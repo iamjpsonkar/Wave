@@ -418,5 +418,7 @@ test('Markdown safe inline extensions and disclosure blocks render without raw H
   await page.locator('.markdown-preview details summary').click();
   await expect(page.locator('.markdown-preview details')).toHaveAttribute('open', '');
   await expect(page.locator('.markdown-preview .markdown-math-display math mfrac')).toBeVisible();
+  await expect(page.locator('.markdown-preview .markdown-math-display math msub')).toBeVisible();
+  await expect(page.locator('.markdown-preview .markdown-math-display math msup')).toBeVisible();
   await expect(page.locator('.markdown-preview script')).toHaveCount(0);
 });
