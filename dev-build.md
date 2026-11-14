@@ -189,3 +189,5 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added one Playwright scenario covering Settings dialog, theme/font/size/line-height/content-width/reduced-motion controls, `.wave/settings.json` persistence and recent-workspace reopen.
 - E2E source inventory increases from 30 to 31 scenarios; Node suite source remains 30 tests.
 - Implementation and regression are committed together; CI is pending. No local test runner was available through the repository connector. Do not report browser, typecheck or production-build success until Actions completes.
+
+- Follow-up regression also checks focus wrapping, applied editor font size/line height and shared preview content width. The test waits for the persisted-preference completion state before reading `settings.json` to avoid an asynchronous-write race.
