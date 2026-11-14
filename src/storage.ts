@@ -186,7 +186,7 @@ export async function createDoc(dir: FileSystemDirectoryHandle, requestedPath: s
     if (await existsFile(parent,candidate)) continue;
     const path=[...parts,candidate].join('/');
     try {
-      await queueWrite(dir,path,()=>withWorkspaceLock('create:'+path,async()=>{
+      await queueWrite(dir,path,()=>withWorkspaceLock('create:'+path.normalize('NFC').toLocaleLowerCase('en-US'),async()=>{
         if (await hasCaseInsensitiveEntry(parent,candidate)) throw new Error('A page with this name already exists.');
         await write(parent,candidate,text);
       }));
@@ -392,8 +392,10 @@ export async function createFolder(dir: FileSystemDirectoryHandle, path: string)
   const safe=requested.trim().replace(/[\\/:*?"<>|]/g,'-').replace(/^\\.+|\\.+$/g,'').slice(0,60);
   if(!safe)throw new Error('Enter a valid folder name.');
   const parent=await directoryForPath(dir,parts.join('/'),true);
-  if(await hasCaseInsensitiveEntry(parent,safe))throw new Error('A folder or file with that name already exists.');
-  await parent.getDirectoryHandle(safe,{create:true});
+  await withWorkspaceLock('folder:'+([...parts,safe].join('/')).normalize('NFC').toLocaleLowerCase('en-US'),async()=>{
+    if(await hasCaseInsensitiveEntry(parent,safe))throw new Error('A folder or file with that name already exists.');
+    await parent.getDirectoryHandle(safe,{create:true});
+  });
   return [...parts,safe].join('/');
 }
 export function slug(title: string) { return (title.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'untitled')+'.md'; }
