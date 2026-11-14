@@ -280,3 +280,22 @@ test('command palette supports filtering and keyboard execution of workspace act
   await expect(page.locator('textarea')).toHaveValue(/# Meeting notes/);
   await expect(dialog).toHaveCount(0);
 });
+
+test('wiki links navigate to pages and backlinks are derived from Markdown files', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Linked Page');
+  await page.getByRole('button', { name: /New page/ }).first().click();
+  const editor = page.locator('textarea');
+  await expect(editor).toBeVisible();
+  await editor.fill('# Source Page\\n\\nSee [[Linked Page|the linked page]].');
+  await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const link = page.locator('.wiki-link');
+  await expect(link).toHaveText('the linked page');
+  await link.click();
+  await expect(editor).toHaveValue(/# Linked Page/);
+  const backlinks = page.getByRole('button', { name: /Backlinks/ });
+  await expect(backlinks).toContainText('1');
+  await backlinks.click();
+  await expect(page.locator('.backlinks-list')).toContainText('Source Page');
+});
