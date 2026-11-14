@@ -4,7 +4,7 @@
 
 Wave takes inspiration from the flexibility of Notion and the document-first collaboration feel of Quip, with one important difference: **your workspace lives in a folder you choose on your own device.**
 
-This page is the showcase of features that are implemented today. For the larger product vision and upcoming capabilities, see [the detailed feature map](docs/FEATURES.md) and [roadmap](docs/ROADMAP.md).
+This page is the showcase of features that are implemented today. For the complete product vision, competitor analysis and upcoming feature catalogue, see [upcoming-features.md](upcoming-features.md). For implementation status, see [the detailed feature map](docs/FEATURES.md) and [roadmap](docs/ROADMAP.md).
 
 ## What Wave can do today
 
