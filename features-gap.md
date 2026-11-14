@@ -278,3 +278,12 @@ The first code/test remediation pass has been committed, but is **awaiting CI ve
 - The same scenario seeds a local `secret.mp3` fixture and verifies that parent traversal, encoded traversal, absolute paths, Windows-style paths and remote media references never create playable audio/video elements.
 - This expands the core link/image/local-media security acceptance coverage; it does **not** establish a complete URL/path security audit or close the remaining compatibility and accessibility gaps.
 - Browser suite source now defines **25 scenarios**. No execution result for this new scenario has been verified yet.
+
+
+## Preview/source round-trip regression — 2026-11-14
+
+- Added an E2E scenario that captures a Markdown source fixture containing hard breaks, links/wiki links, inline and fenced code, escaped table pipes, fenced math, callouts and raw-HTML text.
+- The scenario toggles Preview → Edit and asserts the editor value is byte-for-byte identical, reads the saved Markdown file and compares it exactly, then reloads/reopens the workspace and checks the same source again.
+- Updated the compatibility guide to describe this regression contract.
+- This adds direct coverage for the no-source-rewrite invariant. It does not prove every renderer extension or every malformed input is covered, and it remains unverified until CI executes the scenario.
+- Browser suite source now defines **26 scenarios**; Node suite source remains **30 tests**.
