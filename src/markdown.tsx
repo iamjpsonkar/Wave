@@ -39,14 +39,20 @@ export function extractWikiLinks(markdown: string): string[] {
 }
 
 function convertMathSource(source: string): string {
-  const output: string[] = [];
-  let fence = false, mathBlock = false;
+  const output: string[] = [],tick=String.fromCharCode(96);
+  let fence: {character:string;length:number}|null=null, mathBlock=false;
   for (const line of source.split('\n')) {
-    if (/^\s*(`{3,}|~{3,})/.test(line) && !mathBlock) { fence = !fence; output.push(line); continue; }
-    if (fence) { output.push(line); continue; }
-    if (line.trim().length === 2 && line.trim()[0] === String.fromCharCode(36) && line.trim()[1] === String.fromCharCode(36)) { mathBlock = !mathBlock; output.push(mathBlock ? '```math' : '```'); continue; }
-    if (mathBlock) { output.push(line); continue; }
-    output.push(convertInlineExtensions(line).replace(/\$([^$\n]+)\$/g, (_match, expression: string) => '`math:' + expression.replace(/`/g, '') + '`'));
+    const marker=line.match(/^\s*(\x60{3,}|~{3,})/);
+    if(fence){
+      if(marker&&marker[1][0]===fence.character&&marker[1].length>=fence.length)fence=null;
+      output.push(line);continue;
+    }
+    if(marker&&!mathBlock){fence={character:marker[1][0],length:marker[1].length};output.push(line);continue;}
+    if(line.trim()==='$$'){
+      mathBlock=!mathBlock;output.push(mathBlock?tick.repeat(3)+'math':tick.repeat(3));continue;
+    }
+    if(mathBlock){output.push(line);continue;}
+    output.push(convertInlineExtensions(line).replace(/(?<!\\)\$([^$\n]+)(?<!\\)\$/g, (_match, expression: string) => tick+'math:' + expression.replace(/\x60/g, '') + tick));
   }
   return output.join('\n');
 }
