@@ -108,3 +108,11 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Corrected three stale/overly strict E2E assertions: wiki links are checked as rendered buttons rather than serialized internal URLs; the syntax-token locator is narrowed; Mermaid flowchart assertions check the intended visible node labels rather than depending on SVG primitive types.
 - Code/test commits: `b8e936b707d9f8c2d78a88991943b7a57c705689`, `65f62060152596d160f66effebcf17a274edc80b`, `f633ccc75c9afb9d3ab7529b489e557d7ae9f8c8`, `5d6b16d18e552c79f11dd6471c47aeab54662f47`.
 - Verification status: **not yet verified**. No local test runner is available through this GitHub-only editing path, and no successful CI run for these commits has been inspected. Keep WAVE-052 in `bugs.md` until the new template E2E test passes in CI. The other remaining feature-gap items are still open.
+
+
+## 2026-11-14 — Markdown URL and media path security regression
+
+- Added a dedicated Playwright security matrix for HTTPS/mailto allow cases and unsafe `javascript:`, `data:`, `vbscript:`, `file:`, and mixed-case JavaScript schemes.
+- Added local media path cases for parent traversal, percent-encoded traversal, absolute paths, Windows-style paths and remote URLs. The test creates a local sentinel media file to ensure rejected paths cannot expose it as playable media.
+- Updated `docs/MARKDOWN_SUPPORT.md` to state the URL sanitization and single-filename local-assets contract.
+- This is regression coverage, not a source-code security fix. Browser suite source now defines 25 scenarios. Execution and CI verification are pending; no bug is marked fixed by this change.
