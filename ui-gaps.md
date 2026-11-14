@@ -21,7 +21,7 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 
 ## Priority gaps
 
-### UI-001 — Settings is visibly unavailable
+### UI-001 — Settings dialog needs complete visual and accessibility QA
 
 - Priority: **P1**
 - Status: **Implemented in source — QA verification pending**
@@ -41,7 +41,7 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 - Target: keep Markdown as the portable source of truth while progressively adding an optional block-oriented editing layer: paragraph, headings, lists, quote, divider, callout, code, image/file and table blocks. Avoid silently changing or corrupting source.
 - Acceptance: existing Markdown opens without loss; editing and switching modes preserves source; unsupported blocks remain readable; keyboard navigation and undo behavior are defined.
 
-### UI-003 — Writing canvas uses the available width without a readable content measure
+### UI-003 — Writing canvas width needs responsive and long-content verification
 
 - Priority: **P1**
 - Status: **Core behavior implemented — responsive QA pending**
@@ -50,7 +50,7 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 - Target: introduce a comfortable default writing measure (for example, a centered 720–900px content column) with optional wider/full-width modes for tables, code and diagrams.
 - Acceptance: normal text has a readable maximum line length on wide screens; wide content can intentionally expand; small screens retain usable horizontal padding; preview and edit modes share consistent alignment. Initial centered measure and width choices are implemented; responsive and wide-code/table behavior remain to verify.
 
-### UI-004 — Toolbar actions are icon-heavy and some actions look indistinguishable
+### UI-004 — Toolbar actions need distinct icons and consistent accessible labels
 
 - Priority: **P2**
 - Status: **Partially implemented — regression pending**
@@ -122,7 +122,7 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 - Target: searchable template gallery with descriptions, preview, categories and a blank-page option; add concise first-use guidance without persistent clutter.
 - Acceptance: template gallery can be searched and navigated by keyboard; preview does not create a page; selecting a template creates an editable copy and preserves its Markdown structure.
 
-### UI-012 — Settings, appearance and typography controls are not exposed
+### UI-012 — Settings appearance and typography need visual/accessibility QA
 
 - Priority: **P1**
 - Status: **Implemented in source — QA verification pending**
@@ -267,19 +267,19 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 
 ### Updated implementation order
 
-1. Fix **UI-016 and UI-017** first: code block and Markdown foreground contrast are content readability defects.
-2. Resolve **UI-018 and UI-019** with shared theme tokens rather than isolated overrides.
-3. Add **UI-020** visual regression coverage.
-4. Complete UI-005 typography/contrast audit and responsive UI-014 verification.
-5. Recheck UI-001/UI-012 settings dialog appearance, focus management and preference persistence under all themes.
-6. Preserve UI-003's configurable width behavior and test all four width options at narrow and wide viewports.
+1. Run and resolve the new UI-004 toolbar and system-dark theme regressions; do not close their IDs before CI passes.
+2. Complete **UI-020** with the full Light/Dark/System × Edit/Preview × desktop/mobile fixture matrix.
+3. Finish **UI-018/UI-019** by reviewing all dialogs, popovers, navigation states and selected controls in both dark modes.
+4. Complete the **UI-005** typography/contrast audit and responsive **UI-014** verification.
+5. Recheck **UI-001/UI-012** settings dialog appearance, focus management and preference persistence under all themes.
+6. Preserve **UI-003** width choices and verify long tables, code, diagrams and narrow/mobile viewports.
 
 ### Updated evidence limitations
 
 - The new evidence includes a dark-theme Edit screenshot and a dark-theme Preview screenshot at desktop size.
 - No Settings dialog screenshot, mobile/tablet screenshot, light-theme Preview screenshot, accessibility tree, keyboard/focus recording or contrast measurements were supplied.
-- Visual observations identify likely contrast defects; computed WCAG contrast ratios and the precise CSS rule responsible still require browser inspection.
-- No application code was changed by this screenshot review.
+- The current source now contains explicit dark and system-dark selectors for Markdown and key controls; the added E2E scenario checks representative computed colors but is not a full WCAG contrast audit.
+- No mobile/tablet screenshot, Settings-dialog screenshot, or full theme/mode screenshot matrix is available yet.
 
 
 ## Implementation update — toolbar distinction and dark-theme parity — 2026-11-14
