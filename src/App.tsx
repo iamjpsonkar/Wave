@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { BookOpen, Bold, Check, ChevronDown, Code2, FilePlus2, FileText, Folder, FolderPlus, FolderOpen, HardDrive, Heading1, Heading2, ImagePlus, Italic, Link2, List, ListOrdered, LockKeyhole, MoreHorizontal, Plus, Quote, Search, Settings2, ShieldCheck, Sparkles, Strikethrough, Eye, Edit3, X, Trash2, RotateCcw } from 'lucide-react';
+import { Archive, BookOpen, Bold, Check, ChevronDown, Code2, FilePlus2, FileText, Folder, FolderPlus, FolderOpen, HardDrive, Heading1, Heading2, ImagePlus, Italic, Link2, List, ListOrdered, LockKeyhole, MoreHorizontal, Plus, Quote, Search, Settings2, ShieldCheck, Sparkles, Strikethrough, Eye, Edit3, X, Trash2, RotateCcw } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
