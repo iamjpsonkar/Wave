@@ -61,9 +61,9 @@ A statement with a footnote.[^wave]
 ## Math
 
 Inline: $E = mc^2$
-
-$
-\\frac{a}{b}
+```math
+\frac{a}{b}
+```
 $
 
 ## Mermaid flowchart
