@@ -4,7 +4,7 @@ import { Copy } from 'lucide-react';
 type MarkdownElementProps = { children?: ReactNode; className?: string };
 type WikiDoc = { path: string; title: string };
 
-const ALERTS = new Set(['NOTE', 'TIP', 'IMPORTANT', 'WARNING', 'CAUTION']);
+const ALERTS = new Set(['NOTE', 'TIP', 'IMPORTANT', 'WARNING', 'CAUTION', 'DETAILS']);
 
 function plainText(node: ReactNode): string {
   if (typeof node === 'string' || typeof node === 'number') return String(node);
@@ -72,14 +72,20 @@ export function markdownSource(source: string, docs: WikiDoc[] = []): string {
       return '[' + label + '](' + href + ')';
     });
   });
-  return converted.join('\n').replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*/gim, '$1**$2** ');
+  return converted.join('\n').replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|DETAILS)\][ \t]*/gim, '$1**$2** ');
 }
 
 export function MarkdownBlockquote({ children }: MarkdownElementProps) {
   const text = plainText(children).trimStart();
-  const marker = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
-  const label = text.match(/^(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\b/i);
+  const marker = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|DETAILS)\]/i);
+  const label = text.match(/^(NOTE|TIP|IMPORTANT|WARNING|CAUTION|DETAILS)\b/i);
   const kind = (marker?.[1] || label?.[1])?.toUpperCase();
+  if (kind === 'DETAILS' && marker) {
+    const items = Children.toArray(children);
+    const first = items[0];
+    const summary = plainText(first).replace(/^\[!DETAILS\]\s*/i, '').trim() || 'Details';
+    return <details className="markdown-details"><summary>{summary}</summary>{items.slice(1)}</details>;
+  }
   if (kind && ALERTS.has(kind)) {
     return <blockquote className={'markdown-alert markdown-alert-' + kind.toLowerCase()} role="note" aria-label={kind}>
       {marker ? withoutAlertMarker(children) : children}
