@@ -350,7 +350,7 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 - Added a separate **Blocks** mode alongside the original source editor. The mode classifies headings, paragraphs, lists, quotes, callouts, fenced code, tables, dividers, image lines and attachment links into editable block surfaces.
 - Each block editor replaces only its original source slice. Untouched source, blank-line separators and Markdown syntax remain unchanged; the plain source editor and preview remain available.
 - Added a regression that edits one paragraph block and verifies the exact full Markdown source after returning to source mode, including list, callout and fenced-code blocks.
-- This is a first source-preserving block layer, not full Notion-style block editing. Reordering, drag/drop, block handles, slash menu, bookmark/embed blocks and rich inline formatting remain open.
+- This is a source-preserving block layer, not full Notion-style block editing. Keyboard and drag/drop reordering, block handles, deletion and common-block insertion are now implemented; slash-triggered commands, bookmark/embed blocks and rich inline formatting remain open.
 - **Status: source and E2E regression committed; CI pending.**
 
 
@@ -360,5 +360,5 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 - UI-018: template preview and command palette now trap keyboard focus; template preview initially focuses its close control. Added Shift+Tab/Tab wrap regression for the template dialog.
 - E2E source inventory is now **39 scenarios**; Node source remains **30 tests**. These are source counts only.
 - UI-002 remains partial: slash-triggered menu, bookmark/embed blocks and rich inline editing remain. UI-018 focus restoration and full dialog/popover visual/accessibility audit remain open.
-- Latest source commits: block editor \x609e4f29390447dcdbd43f80098da522385a270448\x60, drag reorder \x607057ce25861bffce43ee05ce5f8afb305ae1d0e8\x60, App focus containment \x60290f926c92caffe64d2ac34f1eea483df015f464\x60; tests \x608bb74c69ec4c9adad7d59c0e34e869224742fa42\x60, \x60f292e32e853fce640d44f05f554ee4bce1cbba72\x60, \x60b90369be8ef6ba66ab95f84f5e609b406afd87f7\x60; styles \x606bbd015307f55a0e385b6f041d383bdb07e6e87c\x60, \x6093bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62\x60.
+- Latest source commits: block editor `9e4f29390447dcdbd43f80098da522385a270448`, drag reorder `7057ce25861bffce43ee05ce5f8afb305ae1d0e8`, App focus containment `290f926c92caffe64d2ac34f1eea483df015f464`; tests `8bb74c69ec4c9adad7d59c0e34e869224742fa42`, `f292e32e853fce640d44f05f554ee4bce1cbba72`, `b90369be8ef6ba66ab95f84f5e609b406afd87f7`; styles `6bbd015307f55a0e385b6f041d383bdb07e6e87c`, `93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62`.
 - No test, typecheck, build, screenshot review or CI pass is claimed. Latest checked combined status and workflow results were empty; verification remains pending.
