@@ -15,7 +15,7 @@ Non-negotiable principles:
 - Portable content: Markdown documents and ordinary asset files remain inspectable outside Wave.
 - Privacy by default: don't introduce uploads, analytics, remote processing, or third-party services without an explicit product decision and disclosure.
 - Reliability before breadth: integrity, safe failure, recovery, backup/restore, migration, accessibility and export are release gates.
-- Preserve scope: never silently prune agreed features. `upcoming-features.md` is the complete scope catalogue; `priority-features.md` assigns delivery order, not permission to drop requirements.
+- Preserve scope: never silently prune agreed features. `upcoming-FEATURES.md` is the complete scope catalogue; `priority-FEATURES.md` assigns delivery order, not permission to drop requirements.
 
 ## 2. Stack and development commands
 
@@ -121,10 +121,10 @@ Preserve all of the following:
 
 ## 6. Project documents and their separate responsibilities
 
-- `upcoming-features.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
-- `priority-features.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
-- `features.md`: concise shipped-feature showcase.
-- `docs/FEATURES.md`: detailed shipped/planned feature map.
+- `upcoming-FEATURES.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
+- `priority-FEATURES.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
+- `FEATURES.md`: concise shipped-feature showcase.
+- `FEATURES.md`: detailed shipped/planned feature map.
 - `docs/ROADMAP.md`: release sequencing.
 - `docs/ARCHITECTURE.md`: architecture and reliability/security rationale.
 - `bugs.md`: only current reproducible/source-supported bugs and material QA gaps.
@@ -141,7 +141,7 @@ The reviewed `bugs.md` reported two partial findings:
 - **WAVE-031 (P1):** remains partial. Current tests simulate permission denial and exercise two-tab editing, but native picker/revocation, external filesystem races during active operations, comprehensive accessibility, and abrupt process termination remain uncovered.
 - **WAVE-039 (P1):** remains partial. IndexedDB strict durability and `pagehide`/`visibilitychange` best-effort writes reduce but cannot eliminate the asynchronous pre-commit crash window.
 
-WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `qa-context.md`; current bug register is `bugs.md`.
+WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `QA_CONTEXT.md`; current bug register is `bugs.md`.
 
 ## 8. Verification snapshot and current QA inventory
 
@@ -171,7 +171,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 6. Keep README/docs/catalogues consistent with actual behavior.
 
 ### At the end of every task
-- Feature work: update `features.md`, `docs/FEATURES.md`, `priority-features.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `upcoming-features.md` catalogue.
+- Feature work: update `FEATURES.md`, `FEATURES.md`, `priority-FEATURES.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `upcoming-FEATURES.md` catalogue.
 - Bug work: current findings only in `bugs.md`; move to `fixed-bugs.md` only after verification; retain IDs and regression scenarios.
 - Code fixes: append problem, changes, files, tests, commit/CI and limitations to `dev-fixed.md`.
 - Build/test/CI: append exact commit and suite-level outcome to `dev-build.md`; distinguish not run, queued, failed and passed.
@@ -194,10 +194,10 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 11. Latest QA handoff — 2026-11-14
 
-- Source-only QA recheck recorded in [qa-context.md](./QA_CONTEXT.md).
+- Source-only QA recheck recorded in [QA_CONTEXT.md](./QA_CONTEXT.md).
 - Open findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed in source.
 - Current test source defines 30 Node tests and 13 Chromium E2E scenarios. The successful CI result currently documented in `dev-build.md` covers an earlier 10-scenario suite; no fresh execution was performed in this QA task.
-- QA documentation commits: `bugs.md` `453f44268b694ded80109f785054d4e80b0ca5bb` (superseded by inventory correction in this task); `fixed-bugs.md` `c0b7503991190d6a84d3f381136bdd75fe98078a`; `qa-context.md` `4f52cbfd016a7419848cf4b2d100266c260cc290`. See current GitHub history for the final corrected `bugs.md` commit.
+- QA documentation commits: `bugs.md` `453f44268b694ded80109f785054d4e80b0ca5bb` (superseded by inventory correction in this task); `fixed-bugs.md` `c0b7503991190d6a84d3f381136bdd75fe98078a`; `QA_CONTEXT.md` `4f52cbfd016a7419848cf4b2d100266c260cc290`. See current GitHub history for the final corrected `bugs.md` commit.
 
 
 ## 12. Markdown compatibility implementation — 2026-11-14
@@ -214,7 +214,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 13. Markdown showcase gap audit — 2026-11-14
 
-- Audited the complete user-provided 20-section Markdown Feature Showcase against the current renderer, App preview wiring, styles, templates, `docs/MARKDOWN_SUPPORT.md`, `features.md`, `docs/FEATURES.md` and E2E test source.
+- Audited the complete user-provided 20-section Markdown Feature Showcase against the current renderer, App preview wiring, styles, templates, `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `FEATURES.md` and E2E test source.
 - Conclusion: Markdown is **not feature-complete** against that showcase. Existing support includes common Markdown/GFM, alert callouts, wiki links/backlinks, local images, heading anchors, a small MathML subset and simple Mermaid flowcharts.
 - Created [features-gap.md](./features-gap.md) as the canonical itemized gap/acceptance checklist. Major gaps: full LaTeX/math grammar, advanced Mermaid diagram families and syntax, syntax highlighting/diff coloring, safe HTML-like inline formatting and collapsible sections, emoji shortcodes, GitHub mention/issue references, Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, media embeds, duplicate-heading slugs, and broader accessibility/conformance coverage.
 - Raw HTML and arbitrary media remain deliberately disabled for safety; any future support must use explicit safe components/allowlists rather than enabling unrestricted HTML.
@@ -230,7 +230,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/styles.css`: styles for syntax tokens, diagrams, inline styles and disclosure.
 - `src/templates.ts`: expanded Markdown showcase examples, including math, sequence/pie charts, inline syntax and details.
 - Added E2E scenarios for extended rendering and CommonMark conformance. Current browser suite source: **17 scenarios**; Node suite source: **30 tests**.
-- Updated `features.md`, `docs/FEATURES.md`, `docs/MARKDOWN_SUPPORT.md`, `README.md`, `dev-fixed.md` and `dev-build.md`.
+- Updated `FEATURES.md`, `FEATURES.md`, `docs/MARKDOWN_SUPPORT.md`, `README.md`, `dev-fixed.md` and `dev-build.md`.
 - Verification: workflow [43614071812](https://github.com/iamjpsonkar/Wave/actions/runs/43614071812), code commit `1df330599916a9d657e83838b03231bd39296ae5`: `npm ci`, 30 Node tests, typecheck and production build passed; Playwright E2E was still in progress at last check. Earlier E2E run [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208) failed four preview journeys; the heading/disclosure/sidebar timing corrections were added afterwards and need the new E2E result before verification is complete.
 - Still not full parity: complete TeX/LaTeX environments, all Mermaid diagram families and advanced syntax, full grammar-based syntax/diff highlighting, GitHub mention/issue semantics, PlantUML/Graphviz/Vega/D2/AsciiDoc renderers, arbitrary media embeds, cross-browser/visual/accessibility audits and a full conformance fixture suite. Raw HTML remains disabled intentionally.
 - Explicitly untouched in this task: `bugs.md`, `fixed-bugs.md`, and `features-gap.md`.
@@ -347,7 +347,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Picked the next core compatibility/accessibility item from `features-gap.md`: image alt semantics, decorative empty-alt handling, broken-image fallback, and reference-style linked images.
 - `src/App.tsx` / `LocalMarkdownImage`: loaded images preserve explicit Markdown alt text and title; when alt is omitted, the title (or a neutral unavailable label) supplies a fallback name. Missing informative images render a visible `role="img"` fallback with an accessible name. Explicit empty-alt images remain decorative, including when the asset is missing (`role="presentation"`, `aria-hidden="true"`).
 - `tests/e2e/workspace.spec.ts`: added a browser scenario for a local image, decorative image, missing informative/decorative assets, reference-style linked image metadata, and keyboard focus on the wrapping link. Corrected the previous accessibility smoke test's broad DETAILS-summary selector, which CI showed also matched the Mermaid source disclosure.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `features.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. Full WCAG/screen-reader certification remains open.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. Full WCAG/screen-reader certification remains open.
 - Current source inventory: 30 Node tests and 29 Playwright E2E scenarios. CI run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed install, Node tests, typecheck and build but failed one existing Playwright selector assertion (27/28 passed). That selector and the new image scenario are in commits `211a19dfca41096cc9617c1124cf439a1313a5cc` and `f5dc998b77176af54d46db22e28034f137328470`; CI is pending for the updated source. Do not report the new scenario as passed until the workflow finishes.
 - Open reliability findings remain WAVE-031 and WAVE-039. No bug trackers were changed.
 
@@ -370,7 +370,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/App.tsx`: added an accessible Settings dialog, validated preference defaults, workspace-specific preference loading, serialized writes through the existing settings queue, and preference reset that leaves documents/recovery untouched. Dialog explains local storage/recovery and shows current save status plus page/folder counts.
 - `src/styles.css`: added dialog layout, responsive writing measure and typography variables, core dark/system-dark workspace styling, and reduced-motion behavior.
 - `tests/e2e/workspace.spec.ts`: added persistence/application/reopen regression; browser suite source is now 31 scenarios, Node suite remains 30 tests.
-- `ui-gaps.md` now records UI-001/UI-012 as **Implemented — CI pending**; all other IDs and acceptance scope remain open. `docs/FEATURES.md` reflects the partial settings capability.
+- `UI_BACKLOG.md` now records UI-001/UI-012 as **Implemented — CI pending**; all other IDs and acceptance scope remain open. `FEATURES.md` reflects the partial settings capability.
 - No test pass is claimed until the new main-branch workflow completes. Full contrast/accessibility review and broader diagnostics remain open.
 
 - Follow-up: dialog focus is contained (Shift+Tab/Tab wrap) and Escape dismisses it; preference writes expose saving/saved/failure status. UI-003 is now **Partially implemented — CI pending** due to the centered 860px default and width choices; responsive/wide-code/table verification remains open.
@@ -380,11 +380,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 27. UI toolbar icon distinction and dark-theme parity — 2026-11-14
 
-- Re-read `DEV_CONTEXT.md`, `ui-gaps.md`, current `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, package dependencies and the latest source history before implementation.
+- Re-read `DEV_CONTEXT.md`, `UI_BACKLOG.md`, current `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, package dependencies and the latest source history before implementation.
 - `src/App.tsx`: replaced duplicate code action icons. Inline code remains `Code2` and is named `Inline code`; fenced code now uses Lucide `FileCode2` and is named `Code block`.
 - `src/styles.css`: added explicit dark and system-dark styles for Markdown heading/body, fenced/inline code, links, blockquotes, tables, dividers, toolbar, Edit/Preview segmented control, Backup and sidebar wordmark.
 - `tests/e2e/workspace.spec.ts`: added 2 Playwright scenarios for unique toolbar icon/label/insertion behavior and system-dark Preview colors. E2E source count 33; Node source count 30.
-- `ui-gaps.md`: reconciled source evidence to current HEAD `4713725f0e09efae0d0b8e6c9da880f5513e18ca`; UI-004 is partially implemented pending regression, UI-016/017 source mitigations await visual regression, UI-018/019 partial, UI-020 partial. UI-001/012 source implementation awaits QA; UI-003 responsive QA remains open. All 20 IDs preserved.
+- `UI_BACKLOG.md`: reconciled source evidence to current HEAD `4713725f0e09efae0d0b8e6c9da880f5513e18ca`; UI-004 is partially implemented pending regression, UI-016/017 source mitigations await visual regression, UI-018/019 partial, UI-020 partial. UI-001/012 source implementation awaits QA; UI-003 responsive QA remains open. All 20 IDs preserved.
 - No tests or build are claimed to pass until the latest main workflow reports success.
 
 - Test review follow-up: toolbar insertion regression now selects actual text before wrapping it in inline/fenced code, matching the current selection-based implementation. UI gap headings/order were rewritten to reflect implemented source behavior and the remaining verification work without dropping IDs.
@@ -392,34 +392,34 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 28. UI feature backlog from spreadsheet-toolbar reference — 2026-11-14
 
-- Created `ui-features.md` as an additive UI proposal backlog based on the supplied spreadsheet-toolbar screenshot and inspection of current Wave editor source.
+- Created `ui-FEATURES.md` as an additive UI proposal backlog based on the supplied spreadsheet-toolbar screenshot and inspection of current Wave editor source.
 - Captures Markdown-editor improvements (undo/redo verification, document-local find, responsive toolbar grouping/overflow, heading styles, shortcut hints, safe insertion/table/link workflows, document statistics, zoom/focus mode and contextual formatting state).
-- Separates spreadsheet-only controls (number formats, cell formatting, grid controls, formulas/sort/filter/charts) into a future dedicated sheet UI, aligned with `priority-features.md` P2.3; these are not proposed for the Markdown editor toolbar.
+- Separates spreadsheet-only controls (number formats, cell formatting, grid controls, formulas/sort/filter/charts) into a future dedicated sheet UI, aligned with `priority-FEATURES.md` P2.3; these are not proposed for the Markdown editor toolbar.
 - Includes stable UIF-001–UIF-021 IDs, priorities, current-state notes, acceptance criteria, dependencies, delivery order and relationships to existing planning documents. All are proposals, not shipped features.
 - No application code, existing gap tracker, product catalogue or tests were changed. No test/build/CI result is claimed for this documentation-only task.
 - Backlog commit: `d9211992d04fd3510f93cc546b814c5a067798d5`.
 
 ## 29. UI-020 theme and responsive regression foundation — 2026-11-14
 
-- Re-read this handoff, `ui-gaps.md`, `dev-fixed.md`, `dev-build.md`, current source, Markdown renderer and Playwright suite before implementation.
+- Re-read this handoff, `UI_BACKLOG.md`, `dev-fixed.md`, `dev-build.md`, current source, Markdown renderer and Playwright suite before implementation.
 - Latest main documentation HEAD before this handoff update: `6084b20582eab22b4a2ecc5dea27d14b0dfefa73`. UI styles commit: `cfb73c72ae17671e893e564688a2324180cbbb6e`; E2E matrix commit: `b729eea18aa7f9297bd977110837c58c6a6ef03f`.
 - `src/styles.css`: added explicit dark/system-dark surfaces and text colors for Markdown alerts, DETAILS disclosures, math and fallback panels, Mermaid diagrams, syntax/diff tokens, missing-image fallbacks, copy controls and Settings dialog controls. Explicit Light mode remains independent of OS dark preference.
 - `tests/e2e/workspace.spec.ts`: added UI-020 matrix for Light/Dark/System × Edit/Preview × desktop/mobile (12 states), covering headings, links, inline/fenced code, tables, alerts, disclosures, math, Mermaid and missing-image fallback. Checks computed styles and horizontal overflow at 1440px and 390px.
 - E2E source inventory is now **34 scenarios**; Node source remains **30 tests**. No local runner is available through the repository connector; no tests, typecheck or production build are claimed to have passed. Check Actions for the latest code commit before asserting verification.
-- `ui-gaps.md`, `dev-fixed.md` and `dev-build.md` record the implementation and pending status. UI-020 remains open pending CI and visual review; UI-005 contrast/WCAG audit, UI-014 broader breakpoints, UI-018/UI-019 full dialogs/popovers/navigation audit and screenshot-diff baselines remain open. All existing UI IDs and the complete product catalogue are preserved.
+- `UI_BACKLOG.md`, `dev-fixed.md` and `dev-build.md` record the implementation and pending status. UI-020 remains open pending CI and visual review; UI-005 contrast/WCAG audit, UI-014 broader breakpoints, UI-018/UI-019 full dialogs/popovers/navigation audit and screenshot-diff baselines remain open. All existing UI IDs and the complete product catalogue are preserved.
 - Open reliability findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed. No bug trackers were changed.
 - UI-020 test-source follow-up: simplified the horizontal-overflow assertion in commit `5b110945a45596de28c13f34435816a87907089f`; `dev-build.md` records this follow-up. The repository connector did not expose a push-triggered workflow run or combined status for this commit, so CI remains unverified.
 - Latest developer handoff update follows the UI-020 implementation: styles `cfb73c72ae17671e893e564688a2324180cbbb6e`, initial matrix `b729eea18aa7f9297bd977110837c58c6a6ef03f`, assertion follow-up `5b110945a45596de28c13f34435816a87907089f`. UI-020 remains open pending actual CI and visual review.
  
 ## 30. Remaining UI implementation batch — 2026-11-14
 
-- Re-read the current `DEV_CONTEXT.md`, `ui-gaps.md`, `dev-fixed.md`, `dev-build.md`, `docs/FEATURES.md`, current App/styles/Markdown source and the E2E suite before continuing. Existing IDs, feature inventory and reliability findings were preserved.
+- Re-read the current `DEV_CONTEXT.md`, `UI_BACKLOG.md`, `dev-fixed.md`, `dev-build.md`, `FEATURES.md`, current App/styles/Markdown source and the E2E suite before continuing. Existing IDs, feature inventory and reliability findings were preserved.
 - Latest documentation HEAD after this batch: `f16e7120f63a55b2d18cd6ef875270595e8fe176`. UI register commit: `82117c34564e1c40365ba6fffb9947f4b3dfef37`; dev fix log: `6eef51e741a24ee8ec972696effb604411b66e9b`; build log: `3fd818f18d277cdd56aacf5949d6e21998d1965e`.
 - `src/EditorEnhancements.tsx` adds bounded in-memory per-page undo/redo, editor-local find/case-sensitive navigation/replace/replace-all, heading outline with Edit/Preview jump, and live word/character/reading-time statistics. History and literal replacement follow-ups: `eec6dda2a2684734b59b34b26073f20bcfffdd78`, `91f52d341feec3274551fba0ab122affcf4e70c1`.
 - `src/App.tsx` integrates the tools through `handleEditorChange` so existing recovery/autosave behavior is retained; adds clickable folder breadcrumbs, polite live save status, searchable/preview-first template gallery, Escape dismissal and accessible names for all primary formatting toolbar actions. Key commits: `0e4bc6b89344f1a09c880322797eff8d9ff60f28`, `2913af688afc024af3739b3980284e5476547273`, `cb278bce391d0c3a116724496bde88f385ef3a0c`, `ee9ba2c16d0c65e136b2e081c5545c75a0424d21`, `e753495c0d44f35c1a8bdbef5d19b5be59694454`, `4ec982c5e64bb93e224017ab2d6036a4a8169629`.
 - `src/styles.css` improves functional text sizing/focus rings, narrow responsive layout, template preview, editor tools, dark secondary surfaces and System-light color handling. Relevant latest CSS commits: `48a1ec34f15598295936e0b01abe535224645fbd`, `13b43c119c9bf20a15dddbe9a097c8178759050b`, `6dab14ef3cc0014d0eb08389c88b14738d19e6b3`, `f9cc770fb54e7165e1f37103bfee9148bb26b3d5`, `bda620165c5264fab0ccda1999aa568690963b87`.
 - `tests/e2e/workspace.spec.ts` adds editor productivity, searchable template preview and nested breadcrumb scenarios. UI-020 now has 3 appearance modes × 2 editor modes × 5 viewport widths (320, 390, 768, 1024, 1440) = **30 states**, computed body/heading contrast assertions at 4.5:1, and page-overflow checks. E2E inventory is **37 scenarios**; Node suite source remains **30 tests**. Regression commits include `632cb75a5693e851937a59ad5958e9c9117f88b5`, `c26e88ec26dfb0e24f84b0c90e4eb525f7cc62b8`, `a1ca18cbb2e987e2725de241e4807a7e01627bf8`, `63de70f23a9379018e22a3107a25db38fce1fff8`.
-- `ui-gaps.md` now includes an authoritative 20-ID implementation status table; `dev-fixed.md`, `dev-build.md` and `docs/FEATURES.md` were updated. UI-002 remains open because a genuine optional rich block editor and lossless Markdown round-trip are not delivered. UI-005, UI-018/UI-019 and other named QA items remain partial pending CI/manual review.
+- `UI_BACKLOG.md` now includes an authoritative 20-ID implementation status table; `dev-fixed.md`, `dev-build.md` and `FEATURES.md` were updated. UI-002 remains open because a genuine optional rich block editor and lossless Markdown round-trip are not delivered. UI-005, UI-018/UI-019 and other named QA items remain partial pending CI/manual review.
 - The repository connection did not expose a current push-triggered Actions run or combined status, and no local dependency install/test runner is available in this GitHub-only path. **Do not claim tests, typecheck, production build, screenshot review or CI passed.** All new source and tests are committed; verification is pending.
 - Open reliability findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed. No bug trackers were changed.
 
@@ -432,7 +432,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - E2E regression edits a paragraph block then verifies exact source preservation for the rest of the document, including heading, list, callout and fenced code. E2E source inventory is now **38 scenarios**; Node suite source remains **30 tests**.
 - Implementation/test commits: component `78e2887d069b6471610b23f341d5178a02c3e12b`; App integration `15928f7956e2fae4934e730a4c99e0eee3cf97ea`; CSS `5ff104ba9f1315b13cc5b40f4dad59f47ea4fcbe`; E2E `2c95631c21f27faad50f4f49bb038a4c7bdb1b1d`; source/test follow-ups `cc6809086922947ae4f32e4eaf47257f93c66073`, `e0d901711430355b06f7c870453484d88099a886`, `760ec73b51361826be00ee653c441d72bca65e28`, `6c9cb3f7b0862fd20253da75a10c263fe215add3`, `41c8adefd98ef00d5ba38867a0e828cd626554a8`.
 - UI-002 is now partially implemented, not complete: block reordering/drag-drop, handles, slash menu, bookmarks/embeds and rich inline formatting remain. UI register and development logs record this honestly.
-- `ui-gaps.md`, `dev-fixed.md`, `dev-build.md` and `docs/FEATURES.md` are updated. Latest dev logs: `54e81395ec9fd0f67e1907254c73e58420a5bc6f` and `8ae1d16d15034fd495b110cdf8449ef5fc74554a`.
+- `UI_BACKLOG.md`, `dev-fixed.md`, `dev-build.md` and `FEATURES.md` are updated. Latest dev logs: `54e81395ec9fd0f67e1907254c73e58420a5bc6f` and `8ae1d16d15034fd495b110cdf8449ef5fc74554a`.
 - No current GitHub Actions result or combined status was exposed. No test/typecheck/production build/visual audit pass is claimed; CI and manual QA remain pending.
 
  
@@ -452,7 +452,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - src/App.tsx: template preview and command palette now trap Tab/Shift+Tab focus; template preview focuses its close control on open.
 - src/styles.css: theme-aware block control, drag and focus-visible styling.
 - tests/e2e/workspace.spec.ts: added block keyboard reorder, drag/drop, insertion and exact-source assertion; template preview focus-wrap assertions. E2E source inventory: **39 scenarios**; Node test source: **30 tests**.
-- docs/FEATURES.md records block mode as partial. ui-gaps.md updates UI-002 and UI-018 while retaining every original ID and remaining acceptance criterion. dev-fixed.md and dev-build.md contain implementation and verification notes.
+- FEATURES.md records block mode as partial. UI_BACKLOG.md updates UI-002 and UI-018 while retaining every original ID and remaining acceptance criterion. dev-fixed.md and dev-build.md contain implementation and verification notes.
 - Source commits: block insertion/reorder 9e4f29390447dcdbd43f80098da522385a270448; drag handle 7057ce25861bffce43ee05ce5f8afb305ae1d0e8; dialog focus 290f926c92caffe64d2ac34f1eea483df015f464; tests 8bb74c69ec4c9adad7d59c0e34e869224742fa42, f292e32e853fce640d44f05f554ee4bce1cbba72, b90369be8ef6ba66ab95f84f5e609b406afd87f7; styles 6bbd015307f55a0e385b6f041d383bdb07e6e87c, 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62.
 - Documentation commits: UI register af7db39acbc456fd3d929dc092f2eabdb2aa9320; dev fix log 6adb102cc0e1d6066e2ad222fcd7c823010d43a5; build log 3f71424b8169aa510a406302a912d9003e5defaf; feature map 9cc459e91e5b1588526c1371084501dea12d3db0.
 - Remaining UI-002 scope: slash-triggered block menu, bookmarks/embeds and rich inline editing. UI-018 still needs focus restoration and complete dialog/popover/disabled/error visual and accessibility review. UI-005/UI-014/UI-020 still need actual browser visual/accessibility verification; no existing UI ID or catalogue requirement was removed.
@@ -461,7 +461,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Documentation-reference correction after the UI log update: dev-fixed.md `34a1d666fd1ca924943ea8bffd332ed3ceee873c`; dev-build.md `f052a4a9bb3b4e113b700bb20d9cc809387b4c18`. This context entry is the final documentation update.
 
-- Feature inventory reconciliation: docs/FEATURES.md now consistently records keyboard/drag reorder, handles, deletion and common-block insertion as implemented, with slash menu, bookmarks/embeds and rich inline editing still partial. Commit `0cfb8174e688e31f866ae4d44e2c98cf8cf21393`. This is the final documentation step.
+- Feature inventory reconciliation: FEATURES.md now consistently records keyboard/drag reorder, handles, deletion and common-block insertion as implemented, with slash menu, bookmarks/embeds and rich inline editing still partial. Commit `0cfb8174e688e31f866ae4d44e2c98cf8cf21393`. This is the final documentation step.
 
 ## 33. Inline foreground/background color formatting — 2026-11-15
 
@@ -470,7 +470,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/markdown.tsx`: added local inline conversion and rendering for the two directives. Only six-digit hexadecimal tokens are accepted; color spans are generated as React elements with a validated color value. Inline-code content is not transformed; malformed color tokens remain literal. Raw HTML and arbitrary style strings remain disabled.
 - `src/styles.css`: added theme-aware color picker controls and a System-light correction.
 - `tests/e2e/workspace.spec.ts`: added one regression for foreground and background application, preview styles, inline-code preservation, invalid-token fallback and returning to Edit. Browser source inventory: **40 scenarios**; Node test source remains **30 tests**. These are definitions, not run results.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `features-gap.md`, `ui-features.md`, `ui-gaps.md`, `dev-fixed.md` and `dev-build.md`. New UI-021 records the inline color controls as implemented in source with CI/visual verification pending. Existing UI IDs and the broader product catalogue remain intact.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `ui-FEATURES.md`, `UI_BACKLOG.md`, `dev-fixed.md` and `dev-build.md`. New UI-021 records the inline color controls as implemented in source with CI/visual verification pending. Existing UI IDs and the broader product catalogue remain intact.
 - Source commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07` and System-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, `48af3998748b51779a0abe75ca5853dd80fa03b1`, `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`.
 - Documentation commits: Markdown support `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`; feature gap `99007028e8f9c98de8baa5d32d55ce97d346d183`; UI feature backlog `bd27ca629c7556b3f2fbeac75e3b600b976365b9`; UI gap register `a0974f7144ec7e0c9fb68a641e4493aadf11c825`; dev-fixed `2b85f26668d6d4f22fe62dcf7ea1f3646444d920`; dev-build `e42d1beff37a08cb5ec4c57cbe97ed9401ad4891`.
 - Remaining color scope: curated preset swatches, remove/reset formatting, nested color spans, block-level fills, selection in Blocks mode, non-Wave fallback/rendering and visual/contrast verification.
@@ -484,7 +484,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/markdown.tsx`: `MarkdownBlockquote` recognizes only the `[!COLOR=#RRGGBB]` marker with a six-digit hex token, strips the marker from rendered content and creates a blockquote with the validated background color. Existing NOTE/TIP/WARNING/DETAILS blockquotes are unchanged.
 - `src/styles.css`: added swatch, clear action and block-fill styling with focus-visible states and theme-aware block borders.
 - `tests/e2e/workspace.spec.ts`: added one regression covering quick swatch insertion, selection-based removal, block-fill source syntax and preview rendering. E2E source inventory is now **41 scenarios**; Node test source remains **30 tests**. These are source counts, not test execution.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `ui-gaps.md`, `ui-features.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-021 remains partial/CI pending; nested inline color ranges, Blocks-mode selection, non-Wave reader fallback and contrast/accessibility review remain open.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `ui-FEATURES.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-021 remains partial/CI pending; nested inline color ranges, Blocks-mode selection, non-Wave reader fallback and contrast/accessibility review remain open.
 - Source commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`; renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`; styles `7020028201eeee4be404a003b4e2c2abc7925c9a`; E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
 - Documentation commits: Markdown support `e71535c61698145ae199a898c9ac6cdf2b910089`; feature inventory `de91a21626ca4fc6bcea07c2e37ee5b8f347e6d2`; UI gap register `8ec018ce51b592282c4e1a0ee91ebe33345b41e8`; UI feature backlog `ece36cd16ecf68c3fd292231bc48034dee6e760a`; renderer feature gap `61213bd311329d75fa2814145847c0f47da6b0a7`; dev-fixed `7a752555c70bb96a17d0ac1bbd7e6187599be7e7`; dev-build `a0aae6b812ecf0a931b77dff41f518b5cad5da89`.
 - Latest observed GitHub Actions run for the documentation commit `a0aae6b812ecf0a931b77dff41f518b5cad5da89` is `43627623167`, queued at the time of inspection. Earlier documentation runs were in progress. No local tests, typecheck, production build or screenshot review were performed; do not claim a pass.
@@ -498,7 +498,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Extended the optional Markdown Blocks editor with an accessible per-block native background color picker. Applying a color wraps the original block source in the safe `> [!COLOR=#RRGGBB]` quote directive; changing a previously colored block updates the marker in place rather than nesting another color wrapper.
 - Updated block classification so Wave color blocks are recognized as callout blocks. Added light/dark theme styling and an E2E source scenario covering first application, changing the color, switching to Preview and checking the rendered block.
 - Fixed a TypeScript error in the existing source-toolbar block-color cursor calculation. CI for the preceding color batch exposed that a concatenated marker expression produced a string cursor argument; the code now computes a single marker string and uses its numeric length.
-- Updated compatibility and feature records: `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `ui-gaps.md`, `ui-features.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-001–UI-020 and all previous feature proposals remain preserved; UI-021 is expanded, not replaced.
+- Updated compatibility and feature records: `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `ui-FEATURES.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-001–UI-020 and all previous feature proposals remain preserved; UI-021 is expanded, not replaced.
 - Source commits: Blocks editor `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`; styles `93bf0eb5dc809e373292570d900066161f6e7be3`; E2E `0cf474ff0d0765f882916c04efbb69e49c95cb85`; toolbar TypeScript fix `efd19504e8d44ab16869f6b82482b00da816d162`.
 - Documentation commits: Markdown support `4e895839c50e6f42d5b1e3830de86d0e1a921066`; feature inventory `6fe3fff45580b238d433ed353f5588ecbc9e80ed`; UI gaps `ea0d90b7e96d6d060bab06a5319297f0bc52e208`; UI feature backlog `a07722b61658e6df1008373323da757f18fc1dd3`; renderer feature gaps `f68a9ac601b7b3aeffdeb6b153c5c29a0446bf19`; dev-fixed `9f85560bfcf7cc921fa46084e8b06d9549c2abc7`; dev-build `dce84d4c2f7dd4d236f8f8676f8676c692bcf730`.
 - Regression source inventory: **42 Playwright E2E scenarios** and **30 Node test definitions**. These are source counts only. The CI run for the preceding docs commit failed at TypeScript because of the cursor expression; Node tests passed 30/30, while build and E2E steps were skipped. The fix is committed; CI run `43627887363` for `efd19504e8d44ab16869f6b82482b00da816d162` was **in progress** at handoff. No pass is claimed yet.
@@ -510,8 +510,8 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Added a new **Wave Complete Feature Test** entry to the existing searchable template gallery in `src/templates.ts`. It is separate from and does not replace the original Markdown feature showcase or any existing template. It includes heading/inline formatting examples, nested lists, GFM tables/tasks/footnotes, reference and wiki links, alert/disclosure blocks, foreground/inline/block colors, code and diff blocks, math, Mermaid and local diagram subsets, local image/file/audio/video references, emoji, search/navigation/backlink prompts, an editor/workspace QA checklist and safe-rendering checks.
 - Existing template preview and create flow is reused; no new storage format, service, or data migration was introduced. Added a Playwright E2E scenario covering template discovery, preview/create, source sections, color and diagram preview, and Edit/Preview source round-trip.
-- Updated `features.md`, `docs/FEATURES.md` and `dev-build.md`. All previous templates, feature ideas and UI gap IDs remain preserved.
-- Commits: template `f7a11993e821cf8cac77b34bc2f593217f8979b7`; template color-marker correction `b1c65d2f0d2893056ae7e75483023eae657bcf74`; E2E scenario `1e7558de59c360532101004695d12b12c1ea1155`; feature showcase `features.md` `759ee2165cb878949e77fecd9daa97527ae48217`; feature map `docs/FEATURES.md` `fe7855acd31cfd20eb5526b02e0e107569764392`; build log `dev-build.md` `92ddcbdb179421d3ef761dde0fb64207c0489b8b`.
+- Updated `FEATURES.md`, `FEATURES.md` and `dev-build.md`. All previous templates, feature ideas and UI gap IDs remain preserved.
+- Commits: template `f7a11993e821cf8cac77b34bc2f593217f8979b7`; template color-marker correction `b1c65d2f0d2893056ae7e75483023eae657bcf74`; E2E scenario `1e7558de59c360532101004695d12b12c1ea1155`; feature showcase `FEATURES.md` `759ee2165cb878949e77fecd9daa97527ae48217`; feature map `FEATURES.md` `fe7855acd31cfd20eb5526b02e0e107569764392`; build log `dev-build.md` `92ddcbdb179421d3ef761dde0fb64207c0489b8b`.
 - Browser E2E source inventory is **43 scenarios** and Node test source remains **30 definitions**; these are source counts, not executed results. No local test, typecheck, production build or screenshot review was performed. GitHub Actions run [43628949071](https://github.com/iamjpsonkar/Wave/actions/runs/43628949071) for main commit `92ddcbdb179421d3ef761dde0fb64207c0489b8b` was **queued** at the time of this update. No pass is claimed.
 - Known test limitation: image, file, audio and video examples are placeholders and require matching local files in the user's workspace before those individual asset examples can render. The renderer compatibility remains the documented local subset; this template does not claim full TeX/diagram specification support.
 - This handoff update is the final documentation action for this batch.
@@ -522,19 +522,19 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Added a Preview-only **Export PDF** action in `src/App.tsx`. It temporarily sets the active document title as the suggested print/PDF filename, invokes `window.print()`, and restores the original tab title on `afterprint`.
 - Added `@media print` and `@page` rules in `src/styles.css` so only `.markdown-preview` is visible in print output. Wave navigation, workspace chrome, editor toolbar, metadata, backlinks and status controls are hidden. Print rules preserve colors where supported, avoid splitting common content blocks, keep headings with following content and wrap long code lines. Audio/video controls are omitted.
 - Added Playwright E2E regression coverage for print invocation, title restoration and print-media visibility. Browser E2E source inventory is now **44 scenarios**; Node test source remains **30 definitions**. These are source counts, not executed results.
-- Updated `features.md`, `docs/FEATURES.md`, `ui-gaps.md` (new UI-022; UI-001–UI-021 retained) and `dev-build.md`.
+- Updated `FEATURES.md`, `FEATURES.md`, `UI_BACKLOG.md` (new UI-022; UI-001–UI-021 retained) and `dev-build.md`.
 - Commits: App `e6800b1725f1471fcd56a403e001ff7fa7302cbb`; print CSS `26dc983d85a531e4a1431624ec7558b5b5dcb2b2`; E2E `8608f04f7c4347d4f59dff4016d45b52db15219b`; feature showcase `0981adaac8c88ee92b7c5e6dc418734b577dfaab`; feature map `f1da436367824bd726b8e63e5fccfa7c73a82359`; UI gap record `623d7ccab194baa3096a07d18ce5b1eb9340b167`; build log `456f4ba2f61a2a4e6c5cf65bf2544e3fc0f07ad3`.
 - Scope limitation: this uses the browser's print dialog and its **Save as PDF** destination; it does not yet generate/download a PDF file directly. Page size, pagination, headers/footers and background printing remain controlled by browser print settings.
 - No local test, typecheck, production build or screenshot review has been performed. Verify the latest GitHub Actions run before claiming success. This developer-context update is the final documentation action for this batch.
 
 ## Implementation update — PDF export UI bug remediation — 2026-11-15
 
-- Re-read the six findings in `ui-bug.md` and targeted the PDF print path rather than changing the general screen theme. `src/styles.css` now applies a deterministic white-page print palette with dark text across Markdown descendants, normalizes code/table/alert/quote/disclosure surfaces, preserves validated custom foreground colors through a dedicated CSS token, forces table cells visible, and exposes initially collapsed DETAILS bodies only for print.
+- Re-read the six findings in `UI_BACKLOG.md` and targeted the PDF print path rather than changing the general screen theme. `src/styles.css` now applies a deterministic white-page print palette with dark text across Markdown descendants, normalizes code/table/alert/quote/disclosure surfaces, preserves validated custom foreground colors through a dedicated CSS token, forces table cells visible, and exposes initially collapsed DETAILS bodies only for print.
 - `src/markdown.tsx`: fixed the Wave inline-color serialization matcher so it captures the complete text payload after the six-digit HEX token. Rendered foreground/background spans now have dedicated classes; the print palette keeps custom foreground colors instead of overriding them with generic body text.
 - `src/templates.ts`: corrected the Complete Feature Test summation from a single-dollar marker on separate lines to the documented `$$` display-math delimiters. The Markdown support contract already documents `$$` or fenced `math` for display expressions.
 - `tests/e2e/workspace.spec.ts`: expanded the existing PDF export scenario to check print invocation and title restoration, hidden Wave chrome, white page/dark heading, retained blue custom text, first table-row Priority `1`, rendered MathML and visibility of collapsed DETAILS content. Source inventory remains **44 Playwright scenarios** and **30 Node test definitions**; these counts do not indicate execution.
-- Updated `ui-bug.md` without removing any UIB-001–UIB-006 finding, `dev-fixed.md` and `dev-build.md`. All six findings now describe their source remediation and pending verification honestly. UIB-005 remains subject to visual confirmation because the supplied PDF's missing first-row value has not yet been reproduced in a fresh PDF.
-- Source commits: Markdown renderer `05275f7c18594918a64e19ab5166300c5cab6424`, follow-up `b68d2a0a43e918fa52f9ebeeb87ef1d3e8676f5b`; print CSS `27678927380002a17400697bb6a6f890032063be`, follow-up `33bbcfdcf00f5200c2f1bd125573d0596d94b188`; showcase fixture `d4049b2e5228b77b8befd7e989252d8b81eed201`, delimiter correction `6f594bab5e4e6e503a77023ca7cac2089e678349`; E2E `2c34b20ad21b930be260f84bcf463075dff4f6d8`, delimiter correction `45c9cd0e2e43a57252f734bb4cfa40a4f085c823`; `ui-bug.md` `2942b71734064433f9816caca86ab2ba452e749e`; `dev-fixed.md` `fc63a024e74be7ccd39f30d1f89de47595c1e59c`; `dev-build.md` `30061332e4b0aa82d3aacf4830c57cb197599df4`.
+- Updated `UI_BACKLOG.md` without removing any UIB-001–UIB-006 finding, `dev-fixed.md` and `dev-build.md`. All six findings now describe their source remediation and pending verification honestly. UIB-005 remains subject to visual confirmation because the supplied PDF's missing first-row value has not yet been reproduced in a fresh PDF.
+- Source commits: Markdown renderer `05275f7c18594918a64e19ab5166300c5cab6424`, follow-up `b68d2a0a43e918fa52f9ebeeb87ef1d3e8676f5b`; print CSS `27678927380002a17400697bb6a6f890032063be`, follow-up `33bbcfdcf00f5200c2f1bd125573d0596d94b188`; showcase fixture `d4049b2e5228b77b8befd7e989252d8b81eed201`, delimiter correction `6f594bab5e4e6e503a77023ca7cac2089e678349`; E2E `2c34b20ad21b930be260f84bcf463075dff4f6d8`, delimiter correction `45c9cd0e2e43a57252f734bb4cfa40a4f085c823`; `UI_BACKLOG.md` `2942b71734064433f9816caca86ab2ba452e749e`; `dev-fixed.md` `fc63a024e74be7ccd39f30d1f89de47595c1e59c`; `dev-build.md` `30061332e4b0aa82d3aacf4830c57cb197599df4`.
 - GitHub Actions run `43630578833` for the defect-register commit was in progress at inspection; later commits triggered additional workflows. No local tests, typecheck, production build or screenshot review were performed. Do not mark any finding fully verified until CI and a fresh light/dark browser-generated PDF are reviewed.
 - This developer-context update is the final documentation action for this batch.
 - PDF export regression follow-up: expanded the existing Playwright fixture to cover all three showcased foreground colors (blue, green, red), the inline yellow background and the normalized print table-header surface. E2E commit `dabe21bcf587f84835b3b5b2a5c90295686ebcf1`; follow-up log commits: `dev-fixed.md` `57a4f23f6f38c939c51115620ad6e60627d35ce3`, `dev-build.md` `58740f0dc87c3f4a055bc7d61c16a50b5b1bcf4b`. Scenario inventory remains 44; execution is still unverified.
@@ -548,7 +548,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Integrated the sample panel into the active editor work area in `src/App.tsx`, with responsive/light/dark styles in `src/styles.css`. The **Insert into document** action inserts Markdown source at the current textarea selection (replacing selected text) and restores the caret after insertion. If Preview or Blocks mode has no source textarea mounted, it appends the sample to the current document so the current view updates through the normal state/autosave path.
 - Added `handleEditorKeyDown` for Enter in the source textarea. Ordered and unordered list markers continue; ordered numbers increment; nested indentation is retained; task-list markers continue as unchecked `[ ]`; and Enter on an empty list item exits the list. Fenced code is deliberately excluded so Enter retains normal code editing behavior.
 - Added Playwright scenarios for sample selection/preview and selection replacement with inserted Markdown, plus ordered/bullet/task list continuation, empty-item exit, nested indentation and fenced-code Enter behavior.
-- Updated `ui-gaps.md` with additive UI-023 (sample discoverability) and UI-024 (list Enter continuation), preserving all existing IDs. Updated `ui-features.md`, `features.md`, `docs/FEATURES.md`, `dev-fixed.md` and `dev-build.md`.
+- Updated `UI_BACKLOG.md` with additive UI-023 (sample discoverability) and UI-024 (list Enter continuation), preserving all existing IDs. Updated `ui-FEATURES.md`, `FEATURES.md`, `FEATURES.md`, `dev-fixed.md` and `dev-build.md`.
 - Source commits: sample component `65fb14ba86541accb9a36617588dbd80b9c65b99`; App integration `148fc99d14bfbc792e4be0a830938cbf001a791e`, newline/regex correction `40ca59461ae6cab5c2b772f4e11b32d07d55e26f`, event typing `e55a34748dcf02c1ec6ae2c87aa27afadb7aa664`; styles `6ffe152c88fec619cca223871d51086894ebe408`, nav alignment `c1f7265ed48cafe50dc9fab2fb8975c59aa0700b`; E2E `4c616bba1d7c3e37408834b8fdba117918f4e321`, stray suite-closure correction `81261223084692acf14486db9d937cd77238e055`, nested/fenced-code follow-up `757d8edba0925432bf8c5027924074ee8331a1eb`.
 - Documentation commits: UI gaps `4e0fbdfb5b2db775bab0e13e771246909e797cc6`; UI backlog `9ee90e20791c53ca78ca075a36fc87430943279b`; feature showcase `225a700a24ddfef166681c74b2528819465dcbdf`; detailed feature map `d8d4ca732010eb56b1ce54a4d2468ab46922e354`; dev-fixed `950162622719c2117337f5163fd48dcaf1119f5f`, follow-up `cd199d846d5c8069952b40fb657f765c53da5268`; dev-build `10cb85ef32f92c7924c23ebe1b62e2e6ed5a9dfe`, follow-up `746ccb7b1ae7245278c201792087a5ba0d70acc1`.
 - CI run `43633086687` for the suite-closure correction passed `npm test`, TypeScript typecheck and production build; Playwright was still executing at last inspection. The expanded nested/fenced-code test commit `757d8edba0925432bf8c5027924074ee8331a1eb` has run `43633137209`, whose Node tests, typecheck and production build passed and whose E2E step was still in progress at last inspection. No E2E pass or screenshot/manual visual review is claimed. No local test/build was run.
@@ -560,7 +560,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Docker files: Dockerfile (Node 22 multi-stage build and unprivileged Nginx runtime), .dockerignore, compose.yaml, .env.example, docker/nginx.conf. Nginx listens on 8080, supports Vite SPA fallback, uses immutable caching for hashed assets and no-cache for the app shell, denies dotfiles and emits browser security headers. Compose enables read-only root, bounded /tmp, drops all capabilities and sets no-new-privileges.
 - Commands: docker compose up --build -d, docker compose down; optional port via WAVE_PORT. Npm shortcuts: npm run docker:build, npm run docker:up, npm run docker:down. Full operational notes are in docs/DOCKER.md.
 - Critical deployment boundary: this is static web hosting only. It does not add backend APIs, accounts, server-side workspace persistence, shared folders, collaboration, database or synchronization. Browser File System Access API continues to operate on a directory selected on each browser user's own device; remote access requires HTTPS and browser support.
-- Updated docs/ARCHITECTURE.md, docs/ROADMAP.md, features.md, docs/FEATURES.md, contributor/docs navigation and the build log. Corrected stale feature wording about wiki links/backlinks. No prior product scope, UI gap IDs, feature ideas or historical engineering records were removed.
+- Updated docs/ARCHITECTURE.md, docs/ROADMAP.md, FEATURES.md, FEATURES.md, contributor/docs navigation and the build log. Corrected stale feature wording about wiki links/backlinks. No prior product scope, UI gap IDs, feature ideas or historical engineering records were removed.
 - CI adds a dedicated container job that validates Compose configuration and builds the production image. Run 43634056269 successfully built the container and passed Node tests, TypeScript and Vite build, while Playwright installation remained in progress at inspection. Runs 43634100390 and the latest Compose-validation workflow are pending final verification; check them before claiming complete CI.
 - Important implementation commits are catalogued in dev-build.md. No local Docker/Compose run, browser E2E completion or manual visual review was performed in this environment.
 - This is the final developer-context update for the repository restructuring and Docker delivery batch.
