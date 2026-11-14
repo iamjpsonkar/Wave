@@ -112,7 +112,7 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] Workspace/folder breadcrumbs and live save-status announcement
 - [x] Searchable template gallery with preview before page creation
 - [~] Responsive/theme regression coverage across five viewport widths and three appearance modes; CI and manual visual review pending
-- [ ] Optional rich block editor with source-preserving Markdown round-trip
+- [~] Optional source-preserving Markdown block editor: editable blocks, keyboard/drag reorder, delete and common-block insertion; slash menu, bookmarks/embeds and rich inline editing remain
 
  
 - [x] Searchable template gallery with preview-before-create workflow
