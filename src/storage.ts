@@ -60,6 +60,14 @@ async function existsDirectory(dir: FileSystemDirectoryHandle, name: string): Pr
   try { await dir.getDirectoryHandle(name); return true; }
   catch (error) { if (isNotFound(error)) return false; throw error; }
 }
+export async function createUniqueDirectory(dir:FileSystemDirectoryHandle,baseName:string,lockName='directory-allocation'):{name:string;handle:FileSystemDirectoryHandle}{
+  return withWorkspaceLock(lockName,async()=>{
+    let name=baseName,suffix=2;
+    while(await hasCaseInsensitiveEntry(dir,name))name=baseName+'-'+suffix++;
+    const handle=await dir.getDirectoryHandle(name,{create:true});
+    return {name,handle};
+  });
+}
 async function hasCaseInsensitiveEntry(dir:FileSystemDirectoryHandle,name:string):Promise<boolean>{
   const target=name.normalize('NFC').toLocaleLowerCase('en-US');
   for await(const [existing] of dir.entries())if(existing.normalize('NFC').toLocaleLowerCase('en-US')===target)return true;
@@ -95,6 +103,10 @@ export async function openWorkspace(rootHandle?: FileSystemDirectoryHandle): Pro
   if (!rootHandle && !('showDirectoryPicker' in window)) throw new Error('Folder access requires Chrome or Edge in this preview.');
   const root = rootHandle ?? await window.showDirectoryPicker({ mode: 'readwrite' });
   const wave = await root.getDirectoryHandle('.wave', { create: true });
+  try{
+    const restoreState=JSON.parse(await(await(await wave.getFileHandle('restore-status.json')).getFile()).text()) as {status?:string};
+    if(restoreState.status!=='complete')throw new Error('This folder contains an incomplete backup restore and must not be used as a workspace.');
+  }catch(error){if(!isNotFound(error))throw error;}
   const documents = await wave.getDirectoryHandle('documents', { create: true });
   const assets = await wave.getDirectoryHandle('assets', { create: true });
   const backups = await wave.getDirectoryHandle('backups', { create: true });
@@ -117,8 +129,8 @@ export async function listDocs(dir: FileSystemDirectoryHandle): Promise<Doc[]> {
       else if (name.toLowerCase().endsWith('.md')) {
         const file = await (handle as FileSystemFileHandle).getFile();
         const text = await file.slice(0, 4096).text();
-        const first = text.split('\\n').find(line => line.trim()) ?? '';
-        result.push({ id: path, path, title: first.replace(/^#\\s*/, '').trim() || name.replace(/\\.md$/i, ''), updatedAt: file.lastModified, content: '' });
+        const first = text.split('\n').find(line => line.trim()) ?? '';
+        result.push({ id: path, path, title: first.replace(/^#\s*/, '').trim() || name.replace(/\.md$/i, ''), updatedAt: file.lastModified, content: '' });
       }
     }
   }
@@ -136,7 +148,7 @@ export async function searchDocs(dir: FileSystemDirectoryHandle, query: string):
       else if (name.toLowerCase().endsWith('.md')) {
         const text = await (await (handle as FileSystemFileHandle).getFile()).text();
         const index = text.toLocaleLowerCase().indexOf(needle);
-        if (index >= 0) matches.push({ path, snippet: text.slice(Math.max(0,index-70), Math.min(text.length,index+needle.length+100)).replace(/\\s+/g,' ').trim() });
+        if (index >= 0) matches.push({ path, snippet: text.slice(Math.max(0,index-70), Math.min(text.length,index+needle.length+100)).replace(/\s+/g,' ').trim() });
       }
     }
   }
@@ -230,7 +242,7 @@ async function snapshotTree(dir:FileSystemDirectoryHandle,prefix=''):Promise<str
   for await(const [name,handle] of dir.entries()){
     const path=prefix?prefix+'/'+name:name;
     if(handle.kind==='directory')entries.push(await snapshotTree(handle as FileSystemDirectoryHandle,path));
-    else{const file=await(handle as FileSystemFileHandle).getFile();entries.push(path+'|'+file.size+'|'+file.lastModified);}
+    else{const file=await(handle as FileSystemFileHandle).getFile();const bytes=await file.arrayBuffer();const digest=await crypto.subtle.digest('SHA-256',bytes);const hash=Array.from(new Uint8Array(digest),value=>value.toString(16).padStart(2,'0')).join('');entries.push(path+'|'+file.size+'|'+hash);}
   }
   return entries.sort().join('\\n');
 }
@@ -239,10 +251,11 @@ async function optionalFileSnapshot(dir:FileSystemDirectoryHandle,name:string):P
   catch(error){if(isNotFound(error))return null;throw error;}
 }
 export async function createBackup(workspace: Workspace): Promise<string> {
+  return withWorkspaceLock('backup:'+workspace.root.name,async()=>{
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
-  let name='backup-'+stamp, suffix=2;
-  while(await existsDirectory(workspace.backups,name))name='backup-'+stamp+'-'+suffix++;
-  const backup = await workspace.backups.getDirectoryHandle(name, { create: true });
+  const reserved=await createUniqueDirectory(workspace.backups,'backup-'+stamp,'backup-allocation');
+  const name=reserved.name;
+  const backup=reserved.handle;
   const startedAt=new Date().toISOString();
   await write(backup,'backup-status.json',JSON.stringify({status:'in-progress',startedAt},null,2));
   try {
@@ -264,6 +277,7 @@ export async function createBackup(workspace: Workspace): Promise<string> {
     await write(backup,'backup-status.json',JSON.stringify({status:'failed',startedAt,failedAt:new Date().toISOString(),message:error instanceof Error?error.message:'Backup failed'},null,2)).catch(()=>undefined);
     throw error;
   }
+  });
 }
 export async function listBackups(backups: FileSystemDirectoryHandle): Promise<BackupInfo[]> {
   const result:BackupInfo[]=[];
@@ -282,28 +296,36 @@ export async function listBackups(backups: FileSystemDirectoryHandle): Promise<B
 export async function restoreBackupToNewWorkspace(workspace:Workspace,name:string):Promise<string>{
   if(!/^backup-[a-zA-Z0-9T._-]+$/.test(name))throw new Error('Invalid backup name.');
   const source=await workspace.backups.getDirectoryHandle(name);
-  const status=JSON.parse(await(await(await source.getFileHandle('backup-status.json')).getFile()).text()) as {status?:string};
-  if(status.status!=='complete')throw new Error('This backup is incomplete and cannot be restored.');
-  const targetName=workspace.root.name+'-restore-'+new Date().toISOString().replace(/[:.]/g,'-');
-  const target=await workspace.root.getDirectoryHandle(targetName,{create:false}).catch(async error=>{if(isNotFound(error))return workspace.root.getDirectoryHandle(targetName,{create:true});throw error;});
+  const backupStatus=JSON.parse(await(await(await source.getFileHandle('backup-status.json')).getFile()).text()) as {status?:string;documents?:number;assets?:number};
+  if(backupStatus.status!=='complete')throw new Error('This backup is incomplete and cannot be restored.');
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  const reserved=await createUniqueDirectory(workspace.root,workspace.root.name+'-restore-'+stamp,'restore-allocation');
+  const targetName=reserved.name,target=reserved.handle;
   const wave=await target.getDirectoryHandle('.wave',{create:true});
-  const docsCopied=await copyFolder(await source.getDirectoryHandle('documents'),await wave.getDirectoryHandle('documents',{create:true}));
-  const assetsCopied=await copyFolder(await source.getDirectoryHandle('assets'),await wave.getDirectoryHandle('assets',{create:true}));
-  const expected=JSON.parse(await(await(await source.getFileHandle('backup-status.json')).getFile()).text()) as {documents?:number;assets?:number};
-  if(docsCopied.files!==expected.documents||assetsCopied.files!==expected.assets)throw new Error('Backup contents do not match the completion manifest; restore was stopped.');
-  for(const filename of ['manifest.json','settings.json']){
-    try{const f=await(await source.getFileHandle(filename)).getFile();await write(wave,filename,f);}
-    catch(error){if(!isNotFound(error))throw error;}
+  const startedAt=new Date().toISOString();
+  await write(wave,'restore-status.json',JSON.stringify({status:'in-progress',backup:name,startedAt},null,2));
+  try{
+    const docsCopied=await copyFolder(await source.getDirectoryHandle('documents'),await wave.getDirectoryHandle('documents',{create:true}));
+    const assetsCopied=await copyFolder(await source.getDirectoryHandle('assets'),await wave.getDirectoryHandle('assets',{create:true}));
+    if(docsCopied.files!==backupStatus.documents||assetsCopied.files!==backupStatus.assets)throw new Error('Backup contents do not match the completion manifest; restore was stopped.');
+    for(const filename of ['manifest.json','settings.json']){
+      try{const f=await(await source.getFileHandle(filename)).getFile();await write(wave,filename,f);}
+      catch(error){if(!isNotFound(error))throw error;}
+    }
+    await write(wave,'restore-source.json',JSON.stringify({backup:name,restoredAt:new Date().toISOString()},null,2));
+    await write(wave,'restore-status.json',JSON.stringify({status:'complete',backup:name,startedAt,completedAt:new Date().toISOString()},null,2));
+    return targetName;
+  }catch(error){
+    await write(wave,'restore-status.json',JSON.stringify({status:'failed',backup:name,startedAt,failedAt:new Date().toISOString(),message:error instanceof Error?error.message:'Restore failed'},null,2)).catch(()=>undefined);
+    throw error;
   }
-  await write(wave,'restore-source.json',JSON.stringify({backup:name,restoredAt:new Date().toISOString()},null,2));
-  return targetName;
 }
 export async function moveDocToTrash(documents: FileSystemDirectoryHandle, trash: FileSystemDirectoryHandle, path: string): Promise<void> {
   await withWorkspaceLock('trash:'+path,async()=>{
     const file=await fileForPath(documents,path);
     const text=await(await file.getFile()).text();
     const id=crypto.randomUUID();
-    const title=text.split('\\n').find(line=>line.trim())?.replace(/^#\\s*/,'').trim()||path.split('/').pop()||'Untitled';
+    const title=text.split('\n').find(line=>line.trim())?.replace(/^#\s*/,'').trim()||path.split('/').pop()||'Untitled';
     const metadata:TrashItem={id,title,originalPath:path,deletedAt:new Date().toISOString()};
     const operation={id,operation:'trash',state:'copying',originalPath:path,startedAt:new Date().toISOString()};
     await write(trash,id+'.op.json',JSON.stringify(operation,null,2));
@@ -392,6 +414,7 @@ export async function listTrash(trash: FileSystemDirectoryHandle): Promise<Trash
 }
 export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documents: FileSystemDirectoryHandle, id: string): Promise<string> {
   if(!/^[a-f0-9-]{16,64}$/i.test(id))throw new Error('Invalid Trash item.');
+  return withWorkspaceLock('trash-restore:'+id,async()=>{
   const metadata=JSON.parse(await(await(await trash.getFileHandle(id+'.json')).getFile()).text()) as unknown;
   if(!validTrashItem(metadata)||metadata.id!==id)throw new Error('Trash metadata is invalid; the item was not changed.');
   let target='';
@@ -414,6 +437,7 @@ export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documen
   await trash.removeEntry(id+'.json').catch(error=>{if(!isNotFound(error))throw error;});
   await trash.removeEntry(id+'.op.json').catch(error=>{if(!isNotFound(error))throw error;});
   return target;
+  });
 }
 export async function permanentlyDeleteTrashItem(trash: FileSystemDirectoryHandle, id: string): Promise<void> {
   if(!/^[a-f0-9-]{16,64}$/i.test(id))throw new Error('Invalid Trash item.');
