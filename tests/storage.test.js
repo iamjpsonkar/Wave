@@ -109,3 +109,30 @@ test('asset lookup permission errors are not treated as free filenames',async()=
   denied.getFileHandle=async()=>{throw new DOMException('Denied','NotAllowedError');};
   await assert.rejects(()=>addAsset(denied,new File(['data'],'diagram.png',{type:'image/png'})),/Denied/);
 });
+
+test('concurrent page creation and case-only names never overwrite',async()=>{
+  const {workspace}=await fixture();
+  const [one,two]=await Promise.all([
+    createDoc(workspace.documents,'Notes.md','first'),
+    createDoc(workspace.documents,'notes.md','second')
+  ]);
+  assert.notEqual(one.toLocaleLowerCase(),two.toLocaleLowerCase());
+  assert.equal(await readDoc(workspace.documents,one),'first');
+  assert.equal(await readDoc(workspace.documents,two),'second');
+});
+test('concurrent same-name asset uploads receive distinct filenames',async()=>{
+  const {workspace}=await fixture();
+  const [one,two]=await Promise.all([
+    addAsset(workspace.assets,new File(['one'],'photo.png',{type:'image/png'})),
+    addAsset(workspace.assets,new File(['two'],'photo.png',{type:'image/png'}))
+  ]);
+  assert.notEqual(one,two);
+  assert.equal(await(await(await workspace.assets.getFileHandle(one)).getFile()).text(),'one');
+  assert.equal(await(await(await workspace.assets.getFileHandle(two)).getFile()).text(),'two');
+});
+test('incomplete backup snapshots are not offered for restore',async()=>{
+  const {workspace}=await fixture();
+  workspace.assets.entries=async function*(){throw new Error('simulated read failure');};
+  await assert.rejects(()=>createBackup(workspace),/simulated read failure/);
+  assert.deepEqual(await listBackups(workspace.backups),[]);
+});
