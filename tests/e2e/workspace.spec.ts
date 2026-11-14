@@ -265,3 +265,16 @@ test('Markdown preview renders GFM tables, task lists, footnotes and safe alert 
   await expect(page.locator('.markdown-preview img')).toHaveCount(0);
   await expect(page.locator('.markdown-preview')).not.toContainText('onerror=alert');
 });
+
+test('command palette supports filtering and keyboard execution of workspace actions', async ({ page }) => {
+  await openWorkspace(page);
+  await page.keyboard.press('Control+k');
+  const dialog = page.getByRole('dialog', { name: 'Command palette' });
+  await expect(dialog).toBeVisible();
+  const input = dialog.getByRole('textbox', { name: 'Search commands' });
+  await input.fill('new meeting notes');
+  await input.press('ArrowDown');
+  await input.press('Enter');
+  await expect(page.locator('textarea')).toContainText('# Meeting notes');
+  await expect(dialog).toHaveCount(0);
+});
