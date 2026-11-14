@@ -1575,3 +1575,11 @@ The draft tests exercise the newest-record selector and queue primitives; they d
 - UI reports when the recovery-draft transaction commits, separately from the Markdown file autosave.
 - Playwright verifies recovery after reload once the IndexedDB write has completed.
 - IndexedDB is asynchronous; abrupt process termination before commit can still lose the newest edit. No claim of crash-proof recovery is made.
+
+
+## Follow-up reliability remediation — 2026-11-14
+
+- WAVE-042 draft-journal cross-tab isolation: each browser tab now has a session-scoped draft identity. Draft saves update only that tab's record, and a successful Markdown save clears only its own recovery record; another tab's unsaved draft is preserved. The new two-tab Chromium regression scenario checks that both concurrent edits survive as either saved Markdown or a retained recovery draft.
+- WAVE-031 browser coverage: the suite now adds simulated File System Access permission denial and two-tab concurrent editing to the existing six journeys. Native picker prompts/revocation and full keyboard/accessibility coverage remain outstanding.
+- WAVE-039 durability: draft write transactions request IndexedDB `strict` durability where supported, with a compatibility fallback. This reduces the persistence window but cannot guarantee recovery if the browser process is killed before the asynchronous transaction commits.
+- CI for these changes is still running; no success claim is made until the workflow completes.
