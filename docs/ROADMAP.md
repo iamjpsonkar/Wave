@@ -51,7 +51,7 @@ Wave is being developed as a user-owned workspace inspired by Notion and Quip. T
 
 ## Release 0.5 — Knowledge management and databases
 
-- [ ] Backlinks, internal page references and mentions
+- [~] Markdown wiki links and backlinks are implemented; richer internal references, mentions and link previews remain planned
 - [ ] Tags, page icons, covers and page properties
 - [ ] Database engine and typed properties
 - [ ] Table, board, list, gallery, calendar and timeline views
