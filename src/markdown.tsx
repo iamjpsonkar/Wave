@@ -84,6 +84,8 @@ export function markdownSource(source: string, docs: WikiDoc[] = []): string {
 
 export function MarkdownBlockquote({ children }: MarkdownElementProps) {
   const text = plainText(children).trimStart();
+  const colorMarker=text.match(/^\[!COLOR=(#[0-9a-f]{6})\]/i);
+  if(colorMarker){const clean=(node:ReactNode):ReactNode=>{if(typeof node==='string')return node.replace(/^\s*\[!COLOR=#[0-9a-f]{6}\]\s*/i,'');if(Array.isArray(node))return node.map(clean);if(isValidElement(node))return cloneElement(node,{},clean((node.props as MarkdownElementProps).children));return node;};return <blockquote className="markdown-color-block" style={{backgroundColor:colorMarker[1]}}>{clean(children)}</blockquote>;}
   const marker = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|DETAILS)\]/i);
   const label = text.match(/^(NOTE|TIP|IMPORTANT|WARNING|CAUTION|DETAILS)\b/i);
   const kind = (marker?.[1] || label?.[1])?.toUpperCase();
