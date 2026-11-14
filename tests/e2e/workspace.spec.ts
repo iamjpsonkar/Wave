@@ -801,11 +801,25 @@ test('Markdown preview exposes accessible semantic structure and keyboard-operab
     '',
     '```javascript',
     'const accessible = true;',
+    '```',
+    '',
+    '```mermaid',
+    'sequenceDiagram',
+    'title Checkout sequence',
+    'Buyer->>Shop: Place order',
     '```'
   ].join('\n'));
   await page.getByRole('button', { name: 'Preview' }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.getByRole('heading', { level: 1, name: 'Accessible Markdown' })).toBeVisible();
+  const diagram = preview.getByRole('img', { name: 'Checkout sequence' });
+  await expect(diagram).toBeVisible();
+  const diagramSource = preview.getByText('View diagram source');
+  await expect(diagramSource).toBeVisible();
+  await diagramSource.focus();
+  await page.keyboard.press('Enter');
+  await expect(preview.locator('.diagram-source')).toHaveAttribute('open', '');
+  await expect(preview.locator('.diagram-source pre')).toContainText('Buyer->>Shop: Place order');
   await expect(preview.getByRole('heading', { level: 2, name: 'Navigation' })).toBeVisible();
   await expect(preview.getByRole('link', { name: 'Wave documentation' })).toHaveAttribute('href', 'https://example.com/docs');
   await expect(preview.getByRole('table')).toBeVisible();
