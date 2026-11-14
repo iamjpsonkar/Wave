@@ -127,3 +127,29 @@ Important documentation drift observed at the same HEAD:
 **Verification:** Repository tree was inspected; current source/test/CI files, bug registers, current workflow run and failing job log were fetched. The source/test baseline is `e53de9e...`; the context-only commit is `ccc59b0...`. No local test suite was run during this documentation-only task. CI for the context-only commit was queued at the time of this update.
 
 **Next action:** Triage and resolve the failing wiki-link/backlink E2E scenario, run the full CI suite, then refresh `bugs.md`, `fixed-bugs.md`, and this context file with the resulting revision and evidence.
+
+
+## Feature coverage audit — 2026-11-14
+
+**Audit baseline:** current `main` HEAD `82388f392a3089266f883c548f2246748937255c` (latest branch ref checked during this audit).
+
+**Files reviewed:** `upcoming-features.md`, `priority-features.md`, `features.md`, `docs/FEATURES.md`, `features-gap.md`, `README.md`, `src/App.tsx`, `src/storage.ts`, `src/markdown.tsx`, `src/draftJournal.ts`, `src/templates.ts`, Node tests, Playwright E2E tests and CI workflow.
+
+**Feature coverage conclusions:**
+- Current working MVP includes local Markdown pages/editing/autosave, browser-local recovery drafts, nested folders/navigation, title/content search, favorites, duplicate pages, Trash/recovery, local attachments, verified local backups/restore, external-edit conflict detection, mobile navigation, command palette, wiki links/backlinks and a substantial Markdown preview subset.
+- Markdown is not full showcase parity. Current code and E2E definitions include unique heading IDs, safe inline syntax, emoji shortcodes, DETAILS disclosures, limited MathML, local code token coloring, and Mermaid flowchart/sequence/pie output. Full TeX, broad Mermaid grammar/families, Graphviz/PlantUML/Vega/D2/AsciiDoc, unrestricted HTML (deliberately disabled), arbitrary media embeds, and broad conformance/accessibility coverage remain incomplete or intentionally excluded.
+- `features-gap.md` is stale relative to the current renderer: it still lists duplicate heading suffixes, emoji shortcodes, DETAILS blocks, sequence diagrams and pie charts as missing even though current source and E2E tests implement those subsets. Its audit should be refreshed before treating it as authoritative.
+- Feature tracking is inconsistent: `docs/FEATURES.md` has 19 checked, 47 unchecked and 1 partial item; `priority-features.md` has 104 unchecked items; `upcoming-features.md` has 973 checklist entries, only one checked (the status-convention definition) and 972 unchecked. The latter two are not meaningful implementation status trackers and should not be read as evidence that nothing has shipped. `features.md` is the current shipped-feature showcase.
+- Some docs conflict: `features.md` says command palette is implemented, while `docs/FEATURES.md` still marks it planned. Reconcile the feature map with code/tests.
+
+**Current verification at this audit:**
+- Current E2E source defines 18 Playwright scenarios; Node test source defines 30 tests.
+- Latest CI run for current HEAD: [43614487327](https://github.com/iamjpsonkar/Wave/actions/runs/43614487327) — Node tests, typecheck and production build passed; Playwright failed **1 of 18**. The failing wiki-link/backlinks scenario at `tests/e2e/workspace.spec.ts:288` expects preview content for the newly edited Source Page, but actual preview HTML was only `<h1 id="untitled">Untitled</h1>`. It failed on both attempts. This is an unresolved browser/functional blocker; investigate why the editor content remains Untitled after the test's page-creation flow before claiming the wiki-link feature fully verified.
+- No local tests were run as part of this feature audit; evidence above is from source inspection and the linked CI run.
+
+**Next feature-audit actions:**
+1. Resolve the current wiki-link E2E failure and obtain a full green CI run on the resulting HEAD.
+2. Refresh `features-gap.md` to distinguish newly implemented Markdown subsets from remaining gaps and retain all unsupported syntax/security decisions.
+3. Reconcile `docs/FEATURES.md` against current source and tests; use `features.md` for the shipped showcase and keep the full `upcoming-features.md` catalogue intact.
+4. Build a feature-by-feature evidence matrix for the full blueprint: implemented + tested, implemented but under-tested, partial, planned, intentionally excluded. Do not delete or drop any planned capability.
+5. Keep WAVE-031 and WAVE-039 open until their stated verification gaps are genuinely closed.
