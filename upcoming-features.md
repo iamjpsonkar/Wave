@@ -37,7 +37,8 @@ Wave should grow from a Markdown workspace into a complete personal and team wor
 
 ### Product boundaries
 
-- No account or network connection should be required to open and edit a local workspace.
+- The essential personal workspace must work offline after the app is available.
+- Advanced online capabilities may require a network connection, but must remain optional and must not silently transfer workspace content to a Wave-operated readable data store.
 - No silent upload, telemetry, AI processing or sync.
 - Markdown remains a supported interchange format, but should not be forced to represent every structured object.
 - Every first-class data type needs a documented export path.
@@ -71,8 +72,9 @@ This is a workflow-oriented comparison, not an attempt to reproduce proprietary 
 
 - Keep a documented, versioned local data model for blocks, databases, relations and metadata.
 - Keep a readable Markdown/HTML/CSV/JSON export path for user content.
-- Local-only mode remains complete and useful.
-- Sync, collaboration, AI and integrations are optional modules.
+- Offline mode remains useful for personal writing, organization and locally available structured data.
+- Online mode unlocks collaboration, sharing, remote integrations and other network-dependent workflows.
+- Sync, collaboration, AI and integrations are optional modules with explicit permissions.
 - Features should be modular so Wave can remain a simple notes app when that's all a user needs.
 
 ## 3. Status and priority conventions
@@ -1606,3 +1608,300 @@ Before adding a capability to the active roadmap, answer all of these questions:
 10. What maintenance burden does it add?
 
 A feature is not complete when its UI exists. It is complete when its data model, recovery behavior, keyboard/accessibility experience, tests, documentation and export story are also in place.
+
+
+---
+
+# 20. Wave product constitution — decisions based on the product owner's answers
+
+This section records the product direction supplied by the owner and turns the open design questions into engineering decisions. If another section conflicts with this constitution, this section takes precedence until the owner changes it.
+
+## 20.1 Product promise
+
+Wave aims to cover the important problems solved by Notion and Quip, and extend beyond them, while keeping durable user content under the user's control.
+
+- Deliver a broad, modular workspace rather than a notes-only application.
+- Keep durable workspace content on storage controlled by the user.
+- Minimize mandatory infrastructure by making the client responsible for editing, rendering and local persistence.
+- Make the product useful offline, while allowing the full collaborative and connected experience online.
+- Offer a self-hosted Docker deployment so users can run online services on infrastructure they control.
+- Treat Notion and Quip as primary workflow references; use specialist tools to guide individual capabilities.
+
+This is a product ambition, not a claim of current feature parity. Delivery must be incremental and tested.
+
+## 20.2 Two operating modes
+
+Wave has two complementary modes, not two separate products.
+
+### Offline Core
+
+The offline core supports essential personal work:
+
+- Open and edit locally stored pages and blocks.
+- Create folders, documents and local assets.
+- Search locally available content.
+- Use local databases, properties, relations and views where supported by the local engine.
+- Manage personal tasks, calendars and templates stored in the workspace.
+- Import, export, back up and restore workspace data.
+- Read and edit content without sign-in or network access.
+
+A network outage must never make local content inaccessible.
+
+### Online Workspace
+
+Online mode adds features that need communication between devices or people:
+
+- Real-time multi-user editing, cursors, presence and comments.
+- Shared workspaces, invitations, permissions and access control.
+- Notifications, mentions and activity feeds.
+- Remote integrations, webhooks and hosted forms.
+- Cross-device synchronization and conflict resolution.
+- Optional AI providers and other external services.
+- Hosted publishing or sharing when enabled by the owner.
+
+If the connection drops, local editing continues and pending operations are queued safely for later synchronization.
+
+### Online does not mean Wave owns the user's data
+
+The default architecture must not require a Wave-operated database containing readable document contents. Clients own durable content; network services coordinate access and delivery.
+
+Preferred deployment model:
+
+1. **Client:** editor, rendering, local database, local search, permissions UX, encryption and offline queue.
+2. **Coordination service:** authentication/session establishment, workspace discovery, presence, signaling, notifications and sync coordination.
+3. **Peer-to-peer transport:** WebRTC or another secure direct transport where practical.
+4. **Relay fallback:** TURN or equivalent may forward encrypted traffic when direct connections fail. Relaying bytes is not the same as storing readable content.
+5. **Optional self-hosted services:** Docker can run coordination, relay, integration and explicitly configured encrypted backup services on user-controlled infrastructure.
+6. **Optional hosted service:** if Wave ever provides one, disclose exactly what metadata/content it can access, retention, encryption boundaries and export/deletion controls.
+
+Do not promise zero infrastructure for real-time internet collaboration. Signaling, identity, NAT traversal and notifications require services somewhere. The goal is minimal infrastructure, user choice and no mandatory central readable content repository.
+
+## 20.3 Source of truth — chosen storage architecture
+
+**Decision: use a versioned, directory-based Wave workspace with SQLite as the canonical transactional data store and ordinary files for binary assets and exports.**
+
+This is preferred over Markdown, independent JSON sidecars or a derived search index as the canonical store.
+
+Why SQLite:
+
+- Databases, relations, comments, permissions, tasks and collaborative edits need transactions and referential integrity.
+- One database avoids partial writes across many independent records.
+- SQLite is portable, inspectable with standard tools and supported by browser/WASM, desktop and server runtimes.
+- It supports migrations, indexes, constraints, rollback and consistent snapshots.
+- The same logical schema can be used by browser, desktop and user-managed Docker runtimes.
+
+### Proposed workspace layout
+
+    MyWorkspace/
+    └── .wave/
+        ├── manifest.json       # format version, workspace ID and capabilities
+        ├── workspace.sqlite   # canonical pages, blocks, objects, relations, metadata
+        ├── assets/            # original images, files and media
+        ├── exports/           # user-requested Markdown/HTML/CSV/JSON exports
+        ├── backups/           # verified, restorable workspace snapshots
+        ├── trash/             # recoverable deleted records/assets
+        ├── cache/             # disposable previews and thumbnails
+        └── logs/              # bounded, user-visible diagnostic logs
+
+Exact names may evolve, but canonical data, original assets, exports, backups and disposable cache must remain separate.
+
+### Data rules
+
+- workspace.sqlite is the source of truth for structured workspace content and metadata.
+- Assets remain ordinary files. SQLite stores stable asset IDs, relative paths, hashes, media types and metadata; large binary assets do not go into database rows by default.
+- Markdown is a first-class import/export format, not the canonical representation for every feature. Export must preserve supported constructs and report unsupported/lossy conversions.
+- JSON/CSV exports must be documented and stable for external tooling.
+- Search indexes, thumbnails, embeddings and previews are derived data and rebuildable.
+- Browser IndexedDB may cache handles, credentials/tokens and transient state, but must not become the only copy of user content.
+- Never maintain two independently editable canonical copies of the same page.
+
+### Migration from the current MVP
+
+The current MVP stores Markdown files under .wave/documents/. Do not abruptly replace or delete them.
+
+- Keep the current Markdown workspace readable.
+- Add a versioned migration that imports pages, folder paths, settings, favorites, trash metadata and assets into the new schema.
+- Preserve original files in a pre-migration snapshot until the user verifies the result.
+- Produce a migration report with counts, warnings, skipped files and failures.
+- Make migration repeat-safe and rollback-capable.
+- Retain Markdown import/export after migration so users are never locked into SQLite.
+
+## 20.4 Migration, export, recovery and interoperability
+
+The workspace directory is the portable unit. A user must be able to copy it, back it up, move it to another machine or mount it into a Docker deployment.
+
+- Version every schema and file-format change.
+- Run migrations transactionally, with a verified pre-migration backup.
+- Maintain stable IDs for pages, blocks, objects, relations and assets.
+- Use SQLite integrity checks and foreign keys where appropriate.
+- Use atomic database transactions and safe asset-write protocols.
+- Maintain a recovery journal or equivalent for interrupted multi-step asset operations.
+- Verify backups by restoring them into a temporary workspace and checking integrity.
+- Export complete workspaces with database, assets and manifest.
+- Export readable content to Markdown and structured data to JSON/CSV.
+- Provide import preview, mapping report and rollback for external imports.
+- Detect missing assets, orphan records, broken relations and unsupported schema versions.
+- Never let an older app silently destroy fields written by a newer schema.
+- Provide a documented read-only inspection path for users and third-party tools.
+
+## 20.5 Security, privacy and accessibility
+
+### Privacy defaults
+
+- Workspace content stays local unless a user explicitly enables a feature that transmits it.
+- No analytics or telemetry containing workspace content by default.
+- Label network-dependent features and show which service/provider receives data.
+- AI processing is opt-in, provider-specific and configurable per workspace/page.
+- Diagnostics exclude document text unless the user explicitly reviews and includes it.
+- Provide session revocation, export and deletion controls for optional hosted identity services.
+
+### Security model
+
+- Encrypt network traffic in transit with modern TLS.
+- Prefer end-to-end encryption for collaboration/sync so coordination and relay services cannot read content.
+- Keep identity, workspace authorization and encryption keys conceptually separate.
+- Never store plaintext passwords or long-lived secrets in the workspace database.
+- Use OS/browser secure credential storage where available; document browser-only limitations.
+- Validate inputs, paths, archive extraction limits and sanitize rich content.
+- Treat plugins, embeds, imported files and integrations as untrusted.
+- Use least-privilege plugin/integration permissions and show grants to the user.
+- Threat-model public sharing, multi-user permissions and plugin execution before release.
+- Define key-loss and recovery behavior before claiming end-to-end encryption.
+
+### Accessibility
+
+- Keyboard-first editing and complete keyboard navigation.
+- Screen-reader semantics for blocks, tables, dialogs and navigation.
+- Visible focus, predictable focus management and accessible errors.
+- Contrast, zoom, reduced motion and scalable typography support.
+- Never communicate state by color alone.
+- Provide accessible alternatives to drag-and-drop and visual-only canvas workflows.
+- Combine automated checks with manual keyboard and screen-reader testing.
+
+## 20.6 Smallest useful vertical slice
+
+Do not start by building every module or real-time collaboration. The smallest meaningful foundation is one complete, safe document workflow using the future storage architecture.
+
+### Vertical slice A — local workspace foundation
+
+1. Create/open a workspace directory.
+2. Initialize manifest and SQLite database.
+3. Define schema versioning and migrations.
+4. Create, edit, rename, move and delete a page containing stable-ID blocks.
+5. Autosave transactionally and recover after an interrupted write.
+6. Store an image/file asset and reference it from a page.
+7. Search pages locally using a rebuildable index.
+8. Export a page to Markdown and the workspace to a portable archive.
+9. Back up and restore the workspace with integrity verification.
+10. Test migration from the existing Markdown MVP without deleting the original.
+
+This proves the core promise: create useful content, keep it locally, recover it and take it elsewhere.
+
+### Vertical slice B — first online collaboration workflow
+
+1. Connect two clients to a user-managed collaboration server.
+2. Invite the second client to a workspace/page.
+3. Exchange encrypted edits and presence events.
+4. Persist changes locally on both clients.
+5. Reconcile concurrent edits deterministically or present conflicts for review.
+6. Disconnect the network, continue editing, reconnect and converge.
+7. Prove the coordination service cannot decrypt end-to-end encrypted content.
+
+Only after these slices are reliable should Wave expand into full database views, spreadsheets, automation, AI and enterprise controls.
+
+## 20.7 Tests that prove correctness and prevent data loss
+
+### Unit and schema tests
+
+- Schema constraints, indexes, foreign keys and migration paths.
+- Stable ID generation and relation integrity.
+- Serialization/deserialization round trips for every block/object type.
+- Markdown import/export round trips with documented loss boundaries.
+- Asset path validation, hashing and duplicate detection.
+- Query/filter/formula correctness for structured data.
+
+### Storage integration tests
+
+- Create, edit, rename, move, trash, restore and permanently delete.
+- Concurrent reads/writes from multiple app windows.
+- Simulated failure before, during and after database transactions.
+- Interrupted asset writes and cleanup of orphaned temporary files.
+- Disk-full, permission-revoked and unavailable-folder scenarios.
+- Backup creation, verification and full restore.
+- Migration from every supported prior schema version.
+- Workspace copy/move to another directory or machine.
+
+### Collaboration tests
+
+- Multiple clients editing same and different blocks.
+- Simultaneous edits, reorder, delete-vs-edit and relation changes.
+- Offline edits followed by reconnect and conflict resolution.
+- Duplicate, delayed and out-of-order message delivery.
+- Client crash/restart during synchronization.
+- Unauthorized access, revoked sessions and expired credentials.
+- Encryption tests proving relays cannot decrypt payloads.
+
+### End-to-end and quality tests
+
+- Browser first-run, permission recovery and workspace reopen.
+- Accessibility keyboard flows and screen-reader smoke tests.
+- Large-workspace benchmarks: thousands of pages, large assets and tables.
+- Security tests for XSS, unsafe Markdown, path traversal and malicious archives.
+- CI runs typecheck, unit, integration and production build.
+- A release passes a restore-from-backup test, not merely a successful backup.
+
+**Release gate:** no data-loss bug, failed migration, failed restore or unresolved critical security issue may be waived as cosmetic.
+
+## 20.8 Maintenance and complexity budget
+
+A broad workspace can become expensive to maintain. Control that cost through architecture and product boundaries.
+
+- Build a modular monolith first: one client, one storage contract and a small number of deployable services.
+- Avoid microservices until measured scale or team boundaries justify them.
+- Keep one canonical schema and versioned migration path.
+- Introduce a plugin API only after stable extension points exist.
+- Prefer established libraries and open standards for Markdown, SQLite, CRDTs, charts, diagrams and citations.
+- Do not build a full office suite, video platform or CRM unless usage validates the investment.
+- Make modules optional and lazy-load expensive capabilities.
+- Maintain compatibility tests across browser, desktop and Docker runtimes.
+- Track bundle size, startup time, query performance and memory usage.
+- Review dependency ownership, licenses and security advisories.
+- Treat format documentation, migration tests and export tests as permanent maintenance work.
+- Every feature proposal documents storage impact, offline behavior, network requirements, permissions, migration/export and tests.
+
+The main maintenance risk is not the number of UI controls; it is overlapping data models, synchronization rules and deployment combinations. Keep those foundations small and consistent.
+
+## 20.9 Docker and deployment direction
+
+Docker is a planned deployment target for users who want online functionality under their own control.
+
+- Provide a documented Docker image and Compose example.
+- Persist server-managed data, configuration and keys in explicitly mounted volumes.
+- Support health checks, structured logs, backup/restore and versioned upgrades.
+- Document reverse-proxy and TLS setup.
+- Keep the server stateless where practical; persist only what the selected mode requires.
+- Separate coordination/relay metadata from encrypted workspace payloads.
+- Allow users to disable public registration and restrict access to their network.
+- Provide upgrade/rollback procedures and a compatibility matrix.
+- Ship secure defaults and document exposed ports, secrets and network boundaries.
+
+The browser-only MVP remains the first delivery target. Docker is a later deployment adapter over the same workspace format and protocol, not a reason to delay the local product.
+
+## 20.10 Product decision summary
+
+| Decision | Chosen direction |
+|---|---|
+| Product scope | Notion + Quip workflows and additional specialist capabilities |
+| Primary references | Notion and Quip |
+| Offline behavior | Essential personal workspace works offline |
+| Online behavior | Collaboration and connected features when online |
+| Data ownership | User-controlled workspace; no mandatory Wave readable-content repository |
+| Canonical store | Versioned SQLite database inside a portable .wave directory |
+| Binary assets | Ordinary files with stable IDs and database metadata |
+| Markdown | Supported import/export and readable interchange format |
+| Search/indexes | Derived and rebuildable |
+| Collaboration | Encrypted peer-to-peer where practical, relay/coordination fallback |
+| Deployment | Browser client first; desktop and user-managed Docker later |
+| First vertical slice | Local page/block storage, migration, backup, restore and export |
+| Release quality | Integrity, migration, recovery, security and accessibility tests |
+
