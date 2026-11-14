@@ -15,7 +15,7 @@ Wave is a local-first workspace for notes, documents and ideas. Choose a folder 
 - **Data safety:** autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore to a separate workspace.
 - **Responsive workspace:** full-window editor, mobile navigation and keyboard-oriented workflows.
 
-See the [implemented feature showcase](./FEATURES.md) and [detailed feature map](./FEATURES.md) for the current implementation inventory. The [complete product blueprint](upcoming-features.md) and [priority plan](priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
+See the [implemented feature showcase](./FEATURES.md) and [detailed feature map](./FEATURES.md) for the current implementation inventory. The [complete product blueprint](upcoming-FEATURES.md) and [priority plan](priority-FEATURES.md) retain the wider agreed scope; planned items are not represented as shipped.
 
 ## Choose how to run Wave
 
@@ -117,7 +117,7 @@ The root-level feature catalogues and engineering registers are intentionally ke
 
 ## Product direction
 
-Wave's personal core remains local-first and useful without an account. Optional collaboration, connected services, richer database capabilities and a desktop application remain planned work. A versioned SQLite store and server-side services require explicit migration, authorization, integrity, export and recovery design; static Docker hosting does not imply those capabilities. See [the product constitution](upcoming-features.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers).
+Wave's personal core remains local-first and useful without an account. Optional collaboration, connected services, richer database capabilities and a desktop application remain planned work. A versioned SQLite store and server-side services require explicit migration, authorization, integrity, export and recovery design; static Docker hosting does not imply those capabilities. See [the product constitution](upcoming-FEATURES.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers).
 
 
 ## Project context
