@@ -264,3 +264,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Keep WAVE-052 in `bugs.md` and do not move it to `fixed-bugs.md` until the new template regression passes in CI. WAVE-031 and WAVE-039 remain partial.
 - Remaining Markdown acceptance scope is still open: complete TeX/LaTeX, Mermaid and external renderer compatibility; grammar-based highlighting and unified diff parsing; broader accessibility, cross-browser and visual checks; malformed/oversized input limits; full preview/source round-trip fixtures; exhaustive showcase coverage. Preserve raw-HTML/remote-media security boundaries and inert GitHub references unless product semantics are explicitly changed.
 - For the next pass, inspect the latest Actions run for the current `main` head, fix any actual failures, then proceed through the remaining `features-gap.md` acceptance groups. Never mark the Markdown feature set complete based on source presence alone.
+
+
+## 18. Markdown security regression expansion — 2026-11-14
+
+- Picked the next item from the core compatibility/security coverage group in `features-gap.md`: a URL-scheme and local-media path security regression matrix.
+- Added a Playwright scenario in `tests/e2e/workspace.spec.ts` that verifies HTTPS/mailto links remain available while `javascript:`, `data:`, `vbscript:`, `file:` and mixed-case JavaScript URLs do not become anchors.
+- The same test creates a sentinel `secret.mp3` in the local assets directory and checks that parent traversal, percent-encoded traversal, absolute paths, Windows-style paths and remote media references do not produce playable audio/video elements.
+- Updated `docs/MARKDOWN_SUPPORT.md` with the intended sanitized URL and local single-filename media resolution contract. Updated `features-gap.md`, `dev-fixed.md` and `dev-build.md` with scope and verification status.
+- Test source now defines **25 Playwright scenarios** and **30 Node tests**. No local test execution or CI run for this scenario has been verified; do not report it as passing. This step adds regression coverage and documentation only; it is not a source-code security fix and closes no bug.
+- Next: inspect CI for current `main`; fix any real failures exposed by the new security scenario. Then continue with another core conformance item (preview/source round-trip invariance or accessibility coverage) before moving into the larger renderer-compatibility projects.
