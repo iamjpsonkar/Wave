@@ -72,7 +72,7 @@ test('attachments are saved locally with correct root and nested Markdown paths'
   await page.locator('input[type="file"]').setInputFiles({ name: 'root.txt', mimeType: 'text/plain', buffer: Buffer.from('root attachment bytes') });
   await expect(page.locator('textarea')).toHaveValue(/\.\.\/assets\/root\.txt/);
   await page.once('dialog', dialog => dialog.accept('Projects'));
-  await page.getByRole('button', { name: 'New folder' }).click();
+  await page.locator('button[title="New folder"]').click();
   await expect(page.getByRole('button', { name: /Projects/ })).toBeVisible();
   await page.locator('.sidebar nav button').first().click();
   const editor = page.locator('textarea');
