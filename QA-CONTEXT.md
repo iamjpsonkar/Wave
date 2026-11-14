@@ -305,3 +305,26 @@ Important documentation drift observed at the same HEAD:
 - Findings are PDF observations; no live-browser reproduction, CSS diagnosis, source fix or test execution was performed.
 - No application source or test files changed. Only `ui-bug.md` and this context handoff changed.
 - Register commit: `89729ac2d7b7a7d9d78879929e1ff0e5a508aa47`.
+
+---
+
+## GitHub issue triage — 2026-11-15
+
+- Reviewed current `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `ui-gaps.md`, `ui-bug.md`, `diagram-features.md`, `docs/FEATURES.md`, `docs/ROADMAP.md`, `priority-features.md` and `upcoming-features.md`.
+- Checked the repository's open issue search before creating issues; no existing open issues were returned, so the identified work did not duplicate an existing open issue.
+- Created 10 GitHub issues, grouped by implementation and verification work:
+  - #1 WAVE-031 native filesystem/permission/lifecycle verification.
+  - #2 WAVE-039 IndexedDB recovery-draft pre-commit window.
+  - #3 UI theme, contrast and accessibility verification (UI-001, UI-005, UI-012, UI-016–UI-020).
+  - #4 source-preserving block editor completion (UI-002).
+  - #5 editor navigation/productivity regression coverage (UI-003, UI-006–UI-011, UI-013, UI-015).
+  - #6 Markdown compatibility, security, round-trip, accessibility and performance test suite.
+  - #7 theme-aware PDF/print export verification (UI-022, UIB-001/002).
+  - #8 PDF regression verification for color, math, tables and DETAILS (UIB-003–006).
+  - #9 Wave color-extension portability/accessibility (UI-021).
+  - #10 native local-first visual diagram editor epic (`diagram-features.md`).
+- Created `github-issues.md` as the stable cross-reference between the registers and issue URLs.
+- Grouped related UI IDs to avoid excessive duplicate tickets; original IDs and acceptance criteria remain in their source registers.
+- Historical fixed findings, including WAVE-052, were not reopened. Long-range roadmap catalogue entries were not misclassified as bugs or individually ticketed.
+- No application source or tests changed. Issues are open and unassigned; no implementation or CI pass is implied by issue creation.
+- Issue index commit: `f2b408aa6b05a4721bc1bb8fc3821da9799f0855`.
