@@ -69,3 +69,38 @@ html,body{height:100%}
   .main{width:calc(100% - 72px)}
   .editor,.trash-view{width:calc(100% - 24px);margin:16px auto}
 }
+
+/* Bug-fix pass: responsive drawer, short viewport support and visible navigation. */
+.app{min-height:0;min-height:100dvh}
+.mobile-nav-toggle{display:none;border:1px solid #e7e9e3;background:white;color:#667260;border-radius:6px;padding:7px;align-items:center;justify-content:center}
+.mobile-nav-backdrop{display:none}
+.search-result{display:grid;gap:3px;min-width:0}
+.search-result small{font-size:9px;color:#8b9085;overflow-wrap:anywhere}
+.folder-node{display:grid;gap:2px}
+.folder-link{display:flex;align-items:center;gap:8px;width:100%;border:0;background:transparent;border-radius:5px;padding:8px;color:#777b70;text-align:left;font-size:11px}
+.folder-link.selected{background:#eaf0e8;color:#425d47}
+@media(max-width:520px){
+ .app{height:100dvh;min-height:0;overflow:hidden}
+ .sidebar{position:fixed;z-index:30;inset:0 auto 0 0;width:min(290px,85vw);height:100dvh;min-height:0;transform:translateX(-105%);transition:transform .2s ease;box-shadow:8px 0 28px #17251b18}
+ .sidebar.mobile-open{transform:translateX(0)}
+ .mobile-nav-backdrop{display:block;position:fixed;z-index:29;inset:0;border:0;background:#18251b66}
+ .mobile-nav-toggle{display:inline-flex;flex:0 0 auto}
+ .main{width:100%;min-width:0}
+ .topbar{gap:9px;padding:0 12px}
+ .topbar>div:first-of-type{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+ .topright{gap:8px}
+ .topright>small{max-width:110px;overflow:hidden;white-space:nowrap}
+ .sidebar .section,.sidebar .page,.sidebar .folder-link,.sidebar .workspace span,.sidebar .workspace>svg,.sidebar .sidebrand>span{display:flex}
+ .sidebar nav button{justify-content:flex-start;padding:8px;font-size:11px}
+ .sidebar .stored span{display:grid}
+ .sidebar .stored{justify-content:flex-start}
+}
+@media(max-height:560px){
+ .app{height:100dvh;min-height:0}
+ .sidebar{min-height:0;overflow-y:auto}
+ .main{min-height:0}
+ .editor,.trash-view{min-height:0;overflow:auto}
+ .editor textarea{min-height:180px}
+ .empty{overflow:auto}
+}
+@media(prefers-reduced-motion:reduce){.sidebar{transition:none}}
