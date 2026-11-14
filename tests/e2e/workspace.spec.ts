@@ -1122,3 +1122,38 @@ test('workspace settings persist appearance and typography preferences locally',
   await page.keyboard.press('Escape');
   await expect(reopenedDialog).toBeHidden();
 });
+
+
+test('toolbar code actions have distinct icons and accessible names', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Code Toolbar Actions');
+  const inlineCode = page.getByRole('button', { name: 'Inline code' });
+  const codeBlock = page.getByRole('button', { name: 'Code block' });
+  await expect(inlineCode).toHaveAttribute('title', 'Inline code');
+  await expect(codeBlock).toHaveAttribute('title', 'Code block');
+  await expect(inlineCode.locator('svg')).toHaveClass(/lucide-code-2/);
+  await expect(codeBlock.locator('svg')).toHaveClass(/lucide-file-code-2/);
+  await inlineCode.click();
+  await expect(page.locator('.editor textarea')).toHaveValue('``');
+  const editor = page.locator('.editor textarea');
+  await editor.fill('const wave = true;');
+  await editor.selectText();
+  await codeBlock.click();
+  await expect(editor).toHaveValue('```\nconst wave = true;\n```');
+});
+
+test('system dark theme keeps Markdown and workspace controls readable', async ({ page }) => {
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await openWorkspace(page);
+  const editor = await createPage(page, 'System Dark Theme');
+  await editor.fill(['# Readable heading', '', 'Body text with `inline code`.', '', '```js', 'const wave = true;', '```', '', '> A readable quotation', '', '| Name | Value |', '| --- | --- |', '| Wave | Local |'].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(/theme-system/);
+  await expect(preview.locator('h1')).toHaveCSS('color', 'rgb(237, 242, 233)');
+  await expect(preview.locator('pre')).toHaveCSS('background-color', 'rgb(32, 40, 32)');
+  await expect(preview.locator('code').first()).toHaveCSS('background-color', 'rgb(37, 47, 38)');
+  await expect(page.locator('.view-toggle')).toHaveCSS('background-color', 'rgb(37, 45, 37)');
+  await expect(page.locator('.brand')).toHaveCSS('color', 'rgb(229, 233, 225)');
+  await expect(page.locator('.backup-button')).toHaveCSS('background-color', 'rgb(37, 45, 37)');
+});
