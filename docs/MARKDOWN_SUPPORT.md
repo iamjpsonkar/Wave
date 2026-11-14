@@ -6,19 +6,20 @@ This page is the compatibility contract for Wave's local Markdown preview. The e
 
 - CommonMark-style paragraphs, hard line breaks, headings (levels 1–6), Setext headings, emphasis, inline code, fenced and indented code, blockquotes, nested blockquotes, ordered/unordered/nested/mixed lists, links, images, thematic breaks, escaping, and reference-style links/images.
 - GFM through `remark-gfm`: tables and column alignment, strikethrough, task lists, autolinks, and footnotes.
-- Wave extensions: internal wiki links and backlinks, GitHub-style NOTE/TIP/IMPORTANT/WARNING/CAUTION callouts, safe DETAILS disclosure blocks, copyable and lightly syntax-highlighted fenced code, unique heading IDs, inline/display math with recursive groups/fractions/roots/scripts and common symbols, inline formatting shorthands, emoji shortcodes, and local Mermaid flowchart/sequence/pie previews.
+- Wave extensions: internal wiki links and backlinks, GitHub-style NOTE/TIP/IMPORTANT/WARNING/CAUTION callouts, safe DETAILS disclosure blocks, copyable code, lightweight token/diff highlighting, unique heading IDs, inline/display MathML for a constrained TeX subset, safe inline formatting shorthands, a small emoji shortcode map, and local diagram renderers described below.
 - Local image attachments resolve from the workspace assets directory; Markdown image alt text and titles are retained. External images are not fetched by the preview and display a readable missing-asset fallback.
+- Controlled audio/video embeds can reference supported local workspace assets with `[[audio:path/to/file.mp3]]` or `[[video:path/to/file.mp4]]`. Remote media and arbitrary HTML media are not loaded.
 - Direct Unicode emoji and symbols work as ordinary text.
 
 ## Math
 
 Inline expressions use dollar delimiters, for example `$E = mc^2$`. Display expressions can use a line containing two dollar signs before and after the expression, or a fenced `math` block.
 
-The built-in MathML parser supports nested groups, recursive fractions and square roots, superscript/subscript groups, common Greek letters/operators, and `\\text`, `\\mathrm`, `\\mathbf` and `\\operatorname` text groups. It remains a deliberately limited TeX subset: matrices, aligned environments, cases, extensible delimiters, macros, custom commands and many advanced symbols are not supported. Unknown commands are displayed as text; TeX is never executed.
+The built-in MathML parser supports nested groups, recursive fractions and square roots, indexed roots, grouped superscript/subscript expressions, selected Greek letters/operators/functions, text groups, accents, spacing, binomial notation, and constrained matrix/cases environments. It can render common showcase expressions involving sums, integrals and limits. It remains a deliberately limited TeX subset: arbitrary macros, custom commands, full aligned environments, extensible delimiters, broad symbol packages and the complete TeX grammar are not supported. Unknown commands remain visible as text; TeX is never executed.
 
 ## Mermaid
 
-Fenced Mermaid `flowchart` definitions with simple `-->` edges and square-bracket node labels, basic `sequenceDiagram` messages, and `pie` charts render as local SVG. Class, ER, state, Gantt, git graph, subgraphs, complex flowchart syntax, styling and other advanced constructs remain visible as source in a fallback panel. Wave does not load a remote Mermaid service.
+Fenced Mermaid definitions render locally for constrained subsets of flowchart, sequence, pie, class, ER, state, Gantt, git graph, mindmap, timeline, quadrant, requirement and architecture-beta diagrams. These are purpose-built lightweight parsers/layouts, not the complete Mermaid grammar or layout engine. Complex syntax, unsupported directives and malformed input use a readable source fallback. Wave does not load a remote Mermaid service.
 
 ## HTML and security
 
@@ -26,7 +27,7 @@ Raw HTML is not enabled in the Markdown parser. This is deliberate: Wave uses a 
 
 ## Other diagram formats
 
-PlantUML, Graphviz/DOT, Vega/Vega-Lite, D2, and AsciiDoc diagrams require dedicated parsers/renderers and are not currently rendered. Their source can still be kept in fenced code blocks. Wave will not send document contents to a third-party renderer.
+Fenced DOT/Graphviz, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc have lightweight local subset renderers. These are not full implementations of those specifications; unsupported or invalid constructs remain available through a readable source fallback. Vega data must be inline (remote data URLs are rejected). Wave will not send document contents to a third-party renderer.
 
 ## Compatibility matrix
 
