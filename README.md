@@ -12,7 +12,7 @@
 - [x] Browser folder selection using the File System Access API
 - [x] Initialize `.wave/` with manifest, settings, documents and assets
 - [x] List, create, open and autosave Markdown documents
-- [x] Store uploaded images locally with collision-safe names
+- [x] Store images and file attachments locally with collision-safe names
 - [x] Markdown formatting toolbar and sanitized live preview
 - [x] Nested folders and pages
 - [x] Search page titles and document content
