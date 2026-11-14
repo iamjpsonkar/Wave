@@ -21,6 +21,7 @@ This page is the showcase of features that are implemented today. For the larger
 - **Empty-folder discovery** — folders remain visible even before they contain a page.
 - **Full-text page search** — search document titles and content in the current workspace.
 - **Favorites** — pin frequently used pages and access them from a dedicated sidebar section.
+- **Duplicate pages** — make an independent copy of a page while keeping the original intact.
 - **Trash and recovery** — move pages to Trash, restore them to their original location, or permanently delete them.
 - **Recent workspace** — reopen the last selected folder with a permission check.
 
