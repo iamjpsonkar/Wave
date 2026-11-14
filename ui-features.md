@@ -226,3 +226,12 @@ All UIF items are **proposed / not implemented by this document**. Existing tool
 - The selection-based color foundation now includes six quick foreground swatches, remove-formatting, source-toolbar block fills and per-block background color pickers in Blocks mode.
 - Blocks-mode color actions preserve the original Markdown model by adding or updating `> [!COLOR=#RRGGBB]` directives. Nested inline color ranges, portable fallback rendering and custom-color contrast guidance remain open.
 - UI-021 remains a tracked implementation item; no earlier UI feature proposal is removed or downgraded.
+
+ 
+## Implemented follow-up — Contextual sample library and list continuation — 2026-11-15
+
+- Added a right-side **Sample library** in the document editor. Users can search and filter Markdown examples by category, select one to see a live rendered preview and inspect its exact Markdown source, then insert that source at the current editor selection. If Preview or Blocks mode has no source textarea mounted, insertion appends to the current document instead.
+- Initial sample set covers Text, Blocks, Lists, Data, Code, Advanced and Media: headings, emphasis, links, blockquotes, callouts, DETAILS, dividers, bullet/numbered/nested/task lists, tables, code/diff, math, Mermaid, Wave colors, wiki links and local asset references.
+- Added automatic Enter continuation for Markdown ordered/unordered/task lists, numbering increments, nested indentation preservation and empty-item exit.
+- Regression source covers preview/insert behavior and ordered, unordered and task list continuation. CI and responsive visual verification remain pending.
+- This addition does not replace or downgrade UIF-001–UIF-021 or any existing product backlog item.
