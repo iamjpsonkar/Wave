@@ -13,7 +13,7 @@
 - A fix is classified as **source-verified**, not automatically as browser/runtime-proven.
 - If a scenario fails again, move the finding back to `bugs.md` with the evidence, affected revision, and failing environment. Keep its original ID.
 - If the implementation changes materially, update the scenario here rather than silently deleting it.
-- The current CI run for the reviewed source revision succeeded: [GitHub Actions run 43603436474](https://github.com/iamjpsonkar/Wave/actions/runs/43603436474). It reports 30 Node tests and 9 Chromium E2E tests passing, plus typecheck and production build. Browser E2E uses OPFS fixtures; simulated permission denial and same-workspace two-tab editing are covered, but native picker prompt/revocation and process-termination testing are not.
+- The current CI run for the reviewed source revision succeeded: [GitHub Actions run 43603436474](https://github.com/iamjpsonkar/Wave/actions/runs/43603436474). It reports 30 Node tests and 9 Chromium E2E tests passing, plus typecheck and production build. Browser E2E uses OPFS fixtures; simulated permission denial, same-workspace two-tab editing, and cross-tab recovery-prompt provenance are covered. Native picker prompt/revocation and process-termination testing are not.
 
 ## Verification summary
 
@@ -27,6 +27,16 @@
 | WAVE-040–WAVE-051 | Implemented in current source |
 
 ## Recheck register
+
+## Current verification addendum — 2026-11-14
+
+The historical audit notes below are retained as an evidence trail; older test counts and coverage statements describe the state at the time they were written and are superseded by this current summary.
+
+- Current browser suite: **10 Playwright Chromium scenarios**. The latest addition verifies that a recovery draft from another tab is explicitly identified as such, and that declining it preserves the originating tab's draft.
+- `src/draftJournal.ts` exposes the draft's tab ownership to the recovery flow; `src/App.tsx` now distinguishes “this tab” from “another browser tab” in the recovery confirmation.
+- Current source-verified fixes: **49**. WAVE-031 and WAVE-039 remain partial; WAVE-042's per-tab isolation and recovery provenance are covered by the current regression scenarios.
+- The 10-scenario suite and updated source are awaiting the CI run triggered by the latest commits. Do not treat the earlier run 43603278555 as verification of these newest changes.
+
 
 ## WAVE-001 — Opening Trash can discard pending editor changes
 
@@ -1579,7 +1589,7 @@ The draft tests exercise the newest-record selector and queue primitives; they d
 
 ## Follow-up reliability remediation — 2026-11-14
 
-- WAVE-042 draft-journal cross-tab isolation: each browser tab now has a session-scoped draft identity. Draft saves update only that tab's record, and a successful Markdown save clears only its own recovery record; another tab's unsaved draft is preserved. The new two-tab Chromium regression scenario checks that both concurrent edits survive as either saved Markdown or a retained recovery draft.
+- WAVE-042 draft-journal cross-tab isolation: each browser tab now has a session-scoped draft identity. Draft saves update only that tab's record, and a successful Markdown save clears only its own recovery record; another tab's unsaved draft is preserved. The two-tab Chromium regression scenario checks that both concurrent edits survive as either saved Markdown or a retained recovery draft. A further scenario verifies that recovery prompts disclose when the candidate draft belongs to another tab, and that declining the foreign draft preserves it.
 - WAVE-031 browser coverage: the suite now adds simulated File System Access permission denial and two-tab concurrent editing to the existing six journeys. Native picker prompts/revocation and full keyboard/accessibility coverage remain outstanding.
 - WAVE-039 durability: draft write transactions request IndexedDB `strict` durability where supported, with a compatibility fallback. This reduces the persistence window but cannot guarantee recovery if the browser process is killed before the asynchronous transaction commits.
 - Verified source CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) on `b11b46eebc1558de9910d8523cdaa027817b087d` — 30 Node tests and all 9 Chromium E2E tests passed; typecheck and production build passed.
