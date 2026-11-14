@@ -109,6 +109,8 @@
 - [~] Expand the showcase template to demonstrate every supported renderer family and clearly label unsupported/partial syntax.
 - [~] Continue aligning the technical-notes template with the full requested structure: introduction, prerequisites, architecture, concepts, implementation, configuration, common issues, best practices and references.
 
+- [~] Inline foreground/background colors use six-digit hex-only Wave directives and are rendered through React spans; palette presets, reset/remove formatting, nested color ranges, block fills and non-Wave rendering remain open.
+
 ## 15. Compatibility, quality and test coverage
 
 - [x] Current test sources define 30 Node tests and 29 Playwright Chromium scenarios.
