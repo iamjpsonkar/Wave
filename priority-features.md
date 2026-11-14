@@ -2,9 +2,9 @@
 
 > **Purpose:** decide what Wave should build first, next and later without deleting, shrinking or abandoning any feature already captured in the product blueprint.
 
-**Source of truth:** [upcoming-features.md](upcoming-features.md) is the complete feature catalogue and product constitution. This file is only the delivery-order view. If a feature is not scheduled in an early phase, it remains planned in the complete catalogue.
+**Source of truth:** [upcoming-FEATURES.md](upcoming-FEATURES.md) is the complete feature catalogue and product constitution. This file is only the delivery-order view. If a feature is not scheduled in an early phase, it remains planned in the complete catalogue.
 
-**Non-negotiable rule: NO FEATURE DROPS.** No idea, feature, workflow, integration, platform target, or capability already recorded in `upcoming-features.md` may be removed because it is not an immediate priority. Defer, split, redesign or mark as not yet validated—but preserve it and its rationale.
+**Non-negotiable rule: NO FEATURE DROPS.** No idea, feature, workflow, integration, platform target, or capability already recorded in `upcoming-FEATURES.md` may be removed because it is not an immediate priority. Defer, split, redesign or mark as not yet validated—but preserve it and its rationale.
 
 **Planning status:** priorities are sequencing guidance, not implementation claims. Update checkboxes only after implementation and verification.
 
@@ -39,7 +39,7 @@ A priority does not mean that lower-priority features are optional or cancelled.
 
 ### P0.2 — Markdown compatibility and rendering (first editor priority)
 
-The Markdown feature specification is maintained in [upcoming-features.md, A4](upcoming-features.md).
+The Markdown feature specification is maintained in [upcoming-FEATURES.md, A4](upcoming-FEATURES.md).
 
 - [ ] **CommonMark:** parser, renderer, six heading levels, paragraphs, line breaks, formatting, lists, blockquotes, code, links, images, rules, escaping and tables.
 - [ ] **GFM:** task lists, tables, strikethrough, autolinks, footnotes, alerts, collapsible sections and portable handling of GitHub-specific references.
@@ -267,14 +267,14 @@ A feature can be marked shipped only when:
 - Automated tests and CI cover critical behavior.
 - Documentation and the complete catalogue are updated.
 
-**Change-control rule:** never delete a catalogue item from `upcoming-features.md` to make a priority plan shorter. If scope changes, retain the original item and append a decision note explaining the proposed change, evidence, impact and owner approval. Only the product owner can approve dropping a feature—and the default is to keep it.
+**Change-control rule:** never delete a catalogue item from `upcoming-FEATURES.md` to make a priority plan shorter. If scope changes, retain the original item and append a decision note explaining the proposed change, evidence, impact and owner approval. Only the product owner can approve dropping a feature—and the default is to keep it.
 
 ---
 
 ## 12. Planning references
 
-- [Complete product blueprint and feature catalogue](upcoming-features.md)
-- [Current shipped features](features.md)
-- [Detailed implementation status](docs/FEATURES.md)
+- [Complete product blueprint and feature catalogue](upcoming-FEATURES.md)
+- [Current shipped features](FEATURES.md)
+- [Detailed implementation status](FEATURES.md)
 - [Delivery roadmap](docs/ROADMAP.md)
 - [Bug and reliability tracker](bugs.md)
