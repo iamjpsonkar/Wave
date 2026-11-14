@@ -10,7 +10,7 @@
 
 Wave takes inspiration from the flexibility of Notion and the document-first collaboration feel of Quip, with one important difference: **your workspace lives in a folder you choose on your own device.**
 
-This page is the showcase of features that are implemented today. For the complete product vision, competitor analysis and upcoming feature catalogue, see [upcoming-features.md](upcoming-features.md). For implementation status, see [the detailed feature map](docs/FEATURES.md) and [roadmap](docs/ROADMAP.md).
+This page is the showcase of features that are implemented today. For the complete product vision, competitor analysis and upcoming feature catalogue, see [upcoming-features.md](upcoming-features.md). For implementation status, see [the detailed feature map](./FEATURES.md) and [roadmap](docs/ROADMAP.md).
 
 ## What Wave can do today
 
@@ -83,7 +83,7 @@ You can inspect, copy and back up these files yourself. Do not delete the `.wave
 
 ## What's not shipped yet
 
-Wave's bigger ambition includes a rich block editor, richer internal references, mentions and link previews, page history, database views, kanban boards, calendar and timeline views, reminders, collaborative editing, comments, Quip-style spreadsheets, imports and exports, plugins and optional encrypted sync. These are **planned capabilities, not current features**. Track their status in the [feature map](docs/FEATURES.md).
+Wave's bigger ambition includes a rich block editor, richer internal references, mentions and link previews, page history, database views, kanban boards, calendar and timeline views, reminders, collaborative editing, comments, Quip-style spreadsheets, imports and exports, plugins and optional encrypted sync. These are **planned capabilities, not current features**. Track their status in the [feature map](./FEATURES.md).
 
 ## Run locally
 
