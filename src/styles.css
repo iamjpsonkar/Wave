@@ -539,3 +539,14 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
  .app.theme-system .breadcrumbs>button,.app.theme-system .breadcrumbs>span>button{color:#64745f}
  .app.theme-system .topright small[role=status]{color:#667061}
 }
+
+@media(prefers-color-scheme:light){
+ .app.theme-system .markdown-preview{color:#34382f}
+ .app.theme-system .markdown-preview h1,.app.theme-system .markdown-preview h2,.app.theme-system .markdown-preview h3,.app.theme-system .markdown-preview h4,.app.theme-system .markdown-preview h5,.app.theme-system .markdown-preview h6{color:#30352e}
+ .app.theme-system .markdown-preview a{color:#55785a}
+ .app.theme-system .markdown-preview pre{background:#f4f5f1;border-color:#e8eae3;color:#34382f}
+ .app.theme-system .markdown-preview code{background:#f1f3ee;color:#34382f}
+ .app.theme-system .markdown-preview th{background:#f6f7f3}
+ .app.theme-system .markdown-preview th,.app.theme-system .markdown-preview td{border-color:#e5e7df}
+ .app.theme-system .markdown-preview blockquote{color:#737b70;border-color:#a9bba7}
+}
