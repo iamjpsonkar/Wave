@@ -17,7 +17,7 @@
 
 ## Verification summary
 
-**49 findings are source-verified as implemented** and retained below as regression scenarios. This does not mean all scenarios have been executed in a real browser. WAVE-031 and WAVE-039 remain open in `bugs.md`.
+**50 findings are source-verified as implemented** and retained below as regression scenarios. This does not mean all scenarios have been executed in a real browser. WAVE-031 and WAVE-039 remain open in `bugs.md`.
 
 | ID range | Source-level disposition |
 |---|---|
@@ -32,11 +32,12 @@
 
 The historical audit notes below are retained as an evidence trail; older test counts and coverage statements describe the state at the time they were written and are superseded by this current summary.
 
-- Current browser suite: **10 Playwright Chromium scenarios**. The latest addition verifies that a recovery draft from another tab is explicitly identified as such, and that declining it preserves the originating tab's draft.
-- `src/draftJournal.ts` exposes the draft's tab ownership to the recovery flow; `src/App.tsx` now distinguishes “this tab” from “another browser tab” in the recovery confirmation.
-- Current source-verified fixes: **49**. WAVE-031 and WAVE-039 remain partial; WAVE-042's per-tab isolation and recovery provenance are covered by the current regression scenarios.
-- The 10-scenario suite and updated source are awaiting the CI run triggered by the latest commits. Do not treat the earlier run 43603278555 as verification of these newest changes.
-
+- Current browser suite: **28 Playwright Chromium scenarios**; Node suite: **30 tests**.
+- CI run [43618423075](https://github.com/iamjpsonkar/Wave/actions/runs/43618423075) passed Node tests, typecheck, production build and all 28 Playwright scenarios on the corrected Markdown/template baseline.
+- `src/templates.ts` now joins the Technical learning notes template with real newline characters. Its selection/preview regression scenario passed in that run; WAVE-052 is retained below as fixed.
+- The later diagram-accessibility change (commit `052840f834f879e54ac32567aecc3e4c7a0cad13`, E2E extension `ed34c50b6f21c134d762786f869801785b2452d3`) post-dates that green run. Its own CI result remains unverified at this review.
+- WAVE-031 and WAVE-039 remain open in `bugs.md`. The browser suite still uses OPFS fixtures and does not cover native picker prompt/revocation or actual process termination.
+- The 50 source-verified findings below are retained as regression scenarios; this does not mean every historical scenario was individually executed during this review.
 
 ## WAVE-001 — Opening Trash can discard pending editor changes
 
