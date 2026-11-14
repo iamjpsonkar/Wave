@@ -965,3 +965,277 @@ These official product/help resources informed the comparison. Features and avai
 - Revisit competitor research and priorities periodically; do not let competitor checklists dictate Wave's product direction.
 
 **The goal is not to become a copy of Notion or Quip. The goal is to make Wave the most trustworthy, capable local-first workspace for writing, knowledge and work.**
+
+
+---
+
+# 11. Expanded competitive landscape — additional products
+
+The first comparison covered the closest document/workspace products. This extension adds adjacent products that reveal important workflows Wave should consider. The aim is broad coverage, not a commitment to build every category.
+
+| Product | Additional capabilities worth studying | Potential Wave direction |
+|---|---|---|
+| **Microsoft Loop** | Portable synchronized components, pages, workspaces, tasks and components embedded in Teams, Outlook and Microsoft 365 | Reusable live components that can be embedded in multiple Wave pages; later, cross-app sharing |
+| **Confluence** | Team spaces, page trees, whiteboards, databases, macros, page analytics, content permissions, templates, page versioning, team calendars and knowledge workflows | Whiteboards, page/space analytics, macros/embeds, trusted documentation and team knowledge governance |
+| **ClickUp** | Tasks, sprints, goals, milestones, custom task types/statuses, docs, whiteboards, forms, workload, dashboards and extensive views | Connect documents to tasks and projects; provide whiteboards and dashboards as first-class workspace surfaces |
+| **Airtable** | Relational databases, interfaces, forms, automations, synced data, extensions and app-like views | Database interfaces, data-entry forms, reusable views and external data connectors |
+| **Linear** | Issue tracking, cycles, projects, roadmaps, initiatives, triage, labels, workflows, project updates and developer integrations | A focused software/project workflow module with issue-to-document links and GitHub integration |
+| **Slite** | Knowledge base, verified documents, review cycles, question answering, analytics and stale-document detection | Verification dates, content owners, knowledge health dashboard and AI-proposed updates with human approval |
+| **Joplin** | Notebooks, Markdown notes, tags, attachments, web clipper, offline-first sync, encryption, plugins and themes | Notebook-like organization, robust import, web capture and optional encrypted sync |
+| **Logseq** | Outliner-first blocks, journals, block/page references, queries, tasks, whiteboards, PDF highlights, flashcards and plugins | Outliner mode, block references, query builder, spaced repetition and research workflows |
+| **Capacities** | Typed objects, custom object types, properties, collections, daily notes, backlinks, graph, calendar and API/MCP | Object-type templates, custom schemas, date-centric navigation and API access |
+| **Trello** | Boards, cards, lists, labels, checklists, due dates, power-ups and Butler automation | A simple board/card experience that can be generated from Wave databases and tasks |
+| **Asana** | Goals, portfolios, projects, task dependencies, workload, approvals, forms, rules and status reporting | Portfolio/goal rollups, approvals and project reporting |
+| **Monday.com** | Work boards, custom columns, dashboards, forms, automations, workload and cross-board connections | Cross-database dashboards, visual workflow automation and customizable work views |
+| **Basecamp** | Message boards, to-dos, schedules, docs/files, chat, check-ins and project home pages | Lightweight project communication bundles without trying to become a full chat platform |
+| **Milanote** | Visual boards, notes, images, links, files, columns and freeform spatial organization | Visual research boards, moodboards and spatial canvases |
+| **Craft** | Polished documents, nested pages, collections, cards, daily notes, backlinks, publishing and offline workflows | High-quality document presentation, shareable exports and polished page layouts |
+| **Evernote** | Web clipping, OCR, notebooks, tags, scans, tasks, reminders and document search | Searchable captures, OCR, inbox workflows and migration compatibility |
+| **Google Docs/Sheets** | Suggesting, comments, version history, pageless docs, smart chips, tables, formulas, collaboration and file interoperability | High-quality review flows, spreadsheet interoperability and reliable document export |
+| **Microsoft Word/Excel** | Advanced formatting, tracked changes, references, mail merge, formulas, pivot tables, charts and data validation | Interoperability and import/export first; only adopt advanced office features where they add clear value |
+| **Dropbox Paper** | Collaborative documents, task assignments, media embeds, comments and lightweight project notes | Lightweight action assignment and clean embedded media experiences |
+
+### Additional lessons
+
+- **Portable components (Loop):** the same task list, table or status component should be able to appear in multiple places without creating divergent copies. Define a canonical component and explicit embed/reference semantics.
+- **Whiteboards (Confluence, ClickUp, Milanote):** a freeform canvas is a distinct interaction model, not just a page with a drawing widget. It should support sticky notes, shapes, connectors, images, text and conversion of selected items into pages/tasks.
+- **Data interfaces (Airtable, Monday):** databases need role- and task-oriented interfaces, not only generic tables. A form, dashboard or curated interface should be able to expose a safe subset of data.
+- **Software delivery (Linear):** issue workflows benefit from cycles, triage, initiatives, release tracking, project updates and developer integrations.
+- **Knowledge maintenance (Slite, Confluence):** a wiki needs owners, verification dates, stale-content detection, usage analytics and review queues—not just page creation.
+- **Outliner and research workflows (Logseq, Joplin, Evernote):** block references, daily journals, web clipping, PDF annotations, OCR and flashcards support serious personal knowledge management.
+- **Object-centric knowledge (Capacities):** custom object types and date-centric navigation can complement folders and Markdown pages, provided data remains exportable.
+- **Office interoperability (Google/Microsoft):** Wave should prioritize accurate import/export and collaboration-friendly review over trying to reproduce every advanced word processor or spreadsheet feature.
+
+---
+
+# 12. Additional feature catalogue — capabilities to include
+
+The following capabilities expand the original catalogue. They are deliberately separate to make omissions visible and avoid hiding important product ideas inside broad headings.
+
+## Q. Whiteboards, canvas and visual thinking
+
+- [ ] Infinite canvas with pan, zoom, minimap and fit-to-content.
+- [ ] Sticky notes with colors, labels and markdown-like text.
+- [ ] Text, shapes, connectors, arrows and freehand drawing.
+- [ ] Images, files, web links and embedded pages on the canvas.
+- [ ] Frames/sections to group related ideas.
+- [ ] Alignment, distribution, snapping and grid guides.
+- [ ] Multi-select, group, lock, duplicate and arrange layers.
+- [ ] Convert sticky notes into pages, tasks or database records.
+- [ ] Convert tasks/pages into canvas cards with live references.
+- [ ] Link canvas objects to one another and to workspace objects.
+- [ ] Templates for brainstorming, mind maps, retrospectives, user journeys and architecture diagrams.
+- [ ] Presentation mode to walk through frames/sections.
+- [ ] Export canvas as PNG, SVG and PDF.
+- [ ] Real-time collaborative cursors and editing (after collaboration foundation).
+- [ ] Whiteboard comments and reactions.
+- [ ] Local/offline whiteboards with portable canvas schema.
+
+## R. Dashboards, reporting and analytics
+
+- [ ] Custom dashboard pages with movable/resizable widgets.
+- [ ] Widgets for metrics, charts, tables, task lists and calendar summaries.
+- [ ] Charts based on database views and spreadsheet ranges.
+- [ ] Cross-database dashboard filters.
+- [ ] Global filters for project, owner, status and date range.
+- [ ] KPI cards, targets and progress indicators.
+- [ ] Project portfolio dashboard.
+- [ ] Team workload and capacity dashboard.
+- [ ] Personal productivity dashboard.
+- [ ] Saved dashboard layouts and reusable dashboard templates.
+- [ ] Scheduled report generation (local or explicitly connected delivery).
+- [ ] Export dashboard as PDF, image or presentation.
+- [ ] Content analytics: page views, edits, searches and unanswered queries (only where collection is enabled and disclosed).
+- [ ] Search analytics to identify missing documentation.
+- [ ] Database and automation execution metrics.
+- [ ] Analytics retention controls and privacy-preserving aggregation.
+
+## S. Advanced knowledge and research workflows
+
+- [ ] Outliner mode with nested bullets as first-class blocks.
+- [ ] Block references and transclusions.
+- [ ] Page embeds and block embeds with source indicators.
+- [ ] Query builder for tasks, tags, properties, links and dates.
+- [ ] Saved dynamic queries and live query blocks.
+- [ ] Daily journal with automatic links to created/edited objects.
+- [ ] Weekly/monthly/yearly notes.
+- [ ] PDF viewer with highlights and anchored annotations.
+- [ ] Link PDF highlights to pages, blocks and references.
+- [ ] Citation manager and bibliography export (BibTeX/RIS).
+- [ ] Zotero integration and reference metadata.
+- [ ] Research source library with author, URL, publication date and notes.
+- [ ] Web page reader mode and metadata extraction.
+- [ ] OCR for scanned documents and images (optional/local where practical).
+- [ ] Flashcards from selected blocks and database records.
+- [ ] Spaced-repetition scheduling and review statistics.
+- [ ] Math notation and calculation scratchpad.
+- [ ] Whiteboard and diagram links from research notes.
+
+## T. Publishing, sharing and document delivery
+
+- [ ] Publish selected pages as a static site.
+- [ ] Publish a page collection with navigation and search.
+- [ ] Custom domain support for hosted publishing (optional service).
+- [ ] Public read-only share links with expiry and revocation.
+- [ ] Password-protected exports or share packages.
+- [ ] Downloadable page bundles with assets.
+- [ ] Print-friendly page themes and page breaks.
+- [ ] Document cover pages, headers, footers and page numbers.
+- [ ] Export selected pages as one combined PDF.
+- [ ] Export a database view as a static snapshot.
+- [ ] Embed a read-only published view in another site.
+- [ ] Publishing preview and link checker.
+- [ ] SEO metadata and social preview cards for published sites.
+- [ ] Explicit warning and confirmation before publishing private content.
+- [ ] Unpublish and revoke all public access in one action.
+
+## U. Advanced task and operations management
+
+- [ ] Multiple assignees and watcher/follower lists.
+- [ ] Custom task types (bug, feature, request, incident, decision).
+- [ ] Custom status workflows per project/database.
+- [ ] Task triage inbox and intake queues.
+- [ ] Sprint/cycle planning with capacity estimates.
+- [ ] Backlog prioritization and ranking.
+- [ ] Initiatives and portfolio-level project grouping.
+- [ ] Release/version tracking and changelog generation.
+- [ ] Goal hierarchy: objectives, key results, projects and tasks.
+- [ ] Goal progress rollups and check-in history.
+- [ ] Approvals and sign-off steps.
+- [ ] Workload balancing and resource capacity.
+- [ ] Time estimates, actuals and optional time tracking.
+- [ ] Dependencies, blockers and critical path.
+- [ ] Project status update templates and history.
+- [ ] Cross-project task views and custom work queues.
+- [ ] Incident/runbook templates and postmortems.
+- [ ] Service request and bug intake forms.
+
+## V. Reusable components and connected work
+
+- [ ] Canonical synced blocks with backlinks to every embed.
+- [ ] Reusable tables, task lists, callouts and page sections.
+- [ ] Live references to a database view in multiple pages.
+- [ ] Portable components that can be shared into documents and messages.
+- [ ] Component permissions and source ownership.
+- [ ] Component version history and change notifications.
+- [ ] Embed preview and refresh policy for external content.
+- [ ] Linked project status, KPI and task summary components.
+- [ ] Cross-workspace references with explicit access boundaries.
+- [ ] Component library and reusable team snippets.
+
+## W. Knowledge quality and governance
+
+- [ ] Verified/trusted page badge with owner and expiry date.
+- [ ] Scheduled content review and reminder queue.
+- [ ] Stale-page detection based on age and linked source changes.
+- [ ] Duplicate/overlapping page detection.
+- [ ] Broken link, missing owner and orphan page reports.
+- [ ] Knowledge health dashboard.
+- [ ] Page feedback: helpful/not helpful and report outdated.
+- [ ] Unanswered search/query report.
+- [ ] Glossary and acronym dictionary.
+- [ ] Content lifecycle and retention rules.
+- [ ] Bulk archive and bulk ownership reassignment.
+- [ ] Audit trail for changes to critical documentation.
+- [ ] AI-assisted update proposals with human review and approval.
+- [ ] Document owner and reviewer escalation when review is overdue.
+
+## X. Advanced forms and data collection
+
+- [ ] Multi-step forms and progress indicators.
+- [ ] Conditional fields and branching logic.
+- [ ] Repeating sections and line-item inputs.
+- [ ] Form prefill from URL or existing record.
+- [ ] Anonymous and authenticated response modes.
+- [ ] Form scheduling, close dates and response limits.
+- [ ] Draft response save/resume.
+- [ ] Confirmation email through a connected provider.
+- [ ] Form analytics and conversion metrics.
+- [ ] Approval/review queue for submissions.
+- [ ] Create multiple related records from one submission.
+- [ ] Webhook actions after form submission.
+- [ ] QR code for local or published form access.
+- [ ] Offline form submission queue for local workspace use.
+
+## Y. Advanced integrations and interoperability
+
+- [ ] Microsoft 365/Teams/Outlook integration.
+- [ ] Microsoft Loop component import/reference where supported.
+- [ ] Google Docs/Sheets/Drive integration.
+- [ ] Atlassian Confluence/Jira integration.
+- [ ] Linear issue and project integration.
+- [ ] ClickUp, Asana, Trello and Monday import/connectors.
+- [ ] Airtable CSV/API import and sync connector.
+- [ ] Slack/Teams notifications and action links.
+- [ ] GitHub/GitLab issue, PR, commit and release integration.
+- [ ] Figma, Miro, Loom and diagramming embeds.
+- [ ] Zotero and citation-manager integration.
+- [ ] Email-to-inbox and calendar-to-meeting-notes workflows.
+- [ ] Generic OAuth2 connector framework.
+- [ ] Generic webhook and REST API connector.
+- [ ] Integration health status, reconnect and token revocation.
+- [ ] Field mapping, sync direction and conflict policy per connector.
+
+## Z. AI knowledge operations — explicit opt-in
+
+- [ ] Ask questions over one page, selected sources or the full workspace.
+- [ ] Show citations, source snippets and freshness information.
+- [ ] Distinguish source facts from generated suggestions.
+- [ ] Draft page summaries, project updates and meeting recaps.
+- [ ] Extract tasks, decisions, risks and owners from documents.
+- [ ] Suggest links, tags, aliases and page properties.
+- [ ] Detect contradictions and outdated instructions.
+- [ ] Propose documentation updates based on changed source material.
+- [ ] Human-reviewed triage queue for all proposed edits.
+- [ ] AI-generated database views and formula suggestions (preview first).
+- [ ] Natural-language query builder for databases.
+- [ ] Meeting transcription with consent and local storage.
+- [ ] Provider choice, local model support and per-workspace settings.
+- [ ] Per-page AI exclusion and sensitive-content controls.
+- [ ] Cost/token usage visibility for remote providers.
+- [ ] AI prompt history and action audit log.
+- [ ] No autonomous publishing, sharing or destructive edits without approval.
+
+## AA. Administration, observability and supportability
+
+- [ ] Workspace health and integrity report.
+- [ ] Storage usage by documents, assets, backups and trash.
+- [ ] Orphaned asset cleanup preview.
+- [ ] Duplicate page and duplicate record report.
+- [ ] Backup schedule, retention and last-verified status.
+- [ ] Import/export job history and diagnostics.
+- [ ] Sync health, device status and conflict queue.
+- [ ] Plugin/integration permission inventory.
+- [ ] Workspace event log and user-visible diagnostics.
+- [ ] Crash recovery and safe-mode startup.
+- [ ] Feature flags for experimental modules.
+- [ ] Privacy-preserving bug report export with user review.
+- [ ] Admin policies for team workspaces.
+- [ ] Data retention, export and account/workspace offboarding.
+
+---
+
+# 13. Product coverage checklist
+
+Use this checklist to check that the plan considers the major product categories across the wider market.
+
+- [ ] Document editor and wiki (Notion, Confluence, Slite, Craft).
+- [ ] Real-time modular components (Microsoft Loop).
+- [ ] Interactive docs and no-code workflows (Coda).
+- [ ] Spreadsheet/database app builder (Airtable).
+- [ ] Project and task management (ClickUp, Asana, Monday).
+- [ ] Software issue tracking and cycles (Linear, Jira).
+- [ ] Kanban boards and lightweight planning (Trello).
+- [ ] Team communication and project hubs (Basecamp, Quip).
+- [ ] Visual whiteboards and spatial thinking (Milanote, Miro, FigJam).
+- [ ] Local-first notes and file ownership (Obsidian, Joplin).
+- [ ] Outliner, block references and journals (Logseq).
+- [ ] Object-based personal knowledge management (Capacities, Anytype).
+- [ ] Web clipping, OCR and research capture (Evernote, Joplin).
+- [ ] Publishing and knowledge portals (Outline, Confluence).
+- [ ] Forms, dashboards and automation (Airtable, ClickUp, Monday).
+- [ ] AI-assisted knowledge discovery and maintenance (Slite and current workspace assistants).
+- [ ] Desktop, mobile, offline and accessibility.
+- [ ] Security, permissions, governance and portability.
+
+**Coverage does not mean feature parity.** Each capability still needs a clear Wave use case, a local-first data contract, a priority and a maintenance cost estimate.
