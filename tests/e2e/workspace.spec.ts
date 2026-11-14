@@ -1209,7 +1209,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
     await dialog.getByRole('button', { name: 'Done' }).click();
     await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(new RegExp(theme.expectedClass));
 
-    for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'mobile', width: 390, height: 844 }]) {
+    for (const viewport of [{ name: 'wide', width: 1440, height: 1000 }, { name: 'tablet', width: 1024, height: 900 }, { name: 'small-tablet', width: 768, height: 900 }, { name: 'mobile', width: 390, height: 844 }, { name: 'compact-mobile', width: 320, height: 720 }]) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       for (const mode of ['edit', 'preview']) {
         if (mode === 'preview') await page.getByRole('button', { name: 'Preview' }).click();
@@ -1258,5 +1258,49 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
       }
     }
   }
-  expect(states).toHaveLength(12);
+  expect(states).toHaveLength(30);
+});
+
+
+
+test('editor productivity tools support find/replace, undo/redo, outline and live statistics', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Editor Productivity');
+  const source = [
+    '# Project overview',
+    '',
+    'Alpha is the first milestone.',
+    '',
+    '## Delivery plan',
+    '',
+    'Alpha and beta are both planned.',
+    '',
+    '### Risks',
+    '',
+    'Review the schedule.'
+  ].join('\n');
+  await editor.fill(source);
+
+  await expect(page.locator('.document-statistics')).toContainText('words');
+  await expect(page.locator('.document-statistics')).toContainText('characters');
+  await expect(page.locator('.document-statistics')).toContainText('min read');
+
+  await page.getByRole('button', { name: 'Document outline' }).click();
+  await expect(page.getByRole('navigation', { name: 'Document outline' }).getByRole('button')).toHaveCount(3);
+  await page.getByRole('navigation', { name: 'Document outline' }).getByRole('button', { name: 'Delivery plan' }).click();
+
+  await page.getByRole('button', { name: 'Find in document' }).click();
+  await page.getByRole('textbox', { name: 'Find text' }).fill('Alpha');
+  await expect(page.getByRole('search', { name: 'Find and replace' })).toContainText('1 of 2');
+  await page.getByRole('textbox', { name: 'Replace text' }).fill('Gamma');
+  await page.getByRole('button', { name: 'Replace all' }).click();
+  await expect(editor).toContainText('Gamma is the first milestone.');
+  await expect(editor).not.toContainText('Alpha');
+
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(editor).toContainText('Alpha is the first milestone.');
+  await expect(editor).not.toContainText('Gamma');
+  await page.getByRole('button', { name: 'Redo' }).click();
+  await expect(editor).toContainText('Gamma is the first milestone.');
+  await expect(editor).not.toContainText('Alpha');
 });
