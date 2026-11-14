@@ -189,3 +189,5 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Verification: awaiting GitHub Actions for this patch; no test pass is claimed. Full contrast review, broader workspace diagnostics and remaining UI gap IDs stay open.
 
 - Follow-up hardening: Settings now contains keyboard focus while open, supports Escape dismissal, and reports preference-save completion/failure. The centered writing measure (860px default with width choices) also partially addresses UI-003; responsive and wide-content review remains open.
+
+- Final register reconciliation: UI-001 and UI-012 now describe remaining scope without stale claims that Settings is wholly unavailable; UI-003 is explicitly partial. The Settings E2E also covers Escape dismissal.
