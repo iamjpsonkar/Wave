@@ -33,17 +33,19 @@ Fenced DOT/Graphviz, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc have lightweight 
 
 | Feature group | Wave status |
 |---|---|
-| CommonMark writing syntax | Supported |
-| GFM tables, tasks, strikethrough, autolinks, footnotes | Supported |
+| CommonMark writing syntax | Supported through the configured Markdown parser |
+| GFM tables, tasks, strikethrough, autolinks, footnotes | Supported through remark-gfm |
 | GitHub-style alert callouts | Supported |
 | Local images and Markdown links | Supported with local-asset and URL safety rules; titles/alt text retained |
 | Heading anchors | Supported with deterministic duplicate suffixes |
-| MathML | Partial: nested groups/fractions/roots/scripts and common commands; no matrices or aligned environments |
-| Mermaid | Partial: simple flowcharts, basic sequence diagrams and pie charts |
-| Raw HTML | Disabled for safety; safe inline shorthands and DETAILS disclosure are supported |
-| Syntax highlighting | Lightweight local token coloring for common language families; not a full grammar/highlighter |
-| Video/audio embeds and arbitrary HTML media | Not supported |\n| Emoji shortcodes | Common shortcode set supported; unknown shortcodes remain unchanged |
-| PlantUML, Graphviz, Vega, D2, AsciiDoc | Not rendered; source is preserved |
+| MathML | Partial local TeX subset; not full LaTeX |
+| Mermaid | Partial local renderers for the families listed above; not full Mermaid compatibility |
+| DOT/Graphviz, PlantUML, Vega/Vega-Lite, D2, AsciiDoc | Partial local subset renderers |
+| Raw HTML | Disabled for safety; safe Wave shorthands and DETAILS disclosure are supported |
+| Syntax highlighting | Lightweight token coloring and line-based diff coloring; not grammar-based |
+| Audio/video | Controlled local assets only; remote media and arbitrary HTML media are disabled |
+| Emoji shortcodes | Small common shortcode set supported; unknown shortcodes remain unchanged |
+| GitHub mentions and issue/PR references | Intentionally inert plain text; no GitHub notification behavior |
 
 ## Regression entry point
 
