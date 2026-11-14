@@ -740,7 +740,7 @@ Create a nested path at root and under an already selected folder. Verify the se
 
 ## Supplemental remediation priorities
 
-- [ ] **Immediate data-safety gate:** [x] WAVE-032 — prevent cross-workspace autosave contamination.
+- [x] **Immediate data-safety gate:** WAVE-032 — prevent cross-workspace autosave contamination.
 - [~] WAVE-039 — IndexedDB draft journal with a 120 ms debounce and pagehide best-effort flush; an abrupt kill inside the debounce window is not an absolute guarantee.
 - [x] WAVE-034 — distinguish missing assets from permission/I/O failures.
 - [x] WAVE-033 — mark or clean up incomplete backup snapshots.
