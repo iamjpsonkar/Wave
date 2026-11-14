@@ -1,0 +1,86 @@
+# Wave — Features
+
+> **Your thoughts. Your space.** A private, local-first workspace for writing, organizing and keeping your ideas.
+
+Wave takes inspiration from the flexibility of Notion and the document-first collaboration feel of Quip, with one important difference: **your workspace lives in a folder you choose on your own device.**
+
+This page is the showcase of features that are implemented today. For the larger product vision and upcoming capabilities, see [the detailed feature map](docs/FEATURES.md) and [roadmap](docs/ROADMAP.md).
+
+## What Wave can do today
+
+### ✍️ Write and create
+- **Markdown documents** — create, open and edit portable `.md` pages.
+- **Autosave** — edits are saved back to your selected workspace folder automatically.
+- **Formatting toolbar** — headings, bold, italic, strikethrough, lists, quotes, inline code and links.
+- **Live preview** — switch between editing Markdown and a sanitized rendered preview.
+- **File attachments** — add images and other files; Wave copies them into your local assets folder and inserts a Markdown reference.
+- **Starter templates** — create a blank page, meeting notes, project brief, task list, weekly plan, research notes or a decision record.
+
+### 🗂️ Organize your knowledge
+- **Nested folders** — create folders and organize pages into a hierarchy.
+- **Empty-folder discovery** — folders remain visible even before they contain a page.
+- **Full-text page search** — search document titles and content in the current workspace.
+- **Favorites** — pin frequently used pages and access them from a dedicated sidebar section.
+- **Trash and recovery** — move pages to Trash, restore them to their original location, or permanently delete them.
+- **Recent workspace** — reopen the last selected folder with a permission check.
+
+### 💾 Own your data
+- **Local-first storage** — your selected folder is the source of truth.
+- **No account required** — the current app has no application backend.
+- **Portable Markdown** — page content remains readable and editable in any Markdown editor.
+- **Ordinary asset files** — images and attachments are stored as regular files.
+- **Local backups** — create timestamped snapshots of documents, assets and workspace settings.
+- **Workspace settings** — favorites and workspace preferences are stored in `.wave/settings.json`.
+- **No silent sync** — Wave does not upload your workspace to a Wave server.
+
+### ⌨️ Designed for a focused workflow
+- `⌘/Ctrl + N` — create a new page.
+- `⌘/Ctrl + K` — open or close search.
+- `⌘/Ctrl + S` — save the current page immediately.
+- **Responsive layout** — compact navigation and editor controls on smaller screens.
+- **Quiet interface** — a minimal workspace with clear document, folder, favorite and recovery navigation.
+
+## Workspace structure
+
+When you select a folder, Wave creates and manages this directory:
+
+```text
+<your-folder>/
+└── .wave/
+    ├── manifest.json
+    ├── settings.json
+    ├── documents/
+    │   └── *.md
+    ├── assets/
+    ├── backups/
+    └── trash/
+```
+
+You can inspect, copy and back up these files yourself. Do not delete the `.wave` folder while Wave is using it.
+
+## Browser support and privacy
+
+- The current workspace picker uses the **File System Access API** and is intended for Chromium-based browsers such as Chrome and Edge.
+- Run Wave on HTTPS or localhost and grant access to the folder you choose.
+- The browser stores a workspace directory handle in IndexedDB to offer a recent-workspace shortcut; document contents remain in your selected folder.
+- Wave currently has no server-side collaboration, cloud sync, account system or analytics.
+- The interface loads its typography from Google Fonts; the core app does not require a Wave application server.
+
+## What's not shipped yet
+
+Wave's bigger ambition includes a rich block editor, internal page links and backlinks, page history, database views, kanban boards, calendar and timeline views, reminders, collaborative editing, comments, Quip-style spreadsheets, imports and exports, plugins and optional encrypted sync. These are **planned capabilities, not current features**. Track their status in the [feature map](docs/FEATURES.md).
+
+## Run locally
+
+Requires Node.js 22+ and a supported Chromium browser.
+
+```bash
+npm install
+npm run dev
+npm run typecheck
+npm run build
+```
+
+---
+
+**Wave is early software.** Keep independent backups of important files while the recovery and restore experience continues to mature.
