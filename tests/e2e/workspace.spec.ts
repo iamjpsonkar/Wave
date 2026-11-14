@@ -474,6 +474,14 @@ test('Markdown inline syntax, code literal preservation, duplicate slugs, nested
     '==marked== ++underlined++ ^super^ ~sub~ [[kbd:Alt+Shift]] :rocket: :unknown_shortcode:',
     '',
     'Inline code `:rocket: ==literal==` must stay literal.',
+    'References remain inert: @waveuser #123 owner/repo#456.',
+    'Escapes: \\*bold\\* \\_italic\\_ \\[link\\] \\#hash \\+plus \\.dot \\!bang.',
+    '',
+    '````text',
+    '```',
+    ':rocket: ==not transformed==',
+    '```',
+    '````',
     '',
     '- Outer item',
     '  Continuation paragraph',
@@ -508,6 +516,9 @@ test('Markdown inline syntax, code literal preservation, duplicate slugs, nested
   await expect(preview.locator('kbd')).toHaveText('Alt+Shift');
   await expect(preview).toContainText('🚀 :unknown_shortcode:');
   await expect(preview.locator('code').filter({ hasText: ':rocket: ==literal==' })).toHaveCount(1);
+  await expect(preview).toContainText('@waveuser #123 owner/repo#456');
+  await expect(preview.locator('a').filter({ hasText: /@waveuser|#123|owner\/repo#456/ })).toHaveCount(0);
+  await expect(preview.locator('code').filter({ hasText: ':rocket: ==not transformed==' })).toHaveCount(1);
   await expect(preview.locator('ul ul ul')).toContainText('Deep item');
   await expect(preview.locator('.syntax-keyword')).toContainText('def');
   await expect(preview.locator('.syntax-diff-removed')).toHaveText('-old value');
