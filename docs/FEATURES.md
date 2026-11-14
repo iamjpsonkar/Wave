@@ -10,6 +10,7 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] Formatting toolbar, headings, lists, quotes, code and links
 - [x] Local images and file attachments
 - [x] Starter templates: meeting notes, project brief, task list, weekly plan, research notes and decision record
+- [x] Built-in page templates for meetings, projects, task lists, weekly plans, research and decision records
 - [ ] Rich block editor with paragraph, heading, list, quote, divider, callout, code, image, file, bookmark, embed and table blocks
 - [ ] Drag-and-drop blocks, multi-select, duplicate, turn-into, block handles and slash menu
 - [ ] Inline formatting, text colors, highlights, comments and suggestions
