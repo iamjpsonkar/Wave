@@ -2,7 +2,7 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed source revision: `9fdd7559d1bef165f838585bf73eb73a67b0d526`  
+> Reviewed source revision: `9fdd7559d1bef165f838585bf73eb73a67b0d526` (follow-up changes are recorded below)  
 > Review date: 2026-11-14  
 > Scope: only defects or material reliability/QA gaps that remain in the current implementation.
 
@@ -104,5 +104,8 @@ Keep the write in the input-event path, request strict IndexedDB durability, exp
 ## Follow-up remediation — 2026-11-14
 
 - WAVE-031: added Chromium coverage for permission denial through the File System Access permission contract and concurrent edits from two tabs sharing the same OPFS workspace. The denial contract is simulated; the native picker prompt and OS-level permission revocation are not yet automated. The browser suite now contains nine scenarios.
+- WAVE-042: the new two-tab scenario exposed that one tab could overwrite or clear another tab's single shared recovery-draft record. Drafts are now isolated by a session-scoped tab ID, and clearing after a successful save removes only the current tab's record. Both edits must survive as saved Markdown or as the other tab's retained recovery draft.
 - WAVE-039: draft journal writes now request IndexedDB `strict` transaction durability, with a compatibility fallback for browsers that reject the option. A browser regression test verifies the strict option is requested. This reduces the durability window but cannot eliminate the interval before an asynchronous transaction commits; WAVE-039 remains partial rather than falsely marked fixed.
 - The exact CI result for these changes is pending the workflow run triggered by the commits above.
+
+- The two-tab draft-isolation change is included in the current main branch; CI for the latest source and documentation commits is pending.
