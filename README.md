@@ -22,6 +22,10 @@
 - [x] Journal interrupted Trash operations and safely reconcile recoverable partial states
 - [x] Preserve corrupt workspace settings and offer backup-before-reset recovery
 - [x] Recover unsaved drafts from browser-local IndexedDB after reload
+- [x] Serialize recovery-journal updates across tabs and reconcile duplicate draft records
+- [x] Guard asynchronous workspace actions against stale completions and keep flushing edits until the current revision is saved
+- [x] Allocate unique backup/restore destinations and mark incomplete restores so they cannot be opened accidentally
+- [x] Detect same-size backup changes with SHA-256 content snapshots
 - [x] Detect external edits before overwriting a document and offer reload or save-as-copy
 - [x] Serialize page/asset creation and prevent case-only filename collisions
 - [x] Remember the most recently opened workspace handle locally and offer permission-aware reopening
