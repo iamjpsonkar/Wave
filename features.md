@@ -97,3 +97,8 @@ npm run build
 
 ### Accessible Markdown images
 - Informative images retain accessible alt text, decorative empty-alt images remain hidden from assistive technology, and missing informative local images display a named fallback.
+
+ 
+### Discover features while writing
+- **Right-side sample library** — browse searchable examples grouped by Text, Blocks, Lists, Data, Code, Advanced and Media. Select an example to see a rendered preview and its Markdown source, then insert the source at the current cursor/selection.
+- **List continuation** — press Enter in a Markdown bullet, numbered or task list to create the next item automatically. Numbered lists increment, nested indentation is retained and a second Enter on an empty item exits the list.
