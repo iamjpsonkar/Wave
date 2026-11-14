@@ -214,3 +214,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Scope limitations: computed-style and interaction assertions are included; screenshot baseline/diff review, a full WCAG contrast audit, tablet/320px breakpoints, and broader dialog/popover/navigation review remain open.
 
 - Test-source follow-up commit: `5b110945a45596de28c13f34435816a87907089f` simplifies the overflow assertion in the UI-020 matrix. Latest combined status was not exposed by the repository connector; no CI pass is claimed. Recheck the Actions run on this commit.
+ 
+## 2026-11-14 — Remaining UI implementation batch
+
+- Added a new editor enhancement component with undo/redo, find/replace, heading outline and document statistics; wired changes through the existing recovery-aware editor change handler.
+- Added folder breadcrumbs, live save-status semantics, searchable template gallery and a preview-before-create dialog; toolbar actions now have explicit accessible names.
+- Improved functional text sizing, focus visibility, mobile layout, dark/system-dark secondary surfaces and System-light color corrections.
+- E2E additions: editor productivity workflow, searchable template preview, nested folder breadcrumbs. UI-020 now exercises 3 themes × 2 modes × 5 viewport widths = **30 states**, with body/heading contrast ratio checks and horizontal page-overflow assertions.
+- Source inventory: **37 Playwright scenarios**, **30 Node tests**. This is a source count, not a run result.
+- No local project dependencies/test runner are available through this repository connection. The GitHub connection did not expose a push-triggered Actions run or combined status for these commits. **No tests, typecheck, production build or CI pass is claimed.**
+- UI-002 remains open for a real optional block editor. Full WCAG review, screenshot-diff baselines, focus-return audit, long-content/table/diagram review and Settings/backup failure-state visual QA remain open. Do not close UI gaps before CI and evidence review.
