@@ -200,7 +200,7 @@ test('two tabs editing the same workspace do not silently overwrite each other',
 test('recovery prompt identifies a draft created in another tab and preserves its record when declined', async ({ page, context }) => {
   await openWorkspace(page);
   const firstEditor = await createPage(page, 'Cross-tab Recovery');
-  await firstEditor.fill('# Cross-tab Recovery\\n\\nUnsaved change owned by first tab');
+  await firstEditor.fill('# Cross-tab Recovery\n\nUnsaved change owned by first tab');
   await expect(page.locator('.topright small')).toContainText('Recovery draft saved', { timeout: 5000 });
 
   const second = await context.newPage();
@@ -215,7 +215,7 @@ test('recovery prompt identifies a draft created in another tab and preserves it
     await dialog.dismiss();
   });
   await second.getByRole('button', { name: /Cross-tab Recovery/ }).click();
-  await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\\n\\nBrowser regression content');
+  await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\n\nBrowser regression content');
   expect(promptMessage).toContain('another browser tab');
 
   const retainedDrafts = await second.evaluate(async () => {
@@ -232,5 +232,5 @@ test('recovery prompt identifies a draft created in another tab and preserves it
     db.close();
     return drafts.map(record => record.content);
   });
-  expect(retainedDrafts).toContain('# Cross-tab Recovery\\n\\nUnsaved change owned by first tab');
+  expect(retainedDrafts).toContain('# Cross-tab Recovery\n\nUnsaved change owned by first tab');
 });
