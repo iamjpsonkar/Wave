@@ -26,7 +26,15 @@
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
 
-## Product scope\n\nSee [the complete feature map](docs/FEATURES.md) for the planned document, database, project-management, collaboration, Quip-style spreadsheet, import/export and local-first capabilities. The [roadmap](docs/ROADMAP.md) tracks delivery by release.\n\n## Development
+## Feature showcase
+
+See [features.md](features.md) for the capabilities currently implemented in Wave. The [detailed feature map](docs/FEATURES.md) and [roadmap](docs/ROADMAP.md) describe the broader product direction.
+
+## Product scope
+
+See [the complete feature map](docs/FEATURES.md) for the planned document, database, project-management, collaboration, Quip-style spreadsheet, import/export and local-first capabilities. The [roadmap](docs/ROADMAP.md) tracks delivery by release.
+
+## Development
 Requires Node.js 22+ and Chrome or Edge.
 
 ```bash
