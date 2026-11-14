@@ -330,6 +330,85 @@ function MermaidFlowchart({ source }: { source: string }) {
   return <div className="mermaid-diagram" role="img" aria-label="Mermaid flowchart"><svg viewBox={`0 0 ${width} ${height}`} width="100%"><defs><marker id="wave-mermaid-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{svgNodes}</svg></div>;
 }
 
+function DiagramSource({source}:{source:string}) {
+  return <details className="diagram-source"><summary>View diagram source</summary><pre>{source}</pre></details>;
+}
+function MermaidClass({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(line=>line&&!line.startsWith('%%'));
+  const classes=new Map<string,string[]>();
+  for(const line of lines){
+    const block=line.match(/^class\s+([\w.]+)\s*\{([\s\S]*)\}$/);
+    if(block)classes.set(block[1],block[2].split('\n').map(x=>x.trim()).filter(Boolean));
+    const declaration=line.match(/^class\s+([\w.]+)$/);
+    if(declaration&&!classes.has(declaration[1]))classes.set(declaration[1],[]);
+  }
+  const relations=lines.map(line=>line.match(/^([\w.]+)\s+(<\|--|\*--|o--|-->|\.\.>|--|<\.\.)\s+([\w.]+)(?:\s*:\s*(.+))?$/)).filter(Boolean) as RegExpMatchArray[];
+  relations.forEach(r=>{if(!classes.has(r[1]))classes.set(r[1],[]);if(!classes.has(r[3]))classes.set(r[3],[]);});
+  const names=Array.from(classes.keys());if(!names.length||names.length>40||source.length>20000)return <MermaidFallback source={source}/>;
+  const cols=Math.min(3,names.length),width=cols*210,height=Math.ceil(names.length/cols)*150;
+  const nodes:ReactNode[]=[];
+  names.forEach((name,index)=>{const x=15+(index%cols)*210,y=15+Math.floor(index/cols)*150,items=classes.get(name)??[];
+    nodes.push(createElement('rect',{key:'box'+name,x,y,width:180,height:48+items.length*19,rx:5,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}));
+    nodes.push(createElement('text',{key:'name'+name,x:x+90,y:y+25,textAnchor:'middle',fontWeight:'bold',fontSize:12,fill:'currentColor'},name));
+    items.forEach((item,n)=>nodes.push(createElement('text',{key:name+n,x:x+8,y:y+48+n*18,fontSize:10,fill:'currentColor'},item)));
+  });
+  relations.forEach((r,index)=>{const a=names.indexOf(r[1]),b=names.indexOf(r[3]);if(a<0||b<0)return;const ax=105+(a%cols)*210,ay=55+Math.floor(a/cols)*150, bx=105+(b%cols)*210,by=55+Math.floor(b/cols)*150;nodes.push(createElement('line',{key:'rel'+index,x1:ax,y1:ay,x2:bx,y2:by,stroke:'currentColor',markerEnd:'url(#wave-class-arrow)'}));if(r[4])nodes.push(createElement('text',{key:'label'+index,x:(ax+bx)/2,y:(ay+by)/2-5,textAnchor:'middle',fontSize:10,fill:'currentColor'},r[4]));});
+  return <div className="mermaid-diagram" role="img" aria-label={linesTitle(source)||'Mermaid class diagram'}><svg viewBox={'0 0 '+width+' '+height} width="100%"><defs><marker id="wave-class-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{nodes}</svg><DiagramSource source={source}/></div>;
+}
+function MermaidEr({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(line=>line&&!line.startsWith('%%'));
+  const names=Array.from(new Set(lines.flatMap(line=>{const m=line.match(/^([\w-]+)\s+(?:\|\||\|o|o\||\}\||\}o|o\{|\|\{|\{\{)[-o|{}]+\s+([\w-]+)\s*:/);return m?[m[1],m[2]]:[]})));
+  const relations=lines.map(line=>line.match(/^([\w-]+)\s+([|o}{]+--[|o}{]+)\s+([\w-]+)\s*:\s*(.+)$/)).filter(Boolean) as RegExpMatchArray[];
+  const entities=Array.from(new Set([...names,...lines.map(line=>line.match(/^([\w-]+)\s*\{$/)?.[1]).filter(Boolean) as string[]]));
+  if(!entities.length||entities.length>40||!relations.length)return <MermaidFallback source={source}/>;
+  const width=Math.max(320,entities.length*190),height=170;
+  const nodes:ReactNode[]=[];
+  entities.forEach((name,index)=>{const x=20+index*190;nodes.push(createElement('rect',{key:'er'+name,x,y:45,width:150,height:65,rx:4,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{key:'ert'+name,x:x+75,y:82,textAnchor:'middle',fontSize:12,fill:'currentColor'},name));});
+  relations.forEach((r,index)=>{const a=entities.indexOf(r[1]),b=entities.indexOf(r[3]);if(a<0||b<0)return;const x1=95+a*190,x2=95+b*190;nodes.push(createElement('line',{key:'erline'+index,x1,y1:110,x2,y2:110,stroke:'currentColor'}),createElement('text',{key:'erlabel'+index,x:(x1+x2)/2,y:100,textAnchor:'middle',fontSize:10,fill:'currentColor'},r[4]));});
+  return <div className="mermaid-diagram" role="img" aria-label={linesTitle(source)||'Mermaid entity relationship diagram'}><svg viewBox={'0 0 '+width+' '+height} width="100%">{nodes}</svg><DiagramSource source={source}/></div>;
+}
+function MermaidState({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(line=>line&&!line.startsWith('%%'));
+  const transitions=lines.map(line=>line.match(/^(.+?)\s*(-->|\-\->)\s*(.+?)(?:\s*:\s*(.+))?$/)).filter(Boolean) as RegExpMatchArray[];
+  const names=Array.from(new Set(transitions.flatMap(r=>[r[1].trim(),r[3].trim()])));
+  if(!transitions.length||names.length>50||source.length>20000)return <MermaidFallback source={source}/>;
+  const width=Math.max(320,names.length*155),height=150,nodes:ReactNode[]=[];
+  names.forEach((name,index)=>{const x=65+index*150;if(name==='[*]')nodes.push(createElement('circle',{key:'state'+index,cx:x,cy:70,r:9,fill:'currentColor'}));else nodes.push(createElement('rect',{key:'state'+index,x:x-55,y:48,width:110,height:44,rx:16,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{key:'statet'+index,x,y:75,textAnchor:'middle',fontSize:11,fill:'currentColor'},name));});
+  transitions.forEach((r,index)=>{const a=names.indexOf(r[1].trim()),b=names.indexOf(r[3].trim());if(a<0||b<0)return;const x1=65+a*150,x2=65+b*150;nodes.push(createElement('line',{key:'stateedge'+index,x1,y1:70,x2,y2:70,stroke:'currentColor',markerEnd:'url(#wave-state-arrow)'}));if(r[4])nodes.push(createElement('text',{key:'statelabel'+index,x:(x1+x2)/2,y:55,textAnchor:'middle',fontSize:10,fill:'currentColor'},r[4]));});
+  return <div className="mermaid-diagram" role="img" aria-label={linesTitle(source)||'Mermaid state diagram'}><svg viewBox={'0 0 '+width+' '+height} width="100%"><defs><marker id="wave-state-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{nodes}</svg><DiagramSource source={source}/></div>;
+}
+function MermaidGantt({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(Boolean);
+  const tasks:{name:string;start:number;duration:number;section:string}[]=[];let section='Tasks',cursor=0;
+  for(const line of lines){
+    const sec=line.match(/^section\s+(.+)$/i);if(sec){section=sec[1];continue;}
+    if(/^(gantt|title\s|dateFormat|axisFormat|excludes|tickInterval)/i.test(line))continue;
+    const parts=line.split(':');if(parts.length<2)continue;
+    const name=parts[0].trim(),spec=parts.slice(1).join(':').split(',').map(x=>x.trim()).filter(Boolean);
+    const detail=spec[spec.length-1]??'1d',durationMatch=detail.match(/^(\d+(?:\.\d+)?)(d|w|h)?$/i),duration=durationMatch?Number(durationMatch[1])*(durationMatch[2]?.toLowerCase()==='w'?7:durationMatch[2]?.toLowerCase()==='h'?1/24:1):1;
+    const after=spec.find(x=>/^after\s+/i.test(x));const date=spec.find(x=>/^\d{4}-\d{2}-\d{2}/.test(x));
+    const start=date?Math.max(0,(Date.parse(date)-Date.parse('2020-01-01'))/86400000):after?(tasks.find(t=>t.name===after.replace(/^after\s+/i,''))?.start??cursor):cursor;
+    tasks.push({name,start,duration,section});cursor=Math.max(cursor,start+duration);
+  }
+  if(!tasks.length||tasks.length>100)return <MermaidFallback source={source}/>;
+  const max=Math.max(...tasks.map(t=>t.start+t.duration),1),scale=600/max,width=760,height=55+tasks.length*34;
+  return <div className="mermaid-diagram" role="img" aria-label={linesTitle(source)||'Mermaid Gantt chart'}><svg viewBox={'0 0 '+width+' '+height} width="100%">{tasks.map((task,index)=>createElement('g',{key:'task'+index},createElement('text',{x:5,y:40+index*34,fontSize:11,fill:'currentColor'},task.name),createElement('rect',{x:155+task.start*scale,y:24+index*34,width:Math.max(4,task.duration*scale),height:20,rx:4,fill:'var(--markdown-diagram-node,#8c9f77)',stroke:'currentColor'})))}</svg><DiagramSource source={source}/></div>;
+}
+function MermaidGitGraph({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(line=>line&&!line.startsWith('%%'));
+  const commits:{label:string;lane:number;merge?:number}[]=[];const lanes=new Map<string,number>([['main',0]]);let current='main',nextLane=1;
+  for(const line of lines){
+    if(/^gitGraph/i.test(line)||/^options:/i.test(line))continue;
+    const branch=line.match(/^branch\s+([\w-]+)/i);if(branch){lanes.set(branch[1],nextLane++);continue;}
+    const checkout=line.match(/^checkout\s+([\w-]+)/i);if(checkout){current=checkout[1];if(!lanes.has(current))lanes.set(current,nextLane++);continue;}
+    const merge=line.match(/^merge\s+([\w-]+)/i);if(merge){commits.push({label:'merge '+merge[1],lane:lanes.get(current)??0,merge:lanes.get(merge[1])??0});continue;}
+    if(/^commit\b/i.test(line)){const label=line.match(/(?:id|tag):\s*["']?([^"']+)["']?/i)?.[1]??'commit';commits.push({label,lane:lanes.get(current)??0});}
+  }
+  if(!commits.length||commits.length>80)return <MermaidFallback source={source}/>;
+  const maxLane=Math.max(...Array.from(lanes.values()),0),width=Math.max(320,commits.length*90+40),height=70+maxLane*65,nodes:ReactNode[]=[];
+  commits.forEach((commit,index)=>{const x=35+index*90,y=35+commit.lane*60;nodes.push(createElement('circle',{key:'commit'+index,cx:x,cy:y,r:9,fill:'var(--markdown-diagram-node,#8c9f77)',stroke:'currentColor'}),createElement('text',{key:'label'+index,x,y:y+24,textAnchor:'middle',fontSize:9,fill:'currentColor'},commit.label));if(index){const prev=commits[index-1];nodes.push(createElement('line',{key:'edge'+index,x1:x-90,y1:35+prev.lane*60,x2:x,y2:y,stroke:'currentColor'});}if(commit.merge!==undefined)nodes.push(createElement('line',{key:'merge'+index,x1:x-35,y1:35+commit.merge*60,x2:x,y2:y,stroke:'currentColor',strokeDasharray:'3 3'});});
+  return <div className="mermaid-diagram" role="img" aria-label={linesTitle(source)||'Mermaid git graph'}><svg viewBox={'0 0 '+width+' '+height} width="100%">{nodes}</svg><DiagramSource source={source}/></div>;
+}
 function highlightedCode(source:string, language:string):ReactNode[] {
   const lang=language.toLowerCase();
   const supported=/^(javascript|js|typescript|ts|jsx|tsx|json|css|scss|html|xml|bash|sh|shell|python|py|sql|yaml|yml|diff|text|txt|markdown|md)$/i.test(lang);
@@ -352,6 +431,11 @@ export function MarkdownCode({ children, className }: MarkdownElementProps) {
   if (className?.includes('language-mermaid')) {
     if(/^\s*pie\b/i.test(source))return <MermaidPie source={source}/>;
     if(/^\s*sequenceDiagram\b/i.test(source))return <MermaidSequence source={source}/>;
+    if(/^\s*classDiagram\b/i.test(source))return <MermaidClass source={source}/>;
+    if(/^\s*erDiagram\b/i.test(source))return <MermaidEr source={source}/>;
+    if(/^\s*stateDiagram(?:-v2)?\b/i.test(source))return <MermaidState source={source}/>;
+    if(/^\s*gantt\b/i.test(source))return <MermaidGantt source={source}/>;
+    if(/^\s*gitGraph\b/i.test(source))return <MermaidGitGraph source={source}/>;
     if(/^\s*flowchart\b/i.test(source))return <MermaidFlowchart source={source}/>;
     return <MermaidFallback source={source}/>;
   }
