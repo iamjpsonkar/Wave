@@ -26,6 +26,7 @@ This page is the showcase of features that are implemented today. For the comple
 - **Duplicate pages** — make an independent copy of a page while keeping the original intact.
 - **Trash and recovery** — move pages to Trash, restore them without overwriting existing files, or permanently delete them. Interrupted operations are journaled and safely reconciled when possible; ambiguous states are surfaced for inspection.
 - **Recent workspace** — reopen the last selected folder with a permission check.
+- **Workspace Settings** — choose system/light/dark theme, writing font, text size, line spacing, content width and reduced motion; preferences stay in the workspace settings file.
 - **Nested navigation** — browse a recursive folder tree and scope the page list to a selected folder.
 - **Search navigation** — view path context and matching snippets, then move through results with arrow keys and Enter.
 
