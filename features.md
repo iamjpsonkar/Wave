@@ -34,7 +34,7 @@ This page is the showcase of features that are implemented today. For the comple
 - **Portable Markdown** — page content remains readable and editable in any Markdown editor.
 - **Ordinary asset files** — images and attachments are stored as regular files.
 - **Local backups** — create timestamped snapshots of documents, assets and workspace settings. Wave verifies that source files did not change during the copy, marks incomplete snapshots, and offers restore into a separate folder.
-- **Workspace settings** — favorites and workspace preferences are stored in `.wave/settings.json`.
+- **Workspace settings** — favorites and workspace preferences are stored in `.wave/settings.json`; malformed settings are preserved and can be backed up before resetting defaults.
 - **No silent sync** — Wave does not upload your workspace to a Wave server.
 - **External edit protection** — Wave checks the saved version before writing and offers reload or save-as-copy when it detects an outside change.
 - **Collision-safe writes** — concurrent page and attachment creation uses serialized allocation and avoids case-only filename collisions.
