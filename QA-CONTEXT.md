@@ -277,3 +277,16 @@ Important documentation drift observed at the same HEAD:
 - No application source or test code changed. Only `ui-gaps.md` changed in this review.
 - Commit: `8f8afb6388c879fce522302a46679e63a814bda3`.
 - Evidence limitations: desktop Edit/Preview only; no mobile, settings dialog, keyboard/focus, accessibility tree, or contrast measurement evidence.
+
+---
+
+## diagrams.net research and diagram roadmap — 2026-11-14
+
+- Researched the official app.diagrams.net site and official draw.io feature/editor/manual/layers/integration documentation.
+- Reviewed current Wave `src/markdown.tsx`, `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `src/App.tsx` and `src/styles.css`.
+- Created `diagram-features.md` with reference capability analysis, Wave's current renderer baseline, explicit visual-editor gaps, local-first design principles, proposed native graph architecture, a comprehensive feature catalogue, five implementation phases, acceptance criteria and test strategy.
+- Current Wave Markdown renderer baseline includes constrained Mermaid flowchart/sequence/pie/class/ER/state/Gantt/git graph/mindmap/timeline/quadrant/requirement/architecture-beta subsets and constrained DOT/Graphviz, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc renderers. These are source-based preview renderers, not an editable canvas diagram application.
+- Roadmap preserves these existing renderers and proposes a structured native diagram document model with canvas, shapes, connectors, styles, undo/redo, pages/layers, layouts, import/export, domain libraries and optional later collaboration.
+- Official research sources are linked inside `diagram-features.md`.
+- No application source or tests changed. Only `diagram-features.md` was created.
+- Commit: `918015553e2d1b1e2d77ccedd7214bd17b5bb9cc`.
