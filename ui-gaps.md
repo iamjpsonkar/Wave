@@ -362,3 +362,14 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 - UI-002 remains partial: slash-triggered menu, bookmark/embed blocks and rich inline editing remain. UI-018 focus restoration and full dialog/popover visual/accessibility audit remain open.
 - Latest source commits: block editor `9e4f29390447dcdbd43f80098da522385a270448`, drag reorder `7057ce25861bffce43ee05ce5f8afb305ae1d0e8`, App focus containment `290f926c92caffe64d2ac34f1eea483df015f464`; tests `8bb74c69ec4c9adad7d59c0e34e869224742fa42`, `f292e32e853fce640d44f05f554ee4bce1cbba72`, `b90369be8ef6ba66ab95f84f5e609b406afd87f7`; styles `6bbd015307f55a0e385b6f041d383bdb07e6e87c`, `93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62`.
 - No test, typecheck, build, screenshot review or CI pass is claimed. Latest checked combined status and workflow results were empty; verification remains pending.
+
+## UI-021 — Selection-based text color controls — 2026-11-15
+
+- **Priority:** P2
+- **Status:** Implemented in source — CI and visual verification pending
+- Added native foreground and background color pickers to the Markdown toolbar. With a source-text selection, the controls wrap the selection in explicit Wave directives: `[[color:#RRGGBB|text]]` and `[[bg:#RRGGBB|text]]`.
+- The preview accepts only six-digit hexadecimal values and renders a React span with the corresponding foreground or background color. Existing `==highlight==` remains available; raw HTML and arbitrary CSS are still disabled.
+- Source remains Markdown and Preview → Edit does not rewrite it. The E2E source adds a regression for both color types, literal code-span preservation and exact source retention on return to Edit.
+- Remaining scope: preset swatches, clear/reset formatting, nested color spans, block-level background fills, block-editor selection support, non-Wave reader fallback and theme/contrast visual review.
+- Commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07`, system-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, locator follow-up `48af3998748b51779a0abe75ca5853dd80fa03b1`.
+- Verification: no local test/typecheck/build or screenshot run was available. Do not mark as CI-passed until the workflow for the latest source completes. Existing UI IDs UI-001–UI-020 and their scope are preserved.
