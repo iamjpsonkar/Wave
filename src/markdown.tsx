@@ -120,7 +120,7 @@ export function markdownHeadingId(node: ReactNode, seen?: Map<string, number>): 
 }
 
 const EMOJI_SHORTCODES: Record<string, string> = {
-  smile:'😄',smiley:'😃',grin:'😁',joy:'😂',heart:'❤️',heart_eyes:'😍',thumbsup:'👍',+1:'👍',
+  smile:'😄',smiley:'😃',grin:'😁',joy:'😂',heart:'❤️',heart_eyes:'😍',thumbsup:'👍','+1':'👍',
   '-1':'👎',rocket:'🚀',tada:'🎉',fire:'🔥',star:'⭐',warning:'⚠️',check:'✅',white_check_mark:'✅',
   x:'❌',bulb:'💡',eyes:'👀',wave:'👋',coffee:'☕',thinking:'🤔',sunglasses:'😎',pray:'🙏'
 };
