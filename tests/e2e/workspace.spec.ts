@@ -422,3 +422,43 @@ test('Markdown safe inline extensions and disclosure blocks render without raw H
   await expect(page.locator('.markdown-preview .markdown-math-display math msup')).toBeVisible();
   await expect(page.locator('.markdown-preview script')).toHaveCount(0);
 });
+
+
+test('Markdown CommonMark links, hard breaks, escaped tables and safe image fallbacks', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Markdown Conformance');
+  await editor.fill([
+    '# Markdown Conformance',
+    '',
+    'First hard-break line  ',
+    'Second hard-break line\\',
+    'Third line',
+    '',
+    '[reference link][guide]',
+    '',
+    '[guide]: https://example.com/docs "Guide title"',
+    '',
+    '[![Remote image alt][remote-image]][guide]',
+    '',
+    '[remote-image]: https://example.com/remote.png "Remote image title"',
+    '',
+    '| Left | Right |',
+    '| --- | --- |',
+    '| escaped \\| pipe | value |',
+    '',
+    '[unsafe](javascript:alert(1))',
+    '',
+    '- Parent',
+    '  continuation paragraph',
+    '  - Nested child'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview.locator('p').filter({ hasText: 'First hard-break line' })).toContainText('Second hard-break line');
+  await expect(preview.locator('p').filter({ hasText: 'Second hard-break line' })).toContainText('Third line');
+  await expect(preview.locator('a[title="Guide title"]')).toHaveAttribute('href', 'https://example.com/docs');
+  await expect(preview.locator('.missing-asset[title="Remote image title"]')).toContainText('Remote image alt');
+  await expect(preview.locator('table')).toContainText('escaped | pipe');
+  await expect(preview.locator('a[href^="javascript:"]')).toHaveCount(0);
+  await expect(preview.locator('ul ul')).toContainText('Nested child');
+});
