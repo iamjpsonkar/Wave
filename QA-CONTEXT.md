@@ -183,3 +183,11 @@ Important documentation drift observed at the same HEAD:
 - No application source code was changed and no feature was removed.
 
 **Next actions:** fix WAVE-052 with a template-selection/preview E2E test; correct the three CI assertion mismatches; rerun full CI; then continue Markdown accessibility, cross-browser, malformed-input and source-preservation verification. Preserve all original Markdown showcase requirements.
+
+
+### Documentation follow-up after the Markdown audit
+
+- Refreshed WAVE-031's current suite references from 13 to 23 scenarios; its historical 13-scenario remediation note remains historical.
+- Corrected WAVE-052 wording to reflect the source's two-backslash-plus-n separator and the required actual-newline separator.
+- Final audit documentation HEAD before this context update: faf991645e639ed55406d810b9a89426b154c354.
+- Current source verification remains tied to CI run 43616302974: 30 Node tests, typecheck and build passed; 20/23 Playwright scenarios passed, with three stale/strict assertions failing. New documentation commits have their own CI runs and are not a new application-source verification.
