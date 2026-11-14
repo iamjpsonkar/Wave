@@ -782,7 +782,7 @@ test('Markdown link schemes and local media paths enforce the preview security b
     '[[audio:/assets/secret.mp3]]',
     '[[audio:C:\\secret.mp3]]',
     '[[audio:https://example.com/secret.mp3]]'
-  ].join('\\n'));
+  ].join('\n'));
   await page.getByRole('button', { name: 'Preview' }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.locator('a[href="https://example.com/safe"]')).toHaveCount(1);
