@@ -688,3 +688,37 @@ test('Markdown local DOT, PlantUML, Vega-Lite, D2 and AsciiDoc renderers stay of
   await expect(preview.locator('.asciidoc-preview ul li')).toHaveCount(2);
   await expect(preview.locator('.asciidoc-preview pre code')).toContainText('const answer = 42;');
 });
+
+
+test('Markdown embeds only local audio and video assets and rejects remote media paths', async ({ page }) => {
+  await openWorkspace(page);
+  await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const assets = await wave.getDirectoryHandle('assets');
+    const audio = await assets.getFileHandle('sample.mp3', { create: true });
+    const audioWriter = await audio.createWritable();
+    await audioWriter.write(new Blob(['local audio fixture'], { type: 'audio/mpeg' }));
+    await audioWriter.close();
+    const video = await assets.getFileHandle('sample.mp4', { create: true });
+    const videoWriter = await video.createWritable();
+    await videoWriter.write(new Blob(['local video fixture'], { type: 'video/mp4' }));
+    await videoWriter.close();
+  });
+  const editor = await createPage(page, 'Local Media');
+  await editor.fill([
+    '# Local Media',
+    '',
+    '[[audio:assets/sample.mp3]]',
+    '',
+    '[[video:assets/sample.mp4]]',
+    '',
+    '[[audio:https://example.com/remote.mp3]]'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview.locator('audio[controls]')).toBeVisible();
+  await expect(preview.locator('video[controls]')).toBeVisible();
+  await expect(preview.locator('.missing-asset')).toContainText('Only local workspace media can be embedded.');
+  await expect(preview.locator('audio[src^="https://"], video[src^="https://"]')).toHaveCount(0);
+});
