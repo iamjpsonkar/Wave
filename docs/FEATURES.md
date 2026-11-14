@@ -55,11 +55,11 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] Local folder workspace and recent-workspace reopening
 - [x] Search titles and page content
 - [x] Recoverable trash and local snapshot backups
-- [ ] Global search with filters, snippets and keyboard navigation
+- [x] Search snippets, path context and keyboard result navigation
 - [ ] Command palette, customizable shortcuts and quick switcher
 - [x] Favorite pages pinned in the sidebar and persisted in workspace settings
 - [ ] Recent history and workspace home
-- [ ] Customizable sidebar, page tree drag/drop and multiple workspaces
+- [x] Recursive folder tree, folder-scoped page lists and mobile navigation drawer\n- [ ] Customizable sidebar, drag/drop and multiple workspaces
 - [ ] Settings for appearance, typography, editor behavior and privacy
 - [ ] Notifications center, inbox and reminders
 - [ ] Universal import, export and workspace portability tools
@@ -69,8 +69,8 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] User-selected folder is the source of truth
 - [x] Markdown documents and ordinary local assets
 - [x] Local Trash, backup snapshots and recent folder handle
-- [ ] Atomic writes, recovery journal and conflict detection
-- [ ] Backup manager, restore preview and scheduled local backups
+- [x] Revision-ordered writes, Trash operation journal, external-edit detection and recoverable local drafts
+- [~] Verified backup browser and restore to a separate workspace folder\n- [ ] Restore diff/preview and scheduled local backups
 - [ ] Workspace schema migrations and integrity checker
 - [ ] Encryption-at-rest option for private workspace vaults
 - [ ] Offline operation and cross-browser/desktop storage adapters
