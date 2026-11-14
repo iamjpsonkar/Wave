@@ -1031,7 +1031,7 @@ test('Markdown images preserve decorative semantics, accessible fallbacks and re
     '[![Linked artwork][reference-art]](https://example.com/gallery "Gallery")',
     '',
     '[reference-art]: assets/one-pixel.png "Reference title"'
-  ].join('\\n'));
+  ].join('\n'));
   await page.getByRole('button', { name: 'Preview' }).click();
   const preview = page.locator('.markdown-preview');
   const artwork = preview.getByRole('img', { name: 'Accessible artwork' });
