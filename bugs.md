@@ -3,9 +3,9 @@
 > Audit date: 2026-11-14  
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed revision: 2f3d53e72e3cde9893b8a93ca830ebfa8967874e  
+> Reviewed revision: c930fbad9e34a82cdeb7c700367b0ff6468a552f  
 > App version: 0.2.0  
-> Review type: Static source-code and documentation review
+> Review type: Recheck of current main source, regression tests, and GitHub Actions; no interactive browser or real filesystem fault-injection
 
 This report records implementation defects, reliability risks, and usability issues found in the current source. It distinguishes confirmed code-path problems from risks requiring runtime reproduction and from planned features that are not bugs.
 
@@ -1098,3 +1098,87 @@ Calculate the number of parent segments from the document's directory depth: a r
 - The audit was source-level against the current `main` tree. It did not include interactive browser tests, multi-tab execution, or filesystem fault injection.
 
 **Updated audit count:** 51 numbered findings (WAVE-001 through WAVE-051), plus the previously recorded cross-cutting risks.
+
+
+---
+
+# 16. Recheck of bugs.md against current main — 2026-11-14
+
+**Reviewed revision:** `c930fbad9e34a82cdeb7c700367b0ff6468a552f`  
+**Files rechecked:** `src/App.tsx`, `src/storage.ts`, `src/draftJournal.ts`, `tests/storage.test.js`, `package.json`, and this audit.  
+**Method:** current-source inspection, comparison against WAVE-001–WAVE-051, and inspection of the GitHub Actions run for this exact main revision. No interactive browser, multi-tab browser run, or real File System Access API fault-injection was performed.
+
+## 16.1 Recheck result
+
+The prior audit is not fully closed. The eleven newer findings WAVE-041 through WAVE-051 are still present in the current source. The findings below were rechecked against the actual code paths, not merely copied from their earlier descriptions.
+
+| Finding | Recheck status | Current evidence |
+|---|---|---|
+| WAVE-041 | **Open — confirmed** | `refresh(w)` publishes docs/folders and reconciles global favorites without checking that `w` is still active (`src/App.tsx:40`). `create()`, `createFromTemplate()` and `duplicateCurrent()` publish state after awaits without a workspace-generation guard (`src/App.tsx:44,57-58`). |
+| WAVE-042 | **Open — confirmed** | Draft journal still performs `findDraft()` before a separate read-write transaction; records use auto-increment IDs and `getDraft()` returns the first match, not the newest (`src/draftJournal.ts:1-6,25-51`). |
+| WAVE-043 | **Open — confirmed** | Backup restore reuses an existing timestamp-named directory when `getDirectoryHandle(...,{create:false})` succeeds; no exclusive allocation or collision suffix is used (`src/storage.ts:282-299`). |
+| WAVE-044 | **Open — confirmed** | Restore creates the destination and copies files before verification, but does not write a restore-in-progress/failed marker or roll back the partial destination on error (`src/storage.ts:287-299`). |
+| WAVE-045 | **Open — confirmed** | Markdown title, Trash title and search snippet code still use double-escaped newline/whitespace patterns (`src/storage.ts:120-121,139,306`). |
+| WAVE-046 | **Open — confirmed** | Conflict-copy naming still uses the double-escaped extension expression in `saveConflictCopy()`; a normal `.md` suffix is not stripped as intended (`src/App.tsx:50`). |
+| WAVE-047 | **Open — confirmed** | The queued favorite write reads mutable global `favoritesRef.current` after awaiting its place in a global queue, rather than writing the immutable snapshot captured for the original workspace (`src/App.tsx:54`). |
+| WAVE-048 | **Open — confirmed** | `flush()` captures content/revision once and returns after that revision is persisted; it does not detect edits typed while the awaited write is pending (`src/App.tsx:46-47`). Transition callers can then replace editor state. |
+| WAVE-049 | **Open — confirmed** | Backup name check and directory creation are not inside an exclusive workspace lock; concurrent calls can select and write to the same timestamp name (`src/storage.ts:241-247`). |
+| WAVE-050 | **Open — confirmed** | Trash restore has no item-specific/workspace lock around reading the Trash item, allocating the destination and removing the source records (`src/storage.ts:393-416`). |
+| WAVE-051 | **Open — confirmed** | Attachment relative path depth is calculated as `targetPath.split('/').length - 1`; a page one folder deep still gets only one `../` instead of two (`src/App.tsx:70`). |
+
+**Recheck conclusion:** none of WAVE-041 through WAVE-051 can currently be marked fixed. These are source-confirmed code-path defects; timing-dependent impact and reproduction frequency still require browser/concurrency tests.
+
+## 16.2 Earlier partial findings remain partial
+
+The following earlier findings are not upgraded to complete:
+
+- **WAVE-019:** compare-before-write conflict detection exists, but no continuous file watcher and no browser-level multi-tab/external-editor verification.
+- **WAVE-020:** backup compares path/size/lastModified snapshots and manifest/settings text, but does not provide a workspace-wide operation lock or content-hash snapshot.
+- **WAVE-031:** current CI runs storage unit tests only; no browser E2E suite exercises the actual File System Access API and React state transitions.
+- **WAVE-039:** IndexedDB journal remains debounce/pagehide based and does not guarantee completion before abrupt process termination. WAVE-042 is a separate concurrency defect in that journal.
+
+## 16.3 Regression test coverage gap
+
+The current `tests/storage.test.js` still contains 14 Node tests. They cover selected storage operations, but none of the following newer findings has a regression test:
+
+- WAVE-041 workspace-switch races and stale UI publication.
+- WAVE-042 concurrent draft saves and newest-record selection.
+- WAVE-043 existing restore destination collision and concurrent restore destination allocation.
+- WAVE-044 partial restore cleanup/failed marker.
+- WAVE-045 Markdown title, Trash title and snippet newline handling.
+- WAVE-046 conflict-copy filename normalization.
+- WAVE-047 workspace-isolated favorite queue behavior.
+- WAVE-048 typing during a delayed flush/navigation transition.
+- WAVE-049 concurrent backup destination allocation.
+- WAVE-050 concurrent restore of one Trash item.
+- WAVE-051 relative attachment links from root, one-level and multi-level folders.
+
+The current test suite is useful but does not establish that these defects are absent.
+
+## 16.4 Current CI evidence
+
+The latest inspected workflow run is for the exact reviewed main revision:
+
+- Run: [43600560309](https://github.com/iamjpsonkar/Wave/actions/runs/43600560309)
+- Commit: `c930fbad9e34a82cdeb7c700367b0ff6468a552f`
+- Result: **Success**
+- Steps: `npm ci`, `npm test`, `npm run typecheck`, `npm run build`.
+- Test result: **14 passed, 0 failed**.
+
+A green CI run means the existing tests, typecheck and production build pass. It does not mean the open findings above are fixed.
+
+## 16.5 Updated overall status and next actions
+
+- Original findings WAVE-001–WAVE-040: the earlier matrix reports 36 implementation changes and 4 partial findings. This remains a source-level assessment, not browser sign-off.
+- WAVE-019, WAVE-020, WAVE-031 and WAVE-039 remain partial.
+- WAVE-041–WAVE-051: **11 open findings confirmed in the current source**.
+- Total catalogue: **51 findings** plus the 8 cross-cutting risks. Do not close or delete findings without a code change and matching regression evidence.
+
+Recommended fix order:
+
+1. **P0 data-loss/concurrency:** WAVE-041, WAVE-042, WAVE-043, WAVE-044, WAVE-047, WAVE-048, WAVE-049 and WAVE-050.
+2. **P1/P2 correctness and portability:** WAVE-045, WAVE-046 and WAVE-051.
+3. Add regression tests alongside each fix; add browser E2E and filesystem fault-injection coverage for the timing-dependent cases.
+4. Re-run CI and update this file with the exact verified commit and test evidence.
+
+**Important:** this recheck updates the audit only. It does not claim the listed defects have been fixed, and no application source code was changed during this pass.
