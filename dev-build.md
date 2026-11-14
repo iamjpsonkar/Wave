@@ -259,3 +259,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Color E2E follow-ups now cover native color input change events, invalid hex values remaining literal, and preservation of the inline-code example. Latest test-source commit: `81f819653e5f766670e51b783edacb1fa39c41b5`. The suite count remains **40 E2E scenarios** and **30 Node tests**; execution, typecheck, build and CI are still unverified.
 
 - Documentation follow-up aligned the Markdown compatibility contract, feature-gap list and UI color backlog with the shipped six-digit-hex syntax and remaining palette/block-fill work. Commits: `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`, `99007028e8f9c98de8baa5d32d55ce97d346d183`, `bd27ca629c7556b3f2fbeac75e3b600b976365b9`.
+
+
+## 2026-11-15 — Color palette, reset and block fill
+
+- Toolbar now includes six curated text-color swatches, remove-color-formatting, and a block background color picker. Added a Markdown quote directive for block fills and preview rendering with validated six-digit hex.
+- Added one E2E scenario for swatch application, reset, block fill source and preview. E2E source inventory: **41 scenarios**; Node source remains **30 tests**. These are source counts only.
+- Commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`, renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`, styles `7020028201eeee4be404a003b4e2c2abc7925c9a`, E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
+- CI, typecheck, build and screenshot review have not been confirmed. Nested ranges and Blocks-mode selection remain open.
