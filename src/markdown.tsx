@@ -436,6 +436,62 @@ function MermaidGitGraph({source}:{source:string}) {
   commits.forEach((commit,index)=>{const x=35+index*90,y=35+commit.lane*60;nodes.push(createElement('circle',{key:'commit'+index,cx:x,cy:y,r:9,fill:'var(--markdown-diagram-node,#8c9f77)',stroke:'currentColor'}),createElement('text',{key:'label'+index,x,y:y+24,textAnchor:'middle',fontSize:9,fill:'currentColor'},commit.label));if(index){const prev=commits[index-1];nodes.push(createElement('line',{key:'edge'+index,x1:x-90,y1:35+prev.lane*60,x2:x,y2:y,stroke:'currentColor'}));}if(commit.merge!==undefined)nodes.push(createElement('line',{key:'merge'+index,x1:x-35,y1:35+commit.merge*60,x2:x,y2:y,stroke:'currentColor',strokeDasharray:'3 3'}));});
   return <div className="mermaid-diagram" role="img" aria-label={linesTitle(source)||'Mermaid git graph'}><svg viewBox={'0 0 '+width+' '+height} width="100%">{nodes}</svg><DiagramSource source={source}/></div>;
 }
+function DotDiagram({source}:{source:string}) {
+  const clean=source.replace(/^\s*(?:strict\s+)?(?:di)?graph\b[^{]*\{/i,'').replace(/\}\s*$/,'');
+  const labels=new Map<string,string>(),edges:Array<[string,string,string]>=[];
+  for(const m of clean.matchAll(/([\w.-]+)\s*\[\s*label\s*=\s*["']([^"']+)["'][^\]]*\]/g))labels.set(m[1],m[2]);
+  for(const m of clean.matchAll(/([\w.-]+)\s*(->|--)\s*([\w.-]+)/g)){edges.push([m[1],m[3],m[2]]);if(!labels.has(m[1]))labels.set(m[1],m[1]);if(!labels.has(m[3]))labels.set(m[3],m[3]);}
+  const names=Array.from(labels.keys());if(!edges.length||names.length>80||source.length>25000)return <MermaidFallback source={source}/>;
+  const width=Math.max(320,names.length*165),height=145,nodes:ReactNode[]=[];
+  edges.forEach((edge,index)=>{const a=names.indexOf(edge[0]),b=names.indexOf(edge[1]);nodes.push(createElement('line',{key:'dotedge'+index,x1:80+a*160,y1:65,x2:80+b*160,y2:65,stroke:'currentColor',markerEnd:edge[2]==='->'?'url(#wave-dot-arrow)':undefined}));});
+  names.forEach((name,index)=>{const x=80+index*160;nodes.push(createElement('rect',{key:'dotnode'+name,x:x-60,y:40,width:120,height:50,rx:5,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{key:'dottext'+name,x,y:70,textAnchor:'middle',fontSize:11,fill:'currentColor'},labels.get(name)));});
+  return <div className="mermaid-diagram" role="img" aria-label="Graphviz DOT diagram"><svg viewBox={'0 0 '+width+' '+height} width="100%"><defs><marker id="wave-dot-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{nodes}</svg><DiagramSource source={source}/></div>;
+}
+function PlantUmlDiagram({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(line=>line&&!/^@(?:start|end)uml\b/i.test(line)&&!/^title\s+/i.test(line));
+  const sequence=lines.filter(line=>/^[\w.-]+\s*(?:-->|->|<-|<--|->>|-->>)\s*[\w.-]+\s*:/.test(line));
+  if(sequence.length){
+    const converted=['sequenceDiagram',...sequence.map(line=>line.replace(/^([\w.-]+)\s*(?:-->|->|<-|<--|->>|-->>)\s*([\w.-]+)\s*:\s*(.+)$/,'$1->>$2: $3'))].join('\n');
+    return <MermaidSequence source={converted}/>;
+  }
+  const classes=lines.filter(line=>/^class\s+[\w.-]+/.test(line)||/^[\w.-]+\s+(?:<\|--|\*--|o--|--|\.\.>)\s+[\w.-]+/.test(line));
+  if(classes.length)return <MermaidClass source={['classDiagram',...classes].join('\n')}/>;
+  const activities=lines.filter(line=>/^:.*;$/.test(line));
+  if(activities.length){const labels=activities.map(line=>line.replace(/^:\s*/,'').replace(/;$/,''));const converted=['flowchart TD',...labels.map((label,index)=>'A'+index+'['+label.replace(/[\[\]]/g,'')+']'),...labels.slice(1).map((_label,index)=>'A'+index+' --> A'+(index+1))].join('\n');return <MermaidFlowchart source={converted}/>;}
+  return <MermaidFallback source={source}/>;
+}
+function D2Diagram({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(line=>line&&!line.startsWith('#'));
+  const nodes=new Map<string,string>(),edges:Array<[string,string,string]>=[];
+  for(const line of lines){
+    const edge=line.match(/^([\w.-]+)(?:\s*:\s*([^>-]+?))?\s*->\s*([\w.-]+)(?:\s*:\s*(.+))?$/);
+    if(edge){nodes.set(edge[1],edge[2]?.trim()||edge[1]);nodes.set(edge[3],edge[4]?.trim()||edge[3]);edges.push([edge[1],edge[3],edge[4]??'']);continue;}
+    const node=line.match(/^([\w.-]+)\s*:\s*(.+)$/);if(node)nodes.set(node[1],node[2]);
+  }
+  if(!edges.length||nodes.size>80||source.length>20000)return <MermaidFallback source={source}/>;
+  const converted=['flowchart TD',...Array.from(nodes,([id,label])=>id+'['+label.replace(/[\[\]]/g,'')+']'),...edges.map(([a,b,label])=>a+' -->'+(label?'|'+label+'|':'')+' '+b)].join('\n');
+  return <MermaidFlowchart source={converted}/>;
+}
+function VegaDiagram({source}:{source:string}) {
+  let spec:any;try{spec=JSON.parse(source);}catch{return <MermaidFallback source={source}/>;}
+  const mark=typeof spec.mark==='string'?spec.mark:spec.mark?.type;
+  const values=Array.isArray(spec.data?.values)?spec.data.values:Array.isArray(spec.datasets?.[spec.data?.name])?spec.datasets[spec.data.name]:null;
+  const xField=spec.encoding?.x?.field,yField=spec.encoding?.y?.field;
+  if(!values||!xField||!yField||!['bar','line','point','circle','area'].includes(mark)||values.length<1||values.length>100||source.length>30000||spec.data?.url)return <MermaidFallback source={source}/>;
+  const rows=values.map((row:any)=>({label:String(row[xField]??''),value:Number(row[yField])})).filter((row:any)=>Number.isFinite(row.value));
+  if(!rows.length)return <MermaidFallback source={source}/>;
+  const max=Math.max(...rows.map((r:any)=>r.value),0),min=Math.min(...rows.map((r:any)=>r.value),0),range=max-min||1,width=640,height=300,plotTop=20,plotBottom=235,slot=560/rows.length;
+  const y=(value:number)=>plotBottom-(value-min)/range*(plotBottom-plotTop);
+  const shapes:ReactNode[]=[];
+  if(mark==='bar')rows.forEach((row:any,index:number)=>{const barWidth=Math.max(4,slot*.65),x=45+index*slot;shapes.push(createElement('rect',{key:'bar'+index,x,y:y(row.value),width:barWidth,height:Math.max(1,plotBottom-y(row.value)),fill:'var(--markdown-diagram-node,#8c9f77)',stroke:'currentColor'}));});
+  else{
+    const points=rows.map((row:any,index:number)=>(45+index*slot+slot/2)+','+y(row.value)).join(' ');
+    if(mark==='line'||mark==='area')shapes.push(createElement('polyline',{key:'series',points,fill:mark==='area'?'rgba(140,159,119,.2)':'none',stroke:'currentColor',strokeWidth:2}));
+    rows.forEach((row:any,index:number)=>shapes.push(createElement('circle',{key:'point'+index,cx:45+index*slot+slot/2,cy:y(row.value),r:4,fill:'var(--markdown-diagram-node,#8c9f77)',stroke:'currentColor'})));
+  }
+  rows.forEach((row:any,index:number)=>shapes.push(createElement('text',{key:'x'+index,x:45+index*slot+slot/2,y:255,textAnchor:'middle',fontSize:10,fill:'currentColor'},row.label),createElement('text',{key:'y'+index,x:30,y:y(row.value)+4,textAnchor:'end',fontSize:9,fill:'currentColor'},String(row.value))));
+  return <div className="mermaid-diagram" role="img" aria-label={spec.title||'Vega chart'}><svg viewBox={'0 0 '+width+' '+height} width="100%"><line x1="40" y1={plotTop} x2="40" y2={plotBottom} stroke="currentColor"/><line x1="40" y1={plotBottom} x2="620" y2={plotBottom} stroke="currentColor"/>{shapes}</svg><DiagramSource source={source}/></div>;
+}
 function highlightedCode(source:string, language:string):ReactNode[] {
   const lang=language.toLowerCase();
   const supported=/^(javascript|js|typescript|ts|jsx|tsx|json|css|scss|html|xml|bash|sh|shell|python|py|sql|yaml|yml|diff|text|txt|markdown|md)$/i.test(lang);
