@@ -328,3 +328,15 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Baseline CI run [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, build and all Playwright scenarios before this patch. The accessibility patch itself is **pending CI**; do not claim it passed until a workflow for the updated source completes.
 - Implementation commit: `052840f834f879e54ac32567aecc3e4c7a0cad13`; regression test commit: `ed34c50b6f21c134d762786f869801785b2452d3`. Latest main before this handoff update: `c2c470d1d2ebc04283eea4646704e20292fea155`.
 - Open reliability findings remain WAVE-031 and WAVE-039 partial; WAVE-042 remains fixed. No bug trackers were changed.
+
+
+## 23. QA tracker reconciliation — 2026-11-14
+
+- Refreshed repository source baseline to `268de12338bce554f18e5feef27acbb5e9ea45fe`.
+- `bugs.md` now contains only the two current open findings: WAVE-031 (native picker/external filesystem/lifecycle and comprehensive accessibility QA coverage) and WAVE-039 (residual IndexedDB pre-commit crash window). WAVE-042 and WAVE-052 remain in the fixed-history register.
+- `fixed-bugs.md` retains all **50** historical finding IDs and their regression scenarios. Its latest addendum distinguishes the successful 30-Node/28-Playwright baseline from the later diagram-accessibility patch.
+- `features-gap.md` has been consolidated into one current 16-section Markdown acceptance checklist. The original requirement families remain preserved; repeated contradictory status snapshots were removed, not scope.
+- Current source defines **30 Node tests** and **28 Playwright Chromium scenarios**.
+- Baseline workflow [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, production build and all 28 Playwright scenarios.
+- The diagram accessibility follow-up initially failed because the sequence SVG used a generic accessible name. Fixed in `268de12338bce554f18e5feef27acbb5e9ea45fe`; workflow [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) was still running at this handoff. Verify latest-main CI before claiming the accessibility correction fully passed.
+- Detailed current state: [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [features-gap.md](./features-gap.md), [dev-build.md](./dev-build.md) and [dev-fixed.md](./dev-fixed.md).
