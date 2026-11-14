@@ -363,10 +363,9 @@ function DiagramSource({source}:{source:string}) {
 function MermaidClass({source}:{source:string}) {
   const lines=source.split('\n').map(line=>line.trim()).filter(line=>line&&!line.startsWith('%%'));
   const classes=new Map<string,string[]>();
+  for(const block of source.matchAll(/class\s+([\w.]+)\s*\{([\s\S]*?)\}/g))classes.set(block[1],block[2].split('\n').map(x=>x.trim()).filter(Boolean));
   for(const line of lines){
-    const block=line.match(/^class\s+([\w.]+)\s*\{([\s\S]*)\}$/);
-    if(block)classes.set(block[1],block[2].split('\n').map(x=>x.trim()).filter(Boolean));
-    const declaration=line.match(/^class\s+([\w.]+)$/);
+    const declaration=line.match(/^class\s+([\w.]+)\s*$/);
     if(declaration&&!classes.has(declaration[1]))classes.set(declaration[1],[]);
   }
   const relations=lines.map(line=>line.match(/^([\w.]+)\s+(<\|--|\*--|o--|-->|\.\.>|--|<\.\.)\s+([\w.]+)(?:\s*:\s*(.+))?$/)).filter(Boolean) as RegExpMatchArray[];
@@ -384,13 +383,14 @@ function MermaidClass({source}:{source:string}) {
 }
 function MermaidEr({source}:{source:string}) {
   const lines=source.split('\n').map(line=>line.trim()).filter(line=>line&&!line.startsWith('%%'));
-  const names=Array.from(new Set(lines.flatMap(line=>{const m=line.match(/^([\w-]+)\s+(?:\|\||\|o|o\||\}\||\}o|o\{|\|\{|\{\{)[-o|{}]+\s+([\w-]+)\s*:/);return m?[m[1],m[2]]:[]})));
   const relations=lines.map(line=>line.match(/^([\w-]+)\s+([|o}{]+--[|o}{]+)\s+([\w-]+)\s*:\s*(.+)$/)).filter(Boolean) as RegExpMatchArray[];
-  const entities=Array.from(new Set([...names,...lines.map(line=>line.match(/^([\w-]+)\s*\{$/)?.[1]).filter(Boolean) as string[]]));
+  const attributes=new Map<string,string[]>();
+  for(const block of source.matchAll(/([\w-]+)\s*\{([\s\S]*?)\}/g))attributes.set(block[1],block[2].split('\n').map(x=>x.trim()).filter(Boolean));
+  const entities=Array.from(new Set([...relations.flatMap(r=>[r[1],r[3]]),...attributes.keys()]));
   if(!entities.length||entities.length>40||!relations.length)return <MermaidFallback source={source}/>;
   const width=Math.max(320,entities.length*190),height=170;
   const nodes:ReactNode[]=[];
-  entities.forEach((name,index)=>{const x=20+index*190;nodes.push(createElement('rect',{key:'er'+name,x,y:45,width:150,height:65,rx:4,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{key:'ert'+name,x:x+75,y:82,textAnchor:'middle',fontSize:12,fill:'currentColor'},name));});
+  entities.forEach((name,index)=>{const x=20+index*190,fields=attributes.get(name)??[];nodes.push(createElement('rect',{key:'er'+name,x,y:45,width:150,height:65+fields.length*17,rx:4,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{key:'ert'+name,x:x+75,y:67,textAnchor:'middle',fontWeight:'bold',fontSize:12,fill:'currentColor'},name));fields.forEach((field,n)=>nodes.push(createElement('text',{key:'erfield'+name+n,x:x+7,y:87+n*16,fontSize:9,fill:'currentColor'},field));});
   relations.forEach((r,index)=>{const a=entities.indexOf(r[1]),b=entities.indexOf(r[3]);if(a<0||b<0)return;const x1=95+a*190,x2=95+b*190;nodes.push(createElement('line',{key:'erline'+index,x1,y1:110,x2,y2:110,stroke:'currentColor'}),createElement('text',{key:'erlabel'+index,x:(x1+x2)/2,y:100,textAnchor:'middle',fontSize:10,fill:'currentColor'},r[4]));});
   return <div className="mermaid-diagram" role="img" aria-label={linesTitle(source)||'Mermaid entity relationship diagram'}><svg viewBox={'0 0 '+width+' '+height} width="100%">{nodes}</svg><DiagramSource source={source}/></div>;
 }
