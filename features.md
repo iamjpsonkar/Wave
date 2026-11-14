@@ -102,3 +102,7 @@ npm run build
 ### Discover features while writing
 - **Right-side sample library** — browse searchable examples grouped by Text, Blocks, Lists, Data, Code, Advanced and Media. Select an example to see a rendered preview and its Markdown source, then insert the source at the current cursor/selection.
 - **List continuation** — press Enter in a Markdown bullet, numbered or task list to create the next item automatically. Numbered lists increment, nested indentation is retained and a second Enter on an empty item exits the list.
+
+
+### 🐳 Deployment choices
+- **Docker static hosting** — multi-stage production image, unprivileged Nginx, SPA fallback, health check and Compose deployment. This hosts the frontend only; local browser-selected workspace storage remains unchanged. See the [Docker guide](docs/DOCKER.md).
