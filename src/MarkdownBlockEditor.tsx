@@ -65,16 +65,18 @@ const insertions: { label: string; source: string }[] = [
 export default function MarkdownBlockEditor({ content, onChange }: { content: string; onChange: (value: string) => void }) {
   const blocks = useMemo(() => parseBlocks(content), [content]);
   const [insertMenuOpen, setInsertMenuOpen] = useState(false);
+  const [draggingIndex, setDraggingIndex] = useState<number | null>(null);
   function update(block: Block, value: string) {
     onChange(content.slice(0, block.start) + value + content.slice(block.end));
   }
-  function move(index: number, direction: -1 | 1) {
-    const other = index + direction;
-    if (other < 0 || other >= blocks.length) return;
-    const first = blocks[Math.min(index, other)], second = blocks[Math.max(index, other)];
-    const gap = content.slice(first.end, second.start);
-    const swapped = second.source + gap + first.source;
-    onChange(content.slice(0, first.start) + swapped + content.slice(second.end));
+  function moveTo(index: number, destination: number) {
+    if (index < 0 || destination < 0 || index >= blocks.length || destination >= blocks.length || index === destination) return;
+    const ordered = [...blocks];
+    const [moving] = ordered.splice(index, 1);
+    ordered.splice(destination, 0, moving);
+    const gaps = blocks.slice(0, -1).map((block, position) => content.slice(block.end, blocks[position + 1].start));
+    const prefix = content.slice(0, blocks[0].start), suffix = content.slice(blocks[blocks.length - 1].end);
+    onChange(prefix + ordered.map((block, position) => block.source + (gaps[position] ?? '')).join('') + suffix);
   }
   function remove(block: Block) {
     let start = block.start, end = block.end;
@@ -90,11 +92,12 @@ export default function MarkdownBlockEditor({ content, onChange }: { content: st
   }
   return <section className="markdown-block-editor" aria-label="Markdown block editor">
     <div className="block-editor-intro"><strong>Block editing</strong><span>Move blocks, add common content, or edit their original Markdown source. Untouched source is preserved.</span></div>
-    {blocks.length ? blocks.map((block, index) => <article className={'markdown-block markdown-block-' + block.type} key={block.start + '-' + block.type}>
+    {blocks.length ? blocks.map((block, index) => <article className={'markdown-block markdown-block-' + block.type + (draggingIndex === index ? ' is-dragging' : '')} key={block.start + '-' + block.type} onDragOver={event => event.preventDefault()} onDrop={event => { event.preventDefault(); if (draggingIndex !== null) moveTo(draggingIndex, index); setDraggingIndex(null); }}>
       <label><span>{block.type}</span><span>Block {index + 1}</span></label>
       <div className="markdown-block-controls">
-        <button type="button" aria-label={'Move block ' + (index + 1) + ' up'} title="Move up" disabled={index === 0} onClick={() => move(index, -1)}>↑</button>
-        <button type="button" aria-label={'Move block ' + (index + 1) + ' down'} title="Move down" disabled={index === blocks.length - 1} onClick={() => move(index, 1)}>↓</button>
+        <button type="button" className="block-drag-handle" draggable aria-label={'Drag block ' + (index + 1)} title="Drag to reorder" onDragStart={event => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', String(index)); setDraggingIndex(index); }} onDragEnd={() => setDraggingIndex(null)}>⠿</button>
+        <button type="button" aria-label={'Move block ' + (index + 1) + ' up'} title="Move up" disabled={index === 0} onClick={() => moveTo(index, index - 1)}>↑</button>
+        <button type="button" aria-label={'Move block ' + (index + 1) + ' down'} title="Move down" disabled={index === blocks.length - 1} onClick={() => moveTo(index, index + 1)}>↓</button>
         <button type="button" aria-label={'Delete block ' + (index + 1)} title="Delete block" onClick={() => remove(block)}>×</button>
       </div>
       <textarea aria-label={'Edit ' + block.type + ' block ' + (index + 1)} rows={Math.min(12, Math.max(1, block.source.split('\n').length))} spellCheck value={block.source} onChange={event => update(block, event.target.value)}/>
