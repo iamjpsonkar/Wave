@@ -328,8 +328,48 @@ function validTrashItem(value:unknown):value is TrashItem{
   try{validatePath(v.originalPath);}catch{return false;}
   return !Number.isNaN(Date.parse(v.deletedAt));
 }
-export async function listTrashDetailed(trash:FileSystemDirectoryHandle):Promise<TrashListing>{
-  const items:TrashItem[]=[],issues:string[]=[],metadataIds=new Set<string>(),markdownIds=new Set<string>();
+async function removeIfPresent(dir:FileSystemDirectoryHandle,name:string):Promise<void>{
+  try{await dir.removeEntry(name);}catch(error){if(!isNotFound(error))throw error;}
+}
+async function recoverTrashOperations(trash:FileSystemDirectoryHandle,documents:FileSystemDirectoryHandle):Promise<string[]>{
+  const issues:string[]=[];
+  for await(const [name,handle] of trash.entries()){
+    if(handle.kind!=='file'||!name.endsWith('.op.json'))continue;
+    try{
+      const op=JSON.parse(await(await(handle as FileSystemFileHandle).getFile()).text()) as {id?:string;operation?:string;originalPath?:string;target?:string};
+      if(typeof op.id!=='string'||name!==op.id+'.op.json')throw new Error('Invalid operation marker.');
+      if(op.operation==='trash'&&typeof op.originalPath==='string'){
+        let original:string|null=null,trashed:string|null=null,metadata:unknown=null;
+        try{original=await readDoc(documents,op.originalPath);}catch(error){if(!isNotFound(error))throw error;}
+        try{trashed=await(await(await trash.getFileHandle(op.id+'.md')).getFile()).text();}catch(error){if(!isNotFound(error))throw error;}
+        try{metadata=JSON.parse(await(await(await trash.getFileHandle(op.id+'.json')).getFile()).text());}catch(error){if(!isNotFound(error)&&!(error instanceof SyntaxError))throw error;}
+        if(trashed!==null&&trashed===original&&validTrashItem(metadata)&&metadata.id===op.id){
+          const parts=validatePath(op.originalPath),leaf=parts.pop()!,parent=await directoryForPath(documents,parts.join('/'));
+          await parent.removeEntry(leaf);
+          await removeIfPresent(trash,op.id+'.op.json');
+        }else if(original===null&&trashed!==null&&validTrashItem(metadata)&&metadata.id===op.id){
+          await removeIfPresent(trash,op.id+'.op.json');
+        }else if(original!==null){
+          await removeIfPresent(trash,op.id+'.md');await removeIfPresent(trash,op.id+'.json');await removeIfPresent(trash,op.id+'.op.json');
+        }else issues.push(name+': source and a verified Trash copy could not be found; manual recovery is required.');
+      }else if(op.operation==='restore'&&typeof op.target==='string'){
+        let target:string|null=null,trashed:string|null=null;
+        try{target=await readDoc(documents,op.target);}catch(error){if(!isNotFound(error))throw error;}
+        try{trashed=await(await(await trash.getFileHandle(op.id+'.md')).getFile()).text();}catch(error){if(!isNotFound(error))throw error;}
+        if(target!==null&&trashed!==null&&target===trashed){
+          await removeIfPresent(trash,op.id+'.md');await removeIfPresent(trash,op.id+'.json');await removeIfPresent(trash,op.id+'.op.json');
+        }else if(target!==null&&trashed===null){
+          await removeIfPresent(trash,op.id+'.json');await removeIfPresent(trash,op.id+'.op.json');
+        }else if(target===null&&trashed!==null){
+          await removeIfPresent(trash,op.id+'.op.json');
+        }else issues.push(name+': restore destination or Trash source is missing; manual recovery is required.');
+      }else throw new Error('Unknown Trash operation type.');
+    }catch(error){issues.push(name+': '+(error instanceof Error?error.message:'operation recovery failed'));}
+  }
+  return issues;
+}
+export async function listTrashDetailed(trash:FileSystemDirectoryHandle,documents?:FileSystemDirectoryHandle):Promise<TrashListing>{
+  const items:TrashItem[]=[],issues:string[]=documents?await recoverTrashOperations(trash,documents):[],metadataIds=new Set<string>(),markdownIds=new Set<string>();
   for await(const [name,handle] of trash.entries()){
     if(handle.kind!=='file')continue;
     if(name.endsWith('.md')){markdownIds.add(name.slice(0,-3));continue;}
