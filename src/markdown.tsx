@@ -18,13 +18,13 @@ function withoutAlertMarker(node: ReactNode): ReactNode {
 }
 
 export function markdownSource(source: string): string {
-  return source.replace(/^(\\s*>\\s*)\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\][ \\t]*/gim, '$1**$2** ');
+  return source.replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \\t]*/gim, '$1**$2** ');
 }
 
 export function MarkdownBlockquote({ children }: MarkdownElementProps) {
   const text = plainText(children).trimStart();
-  const marker = text.match(/^\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\]/i);
-  const label = text.match(/^(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\b/i);
+  const marker = text.match(/^\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]/i);
+  const label = text.match(/^(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\b/i);
   const kind = (marker?.[1] || label?.[1])?.toUpperCase();
   if (kind && ALERTS.has(kind)) {
     return <blockquote className={'markdown-alert markdown-alert-' + kind.toLowerCase()} role="note" aria-label={kind}>{marker ? withoutAlertMarker(children) : children}</blockquote>;
