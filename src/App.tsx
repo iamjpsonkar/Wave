@@ -9,7 +9,7 @@ export default function App() {
  const [ws,setWs]=useState<Workspace|null>(null),[docs,setDocs]=useState<Doc[]>([]),[active,setActive]=useState(''),[content,setContent]=useState(''),[query,setQuery]=useState(''),[search,setSearch]=useState(false),[menu,setMenu]=useState(false),[status,setStatus]=useState('All changes saved'),[error,setError]=useState(''),[busy,setBusy]=useState(false),[preview,setPreview]=useState(false),[selectedFolder,setSelectedFolder]=useState('');
  const editorRef=useRef<HTMLTextAreaElement>(null);
  const filtered=useMemo(()=>docs.filter(d=>(d.title+' '+d.content).toLowerCase().includes(query.toLowerCase())),[docs,query]);
- const folders=useMemo(()=>Array.from(new Set(docs.map(d=>d.path.includes('/')?d.path.slice(0,d.path.lastIndexOf('/')):'').filter(Boolean))).sort(),[docs]);
+ const folders=useMemo(()=>Array.from(new Set(docs.flatMap(d=>{const parts=d.path.split('/').slice(0,-1);return parts.map((_,i)=>parts.slice(0,i+1).join('/'));}))).sort((a,b)=>a.split('/').length-b.split('/').length||a.localeCompare(b)),[docs]);
  async function refresh(w:Workspace){setDocs(await listDocs(w.documents));}
  async function flush(){if(ws&&active){await saveDoc(ws.documents,active,content);setStatus('Saved locally');await refresh(ws);}}
  async function connect(){setBusy(true);setError('');try{const w=await openWorkspace();setWs(w);await refresh(w);setActive('');setContent('');}catch(e){if(!(e instanceof DOMException&&e.name==='AbortError'))setError(e instanceof Error?e.message:'Could not open folder.');}finally{setBusy(false);}}
