@@ -3,7 +3,7 @@
 > Audit date: 2026-11-14  
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed revision: e55839df395f7bfc4ba6f5dc6c234c993d875ff5  
+> Reviewed revision: 5ea1657ff50235cbff46cc9e120a1b650e5fa953  
 > App version: 0.2.0  
 > Review type: Static source-code and documentation review
 
@@ -789,6 +789,6 @@ This section supersedes the original unchecked remediation lists above. It recor
 
 ## CI and release gate
 
-The repository now includes a committed npm lockfile and uses `npm ci`. The CI workflow runs `npm test`, `npm run typecheck` and `npm run build`.
+The repository now includes a committed npm lockfile and uses `npm ci`. The CI workflow runs `npm test`, `npm run typecheck` and `npm run build`. Latest verified run: [43599474006](https://github.com/iamjpsonkar/Wave/actions/runs/43599474006) — success; 11 tests passed, 0 failed.
 
 Do not begin the next feature milestone until the current CI run is green and the remaining browser-level verification items have been reviewed. No storage reliability claim should be interpreted as a substitute for keeping an independent backup of important data.
