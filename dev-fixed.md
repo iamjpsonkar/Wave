@@ -235,3 +235,7 @@ Source changes and the regression scenario are committed, but no local typecheck
 - **Status: partial implementation; CI pending.** Drag/drop/reordering, block handles, slash menu, bookmarks/embeds and rich inline formatting remain open. This is not full feature parity with a rich block editor.
 - E2E source inventory: **38 scenarios**; Node test source: **30 tests**. No test/typecheck/build/CI pass is claimed.
 - Commits: component `78e2887d069b6471610b23f341d5178a02c3e12b`; App integration `15928f7956e2fae4934e730a4c99e0eee3cf97ea`; styling `5ff104ba9f1315b13cc5b40f4dad59f47ea4fcbe`; E2E `2c95631c21f27faad50f4f49bb038a4c7bdb1b1d`; parser fixes `4c418ae633bc7bb986469a88cfc2c60d4041368a` and `cc6809086922947ae4f32e4eaf47257f93c66073`.
+
+ 
+- Follow-up: block grouping now keeps list and quote/callout blocks distinct; heading outline jumps to the corresponding block textarea; block mode uses a distinct Blocks icon and System-light block labels remain readable. Undo/redo shortcuts are enabled while a block textarea is focused.
+- The block-mode E2E now also exercises Undo and Redo before asserting the exact Markdown source. Latest follow-up commits: `03c572edd64fb6924d0bbda706dbf840f44bef26` (outline navigation), `30be50f3afae887386eba1f86faf2d855207c925` (undo/redo regression), `6c9cb3f7b0862fd20253da75a10c263fe215add3` (icon), `41c8adefd98ef00d5ba38867a0e828cd626554a8` (System-light block styling).
