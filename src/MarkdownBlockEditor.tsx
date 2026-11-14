@@ -39,9 +39,9 @@ function parseBlocks(source: string): Block[] {
       if (type === 'table') {
         while (index < lines.length && lines[index].trim() && lines[index].includes('|')) index++;
       } else if (type === 'list') {
-        while (index < lines.length && (/^\\s*(?:[-*+]\\s|\\d+[.)]\\s)/.test(lines[index]) || /^\\s{2,}\\S/.test(lines[index]))) index++;
+        while (index < lines.length && (/^\s*(?:[-*+]\s|\d+[.)]\s)/.test(lines[index]) || /^\s{2,}\S/.test(lines[index]))) index++;
       } else if (type === 'quote' || type === 'callout') {
-        while (index < lines.length && (/^\\s*>/.test(lines[index]) || /^\\s{2,}\\S/.test(lines[index]))) index++;
+        while (index < lines.length && (/^\s*>/.test(lines[index]) || /^\s{2,}\S/.test(lines[index]))) index++;
       } else if (type === 'paragraph') {
         while (index < lines.length && lines[index].trim() && classify(lines[index]) === 'paragraph') index++;
       }
