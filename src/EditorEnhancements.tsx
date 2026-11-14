@@ -39,7 +39,7 @@ export default function EditorEnhancements({ content, onChange, editorRef, previ
   function restore(from: 'undo' | 'redo') {
     const stack = from === 'undo' ? past.current : future.current, value = stack.pop(); if (value === undefined) return;
     (from === 'undo' ? future.current : past.current).push(content);
-    applyingHistory.current = true; previous.current = value; onChange(value);
+    applyingHistory.current = true; onChange(value);
     setCanUndo(past.current.length > 0); setCanRedo(future.current.length > 0);
     requestAnimationFrame(() => editorRef.current?.focus());
   }
