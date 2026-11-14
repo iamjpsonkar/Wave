@@ -343,8 +343,8 @@ export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documen
     const operation=JSON.parse(await(await(await trash.getFileHandle(id+'.op.json')).getFile()).text()) as {operation?:string;state?:string;target?:string};
     if(operation.operation==='restore'&&typeof operation.target==='string'){
       const existing=await readDoc(documents,operation.target);
-      const original=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();
-      if(existing===original)target=operation.target;
+      try{const original=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();if(existing===original)target=operation.target;}
+      catch(error){if(isNotFound(error)&&operation.state==='destination-verified')target=operation.target;else throw error;}
     }
   }catch{/* no resumable restore marker */}
   if(!target){
