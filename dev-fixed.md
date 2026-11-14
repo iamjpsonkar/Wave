@@ -151,3 +151,12 @@ Source changes and the regression scenario are committed, but no local typecheck
 - **Regression:** Extended the accessibility E2E scenario to verify a named sequence-diagram image, focus and Enter activation of **View diagram source**, and readable original source text.
 - **Related behavior retained:** The Code block toolbar action already supports selected multiline text, a placeholder when no selection exists, fenced preview rendering and clipboard fidelity.
 - **Verification:** Awaiting CI for the implementation and test commits. This is not a full WCAG audit or screen-reader certification.
+
+
+## 2026-11-14 — Mermaid sequence accessible name correction
+
+- Diagram SVG image semantics were moved off the wrapper so the separate **View diagram source** disclosure remains available to assistive technology.
+- CI revealed that the sequence renderer still used a generic accessible name even when the Mermaid source supplied a `title`. Updated it to use `linesTitle(source)`, matching the other titled diagram families.
+- Source commit: `268de12338bce554f18e5feef27acbb5e9ea45fe`.
+- The regression scenario expects the title **Checkout sequence** and verifies that the source disclosure can be opened with the keyboard.
+- Verification is pending the E2E result for [run 43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306). Do not classify the accessibility improvement as CI-verified until that run passes.
