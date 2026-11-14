@@ -118,3 +118,8 @@ The root-level feature catalogues and engineering registers are intentionally ke
 ## Product direction
 
 Wave's personal core remains local-first and useful without an account. Optional collaboration, connected services, richer database capabilities and a desktop application remain planned work. A versioned SQLite store and server-side services require explicit migration, authorization, integrity, export and recovery design; static Docker hosting does not imply those capabilities. See [the product constitution](upcoming-features.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers).
+
+
+## Project context
+
+- [Wave Wiki — complete product, repository and AI-agent context](./wiki.md)
