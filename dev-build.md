@@ -193,3 +193,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Follow-up regression also checks focus wrapping, applied editor font size/line height and shared preview content width. The test waits for the persisted-preference completion state before reading `settings.json` to avoid an asynchronous-write race.
 
 - Added the final keyboard regression for Escape dismissal; UI-001/012 are recorded as implemented pending CI, while UI-003 remains partial pending responsive/wide-content verification.
+
+
+## 2026-11-14 — UI-004 code toolbar and dark-theme regressions
+
+- Added two Playwright scenarios: distinct inline/fenced code icon, accessible name, tooltip and insertion behavior; system-dark Markdown Preview heading, fenced/inline code, segmented controls, wordmark and Backup surface colors.
+- Source E2E inventory increases from 31 to 33 scenarios; Node suite remains 30 tests.
+- Full Light/Dark/System × Edit/Preview × desktop/mobile visual regression matrix remains unimplemented. CI verification pending.
