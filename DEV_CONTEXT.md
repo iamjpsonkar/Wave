@@ -398,3 +398,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Includes stable UIF-001–UIF-021 IDs, priorities, current-state notes, acceptance criteria, dependencies, delivery order and relationships to existing planning documents. All are proposals, not shipped features.
 - No application code, existing gap tracker, product catalogue or tests were changed. No test/build/CI result is claimed for this documentation-only task.
 - Backlog commit: `d9211992d04fd3510f93cc546b814c5a067798d5`.
+
+## 29. UI-020 theme and responsive regression foundation — 2026-11-14
+
+- Re-read this handoff, `ui-gaps.md`, `dev-fixed.md`, `dev-build.md`, current source, Markdown renderer and Playwright suite before implementation.
+- Latest main documentation HEAD before this handoff update: `6084b20582eab22b4a2ecc5dea27d14b0dfefa73`. UI styles commit: `cfb73c72ae17671e893e564688a2324180cbbb6e`; E2E matrix commit: `b729eea18aa7f9297bd977110837c58c6a6ef03f`.
+- `src/styles.css`: added explicit dark/system-dark surfaces and text colors for Markdown alerts, DETAILS disclosures, math and fallback panels, Mermaid diagrams, syntax/diff tokens, missing-image fallbacks, copy controls and Settings dialog controls. Explicit Light mode remains independent of OS dark preference.
+- `tests/e2e/workspace.spec.ts`: added UI-020 matrix for Light/Dark/System × Edit/Preview × desktop/mobile (12 states), covering headings, links, inline/fenced code, tables, alerts, disclosures, math, Mermaid and missing-image fallback. Checks computed styles and horizontal overflow at 1440px and 390px.
+- E2E source inventory is now **34 scenarios**; Node source remains **30 tests**. No local runner is available through the repository connector; no tests, typecheck or production build are claimed to have passed. Check Actions for the latest code commit before asserting verification.
+- `ui-gaps.md`, `dev-fixed.md` and `dev-build.md` record the implementation and pending status. UI-020 remains open pending CI and visual review; UI-005 contrast/WCAG audit, UI-014 broader breakpoints, UI-018/UI-019 full dialogs/popovers/navigation audit and screenshot-diff baselines remain open. All existing UI IDs and the complete product catalogue are preserved.
+- Open reliability findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed. No bug trackers were changed.
