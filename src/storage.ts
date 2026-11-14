@@ -22,6 +22,9 @@ async function write(dir: FileSystemDirectoryHandle, name: string, data: string 
 }
 async function directoryForPath(root: FileSystemDirectoryHandle, path: string, create = false) {
   const parts = path.split('/').filter(Boolean);
+  if (parts.some(part => part === '.' || part === '..' || part.includes('\\\\') || part.includes(':'))) {
+    throw new Error('Invalid directory path.');
+  }
   let current = root;
   for (const part of parts) current = await current.getDirectoryHandle(part, { create });
   return current;
@@ -29,7 +32,7 @@ async function directoryForPath(root: FileSystemDirectoryHandle, path: string, c
 async function fileForPath(root: FileSystemDirectoryHandle, path: string, create = false) {
   const parts = path.split('/').filter(Boolean);
   const name = parts.pop();
-  if (!name || name.includes('..')) throw new Error('Invalid document path.');
+  if (!name || name === '.' || name === '..' || name.includes('\\\\') || name.includes(':')) throw new Error('Invalid document path.');
   const parent = await directoryForPath(root, parts.join('/'), create);
   return parent.getFileHandle(name, { create });
 }
