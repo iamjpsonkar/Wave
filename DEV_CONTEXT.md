@@ -135,15 +135,15 @@ Preserve all of the following:
 
 Don't conflate these trackers. Don't move an issue to fixed until implemented and appropriate regression verification passes. Planned features are not bugs.
 
-## 7. Open bug snapshot at context creation
+## 7. Open bug snapshot — refreshed 2026-11-14
 
 The reviewed `bugs.md` reported two partial findings:
-- **WAVE-031 (P1):** native picker permission lifecycle, external filesystem race/fault injection, comprehensive accessibility, and abrupt browser-process lifecycle coverage remain incomplete. Existing OPFS/Chromium tests simulate some permission behavior; they do not prove native picker/revocation behavior.
-- **WAVE-039 (P1):** asynchronous IndexedDB draft transaction leaves a residual crash window before commit. Strict durability and lifecycle writes reduce risk but cannot eliminate it.
+- **WAVE-031 (P1):** remains partial. Current tests simulate permission denial and exercise two-tab editing, but native picker/revocation, external filesystem races during active operations, comprehensive accessibility, and abrupt process termination remain uncovered.
+- **WAVE-039 (P1):** remains partial. IndexedDB strict durability and `pagehide`/`visibilitychange` best-effort writes reduce but cannot eliminate the asynchronous pre-commit crash window.
 
-WAVE-042 was recorded as fixed/closed for per-tab recovery draft isolation. Re-read current `bugs.md` and `fixed-bugs.md` before any QA conclusion; this snapshot can become stale.
+WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `qa-context.md`; current bug register is `bugs.md`.
 
-## 8. Verification snapshot at context creation
+## 8. Verification snapshot and current QA inventory
 
 The checked-in `dev-build.md` reports workflow run [43604242348](https://github.com/iamjpsonkar/Wave/actions/runs/43604242348), for commit `09021ed224f739fd66325bb8f6cc8f1bcca5b142`, successful:
 - 30 Node tests passed.
@@ -151,7 +151,7 @@ The checked-in `dev-build.md` reports workflow run [43604242348](https://github.
 - TypeScript typecheck passed.
 - Production build passed.
 
-This is the latest result documented in `dev-build.md` when this context was written. It does not verify later commits. Refresh HEAD and CI before relying on it. No local build/tests were run during this repository-reading/context-file task.
+This remains historical CI evidence and does not verify later commits. The current checked-in test sources define 30 Node tests and 13 Playwright Chromium scenarios; the documented successful CI run covers an earlier 10-scenario browser suite. The 2026-11-14 QA recheck was source-only: no local build/tests or new CI run were performed. Refresh the default-branch HEAD and CI before relying on test status.
 
 ## 9. Required workflow for every future task
 
