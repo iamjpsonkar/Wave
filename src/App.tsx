@@ -107,8 +107,8 @@ export default function App() {
  function insertSnippet(source:string){
   const el=editorRef.current,start=el?el.selectionStart:content.length,end=el?el.selectionEnd:content.length;
   const before=content.slice(0,start),after=content.slice(end);
-  const prefix=before.length?(before.endsWith('\\n\\n')?'':before.endsWith('\\n')?'\\n':'\\n\\n'):'';
-  const suffix=after.length?(after.startsWith('\\n\\n')?'':after.startsWith('\\n')?'\\n':'\\n\\n'):'';
+  const prefix=before.length?(before.endsWith('\n\n')?'':before.endsWith('\n')?'\n':'\n\n'):'';
+  const suffix=after.length?(after.startsWith('\n\n')?'':after.startsWith('\n')?'\n':'\n\n'):'';
   const inserted=prefix+source+suffix,next=before+inserted+after,cursor=start+prefix.length+source.length;
   setEditorContent(next);
   if(el)requestAnimationFrame(()=>{el.focus();el.setSelectionRange(cursor,cursor);});
@@ -116,21 +116,21 @@ export default function App() {
  function handleEditorKeyDown(event:React.KeyboardEvent<HTMLTextAreaElement>){
   if(event.key!=='Enter'||event.shiftKey||event.altKey||event.ctrlKey||event.metaKey)return;
   const el=editorRef.current;if(!el||el.selectionStart!==el.selectionEnd)return;
-  const cursor=el.selectionStart,lineStart=content.lastIndexOf('\\n',cursor-1)+1,breakAt=content.indexOf('\\n',cursor),lineEnd=breakAt<0?content.length:breakAt,line=content.slice(lineStart,lineEnd);
+  const cursor=el.selectionStart,lineStart=content.lastIndexOf('\n',cursor-1)+1,breakAt=content.indexOf('\n',cursor),lineEnd=breakAt<0?content.length:breakAt,line=content.slice(lineStart,lineEnd);
   let fence:{character:string;length:number}|null=null;
-  for(const prior of content.slice(0,lineStart).split('\\n')){const mark=prior.match(/^ {0,3}(`{3,}|~{3,})/);if(!mark)continue;const token=mark[1];if(!fence)fence={character:token[0],length:token.length};else if(token[0]===fence.character&&token.length>=fence.length)fence=null;}
+  for(const prior of content.slice(0,lineStart).split('\n')){const mark=prior.match(/^ {0,3}(`{3,}|~{3,})/);if(!mark)continue;const token=mark[1];if(!fence)fence={character:token[0],length:token.length};else if(token[0]===fence.character&&token.length>=fence.length)fence=null;}
   if(fence)return;
-  const match=line.match(/^(\\s*)([-+*]|\\d+[.)])\\s+(.*)$/);if(!match||match[1].length>=4)return;
+  const match=line.match(/^(\s*)([-+*]|\d+[.)])\s+(.*)$/);if(!match||match[1].length>=4)return;
   const offset=cursor-lineStart,markerLength=match[1].length+match[2].length+1;if(offset<markerLength)return;
   const itemBefore=line.slice(markerLength,offset),itemAfter=line.slice(offset);
   event.preventDefault();
   if(!itemBefore.trim()&&!itemAfter.trim()){
-   const next=content.slice(0,lineStart)+(lineEnd<content.length?content.slice(lineEnd):'\\n');
+   const next=content.slice(0,lineStart)+(lineEnd<content.length?content.slice(lineEnd):'\n');
    setEditorContent(next);requestAnimationFrame(()=>{el.focus();el.setSelectionRange(lineStart,lineStart);});return;
   }
-  const ordered=match[2].match(/^(\\d+)([.)])$/),nextMarker=ordered?String(Number(ordered[1])+1)+ordered[2]:match[2];
-  const task=match[3].match(/^\\[([ xX])\\]\\s+/),prefix=match[1]+nextMarker+' '+(task?'[ ] ':'');
-  const addition='\\n'+prefix,next=content.slice(0,cursor)+addition+content.slice(cursor),nextCursor=cursor+addition.length;
+  const ordered=match[2].match(/^(\d+)([.)])$/),nextMarker=ordered?String(Number(ordered[1])+1)+ordered[2]:match[2];
+  const task=match[3].match(/^\[([ xX])\]\s+/),prefix=match[1]+nextMarker+' '+(task?'[ ] ':'');
+  const addition='\n'+prefix,next=content.slice(0,cursor)+addition+content.slice(cursor),nextCursor=cursor+addition.length;
   setEditorContent(next);requestAnimationFrame(()=>{el.focus();el.setSelectionRange(nextCursor,nextCursor);});
  }
  function linePrefix(prefix:string){const el=editorRef.current;if(!el||preview)return;const start=el.selectionStart,end=el.selectionEnd;const lineStart=content.lastIndexOf('\n',start-1)+1;const breakAt=content.indexOf('\n',end);const lineEnd=breakAt<0?content.length:breakAt;const lines=content.slice(lineStart,lineEnd).split('\n');const transformed=lines.map((line,index)=>{const clean=prefix==='1. '?line.replace(/^\s*\d+\.\s*/,''):line;return prefix==='1. '?(index+1)+'. '+clean:prefix+line;}).join('\n');const next=content.slice(0,lineStart)+transformed+content.slice(lineEnd);setEditorContent(next);requestAnimationFrame(()=>{el.focus();el.setSelectionRange(lineStart,lineStart+transformed.length);});}
