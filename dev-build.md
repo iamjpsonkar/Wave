@@ -236,3 +236,6 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 
  
 - Block-mode follow-up added Undo/Redo assertions to the block editor scenario and improved outline navigation within block mode. E2E source remains **38 scenarios**; CI still not exposed and no test pass is claimed. Latest regression commit: `30be50f3afae887386eba1f86faf2d855207c925`.
+
+ 
+- Contrast-test follow-up: corrected the RGB channel matcher in the UI-020 computed-contrast helper to parse numeric CSS channels. Test-source commit: `ffc3be4ae9026ce76148ce3fbcaa86b4be0e0f73`. The 38-scenario source inventory is unchanged; execution and CI remain unverified.
