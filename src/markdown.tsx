@@ -161,7 +161,8 @@ function MathExpression({ source, display = false }: { source: string; display?:
         const command=input.slice(i+1).match(/^[A-Za-z]+/)?.[0]??'';
         if(!command){nodes.push(createElement('mo',{key:'m'+i},'\\\\'));i++;continue;}
         i+=command.length+1;
-        if(command==='left'||command==='right')continue;\n        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='sqrt'){
+        if(command==='left'||command==='right')continue;
+        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='sqrt'){
           const a=groupAt(input,i);i=a.end;
           if(command==='sqrt')nodes.push(createElement('msqrt',{key:'r'+i},...parse(a.value)));
           else{const b=groupAt(input,i);i=b.end;nodes.push(createElement('mfrac',{key:'f'+i},createElement('mrow',null,...parse(a.value)),createElement('mrow',null,...parse(b.value))));}
