@@ -117,3 +117,9 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
  
 - [x] Searchable template gallery with preview-before-create workflow
 - [x] Page-local undo/redo, find/replace, heading outline and word/character/reading-time statistics
+
+
+## Editor formatting additions
+
+- [x] Selection-based foreground text color and background color using documented, portable Wave Markdown directives; color values are restricted to six-digit hexadecimal tokens.
+- [~] Full rich-text color palette, block-level fills and advanced selection-aware formatting remain future work.
