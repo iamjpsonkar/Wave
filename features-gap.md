@@ -81,7 +81,7 @@
 - [x] Inline dollar-delimited math, display delimiters and fenced math blocks have a local MathML rendering path.
 - [~] The recursive hand-built MathML parser supports tested grouped expressions, fractions, roots, scripts, selected Greek/operators/functions and examples including quadratic formula, matrices, cases, sums, integrals and limits.
 - [ ] Full TeX/LaTeX grammar, arbitrary macros/custom commands, complete aligned environments, broad symbol packages, extensible delimiters and package compatibility are not implemented.
-- [ ] Add broader malformed-input, escaping, delimiter-conflict, large-expression and resource-limit tests. Keep rendering local/offline; never execute arbitrary TeX.
+- [~] The local math renderer now rejects unbalanced grouping, caps source at 8192 characters, nesting at 48 levels and generated nodes at 2048, with readable source fallbacks and E2E regression coverage. Broader parser-fuzzing, escaping, delimiter-conflict and resource-limit tests remain open. Keep rendering local/offline; never execute arbitrary TeX.
 
 ## 11. Mermaid diagrams
 
@@ -137,7 +137,7 @@
 
 ## Current verification snapshot — 2026-11-14
 
-- Current source/test inventory: 30 Node test definitions and 29 Playwright Chromium scenarios.
+- Current source/test inventory: 30 Node test definitions and 30 Playwright Chromium scenarios.
 - Baseline CI run [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed all 30 Node tests, typecheck, production build and all 28 Playwright scenarios. It predates the later diagram-accessibility patch.
 - The diagram-accessibility test initially failed because the sequence renderer exposed a generic accessible name; the sequence SVG now uses its Mermaid `title` as its accessible name (commit `268de12338bce554f18e5feef27acbb5e9ea45fe`). Run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed Node, typecheck and build but exposed a stale strict-mode selector in the accessibility smoke test; that selector is narrowed in the current source. Image accessibility/fallback changes and the selector correction are under CI in run [43620153572](https://github.com/iamjpsonkar/Wave/actions/runs/43620153572).
 - Source presence and a test definition are not proof of a passing test. Keep full TeX/Mermaid/other-renderer compatibility explicitly partial unless compatible engines and broad conformance fixtures are adopted.

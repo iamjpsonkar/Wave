@@ -205,3 +205,5 @@ html,body{height:100%}
 .markdown-preview .syntax-diff-hunk{display:block;color:#536f9d;background:rgba(80,120,180,.08)}
 .markdown-preview .syntax-diff-header{display:block;font-weight:600;color:var(--muted,#777)}
 .markdown-preview .syntax-diff-context{display:block}
+
+.markdown-math-fallback{margin:10px 0;padding:10px 12px;border:1px solid #d8b878;border-radius:7px;background:#fffaf0;color:inherit;text-align:left;overflow-wrap:anywhere}.markdown-math-fallback p{margin:0 0 6px;font-size:.85em}.markdown-math-fallback code{white-space:pre-wrap;font-size:.82em}

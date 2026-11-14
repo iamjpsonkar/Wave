@@ -174,3 +174,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Latest-main CI run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed install, all 30 Node tests, TypeScript typecheck and production build, but Playwright failed **27/28** because the accessibility smoke test used a broad `details summary` selector that matched both the DETAILS block and Mermaid source disclosure. This was a test-selector issue, not an application runtime failure.
 - The selector now targets `.markdown-details > summary`. The same change adds image accessibility behavior and regression coverage: meaningful missing images expose a named image fallback; explicit empty alt text remains decorative; reference-style linked images retain their accessible name/title and keyboard focus.
 - New E2E source count: **29 scenarios**; Node source remains **30 tests**. CI for this commit is pending; no pass is claimed.
+
+
+## 2026-11-14 — Math parser input and complexity hardening
+
+- Added explicit math-renderer limits: 8192 source characters, 48 recursive nesting levels and 2048 generated parser nodes; unbalanced braces now return an accessible readable source fallback.
+- Added Playwright regression coverage for malformed, deeply nested and oversized expressions.
+- Fixed the remaining broad DETAILS-summary selector in the accessibility smoke test. Latest image-accessibility CI exposed this second occurrence after the first selector had been narrowed; it now targets `.markdown-details`.
+- Current source inventory: 30 Node tests and 30 Playwright Chromium scenarios. The image-accessibility and math-hardening changes are awaiting CI; no passing result is claimed.

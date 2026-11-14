@@ -201,9 +201,27 @@ function MathExpression({ source, display = false }: { source: string; display?:
     }
     parts.push(input.slice(start));return parts;
   }
-  function parse(input:string):ReactNode[]{
+  const MAX_SOURCE_LENGTH=8192,MAX_NESTING=48,MAX_NODES=2048;
+  let generatedNodes=0,limitReason='';
+  function fallback(reason:string) {
+    const preview=source.length>512?source.slice(0,512)+'…':source;
+    return createElement('div',{className:'markdown-math-fallback',role:'note'},
+      createElement('p',null,'Math not rendered: '+reason+'.'),
+      createElement('code',null,preview));
+  }
+  if(source.length>MAX_SOURCE_LENGTH)return fallback('expression exceeds the 8192-character limit');
+  let braceDepth=0;
+  for(let index=0;index<source.length;index++){
+    if(source[index]===slash){index++;continue;}
+    if(source[index]==='{')braceDepth++;
+    else if(source[index]==='}'&&--braceDepth<0)return fallback('unbalanced grouping braces');
+  }
+  if(braceDepth!==0)return fallback('unbalanced grouping braces');
+  function parse(input:string,depth=0):ReactNode[]{
+    if(depth>MAX_NESTING){limitReason='nesting exceeds the 48-level limit';return [];}
     const nodes:ReactNode[]=[];let i=0;
     while(i<input.length){
+      if(++generatedNodes>MAX_NODES){limitReason='generated structure exceeds the 2048-node limit';break;}
       const ch=input[i];
       if(ch===slash){
         const rest=input.slice(i+1),match=rest.match(/^[A-Za-z]+/),command=match?.[0]??'';
@@ -224,7 +242,7 @@ function MathExpression({ source, display = false }: { source: string; display?:
           const rows=splitTopLevel(body,slash+slash).map(row=>row.trim()).filter(Boolean);
           const table=createElement('mtable',null,...rows.map((row,rowIndex)=>{
             const cells=splitTopLevel(row,'&');
-            return createElement('mtr',{key:'row'+rowIndex},...cells.map((cell,colIndex)=>createElement('mtd',{key:'cell'+rowIndex+'-'+colIndex},createElement('mrow',null,...parse(cell)))));
+            return createElement('mtr',{key:'row'+rowIndex},...cells.map((cell,colIndex)=>createElement('mtd',{key:'cell'+rowIndex+'-'+colIndex},createElement('mrow',null,...parse(cell,depth+1)))));
           }));
           if(env.value==='cases')nodes.push(createElement('mrow',{key:'cases'+i},createElement('mo',null,'{'),table));
           else{
@@ -238,20 +256,20 @@ function MathExpression({ source, display = false }: { source: string; display?:
         if(command==='left'||command==='right')continue;
         if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='binom'){
           const a=groupAt(input,i);i=a.end;const b=groupAt(input,i);i=b.end;
-          const frac=createElement('mfrac',{key:'frac'+i,linethickness:command==='binom'?'0':'1'},createElement('mrow',null,...parse(a.value)),createElement('mrow',null,...parse(b.value)));
+          const frac=createElement('mfrac',{key:'frac'+i,linethickness:command==='binom'?'0':'1'},createElement('mrow',null,...parse(a.value,depth+1)),createElement('mrow',null,...parse(b.value,depth+1)));
           nodes.push(command==='binom'?createElement('mfenced',{key:'binom'+i,open:'(',close:')'},frac):frac);continue;
         }
         if(command==='sqrt'){
           let index:string|undefined;
           if(input[i]==='['){const close=input.indexOf(']',i);if(close>=0){index=input.slice(i+1,close);i=close+1;}}
           const radicand=groupAt(input,i);i=radicand.end;
-          nodes.push(index?createElement('mroot',{key:'root'+i},createElement('mrow',null,...parse(radicand.value)),createElement('mrow',null,...parse(index))):createElement('msqrt',{key:'root'+i},...parse(radicand.value)));continue;
+          nodes.push(index?createElement('mroot',{key:'root'+i},createElement('mrow',null,...parse(radicand.value,depth+1)),createElement('mrow',null,...parse(index,depth+1))):createElement('msqrt',{key:'root'+i},...parse(radicand.value,depth+1)));continue;
         }
         if(['overline','bar','underline','hat','widehat','tilde','widetilde','vec','dot','ddot','overrightarrow','overleftarrow'].includes(command)){
           const a=groupAt(input,i);i=a.end;
           const accent:Record<string,string>={overline:'¯',bar:'¯',underline:'_',hat:'^',widehat:'^',tilde:'~',widetilde:'~',vec:'→',dot:'˙',ddot:'¨',overrightarrow:'→',overleftarrow:'←'};
           const over=command!=='underline';
-          nodes.push(over?createElement('mover',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])):createElement('munder',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])));continue;
+          nodes.push(over?createElement('mover',{key:'accent'+i},createElement('mrow',null,...parse(a.value,depth+1)),createElement('mo',null,accent[command])):createElement('munder',{key:'accent'+i},createElement('mrow',null,...parse(a.value,depth+1)),createElement('mo',null,accent[command])));continue;
         }
         if(['text','textrm','textbf','mathrm','mathbf','mathit','operatorname'].includes(command)){
           const a=groupAt(input,i);i=a.end;nodes.push(createElement('mtext',{key:'text'+i},a.value));continue;
@@ -268,7 +286,7 @@ function MathExpression({ source, display = false }: { source: string; display?:
       }
       if(ch==='^'||ch==='_'){
         const previous=nodes.pop(),arg=groupAt(input,i+1);i=arg.end;
-        const script=createElement('mrow',null,...parse(arg.value));
+        const script=createElement('mrow',null,...parse(arg.value,depth+1));
         if(previous&&isValidElement(previous)&&previous.type==='msup'&&ch==='_'){
           const parts=Children.toArray((previous.props as {children?:ReactNode}).children);
           nodes.push(createElement('msubsup',{key:'both'+i},parts[0],script,parts[1]));
@@ -280,7 +298,7 @@ function MathExpression({ source, display = false }: { source: string; display?:
         }
         continue;
       }
-      if(ch==='{'){const a=groupAt(input,i);i=a.end;nodes.push(createElement('mrow',{key:'group'+i},...parse(a.value)));continue;}
+      if(ch==='{'){const a=groupAt(input,i);i=a.end;nodes.push(createElement('mrow',{key:'group'+i},...parse(a.value,depth+1)));continue;}
       if(ch==='}') {nodes.push(createElement('mo',{key:'close'+i},'}'));i++;continue;}
       if(ch==='&'){nodes.push(createElement('mo',{key:'amp'+i},'&'));i++;continue;}
       if(/\s/.test(ch)){nodes.push(' ');i++;continue;}
@@ -290,7 +308,9 @@ function MathExpression({ source, display = false }: { source: string; display?:
     }
     return nodes;
   }
-  const tree=createElement('math',{xmlns:'http://www.w3.org/1998/Math/MathML',display:display?'block':'inline'},createElement('mrow',null,...parse(source)));
+  const parsed=parse(source);
+  if(limitReason)return fallback(limitReason);
+  const tree=createElement('math',{xmlns:'http://www.w3.org/1998/Math/MathML',display:display?'block':'inline'},createElement('mrow',null,...parsed));
   return createElement(display?'div':'span',{className:display?'markdown-math-display':'markdown-math-inline'},tree);
 }
 

@@ -832,11 +832,11 @@ test('Markdown preview exposes accessible semantic structure and keyboard-operab
   await expect(copyButton).toBeVisible();
   await copyButton.focus();
   await expect(copyButton).toBeFocused();
-  const summary = preview.locator('details summary');
+  const summary = preview.locator('.markdown-details > summary');
   await summary.focus();
   await expect(summary).toBeFocused();
   await page.keyboard.press('Enter');
-  await expect(preview.locator('details')).toHaveAttribute('open', '');
+  await expect(preview.locator('.markdown-details')).toHaveAttribute('open', '');
 });
 
 test('Markdown preview is source-preserving across toggle, save and workspace reopen', async ({ page }) => {
@@ -1046,5 +1046,35 @@ test('Markdown images preserve decorative semantics, accessible fallbacks and re
   await expect(linkedImage).toHaveAttribute('href', 'https://example.com/gallery');
   await linkedImage.focus();
   await expect(linkedImage).toBeFocused();
-  await expect(linkedImage.locator('img')).toHaveAttribute('title', 'Reference title');
+  await expect(linkedImage.locator('.missing-asset')).toHaveAttribute('title', 'Reference title');
+});
+
+
+test('Math rendering rejects malformed and oversized input within explicit resource limits', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Math Safety Limits');
+  const nested = '{'.repeat(60) + 'x' + '}'.repeat(60);
+  const oversized = 'x+'.repeat(4100);
+  await editor.fill([
+    '# Math Safety Limits',
+    '',
+    '```math',
+    '\\frac{1}{',
+    '```',
+    '',
+    '```math',
+    nested,
+    '```',
+    '',
+    '```math',
+    oversized,
+    '```'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const fallbacks = page.locator('.markdown-math-fallback');
+  await expect(fallbacks).toHaveCount(3);
+  await expect(fallbacks.nth(0)).toContainText('unbalanced grouping braces');
+  await expect(fallbacks.nth(1)).toContainText('nesting exceeds the 48-level limit');
+  await expect(fallbacks.nth(2)).toContainText('expression exceeds the 8192-character limit');
+  await expect(fallbacks.nth(2).locator('code')).toContainText('…');
 });

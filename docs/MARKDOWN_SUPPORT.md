@@ -60,3 +60,6 @@ Fenced DOT/Graphviz, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc have lightweight 
 ## Regression entry point
 
 Choose **Markdown feature showcase** from Wave's page templates to try the supported syntax and preview extensions. The browser E2E suite includes a renderer-extension scenario. Run `npm run typecheck`, `npm run build`, and `npm run test:e2e` before treating a source change as verified.
+
+
+Math rendering rejects unbalanced grouping and is bounded to 8192 source characters, 48 nested groups and 2048 generated parser nodes. Inputs outside these limits remain visible as readable source fallbacks; no remote TeX engine is used.

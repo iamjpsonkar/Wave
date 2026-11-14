@@ -168,3 +168,11 @@ Source changes and the regression scenario are committed, but no local typecheck
 - **Change:** `LocalMarkdownImage` now preserves explicit empty alt text, assigns image semantics and an accessible name to informative missing-image fallbacks, and keeps decorative missing images hidden from the accessibility tree. Loaded images use the Markdown alt text (or title only when alt is omitted).
 - **Regression:** Added Playwright coverage for a real local image, empty-alt decorative image, missing informative/decorative images, reference-style linked image metadata and keyboard focus on the wrapping link. Also narrowed an existing DETAILS summary selector after CI exposed a strict-mode collision with the diagram source disclosure.
 - **Verification:** Source and regression coverage committed; CI is pending. See `features-gap.md` and `dev-build.md` for the current acceptance and CI record.
+
+
+## 2026-11-14 — Math parser malformed-input and resource limits
+
+- **Issue:** The local recursive MathML parser accepted unbalanced grouping and had no explicit source-size, recursion-depth or generated-node budget.
+- **Change:** Added preflight brace-balance validation, an 8192-character source limit, a 48-level nesting limit and a 2048-node generation budget. Invalid or over-limit expressions render a visible, bounded source fallback rather than attempting unbounded MathML construction.
+- **Regression:** Added a Playwright scenario for unbalanced fractions, deeply nested groups and oversized expressions. Also tightened the existing DETAILS keyboard test selector to target Wave's own disclosure, and updated the linked-image assertion to inspect the accessible fallback element.
+- **Verification:** CI pending for this change; see `dev-build.md`. This is targeted hardening, not complete TeX conformance or comprehensive parser fuzzing.
