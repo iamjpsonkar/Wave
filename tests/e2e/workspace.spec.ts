@@ -754,6 +754,74 @@ test('Markdown embeds only local audio and video assets and rejects remote media
 });
 
 
+test('editor inserts selected multiline code as a fenced block and preserves copy fidelity', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Multiline Code');
+  const source = 'function greet(name: string) {\n  return `Hello, ${name}`;\n}\nconsole.log(greet("Wave"));';
+  await editor.fill(source);
+  await editor.evaluate((node, value) => {
+    const textarea = node as HTMLTextAreaElement;
+    textarea.focus();
+    textarea.setSelectionRange(0, value.length);
+  }, source);
+  await page.getByRole('button', { name: 'Insert code block' }).click();
+  const expected = '```\n' + source + '\n```';
+  await expect(editor).toHaveValue(expected);
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const block = page.locator('.markdown-preview .markdown-code');
+  await expect(block.locator('pre code')).toContainText('function greet(name: string)');
+  await expect(block.locator('pre code')).toContainText('console.log(greet("Wave"));');
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await block.getByRole('button', { name: 'Copy code block' }).click();
+  expect(await page.evaluate(() => navigator.clipboard.readText())).toBe(source + '\n');
+});
+
+test('Markdown preview exposes accessible semantic structure and keyboard-operable controls', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Accessible Markdown');
+  await editor.fill([
+    '# Accessible Markdown',
+    '',
+    '## Navigation',
+    '',
+    '[Wave documentation](https://example.com/docs)',
+    '',
+    '| Feature | Status |',
+    '| --- | --- |',
+    '| Preview | Ready |',
+    '',
+    '- [x] Keyboard support',
+    '- [ ] Screen reader review',
+    '',
+    '> [!NOTE]',
+    '> Semantic callout content.',
+    '',
+    '> [!DETAILS] More information',
+    '> Disclosure body.',
+    '',
+    '```javascript',
+    'const accessible = true;',
+    '```'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview.getByRole('heading', { level: 1, name: 'Accessible Markdown' })).toBeVisible();
+  await expect(preview.getByRole('heading', { level: 2, name: 'Navigation' })).toBeVisible();
+  await expect(preview.getByRole('link', { name: 'Wave documentation' })).toHaveAttribute('href', 'https://example.com/docs');
+  await expect(preview.getByRole('table')).toBeVisible();
+  await expect(preview.getByRole('columnheader')).toHaveCount(2);
+  await expect(preview.getByRole('checkbox')).toHaveCount(2);
+  await expect(preview.getByRole('note', { name: 'NOTE' })).toContainText('Semantic callout content.');
+  await expect(preview.getByText('More information')).toBeVisible();
+  await expect(preview.locator('details summary')).toHaveText('More information');
+  const copyButton = preview.getByRole('button', { name: 'Copy code block' });
+  await expect(copyButton).toBeVisible();
+  await copyButton.focus();
+  await expect(copyButton).toBeFocused();
+  await page.keyboard.press('Tab');
+  await expect(preview.locator('details summary')).toBeFocused();
+});
+
 test('Markdown preview is source-preserving across toggle, save and workspace reopen', async ({ page }) => {
   await openWorkspace(page);
   const editor = await createPage(page, 'Source Round Trip');
