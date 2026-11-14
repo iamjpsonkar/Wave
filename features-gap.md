@@ -270,3 +270,11 @@ The first code/test remediation pass has been committed, but is **awaiting CI ve
 - Browser suite source now defines 24 scenarios; Node suite source remains 30 tests.
 - No local tests were run and no CI result for the new commits has been verified. The previous 20/23 E2E result remains the last verified run.
 - This does not close full compatibility or quality gaps. Full TeX/Mermaid and external-renderer compatibility, grammar-based highlighting/diff parsing, comprehensive accessibility, cross-browser/visual checks, malformed/oversized-input limits and preview/source round-trip coverage remain open. Raw HTML and remote media remain deliberate security boundaries; GitHub references remain inert pending a product decision.
+
+
+## Security regression expansion — 2026-11-14
+
+- Added a Playwright security-matrix scenario covering safe HTTPS/mailto links, mixed-case and unsafe `javascript:`, `data:`, `vbscript:`, and `file:` link schemes.
+- The same scenario seeds a local `secret.mp3` fixture and verifies that parent traversal, encoded traversal, absolute paths, Windows-style paths and remote media references never create playable audio/video elements.
+- This expands the core link/image/local-media security acceptance coverage; it does **not** establish a complete URL/path security audit or close the remaining compatibility and accessibility gaps.
+- Browser suite source now defines **25 scenarios**. No execution result for this new scenario has been verified yet.
