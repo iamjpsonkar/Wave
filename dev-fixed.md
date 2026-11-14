@@ -221,3 +221,17 @@ Source changes and the regression scenario are committed, but no local typecheck
 - UI-002 remains open: this batch does not pretend that a textarea plus Markdown insertion helpers is a full optional block editor. UI-005, UI-018/UI-019 and other visual/accessibility review items remain pending CI and manual audit.
 - E2E source inventory: 37 scenarios; Node test source: 30 tests. No test/typecheck/build/CI pass is claimed.
 - Relevant implementation commits include `103c0796e7816553b2864a639e132dd1edde2a35` (new editor component), `0e4bc6b89344f1a09c880322797eff8d9ff60f28` (integration), `2913af688afc024af3739b3980284e5476547273` (breadcrumbs/status), `cb278bce391d0c3a116724496bde88f385ef3a0c` / `ee9ba2c16d0c65e136b2e081c5545c75a0424d21` (template search/preview), and `a1ca18cbb2e987e2725de241e4807a7e01627bf8` (contrast regression).
+
+ 
+## 2026-11-14 — Source-preserving Markdown block mode (UI-002)
+
+- Added `src/MarkdownBlockEditor.tsx`, an optional Blocks mode alongside the existing source textarea and Preview.
+- The parser identifies headings, paragraphs, lists, quotes, NOTE/TIP/IMPORTANT/WARNING/CAUTION/DETAILS callouts, fenced code, tables, dividers, image lines and attachment links.
+- Editing a block replaces only its original source range. Untouched blocks, Markdown syntax and blank-line separators are retained. The original source editor and Preview remain available.
+- `src/EditorEnhancements.tsx`: added a distinct Blocks control/icon; undo/redo keyboard shortcuts also work when focus is inside a block textarea.
+- `src/App.tsx`: integrated block mode without changing the local Markdown storage format or the existing recovery-aware change handler.
+- `src/styles.css`: added responsive block surfaces and light/dark/system styling, including a System-light correction.
+- Added Playwright coverage that edits one paragraph block and checks the exact full source after switching back, including heading, list, callout and fenced code blocks.
+- **Status: partial implementation; CI pending.** Drag/drop/reordering, block handles, slash menu, bookmarks/embeds and rich inline formatting remain open. This is not full feature parity with a rich block editor.
+- E2E source inventory: **38 scenarios**; Node test source: **30 tests**. No test/typecheck/build/CI pass is claimed.
+- Commits: component `78e2887d069b6471610b23f341d5178a02c3e12b`; App integration `15928f7956e2fae4934e730a4c99e0eee3cf97ea`; styling `5ff104ba9f1315b13cc5b40f4dad59f47ea4fcbe`; E2E `2c95631c21f27faad50f4f49bb038a4c7bdb1b1d`; parser fixes `4c418ae633bc7bb986469a88cfc2c60d4041368a` and `cc6809086922947ae4f32e4eaf47257f93c66073`.
