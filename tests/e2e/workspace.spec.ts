@@ -1169,9 +1169,9 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
     '',
     'Readable body text with [a local-first link](https://example.com), **bold**, and \`inline code\`.',
     '',
-    '\`\`\`ts',
+    String.fromCharCode(96).repeat(3) + 'ts',
     'const wave = "portable";',
-    '\`\`\`',
+    String.fromCharCode(96).repeat(3)
     '',
     '> [!NOTE]',
     '> A readable note callout.',
