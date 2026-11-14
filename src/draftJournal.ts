@@ -74,8 +74,10 @@ export async function saveDraft(workspace:FileSystemDirectoryHandle,path:string,
 }
 export async function getDraft(workspace:FileSystemDirectoryHandle,path:string):Promise<DraftRecord|undefined>{
   if(!('indexedDB' in window))return undefined;
-  const db=await openDatabase();
-  try{return newestDraft(await findDrafts(db,workspace,path));}finally{db.close();}
+  return withDraftLock(workspace,path,async()=>{
+    const db=await openDatabase();
+    try{return newestDraft(await findDrafts(db,workspace,path));}finally{db.close();}
+  });
 }
 export async function clearDraft(workspace:FileSystemDirectoryHandle,path:string):Promise<void>{
   if(!('indexedDB' in window))return;
