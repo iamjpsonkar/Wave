@@ -1455,5 +1455,5 @@ test('foreground and background color formatting round-trip through Markdown pre
   await expect(preview.locator('code')).toContainText('[[color:#123456|not colored]]');
   await expect(preview).toContainText('Invalid directive: [[color:red|plain text]]');
   await page.getByRole('button', { name: 'Edit' }).click();
-  await expect(editor).toHaveValue(/Literal code: `\[\[color:#123456\|not colored\]\]`/);
+  await expect(editor).toHaveValue(/Literal code: `\\[\\[color:#123456\\|not colored\\]\\]`[\\s\\S]*Invalid directive: \\[\\[color:red\\|plain text\\]\\]/);
 });
