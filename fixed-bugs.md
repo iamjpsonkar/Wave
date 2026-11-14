@@ -2,7 +2,7 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Source revision reviewed: `b11b46eebc1558de9910d8523cdaa027817b087d`  
+> Source revision reviewed: `268de12338bce554f18e5feef27acbb5e9ea45fe`  
 > Review date: 2026-11-14  
 > Purpose: historical fixes and mandatory rechecking scenarios for future QA passes.
 
