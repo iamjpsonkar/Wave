@@ -111,21 +111,21 @@ export function MarkdownPre({ children }: MarkdownElementProps) {
 }
 
 export function markdownHeadingId(node: ReactNode): string {
-  const value = plainText(node).trim().toLocaleLowerCase().normalize('NFKD').replace(/[\\u0300-\\u036f]/g, '');
-  return value.replace(/[^a-z0-9\\s-]/g, '').trim().replace(/\\s+/g, '-').replace(/-+/g, '-') || 'section';
+  const value = plainText(node).trim().toLocaleLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+  return value.replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-') || 'section';
 }
 
 function MathExpression({ source, display = false }: { source: string; display?: boolean }) {
   const parts: ReactNode[] = [];
-  const fraction = source.match(/^\\s*\\frac\\{([^{}]+)\\}\\{([^{}]+)\\}\\s*$/);
-  const root = source.match(/^\\s*\\sqrt\\{([^{}]+)\\}\\s*$/);
+  const fraction = source.match(/^\s*\\frac\\{([^{}]+)\\}\\{([^{}]+)\\}\s*$/);
+  const root = source.match(/^\s*\sqrt\\{([^{}]+)\\}\s*$/);
   const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', theta:'θ', lambda:'λ', pi:'π', sigma:'σ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', infty:'∞' };
   if (fraction) parts.push(createElement('mfrac', { key:'fraction' }, createElement('mi', null, fraction[1]), createElement('mi', null, fraction[2])));
   else if (root) parts.push(createElement('msqrt', { key:'root' }, createElement('mi', null, root[1])));
   else {
     const tokens = source.replace(/\\([A-Za-z]+)/g, (_m, command: string) => greek[command] ?? command);
     for (const [index, token] of Array.from(tokens).entries()) {
-      if (/\\s/.test(token)) parts.push(' ');
+      if (/\s/.test(token)) parts.push(' ');
       else parts.push(createElement(/[0-9]/.test(token) ? 'mn' : /[=+*/<>-]/.test(token) ? 'mo' : 'mi', { key:index }, token));
     }
   }
@@ -134,13 +134,13 @@ function MathExpression({ source, display = false }: { source: string; display?:
 }
 
 function MermaidFlowchart({ source }: { source: string }) {
-  const lines = source.split('\\n').map(line=>line.trim()).filter(Boolean);
-  const edges = lines.slice(1).map(line=>line.match(/^([\\w-]+)\\s*(?:\\[(.*?)\\])?\\s*-->\\s*([\\w-]+)\\s*(?:\\[(.*?)\\])?/)).filter(Boolean) as RegExpMatchArray[];
-  if (!/^flowchart\\s+(?:TD|TB|LR|RL|BT)/i.test(lines[0] ?? '') || !edges.length)
+  const lines = source.split('\n').map(line=>line.trim()).filter(Boolean);
+  const edges = lines.slice(1).map(line=>line.match(/^([\w-]+)\s*(?:\[(.*?)\])?\s*-->\s*([\w-]+)\s*(?:\[(.*?)\])?/)).filter(Boolean) as RegExpMatchArray[];
+  if (!/^flowchart\s+(?:TD|TB|LR|RL|BT)/i.test(lines[0] ?? '') || !edges.length)
     return <div className="mermaid-fallback"><p>This Mermaid diagram type is not rendered yet. The source remains available:</p><pre>{source}</pre></div>;
   const labels = new Map<string,string>();
   edges.forEach(edge=>{labels.set(edge[1],edge[2]||labels.get(edge[1])||edge[1]);labels.set(edge[3],edge[4]||labels.get(edge[3])||edge[3]);});
-  const ids=Array.from(labels.keys()), horizontal=/flowchart\\s+(?:LR|RL)/i.test(lines[0]);
+  const ids=Array.from(labels.keys()), horizontal=/flowchart\s+(?:LR|RL)/i.test(lines[0]);
   const width=horizontal?Math.max(240,ids.length*180):420, height=horizontal?130:Math.max(130,ids.length*95);
   const position=(id:string)=>{const index=ids.indexOf(id);return horizontal?{x:20+index*175,y:30}:{x:135,y:15+index*90};};
   const svgNodes:ReactNode[]=[];
