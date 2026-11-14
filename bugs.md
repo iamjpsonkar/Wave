@@ -2,7 +2,7 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed source revision: `9fdd7559d1bef165f838585bf73eb73a67b0d526` (follow-up changes are recorded below)  
+> Reviewed source revision: `b11b46eebc1558de9910d8523cdaa027817b087d` (documentation follow-ups are recorded below)  
 > Review date: 2026-11-14  
 > Scope: only defects or material reliability/QA gaps that remain in the current implementation.
 
@@ -19,8 +19,8 @@
 
 - **2 remaining partial findings:** WAVE-031, WAVE-039. Permission-denial and same-workspace two-tab journeys are now covered in Chromium; draft writes request strict IndexedDB durability where supported.
 - **50 source-verified fixes:** tracked in `fixed-bugs.md`.
-- CI now runs Node storage/concurrency tests and Playwright Chromium E2E. Six browser journeys use native OPFS directory handles; real user-picked-folder permission denial/revocation, multi-tab race testing, external-editor fault injection and abrupt process-termination tests remain outstanding.
-- Verified code CI: [run 43602384257](https://github.com/iamjpsonkar/Wave/actions/runs/43602384257) — 30 Node tests and 6 Chromium E2E tests passed; typecheck and production build passed.
+- CI runs Node storage/concurrency tests and nine Playwright Chromium E2E journeys using native OPFS handles. Simulated permission denial and same-workspace two-tab editing are covered; native picker prompts/revocation, external-editor fault injection, comprehensive accessibility checks and abrupt process-termination tests remain outstanding.
+- Verified code CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) — 30 Node tests and all 9 Chromium E2E tests passed; typecheck and production build passed.
 
 ---
 
