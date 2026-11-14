@@ -233,3 +233,6 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Latest source/test commits: block parser `cc6809086922947ae4f32e4eaf47257f93c66073`; E2E `e0d901711430355b06f7c870453484d88099a886`; block-mode history shortcut follow-up `760ec73b51361826be00ee653c441d72bca65e28`.
 - E2E source inventory is now **38 scenarios**; Node test source remains **30 tests**. No execution result is available; no test/typecheck/build/CI pass is claimed.
 - Remaining UI-002 scope: block reordering/drag-drop, handles, slash menu, bookmarks/embeds and rich inline editing. The full UI register remains open for its stated CI/manual QA items.
+
+ 
+- Block-mode follow-up added Undo/Redo assertions to the block editor scenario and improved outline navigation within block mode. E2E source remains **38 scenarios**; CI still not exposed and no test pass is claimed. Latest regression commit: `30be50f3afae887386eba1f86faf2d855207c925`.
