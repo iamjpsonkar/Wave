@@ -136,3 +136,28 @@ test('incomplete backup snapshots are not offered for restore',async()=>{
   await assert.rejects(()=>createBackup(workspace),/simulated read failure/);
   assert.deepEqual(await listBackups(workspace.backups),[]);
 });
+
+test('Trash inspection completes an interrupted verified move safely',async()=>{
+  const {workspace}=await fixture();
+  await saveDoc(workspace.documents,'Interrupted.md','recover me');
+  const id='11223344-5566-7788-9900-aabbccddeeff';
+  const metadata={id,title:'Interrupted',originalPath:'Interrupted.md',deletedAt:new Date().toISOString()};
+  for(const [name,value] of [[id+'.md','recover me'],[id+'.json',JSON.stringify(metadata)],[id+'.op.json',JSON.stringify({id,operation:'trash',state:'verified',originalPath:'Interrupted.md'})]]){
+    const handle=await workspace.trash.getFileHandle(name,{create:true}),w=await handle.createWritable();await w.write(value);await w.close();
+  }
+  const listing=await listTrashDetailed(workspace.trash,workspace.documents);
+  assert.equal(listing.items.length,1);
+  await assert.rejects(()=>readDoc(workspace.documents,'Interrupted.md'),/Missing file/);
+  await assert.rejects(()=>workspace.trash.getFileHandle(id+'.op.json'),/Missing file/);
+});
+test('Trash inspection rolls back an incomplete copy when original remains',async()=>{
+  const {workspace}=await fixture();
+  await saveDoc(workspace.documents,'Safe.md','original safe');
+  const id='22334455-6677-8899-aabb-ccddeeff0011';
+  const h=await workspace.trash.getFileHandle(id+'.md',{create:true}),w=await h.createWritable();await w.write('partial');await w.close();
+  const op=await workspace.trash.getFileHandle(id+'.op.json',{create:true}),ow=await op.createWritable();await ow.write(JSON.stringify({id,operation:'trash',state:'content-copied',originalPath:'Safe.md'}));await ow.close();
+  const listing=await listTrashDetailed(workspace.trash,workspace.documents);
+  assert.equal(await readDoc(workspace.documents,'Safe.md'),'original safe');
+  assert.equal(listing.items.length,0);
+  assert.equal(listing.issues.length,0);
+});
