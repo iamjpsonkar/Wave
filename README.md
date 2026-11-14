@@ -8,12 +8,16 @@
 - **No account required:** this MVP has no application backend.
 - **User-owned:** users can inspect, copy and back up their workspace.
 
-## MVP
+## Current MVP (0.2)
 - [x] Browser folder selection using the File System Access API
 - [x] Initialize `.wave/` with manifest, settings, documents and assets
 - [x] List, create, open and autosave Markdown documents
-- [x] Store uploaded images locally
-- [ ] Rich block editor, nested pages, search, trash, backups and history
+- [x] Store uploaded images locally with collision-safe names
+- [x] Markdown formatting toolbar and sanitized live preview
+- [x] Nested folders and pages
+- [x] Search page titles and document content
+- [ ] Trash, backups, restore and revision history
+- [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
 
 ## Development
