@@ -391,3 +391,56 @@ html,body{height:100%}
  .document-statistics{font-size:9px;gap:8px}
  .find-fields label{min-width:100%}
 }
+
+
+/* UI-005 / UI-006 / UI-014: readable utility text, path context and narrow layouts. */
+.breadcrumbs{display:flex;align-items:center;gap:5px;min-width:0;overflow:hidden;white-space:nowrap}
+.breadcrumbs>button,.breadcrumbs>span>button{border:0;background:transparent;color:#64745f;padding:3px 2px;font-size:12px;cursor:pointer;border-radius:3px}
+.breadcrumbs>button:hover,.breadcrumbs>span>button:hover{text-decoration:underline;background:#f0f3ed}
+.breadcrumbs>span{color:#a1a69b;display:inline-flex;align-items:center;gap:4px}
+.breadcrumbs strong{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.topright small[role=status]{font-size:12px;color:#667061;max-width:260px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.meta{font-size:11px}
+.meta>span{font-size:11px}
+.sidebar .section,.sidebar .workspace small,.sidebar .stored small,.sidebar .pages p,.appfoot{font-size:10px}
+.sidebar .page,.sidebar nav button,.sidebar .folder-link,.sidebar .trash-nav,.sidebar .settings{font-size:12px}
+.settings-section>label,.settings-info,.settings-check label{font-size:12px}
+.settings-section select{font-size:13px;min-height:38px}
+.settings-dialog>footer button{font-size:12px;min-height:36px}
+button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:2px solid #628663;outline-offset:2px}
+.app.theme-dark .breadcrumbs>button,.app.theme-dark .breadcrumbs>span>button{color:#b9d1b1}
+.app.theme-dark .breadcrumbs>button:hover,.app.theme-dark .breadcrumbs>span>button:hover{background:#303c30}
+.app.theme-dark .topright small[role=status]{color:#c0cbb9}
+.app.theme-system .breadcrumbs>button,.app.theme-system .breadcrumbs>span>button{color:#b9d1b1}
+.app.theme-system .topright small[role=status]{color:#c0cbb9}
+@media(prefers-color-scheme:dark){
+ .app.theme-system .breadcrumbs>button,.app.theme-system .breadcrumbs>span>button{color:#b9d1b1}
+ .app.theme-system .breadcrumbs>button:hover,.app.theme-system .breadcrumbs>span>button:hover{background:#303c30}
+}
+@media(max-width:700px){
+ .app{min-height:480px}
+ .topbar{gap:8px;padding:0 12px}
+ .breadcrumbs{max-width:calc(100vw - 155px);font-size:11px}
+ .breadcrumbs>button,.breadcrumbs>span>button{font-size:11px}
+ .topright{gap:7px}
+ .topright small[role=status]{max-width:120px;font-size:10px}
+ .editor{width:calc(100% - 28px);margin:22px auto}
+ .editor>textarea,.editor>.markdown-preview{width:100%}
+ .meta{margin-bottom:12px;gap:8px;flex-wrap:wrap}
+ .toolbar{gap:6px}
+ .toolgroup button{width:32px;height:32px}
+ .markdown-preview table{display:block;max-width:100%;overflow-x:auto}
+ .markdown-preview pre{max-width:100%;white-space:pre;overflow-x:auto}
+ .settings-backdrop{padding:10px}
+ .settings-dialog{max-height:calc(100dvh - 20px);padding:16px}
+}
+@media(max-width:380px){
+ .topbar{padding:0 8px}
+ .breadcrumbs{max-width:calc(100vw - 128px)}
+ .topright small[role=status]{display:none}
+ .editor{width:calc(100% - 20px)}
+ .meta{font-size:10px}
+ .settings-section{grid-template-columns:1fr}
+ .settings-section h3{grid-column:1}
+ .trash-view{width:calc(100% - 20px)}
+}
