@@ -1,4 +1,4 @@
-import { Children, cloneElement, createElement, isValidElement, type ReactNode } from 'react';
+import { Children, cloneElement, createElement, isValidElement, type CSSProperties, type ReactNode } from 'react';
 import { Copy } from 'lucide-react';
 
 type MarkdownElementProps = { children?: ReactNode; className?: string };
@@ -648,7 +648,7 @@ export function MarkdownCode({ children, className }: MarkdownElementProps) {
   if(className?.includes('language-asciidoc')||className?.includes('language-adoc'))return <AsciiDocBlock source={source}/>;
   if (className?.includes('language-math')) return <MathExpression source={source} display/>;
   if (typeof children==='string' && children.startsWith('math:')) return <MathExpression source={children.slice(5)}/>;
-  if(typeof children==='string'){const colored=children.match(/^wave-(color|bg):(#[0-9a-f]{6}):([\s\S]*)$/i);if(colored){const [,kind,hex,value]=colored;return <span className={kind==='color'?'wave-inline-color':'wave-inline-background'} style={kind==='color'?{color:hex}:{backgroundColor:hex}}>{value}</span>;}}
+  if(typeof children==='string'){const colored=children.match(/^wave-(color|bg):(#[0-9a-f]{6}):([\s\S]*)$/i);if(colored){const [,kind,hex,value]=colored;return <span className={kind==='color'?'wave-inline-color':'wave-inline-background'} style={kind==='color'?({'--wave-print-color':hex,color:hex} as CSSProperties):{backgroundColor:hex}}>{value}</span>;}}
   if(typeof children==='string'&&children.startsWith('wave-')){
     const split=children.indexOf(':');const kind=children.slice(5,split),value=children.slice(split+1);
     if(kind==='mark')return <mark>{value}</mark>;
