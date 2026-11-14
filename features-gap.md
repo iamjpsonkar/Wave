@@ -287,3 +287,13 @@ The first code/test remediation pass has been committed, but is **awaiting CI ve
 - Updated the compatibility guide to describe this regression contract.
 - This adds direct coverage for the no-source-rewrite invariant. It does not prove every renderer extension or every malformed input is covered, and it remains unverified until CI executes the scenario.
 - Browser suite source now defines **26 scenarios**; Node suite source remains **30 tests**.
+
+
+## Accessibility and multiline code editor pass — 2026-11-14
+
+- Implemented a **Code block** toolbar action. It wraps selected multiline source in a fenced Markdown block, preserves the selected text, and selects the inserted code; without a selection it inserts a selectable placeholder.
+- Added Playwright coverage for multiline code insertion, rendered code contents and clipboard fidelity.
+- Added an accessibility smoke scenario for heading levels, named links, table/column headers, task-list checkbox roles, NOTE callout semantics, DETAILS disclosure, and keyboard focus/activation.
+- Updated the compatibility guide with the editor action.
+- This is focused semantic/keyboard regression coverage, not a complete WCAG audit, automated axe scan, or screen-reader certification. E2E scenarios are defined but not yet run in CI.
+- Browser test source now defines **28 scenarios**; Node suite source remains **30 tests**.
