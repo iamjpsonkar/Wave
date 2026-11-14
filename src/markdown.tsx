@@ -68,9 +68,9 @@ type MarkdownNode = {
 };
 
 export function resolveWikiLinkTarget(target: string, docs: WikiDoc[]): string | null {
-  const normalized = target.trim().replace(/\\.md$/i, '').toLocaleLowerCase();
+  const normalized = target.trim().replace(/\.md$/i, '').toLocaleLowerCase();
   if (!normalized) return null;
-  const pathMatches = docs.filter(doc => doc.path.replace(/\\.md$/i, '').toLocaleLowerCase() === normalized);
+  const pathMatches = docs.filter(doc => doc.path.replace(/\.md$/i, '').toLocaleLowerCase() === normalized);
   if (pathMatches.length === 1) return pathMatches[0].path;
   if (pathMatches.length > 1) return null;
   const titleMatches = docs.filter(doc => doc.title.trim().toLocaleLowerCase() === normalized);
@@ -79,10 +79,10 @@ export function resolveWikiLinkTarget(target: string, docs: WikiDoc[]): string |
 
 export function extractWikiLinks(markdown: string): string[] {
   const source = markdown
-    .replace(/\\`{3}[\\s\\S]*?\\`{3}/g, '')
-    .replace(/~~~[\\s\\S]*?~~~/g, '')
-    .replace(/\\`[^\\`\\n]*\\`/g, '');
-  return Array.from(source.matchAll(/\\[\\[([^\\]|]+)(?:\\|[^\\]]+)?\\]\\]/g), match => match[1].trim()).filter(Boolean);
+    .replace(/\x60{3}[\s\S]*?\x60{3}/g, '')
+    .replace(/~~~[\s\S]*?~~~/g, '')
+    .replace(/\x60[^\x60\n]*\x60/g, '');
+  return Array.from(source.matchAll(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g), match => match[1].trim()).filter(Boolean);
 }
 
 export function remarkWikiLinks(docs: WikiDoc[]) {
@@ -93,7 +93,7 @@ export function remarkWikiLinks(docs: WikiDoc[]) {
         const next: MarkdownNode[] = [];
         for (const child of parent.children) {
           if (child.type === 'text' && typeof child.value === 'string' && child.value.includes('[[')) {
-            const pattern = /\\[\\[([^\\]|]+)(?:\\|([^\\]]+))?\\]\\]/g;
+            const pattern = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
             let cursor = 0;
             for (const match of child.value.matchAll(pattern)) {
               const index = match.index ?? 0;
