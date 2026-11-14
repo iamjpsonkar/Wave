@@ -19,10 +19,12 @@
 - [x] Create complete local backup snapshots of documents, assets and workspace settings
 - [x] Move documents to local Trash, restore them or permanently delete them
 - [x] Remember the most recently opened workspace handle locally and offer permission-aware reopening
+- [x] Built-in templates for meetings, projects, task lists, weekly plans, research and decisions
+- [ ] Full Notion/Quip-inspired feature set (see the feature map and roadmap)
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
 
-## Development
+## Product scope\n\nSee [the complete feature map](docs/FEATURES.md) for the planned document, database, project-management, collaboration, Quip-style spreadsheet, import/export and local-first capabilities. The [roadmap](docs/ROADMAP.md) tracks delivery by release.\n\n## Development
 Requires Node.js 22+ and Chrome or Edge.
 
 ```bash
