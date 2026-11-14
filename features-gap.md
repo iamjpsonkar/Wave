@@ -15,6 +15,7 @@
 
 - [x] Bold, italic, nested emphasis, strikethrough and inline code.
 - [x] Wave-native safe inline shorthands for underline, highlight/mark, subscript, superscript and keyboard-key styling.
+- [~] Inline foreground/background colors use six-digit-hex directives and safe React spans; preset swatches, reset/remove formatting, nested color ranges, block fills and non-Wave rendering remain open.
 - [~] These are Wave shorthands, not general HTML-tag support; expand syntax and edge-case coverage only with a safe parsing contract.
 - [~] Unicode emoji works; a small explicit emoji-shortcode map is implemented. Unknown shortcode names remain literal.
 
