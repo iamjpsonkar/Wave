@@ -175,9 +175,10 @@ Rechecked the current default-branch source at commit `186e7ec3dd817a42a610e51c6
 ### CI and regression evidence
 
 - Current browser test source defines **23 Playwright scenarios**; Node test source defines **30 tests**.
-- Workflow [43616005399](https://github.com/iamjpsonkar/Wave/actions/runs/43616005399), commit `186e7ec3dd817a42a610e51c6a3c4a3d8b3d8f19`: `npm ci`, all 30 Node tests, TypeScript typecheck and production build passed. Playwright E2E was still running at recheck time; no complete browser-suite pass is claimed.
-- The preceding completed browser run [43615833361](https://github.com/iamjpsonkar/Wave/actions/runs/43615833361) passed install, Node tests, typecheck and build but failed E2E. Reported failures included a stale wiki-link test expecting an internal `wave.invalid` href even though the rendered control is a button, a strict-mode assertion against multiple syntax-keyword spans, and Mermaid flowchart shape assertions that did not match the renderer's SVG output. The current test source still contains those assertions, so they remain explicit recheck items.
-- Earlier E2E attempts also failed in the new local renderer tests; do not infer success from the later passing typecheck/build steps alone.
+- Workflow [43616005399](https://github.com/iamjpsonkar/Wave/actions/runs/43616005399), commit `186e7ec3dd817a42a610e51c6a3c4a3d8b3d8f19`: `npm ci`, all 30 Node tests, TypeScript typecheck and production build passed. Playwright E2E completed with **20 passed and 3 failed** (23 unique scenarios total).
+- The three current browser failures are confirmed: (1) the wiki-link test still expects an internal `wave.invalid` href although the renderer produces a `.wiki-link` button; (2) the code-highlighting test calls `toContainText` on a strict locator matching multiple `.syntax-keyword` spans; (3) the Mermaid extended-flowchart test expects `polygon`/`ellipse` SVG elements that the renderer does not emit. These are test/expectation mismatches, not evidence that all related features are correct; the assertions must be corrected and the suite rerun.
+- The same run passed the new math examples, the local DOT/PlantUML/Vega-Lite/D2/AsciiDoc renderer scenario, the local-only audio/video scenario and the mindmap/timeline/quadrant/requirement/architecture scenario. These passing scenarios establish only the supplied fixtures, not full language compatibility.
+- Do not infer full Markdown showcase parity from the passing typecheck/build or the 20 passing browser scenarios.
 
 ### Next acceptance sequence
 
