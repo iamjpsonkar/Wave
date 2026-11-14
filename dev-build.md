@@ -257,3 +257,5 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 
 
 - Color E2E follow-ups now cover native color input change events, invalid hex values remaining literal, and preservation of the inline-code example. Latest test-source commit: `81f819653e5f766670e51b783edacb1fa39c41b5`. The suite count remains **40 E2E scenarios** and **30 Node tests**; execution, typecheck, build and CI are still unverified.
+
+- Documentation follow-up aligned the Markdown compatibility contract, feature-gap list and UI color backlog with the shipped six-digit-hex syntax and remaining palette/block-fill work. Commits: `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`, `99007028e8f9c98de8baa5d32d55ce97d346d183`, `bd27ca629c7556b3f2fbeac75e3b600b976365b9`.
