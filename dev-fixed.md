@@ -176,3 +176,14 @@ Source changes and the regression scenario are committed, but no local typecheck
 - **Change:** Added preflight brace-balance validation, an 8192-character source limit, a 48-level nesting limit and a 2048-node generation budget. Invalid or over-limit expressions render a visible, bounded source fallback rather than attempting unbounded MathML construction.
 - **Regression:** Added a Playwright scenario for unbalanced fractions, deeply nested groups and oversized expressions. Also tightened the existing DETAILS keyboard test selector to target Wave's own disclosure, and updated the linked-image assertion to inspect the accessible fallback element.
 - **Verification:** CI pending for this change; see `dev-build.md`. This is targeted hardening, not complete TeX conformance or comprehensive parser fuzzing.
+
+
+## 2026-11-14 — Settings and workspace appearance preferences
+
+- **UI gaps addressed:** UI-001 (unavailable Settings destination) and UI-012 (appearance/typography controls).
+- Replaced the inert sidebar Settings label with a dialog that opens/closes by keyboard and pointer. Added workspace-persisted system/light/dark theme, font family, text size, line spacing, content width and reduced-motion preferences using the existing `.wave/settings.json` store.
+- Added local-first explanation, save/recovery status and basic workspace page/folder counts. Reset affects preferences only; document and recovery data are not touched.
+- Editor and Markdown preview share the configured writing measure and typography. Added dark-theme and system-dark styling for core workspace surfaces.
+- Added Playwright regression for control behavior, settings-file persistence and workspace reload/reopen.
+- Files: `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, `ui-gaps.md`, `docs/FEATURES.md`.
+- Verification: awaiting GitHub Actions for this patch; no test pass is claimed. Full contrast review, broader workspace diagnostics and remaining UI gap IDs stay open.
