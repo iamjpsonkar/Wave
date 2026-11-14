@@ -254,3 +254,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - features-gap.md now contains the recheck matrix and pending acceptance sequence. docs/MARKDOWN_SUPPORT.md now describes the current constrained renderer subsets and security boundaries. Detailed CI result is in dev-build.md.
 - No app source was changed in this recheck; the three E2E assertions remain unfixed. Open Wave bugs remain WAVE-031 and WAVE-039 partial; WAVE-042 remains fixed.
 - Next task should fix the three browser assertions/behaviors, rerun the full 23-scenario suite, then continue the unverified accessibility, conformance, round-trip and compatibility work. Do not mark Markdown feature-complete yet.
+
+## 17. Markdown gap remediation checkpoint — 2026-11-14
+
+- Initial remediation pass committed to `main`: fixed the technical learning-notes template's literal backslash-n separator in `src/templates.ts`; added a Playwright template-selection/editor-newline/preview-structure scenario; corrected three stale/overly strict E2E assertions for wiki links, syntax-token selection and Mermaid flowchart output.
+- Code/test commits: `b8e936b707d9f8c2d78a88991943b7a57c705689`, `65f62060152596d160f66effebcf17a274edc80b`, `f633ccc75c9afb9d3ab7529b489e557d7ae9f8c8`, `5d6b16d18e552c79f11dd6471c47aeab54662f47`.
+- Updated `dev-fixed.md`, `dev-build.md` and `features-gap.md` with the remediation and explicit verification boundary. This context update is the final documentation step; its parent documentation checkpoint is `88899a31f721a6dadcd5f2174b73e569562ee0a5`.
+- Browser test source now defines 24 scenarios; Node test source remains 30 tests. **No local tests were run and no CI run for these new commits has been verified.** The last inspected CI evidence remains the earlier 20/23 Playwright result; do not claim the corrected suite passes.
+- Keep WAVE-052 in `bugs.md` and do not move it to `fixed-bugs.md` until the new template regression passes in CI. WAVE-031 and WAVE-039 remain partial.
+- Remaining Markdown acceptance scope is still open: complete TeX/LaTeX, Mermaid and external renderer compatibility; grammar-based highlighting and unified diff parsing; broader accessibility, cross-browser and visual checks; malformed/oversized input limits; full preview/source round-trip fixtures; exhaustive showcase coverage. Preserve raw-HTML/remote-media security boundaries and inert GitHub references unless product semantics are explicitly changed.
+- For the next pass, inspect the latest Actions run for the current `main` head, fix any actual failures, then proceed through the remaining `features-gap.md` acceptance groups. Never mark the Markdown feature set complete based on source presence alone.
