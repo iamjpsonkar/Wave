@@ -79,8 +79,8 @@
 ### UIF-006 — Text color and highlight palette (Markdown-safe)
 
 - **Inspiration:** text color and fill-color controls.
-- **Status:** Partially implemented in source. The toolbar now exposes native foreground and background color pickers. Selected text is stored as `[[color:#RRGGBB|text]]` or `[[bg:#RRGGBB|text]]`; existing `==highlight==` remains supported.
-- **Proposal:** extend this foundation with accessible preset swatches, remove/reset formatting, nested color ranges and block-level fills after the portable syntax and selection model are validated.
+- **Status:** Partially implemented in source. The toolbar exposes native foreground, inline background and block background color pickers, quick text-color swatches, and a remove-formatting action. Inline selections are stored as `[[color:#RRGGBB|text]]` or `[[bg:#RRGGBB|text]]`; block fills use `> [!COLOR=#RRGGBB]` quote directives. Existing `==highlight==` remains supported.
+- **Proposal:** complete nested color ranges, selection support in Blocks mode, and accessibility/contrast feedback for arbitrary user-picked colors.
 - **Acceptance:**
   - Highlight syntax is documented, sanitized and round-trips exactly.
   - Native color inputs have accessible labels and keyboard operation; a curated swatch palette and selected-state styling remain future work.
