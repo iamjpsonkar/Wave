@@ -1086,6 +1086,8 @@ test('workspace settings persist appearance and typography preferences locally',
   await page.getByRole('button', { name: 'Settings' }).click();
   const dialog = page.getByRole('dialog', { name: 'Settings' });
   await expect(dialog).toBeVisible();
+  await page.keyboard.press('Shift+Tab');
+  await expect(dialog.getByRole('button', { name: 'Done' })).toBeFocused();
   await dialog.getByLabel('Theme').selectOption('dark');
   await dialog.getByLabel('Font family').selectOption('serif');
   await dialog.getByLabel('Text size').selectOption('18');
@@ -1095,6 +1097,9 @@ test('workspace settings persist appearance and typography preferences locally',
   await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(/theme-dark/);
   await expect(page.locator('.editor')).toHaveAttribute('data-content-width', 'narrow');
   await expect(page.locator('.editor textarea')).toHaveCSS('font-size', '18px');
+  await expect(page.locator('.editor textarea')).toHaveCSS('line-height', '34.2px');
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview')).toHaveCSS('width', '680px');
   await dialog.getByRole('button', { name: 'Done' }).click();
   const settings = await page.evaluate(async () => {
     const root = (window as any).__waveTestRoot;
