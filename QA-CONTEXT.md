@@ -254,3 +254,15 @@ Important documentation drift observed at the same HEAD:
 - Updated `features.md` to describe the current constrained local diagram-renderer families and technical learning-notes template.
 - These are documentation-only changes; no source or test files changed. The CI run for the source/test baseline remains 43618423075. The newest documentation commits have not been independently checked in CI.
 - Main HEAD immediately before this QA-context update: `4fd135fadce0ab45488581d7b785c9a44ab84548`.
+
+---
+
+## UI screenshot review — 2026-11-14
+
+- Reviewed user-provided desktop screenshot (2048 × 1330) against current `src/App.tsx`, `src/styles.css` and `docs/FEATURES.md`.
+- Created `ui-gaps.md` with 15 stable UI gap IDs (UI-001 through UI-015), priorities, evidence classification, user impact, target behavior, acceptance criteria and a suggested implementation order.
+- Main confirmed gaps: Settings is visibly and source-confirmedly unavailable; editing is a plain textarea plus separate Markdown preview rather than a rich block editor; the wide writing surface has no visible reading-width constraint; toolbar actions are icon-heavy; typography/metadata are small; document outline and settings preferences remain planned.
+- Other items (undo/redo, find/replace, responsive behavior, template discovery, backup/recovery explanation) are explicitly marked for interaction review where a static screenshot cannot establish the complete behavior.
+- No application source or tests changed. Only `ui-gaps.md` was created.
+- Commit: `118be4b91fc05500af5425ce820a5eab3bed66b0`.
+- Evidence limitation: one desktop edit-state screenshot only; no preview, modal, mobile, tablet, keyboard or screen-reader states were provided.
