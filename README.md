@@ -26,6 +26,8 @@
 - [x] Guard asynchronous workspace actions against stale completions and keep flushing edits until the current revision is saved
 - [x] Allocate unique backup/restore destinations and mark incomplete restores so they cannot be opened accidentally
 - [x] Detect same-size backup changes with SHA-256 content snapshots
+- [x] Coordinate workspace initialization, document, folder, asset, settings, Trash and backup mutations with a shared workspace lock
+- [x] Verify copied backup files and workspace settings against their pre-copy content hashes before marking a snapshot complete
 - [x] Detect external edits before overwriting a document and offer reload or save-as-copy
 - [x] Serialize page/asset creation and prevent case-only filename collisions
 - [x] Remember the most recently opened workspace handle locally and offer permission-aware reopening
@@ -55,9 +57,14 @@ npm install
 npm run dev
 npm run typecheck
 npm run build
+
+# Optional browser regression suite (Chromium)
+npm install --no-save --package-lock=false @playwright/test@1.55.0
+npx playwright install chromium
+npm run test:e2e
 ```
 
-Open the Vite URL and choose a folder to initialize a workspace.
+Open the Vite URL and choose a folder to initialize a workspace. CI runs the Playwright suite against Chromium using native Origin Private File System directory handles as a deterministic filesystem fixture; it does not replace manual permission testing with a user-selected folder.
 
 ## Workspace layout
 ```text
