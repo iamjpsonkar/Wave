@@ -305,3 +305,39 @@ The first code/test remediation pass has been committed, but is **awaiting CI ve
 - Extended the Markdown accessibility E2E scenario with a named sequence-diagram image and keyboard activation of its source disclosure; it checks that the original diagram source remains readable.
 - This is a targeted accessibility correction and smoke test, not a complete WCAG or screen-reader audit. Multiline code-block insertion and exact copy fidelity remain implemented and covered by their existing E2E scenario.
 - CI verification for these commits is pending; do not mark the broader accessibility checklist complete.
+
+---
+
+## Current verified status override — 2026-11-14
+
+This section supersedes earlier checklist status statements where they conflict with the current source and test evidence. All original requirements remain preserved above.
+
+### Implemented and present in current source
+
+- CommonMark/GFM baseline, wiki links/backlinks, deterministic heading IDs, safe inline formatting shorthands, limited emoji shortcodes, callouts and DETAILS disclosures.
+- Local-only image/media handling, safe URL schemes, local asset path restrictions, copyable fenced code and multiline code-block insertion.
+- Local MathML examples for common expressions; constrained Mermaid renderers for flowchart, sequence, pie, class, ER, state, Gantt, git graph, mindmap, timeline, quadrant, requirement and architecture-beta.
+- Lightweight local DOT/Graphviz, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc subsets.
+- Technical learning-notes template now uses real newlines; its selection/preview regression is covered by Playwright.
+
+### Partial implementations and explicit boundaries
+
+- MathML is a hand-built TeX subset, not full LaTeX; Mermaid and other diagram formats are hand-built constrained parsers/layouts, not full specification-compatible engines.
+- Syntax highlighting is heuristic token coloring for a fixed language allowlist; diff coloring classifies lines by prefix.
+- Markdown showcase templates and renderer tests cover representative examples, not every possible syntax or every reference showcase example.
+- Raw HTML, iframe embeds, remote media and remote image fetching remain deliberately disabled. GitHub mentions and issue/PR references remain inert plain text.
+- The diagram accessibility change moves image semantics onto SVG elements and retains a keyboard-operable source disclosure; its post-change CI run remains unverified as of this review.
+
+### Current automated evidence
+
+- Node test definitions: **30**.
+- Playwright Chromium scenario definitions: **28**.
+- CI run [43618423075](https://github.com/iamjpsonkar/Wave/actions/runs/43618423075) passed Node tests, typecheck, production build and all 28 Playwright scenarios on the corrected template/selector baseline. It predates the later diagram-accessibility patch.
+- This is not full CommonMark/GFM conformance, cross-browser, visual regression, accessibility certification, malformed-input/fuzz or real-process-termination verification.
+
+### Remaining quality work
+
+- Native File System Access picker and permission revocation; external filesystem changes during active operations; actual browser-process termination during IndexedDB writes.
+- Full keyboard/focus/contrast/screen-reader audit and cross-browser coverage.
+- Large-document/workspace performance budgets, malformed/oversized-input and parser-fuzz testing, visual regression and broader preview/source round-trip coverage.
+- Keep full TeX/Mermaid/diagram-language parity explicitly partial unless complete compatible engines and conformance fixtures are adopted.
