@@ -20,7 +20,7 @@
 - **3 remaining findings:** WAVE-031 (native picker/filesystem/accessibility/lifecycle QA gap), WAVE-039 (IndexedDB pre-commit crash window), and WAVE-052 (technical learning-notes template joins lines with literal backslash-n text).
 - `fixed-bugs.md` retains 49 historical source-verified fixes and regression scenarios; this pass re-read the register but did not execute every historical scenario.
 - Current checked-in test definitions: **30 Node tests** and **23 Playwright Chromium E2E scenarios**. The E2E fixture uses OPFS and simulates permission behavior; it does not exercise the native OS picker.
-- Historical CI evidence in `dev-build.md` verifies an earlier 10-scenario E2E suite. No fresh CI or local execution was performed in this source-only recheck; the current 13-scenario suite is not claimed as passed.
+- Historical CI evidence in `dev-build.md` verifies an earlier 10-scenario E2E suite. No fresh CI or local execution was performed in this source-only recheck; the current 23-scenario suite is not claimed as passed.
 
 ---
 
@@ -31,7 +31,7 @@
 
 ### Problem
 
-The checked-in test files currently define 30 Node storage/concurrency tests plus 13 Playwright Chromium E2E scenarios. The latest CI evidence in `dev-build.md` is for an earlier 10-scenario suite; this recheck did not execute the current suite. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments, mobile navigation, simulated permission denial and same-workspace two-tab editing.
+The checked-in test files currently define 30 Node storage/concurrency tests plus 23 Playwright Chromium E2E scenarios. The latest CI evidence in `dev-build.md` is for an earlier 10-scenario suite; this recheck did not execute the current suite. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments, mobile navigation, simulated permission denial and same-workspace two-tab editing.
 
 The remaining gap is specifically the native user-picked-folder permission prompt and OS/browser permission revocation: the OPFS fixture simulates the File System Access permission contract rather than exercising the real picker lifecycle. External filesystem edits during active operations, comprehensive keyboard/accessibility paths, and actual abrupt browser-process termination also remain untested.
 
@@ -50,7 +50,7 @@ Recheck the current Playwright suite and add browser-supported tests for the rem
 
 ### Expected behavior
 
-CI should retain all 13 current Chromium journeys and add deterministic coverage for the native picker lifecycle, external filesystem changes, accessibility, and browser-process termination when supported.
+CI should retain all 23 current Chromium journeys and add deterministic coverage for the native picker lifecycle, external filesystem changes, accessibility, and browser-process termination when supported.
 
 ### Fix direction
 
@@ -58,7 +58,7 @@ Extend the existing Playwright suite with permission/picker integration coverage
 
 ### Regression coverage
 
-Keep all 13 current Chromium scenarios in CI. Add native picker prompt/revocation, external filesystem edits during active operations, keyboard/accessibility checks, and browser lifecycle fault injection when supported.
+Keep all 23 current Chromium scenarios in CI. Add native picker prompt/revocation, external filesystem edits during active operations, keyboard/accessibility checks, and browser lifecycle fault injection when supported.
 
 ---
 
