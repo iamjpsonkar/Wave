@@ -366,10 +366,10 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 ## UI-021 — Selection-based text color controls — 2026-11-15
 
 - **Priority:** P2
-- **Status:** Implemented in source — CI and visual verification pending
+- **Status:** Expanded implementation in source — CI and visual verification pending
 - Added native foreground and background color pickers to the Markdown toolbar. With a source-text selection, the controls wrap the selection in explicit Wave directives: `[[color:#RRGGBB|text]]` and `[[bg:#RRGGBB|text]]`.
-- The preview accepts only six-digit hexadecimal values and renders a React span with the corresponding foreground or background color. Existing `==highlight==` remains available; raw HTML and arbitrary CSS are still disabled.
+- The preview accepts only six-digit hexadecimal values and renders React spans or a styled blockquote. Existing `==highlight==` remains available; raw HTML and arbitrary CSS are still disabled.
 - Source remains Markdown and Preview → Edit does not rewrite it. The E2E source adds a regression for both color types, literal code-span preservation and exact source retention on return to Edit.
-- Remaining scope: preset swatches, clear/reset formatting, nested color spans, block-level background fills, block-editor selection support, non-Wave reader fallback and theme/contrast visual review.
-- Commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07`, system-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, locator follow-up `48af3998748b51779a0abe75ca5853dd80fa03b1`, invalid-value and literal-source follow-ups `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`.
+- Remaining scope: nested color spans, block-editor selection support, non-Wave reader fallback, accessibility/contrast checks for user-chosen colors and theme/visual review.
+- Commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07`, system-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, locator follow-up `48af3998748b51779a0abe75ca5853dd80fa03b1`, invalid-value and literal-source follow-ups `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`, and palette/block-fill E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
 - Verification: no local test/typecheck/build or screenshot run was available. Do not mark as CI-passed until the workflow for the latest source completes. Existing UI IDs UI-001–UI-020 and their scope are preserved.
