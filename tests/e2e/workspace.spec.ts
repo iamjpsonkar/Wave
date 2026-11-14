@@ -1301,6 +1301,22 @@ test('editor productivity tools support find/replace, undo/redo, outline and liv
   await expect(editor).toHaveValue(/Alpha is the first milestone\./)
   await expect(editor).not.toHaveValue(/Gamma/)
   await page.getByRole('button', { name: 'Redo' }).click();
-  await expect(editor).toHaveValue(/Gamma is the first milestone\\./);
+  await expect(editor).toHaveValue(/Gamma is the first milestone\./);
   await expect(editor).not.toHaveValue(/Alpha/);
+});
+
+
+
+test('template gallery searches and previews before creating a local page', async ({ page }) => {
+  await openWorkspace(page);
+  await page.getByRole('button', { name: 'New from template' }).click();
+  await page.getByRole('textbox', { name: 'Search templates' }).fill('meeting');
+  const meeting = page.getByRole('button', { name: /Meeting notes/ });
+  await expect(meeting).toBeVisible();
+  await meeting.click();
+  const dialog = page.getByRole('dialog', { name: 'Meeting notes template preview' });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.locator('pre')).toContainText('# Meeting notes');
+  await dialog.getByRole('button', { name: 'Cancel' }).click();
+  await expect(dialog).toBeHidden();
 });
