@@ -374,3 +374,15 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 - Remaining scope: nested color spans, non-Wave reader fallback, accessibility/contrast checks for user-chosen colors and theme/visual review.
 - Commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07`, system-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, locator follow-up `48af3998748b51779a0abe75ca5853dd80fa03b1`, invalid-value and literal-source follow-ups `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`, and palette/block-fill E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
 - Verification: no local test/typecheck/build or screenshot run was available. Do not mark as CI-passed until the workflow for the latest source completes. Existing UI IDs UI-001–UI-020 and their scope are preserved.
+
+
+## UI-022 — Export rendered Preview as PDF — 2026-11-15
+
+- **Priority:** P2
+- **Status:** Implemented in source — CI and browser verification pending
+- Added an **Export PDF** action visible in Preview mode. It opens the browser print dialog for the rendered Markdown preview, sets the document title as the suggested filename, and restores the app title after printing.
+- Print styles hide Wave navigation, editor controls, toolbar, backlinks and workspace chrome; only the rendered preview is printed. Print rules preserve color where supported, keep headings with following content, avoid splitting common blocks and wrap long code lines.
+- E2E regression source verifies the print action, document title restoration and print-only visibility. Existing UI-001–UI-021 records remain unchanged.
+- Direct PDF file generation without the browser print dialog remains a future enhancement; browser PDF output and exact pagination vary by browser/printer settings.
+- Commits: App `e6800b1725f1471fcd56a403e001ff7fa7302cbb`; print CSS `26dc983d85a531e4a1431624ec7558b5b5dcb2b2`; E2E `8608f04f7c4347d4f59dff4016d45b52db15219b`.
+- Verification is pending; do not claim CI success until the latest workflow completes.
