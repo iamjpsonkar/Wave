@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty",
     "test": "node --experimental-strip-types --test tests/*.test.js",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "docker:build": "docker build -t wave:local .",
+    "docker:up": "docker compose up --build -d",
+    "docker:down": "docker compose down"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
