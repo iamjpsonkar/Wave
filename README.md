@@ -30,11 +30,11 @@
 
 ## Feature showcase
 
-See [features.md](features.md) for the capabilities currently implemented in Wave. The [detailed feature map](docs/FEATURES.md) and [roadmap](docs/ROADMAP.md) describe the broader product direction.
+See [features.md](features.md) for the capabilities currently implemented in Wave. Read [upcoming-features.md](upcoming-features.md) for the comprehensive product blueprint, competitive analysis and planned feature catalogue. The [detailed feature map](docs/FEATURES.md) tracks implementation status, while the [roadmap](docs/ROADMAP.md) summarizes delivery phases.
 
 ## Product scope
 
-See [the complete feature map](docs/FEATURES.md) for the planned document, database, project-management, collaboration, Quip-style spreadsheet, import/export and local-first capabilities. The [roadmap](docs/ROADMAP.md) tracks delivery by release.
+See [upcoming-features.md](upcoming-features.md) for the full future feature catalogue and product strategy. [docs/FEATURES.md](docs/FEATURES.md) tracks what is shipped versus planned, and [docs/ROADMAP.md](docs/ROADMAP.md) tracks delivery by release.
 
 ## Development
 Requires Node.js 22+ and Chrome or Edge.
