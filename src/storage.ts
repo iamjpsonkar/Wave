@@ -106,25 +106,23 @@ function queueWrite<T>(dir: FileSystemDirectoryHandle, path: string, operation: 
 export async function openWorkspace(rootHandle?: FileSystemDirectoryHandle): Promise<Workspace> {
   if (!rootHandle && !('showDirectoryPicker' in window)) throw new Error('Folder access requires Chrome or Edge in this preview.');
   const root = rootHandle ?? await window.showDirectoryPicker({ mode: 'readwrite' });
-  const wave = await root.getDirectoryHandle('.wave', { create: true });
-  try{
-    const restoreState=JSON.parse(await(await(await wave.getFileHandle('restore-status.json')).getFile()).text()) as {status?:string};
-    if(restoreState.status!=='complete')throw new Error('This folder contains an incomplete backup restore and must not be used as a workspace.');
-  }catch(error){if(!isNotFound(error))throw error;}
-  const documents = await wave.getDirectoryHandle('documents', { create: true });
-  const assets = await wave.getDirectoryHandle('assets', { create: true });
-  const backups = await wave.getDirectoryHandle('backups', { create: true });
-  const trash = await wave.getDirectoryHandle('trash', { create: true });
-  const now = new Date().toISOString();
-  if (!(await existsFile(wave, 'manifest.json'))) {
-    await write(wave, 'manifest.json', JSON.stringify({ schemaVersion: 1, name: root.name, createdAt: now, updatedAt: now }, null, 2));
-  }
-  if (!(await existsFile(wave, 'settings.json'))) {
-    await write(wave, 'settings.json', JSON.stringify({ format: 'markdown', appearance: 'system', favorites: [] }, null, 2));
-  }
-  const workspace={ root, wave, documents, assets, backups, trash };
-  registerWorkspaceHandles(root.name,root,wave,documents,assets,backups,trash);
-  return workspace;
+  return withWorkspaceLock('workspace:'+root.name,async()=>{
+    const wave = await root.getDirectoryHandle('.wave', { create: true });
+    try{
+      const restoreState=JSON.parse(await(await(await wave.getFileHandle('restore-status.json')).getFile()).text()) as {status?:string};
+      if(restoreState.status!=='complete')throw new Error('This folder contains an incomplete backup restore and must not be used as a workspace.');
+    }catch(error){if(!isNotFound(error))throw error;}
+    const documents = await wave.getDirectoryHandle('documents', { create: true });
+    const assets = await wave.getDirectoryHandle('assets', { create: true });
+    const backups = await wave.getDirectoryHandle('backups', { create: true });
+    const trash = await wave.getDirectoryHandle('trash', { create: true });
+    const now = new Date().toISOString();
+    if (!(await existsFile(wave, 'manifest.json'))) await write(wave, 'manifest.json', JSON.stringify({ schemaVersion: 1, name: root.name, createdAt: now, updatedAt: now }, null, 2));
+    if (!(await existsFile(wave, 'settings.json'))) await write(wave, 'settings.json', JSON.stringify({ format: 'markdown', appearance: 'system', favorites: [] }, null, 2));
+    const workspace={ root, wave, documents, assets, backups, trash };
+    registerWorkspaceHandles(root.name,root,wave,documents,assets,backups,trash);
+    return workspace;
+  });
 }
 export async function listDocs(dir: FileSystemDirectoryHandle): Promise<Doc[]> {
   const result: Doc[] = [];
