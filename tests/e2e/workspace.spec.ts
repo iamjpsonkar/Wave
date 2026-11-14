@@ -784,7 +784,7 @@ test('Markdown preview is source-preserving across toggle, save and workspace re
     '',
     '<script>this must remain inert source text</script>',
     ''
-  ].join('\\n');
+  ].join('\n');
   await editor.fill(original);
   await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
   await page.getByRole('button', { name: 'Preview' }).click();
