@@ -11,10 +11,9 @@ export async function openWorkspace(): Promise<Workspace> {
   const trash = await wave.getDirectoryHandle('trash', { create: true });
   const now = new Date().toISOString();
   try { await wave.getFileHandle('manifest.json'); }
-  catch {
-    await write(wave, 'manifest.json', JSON.stringify({ schemaVersion: 1, name: root.name, createdAt: now, updatedAt: now }, null, 2));
-    await write(wave, 'settings.json', JSON.stringify({ format: 'markdown', appearance: 'system' }, null, 2));
-  }
+  catch { await write(wave, 'manifest.json', JSON.stringify({ schemaVersion: 1, name: root.name, createdAt: now, updatedAt: now }, null, 2)); }
+  try { await wave.getFileHandle('settings.json'); }
+  catch { await write(wave, 'settings.json', JSON.stringify({ format: 'markdown', appearance: 'system' }, null, 2)); }
   return { root, wave, documents, assets, backups, trash };
 }
 async function write(dir: FileSystemDirectoryHandle, name: string, data: string | File) {
