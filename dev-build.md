@@ -202,3 +202,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Full Light/Dark/System × Edit/Preview × desktop/mobile visual regression matrix remains unimplemented. CI verification pending.
 
 - Test review follow-up: toolbar regression selects text before invoking the two wrapping actions, so it verifies actual inline/fenced wrapping rather than an empty-selection placeholder.
+
+
+## 2026-11-14 — UI-020 theme and responsive regression foundation
+
+- Current-main implementation commits: styles `cfb73c72ae17671e893e564688a2324180cbbb6e`; Playwright matrix `b729eea18aa7f9297bd977110837c58c6a6ef03f`.
+- Added dark/system-dark styles for Markdown alerts, disclosures, math/fallback surfaces, diagram surfaces, syntax/diff tokens, missing-image fallbacks, copy controls and Settings dialog controls.
+- Added one Playwright test that exercises 12 combinations: Light/Dark/System × Edit/Preview × desktop/mobile. It verifies representative Markdown rendering, computed styles and horizontal overflow.
+- E2E source inventory: **34 scenarios** (previously 33); Node test source remains **30 tests**.
+- No local test runner is available through this repository connection. No test, typecheck or production-build pass is claimed. Check the workflow for the latest main commit before marking UI-020 verified.
+- Scope limitations: computed-style and interaction assertions are included; screenshot baseline/diff review, a full WCAG contrast audit, tablet/320px breakpoints, and broader dialog/popover/navigation review remain open.
