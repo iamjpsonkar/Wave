@@ -287,3 +287,16 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Next: inspect current CI for the latest `main` head and repair any actual test failures. Then continue with accessibility checks (including keyboard focus, headings, images, tables, task lists, callouts, math and diagram fallbacks). Keep full language compatibility and malformed/oversized-input testing open.
 
 - Follow-up test-fixture correction: the round-trip test's array join now uses an actual newline separator (not a literal backslash-n). Corrected in `031a0e2427a6669312d643e14275a3ebd1ce04db`; fetched source was rechecked to confirm `.join('\n')`.
+
+
+## 20. Multiline code blocks and Markdown accessibility smoke coverage — 2026-11-14
+
+- Next picked item: accessibility checks for semantic Markdown output, plus the user's explicit request for multiline code support.
+- Implemented a new editor toolbar action in `src/App.tsx`: **Code block** wraps selected content in triple-backtick fences and selects it; when selection is empty, inserts a selected `Write code here` placeholder.
+- Added two Playwright scenarios:
+  - Multiline code insertion, fenced preview rendering and exact clipboard-copy fidelity.
+  - Accessibility smoke checks for heading levels, accessible link name, table and column headers, task-list checkbox roles, NOTE callout role/name, DETAILS disclosure and keyboard focus/activation.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`.
+- Current test source counts: **28 Playwright scenarios**, **30 Node tests**. No local tests or CI run for these commits have been executed/inspected. Do not claim passing. Accessibility coverage is a focused semantic/keyboard smoke test, not a full WCAG audit or screen-reader certification.
+- Main implementation commit: `2553d24d95ed322a21588a1b02a6cb14107b45ec`; E2E coverage commits: `55e51e1f7d8d8b45a38843248456bf14493c2f98`, `d4f3a375888c033645ab1af07463a011b082926d`.
+- Next: inspect CI on current main and repair any actual failures; then expand accessibility coverage (images/alt text, focus visibility, color contrast, diagram source/fallback semantics) and malformed/oversized input tests. Preserve all outstanding feature scope.
