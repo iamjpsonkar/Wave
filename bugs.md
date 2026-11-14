@@ -1182,3 +1182,63 @@ Recommended fix order:
 4. Re-run CI and update this file with the exact verified commit and test evidence.
 
 **Important:** this recheck updates the audit only. It does not claim the listed defects have been fixed, and no application source code was changed during this pass.
+
+
+---
+
+# 17. Remediation pass — 2026-11-14
+
+**Reviewed code revision:** `94dbaaa447291cc9e29cfb5b51de80eadff79b60`  
+**Scope:** `src/App.tsx`, `src/storage.ts`, `src/draftJournal.ts`, new `src/safety.ts`, and `tests/storage.test.js`. Documentation was also updated on `main`.  
+**Verification:** source inspection and GitHub Actions run [43601335473](https://github.com/iamjpsonkar/Wave/actions/runs/43601335473) for the exact code revision. The run passed `npm ci`, `npm test`, `npm run typecheck`, and `npm run build`; **26 tests passed, 0 failed**. No interactive browser E2E or real multi-tab IndexedDB run was performed.
+
+## 17.1 New findings WAVE-041 through WAVE-051
+
+| Finding | Current status | Implemented change and evidence |
+|---|---|---|
+| WAVE-041 | **Partial — source safeguards implemented** | Workspace-generation tokens now guard workspace activation, refresh, page/template creation, duplication, folder creation, Trash actions, backup actions, opening, attachment completion and other async UI publication. Browser component tests for delayed A-to-B workspace switches remain outstanding. |
+| WAVE-042 | **Partial — source safeguards implemented** | Draft saves, reads and clears are serialized with Web Locks where available and a local queue fallback. Matching records are reconciled, the newest record is selected, duplicate legacy records are deleted during save, and timestamps are monotonically advanced. Real IndexedDB multi-tab/concurrent transaction tests remain outstanding. |
+| WAVE-043 | **Implemented** | Restore destinations use collision-aware unique directory allocation under a lock and do not reuse existing directories. Regression test verifies a pre-existing destination and its sentinel file remain unchanged. |
+| WAVE-044 | **Implemented** | Restore writes `in-progress`, `failed` or `complete` state. `openWorkspace()` refuses a folder whose restore marker is not complete. Fault-injection test verifies a failed copy is marked and cannot be opened. |
+| WAVE-045 | **Implemented** | Corrected actual newline splitting and heading/extension/whitespace expressions in document titles, Trash titles and search snippets. Regression test covers multi-line Markdown and Trash title extraction. |
+| WAVE-046 | **Implemented** | Added and used a shared conflict-copy path helper that strips a normal `.md` suffix correctly, including uppercase extensions. Regression test covers nested paths and extension case. |
+| WAVE-047 | **Partial — source safeguards implemented** | Favorite writes now use a per-workspace queue and an immutable favorites snapshot; delayed callbacks no longer read another workspace's global favorites ref. Queue ordering and workspace isolation are covered by a helper test; full React/workspace-switch integration testing remains outstanding. |
+| WAVE-048 | **Partial — source safeguards implemented** | Flush now persists revisions until the editor content is stable. Page open/create/template/duplicate/workspace activation and Trash flows perform guarded flushes; destructive Trash operations temporarily lock the editor. A delayed-write revision test covers the stable-flush primitive; browser transition tests remain outstanding. |
+| WAVE-049 | **Implemented** | Backup creation is serialized and allocates a unique destination before copying. Snapshot consistency now includes SHA-256 digests of document and asset contents, not only size/timestamp metadata. Concurrent-backup regression test verifies distinct snapshots. |
+| WAVE-050 | **Implemented** | Trash restore is serialized by Trash item ID across tabs where Web Locks are available. Concurrent restore test verifies exactly one call succeeds and only one page is created. |
+| WAVE-051 | **Implemented** | Attachment Markdown paths now use one parent segment per document path segment. Regression tests cover root, one-level and multi-level nested pages. |
+
+## 17.2 Earlier partial findings
+
+- **WAVE-019 remains partial:** external edit detection is implemented, but browser-level multi-tab and external-editor conflict scenarios have not been exercised.
+- **WAVE-020 remains partial:** backup snapshots now include SHA-256 content digests and backup creation is serialized against other backup calls. A workspace-wide operation lock coordinating every document, asset, settings and Trash mutation is not yet in place; browser/filesystem fault-injection remains necessary.
+- **WAVE-031 remains partial:** CI now runs 26 Node storage and concurrency-helper tests. There is still no browser E2E suite using the real File System Access API, actual IndexedDB, permission revocation and React component transitions.
+- **WAVE-039 remains partial:** the journal is serialized and reads the newest record, but debounce/pagehide writes cannot guarantee completion if the browser process is terminated before IndexedDB commits.
+
+## 17.3 Regression coverage added
+
+The suite grew from 14 to **26 tests**. New tests cover:
+
+- concurrent backup allocation and distinct snapshots;
+- unique directory allocation and restore destination collision safety;
+- failed restore markers and refusal to open incomplete restores;
+- concurrent restore of the same Trash item;
+- real newline parsing for document titles, Trash titles and search snippets;
+- conflict-copy filename normalization;
+- stale workspace-generation rejection;
+- newest draft-record selection;
+- relative attachment paths at three nesting depths;
+- revision-stable flush behavior during a delayed save;
+- per-workspace async queue ordering.
+
+The draft tests exercise the newest-record selector and queue primitives; they do not replace browser-backed IndexedDB integration tests. The workspace-generation test exercises the guard helper, not a rendered React component.
+
+## 17.4 Current status summary
+
+- **43 of 51 findings** now have implementation-level fixes recorded (36 original findings plus 7 newly closed findings).
+- **8 findings remain partial:** WAVE-019, WAVE-020, WAVE-031, WAVE-039, WAVE-041, WAVE-042, WAVE-047 and WAVE-048.
+- The 8 cross-cutting risks still require the browser, performance, compatibility and filesystem verification described earlier.
+- Latest verified code revision: `94dbaaa447291cc9e29cfb5b51de80eadff79b60`.
+- CI: [43601335473](https://github.com/iamjpsonkar/Wave/actions/runs/43601335473) — success; 26 passed, 0 failed; typecheck and production build passed.
+
+**Release gate:** do not describe the bug audit as fully closed. The next reliability step is browser E2E and real IndexedDB/File System Access API fault-injection for the eight partial findings and cross-cutting risks. No next feature milestone is started by this remediation pass.
