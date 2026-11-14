@@ -288,6 +288,17 @@ test('command palette supports filtering and keyboard execution of workspace act
 test('wiki links navigate to pages and backlinks are derived from Markdown files', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'Linked Page');
+  const firstPageFiles = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const documents = await wave.getDirectoryHandle('documents');
+    const files: Array<{ name: string; content: string }> = [];
+    for await (const [name, handle] of documents.entries()) {
+      if (handle.kind === 'file' && name.endsWith('.md')) files.push({ name, content: await (await handle.getFile()).text() });
+    }
+    return files;
+  });
+  expect(firstPageFiles.some(file => file.content.includes('# Linked Page'))).toBe(true);
   await expect(page.getByRole('button', { name: /Linked Page/ })).toBeVisible();
   await page.getByRole('button', { name: /New page/ }).first().click();
   const editor = page.locator('textarea');
