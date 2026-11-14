@@ -10,7 +10,7 @@ This page is the showcase of features that are implemented today. For the comple
 
 ### ✍️ Write and create
 - **Markdown documents** — create, open and edit portable `.md` pages.
-- **Autosave** — edits are saved back to your selected workspace folder automatically.
+- **Autosave** — edits are saved back to your selected workspace folder automatically, with revision-ordered writes.\n- **Draft recovery** — unsaved text is journaled in browser-local IndexedDB and can be recovered after a reload or tab close. Clearing browser site data removes this recovery copy.
 - **Formatting toolbar** — headings, bold, italic, strikethrough, lists, quotes, inline code and links.
 - **Live preview** — switch between editing Markdown and a sanitized rendered preview.
 - **File attachments** — add images and other files; Wave copies them into your local assets folder and inserts a Markdown reference.
@@ -22,17 +22,17 @@ This page is the showcase of features that are implemented today. For the comple
 - **Full-text page search** — search document titles and content in the current workspace.
 - **Favorites** — pin frequently used pages and access them from a dedicated sidebar section.
 - **Duplicate pages** — make an independent copy of a page while keeping the original intact.
-- **Trash and recovery** — move pages to Trash, restore them to their original location, or permanently delete them.
-- **Recent workspace** — reopen the last selected folder with a permission check.
+- **Trash and recovery** — move pages to Trash, restore them without overwriting existing files, or permanently delete them. Interrupted operations are journaled and surfaced for inspection.
+- **Recent workspace** — reopen the last selected folder with a permission check.\n- **Nested navigation** — browse a recursive folder tree and scope the page list to a selected folder.\n- **Search navigation** — view path context and matching snippets, then move through results with arrow keys and Enter.
 
 ### 💾 Own your data
 - **Local-first storage** — your selected folder is the source of truth.
 - **No account required** — the current app has no application backend.
 - **Portable Markdown** — page content remains readable and editable in any Markdown editor.
 - **Ordinary asset files** — images and attachments are stored as regular files.
-- **Local backups** — create timestamped snapshots of documents, assets and workspace settings.
+- **Local backups** — create timestamped snapshots of documents, assets and workspace settings. Wave verifies that source files did not change during the copy, marks incomplete snapshots, and offers restore into a separate folder.
 - **Workspace settings** — favorites and workspace preferences are stored in `.wave/settings.json`.
-- **No silent sync** — Wave does not upload your workspace to a Wave server.
+- **No silent sync** — Wave does not upload your workspace to a Wave server.\n- **External edit protection** — Wave checks the saved version before writing and offers reload or save-as-copy when it detects an outside change.\n- **Collision-safe writes** — concurrent page and attachment creation uses serialized allocation and avoids case-only filename collisions.
 
 ### ⌨️ Designed for a focused workflow
 - `⌘/Ctrl + N` — create a new page.
@@ -63,7 +63,7 @@ You can inspect, copy and back up these files yourself. Do not delete the `.wave
 
 - The current workspace picker uses the **File System Access API** and is intended for Chromium-based browsers such as Chrome and Edge.
 - Run Wave on HTTPS or localhost and grant access to the folder you choose.
-- The browser stores a workspace directory handle in IndexedDB to offer a recent-workspace shortcut; document contents remain in your selected folder.
+- The browser stores a workspace directory handle and unsaved recovery drafts in IndexedDB. Saved documents and assets remain in your selected folder; drafts are only a recovery safety net.
 - Wave currently has no server-side collaboration, cloud sync, account system or analytics.
 - The interface loads its typography from Google Fonts; the core app does not require a Wave application server.
 
@@ -84,4 +84,4 @@ npm run build
 
 ---
 
-**Wave is early software.** Keep independent backups of important files while the recovery and restore experience continues to mature.
+**Wave is early software.** Keep independent backups of important files. Recovery drafts are browser-local, and verified workspace backups should be copied to a separate location.
