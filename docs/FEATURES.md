@@ -122,5 +122,5 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 ## Editor formatting additions
 
 - [x] Selection-based foreground text color and inline background color with custom HEX pickers, curated quick swatches and remove-formatting action; values are restricted to six-digit hexadecimal tokens.
-- [x] Block background fill using a safe Markdown quote directive and the same six-digit HEX restriction.
-- [~] Full rich-text color palette, block-level fills and advanced selection-aware formatting remain future work.
+- [x] Block background fill using a safe Markdown quote directive and the same six-digit HEX restriction, available from the source toolbar and per-block controls in Blocks mode.
+- [~] Nested inline color ranges, portable non-Wave fallback and contrast guidance for arbitrary custom colors remain future work.
