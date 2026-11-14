@@ -318,7 +318,7 @@ function MermaidSequence({source}:{source:string}) {
   const nodes:ReactNode[]=[];
   participants.forEach((name,index)=>{const x=55+index*145;nodes.push(createElement('rect',{key:'p'+name,x:x-48,y:8,width:96,height:30,rx:5,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{key:'t'+name,x,y:28,textAnchor:'middle',fontSize:11,fill:'currentColor'},name),createElement('line',{key:'l'+name,x1:x,y1:40,x2:x,y2:height-8,stroke:'currentColor',strokeDasharray:'4 4',opacity:.55}));});
   messages.forEach((message,index)=>{const from=participants.indexOf(message[1]),to=participants.indexOf(message[3]);const y=65+index*55,x1=55+from*145,x2=55+to*145;nodes.push(createElement('line',{key:'m'+index,x1,y1:y,x2,y2:y,stroke:'currentColor',strokeWidth:1.5,markerEnd:'url(#wave-seq-arrow)'}),createElement('text',{key:'label'+index,x:(x1+x2)/2,y:y-7,textAnchor:'middle',fontSize:10,fill:'currentColor'},message[4]));});
-  return <div className="mermaid-diagram"><svg role="img" aria-label="Mermaid sequence diagram" viewBox={`0 0 ${width} ${height}`} width="100%"><defs><marker id="wave-seq-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{nodes}</svg><DiagramSource source={source}/></div>;
+  return <div className="mermaid-diagram"><svg role="img" aria-label={linesTitle(source)||'Mermaid sequence diagram'} viewBox={`0 0 ${width} ${height}`} width="100%"><defs><marker id="wave-seq-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{nodes}</svg><DiagramSource source={source}/></div>;
 }
 
 function MermaidFlowchart({ source }: { source: string }) {
