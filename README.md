@@ -22,7 +22,7 @@
 - [ ] Tauri desktop application
 
 ## Development
-Requires Node.js 20+ and Chrome or Edge.
+Requires Node.js 22+ and Chrome or Edge.
 
 ```bash
 npm install
