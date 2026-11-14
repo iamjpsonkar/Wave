@@ -182,3 +182,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added Playwright regression coverage for malformed, deeply nested and oversized expressions.
 - Fixed the remaining broad DETAILS-summary selector in the accessibility smoke test. Latest image-accessibility CI exposed this second occurrence after the first selector had been narrowed; it now targets `.markdown-details`.
 - Current source inventory: 30 Node tests and 30 Playwright Chromium scenarios. The image-accessibility and math-hardening changes are awaiting CI; no passing result is claimed.
+
+
+## 2026-11-14 — UI Settings implementation (UI-001 / UI-012)
+
+- Added one Playwright scenario covering Settings dialog, theme/font/size/line-height/content-width/reduced-motion controls, `.wave/settings.json` persistence and recent-workspace reopen.
+- E2E source inventory increases from 30 to 31 scenarios; Node suite source remains 30 tests.
+- Implementation and regression are committed together; CI is pending. No local test runner was available through the repository connector. Do not report browser, typecheck or production-build success until Actions completes.
