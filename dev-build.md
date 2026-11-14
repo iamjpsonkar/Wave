@@ -142,3 +142,8 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
   - Accessibility smoke test now inspects the actual `thead th` header cells rather than relying on Playwright's columnheader role mapping in this environment.
 - Correction commit: `44d78ebc1ba6734caa75cb52d20bbb1ee1a5e6d8`.
 - New CI run: https://github.com/iamjpsonkar/Wave/actions/runs/43618259567. At log update time it was queued; no passing result is claimed.
+
+
+- Follow-up run `43618259567` on correction commit `44d78ebc`: Node tests, typecheck and production build passed; Playwright improved to **27/28 passed**. The only remaining failure was another strict-mode locator in the template scenario: the test searched all H2 elements when it meant to find the named Introduction heading.
+- Fixed by selecting level-2 headings by accessible name (Introduction and Open questions) in commit `026b0bdee17d05278dbf616afd4b4a323df264cd`.
+- New verification run: https://github.com/iamjpsonkar/Wave/actions/runs/43618423075 (queued at time of update). Pipeline is not yet confirmed green.
