@@ -191,3 +191,55 @@ Important documentation drift observed at the same HEAD:
 - Corrected WAVE-052 wording to reflect the source's two-backslash-plus-n separator and the required actual-newline separator.
 - Final audit documentation HEAD before this context update: faf991645e639ed55406d810b9a89426b154c354.
 - Current source verification remains tied to CI run 43616302974: 30 Node tests, typecheck and build passed; 20/23 Playwright scenarios passed, with three stale/strict assertions failing. New documentation commits have their own CI runs and are not a new application-source verification.
+
+---
+
+## Full repository review — 2026-11-14
+
+**Review baseline:** main at `9facb8bf1b71b4470ea661cb4b30a76660217f18` before this handoff update.
+
+**Scope reviewed:** `src/App.tsx`, `src/storage.ts`, `src/draftJournal.ts`, `src/safety.ts`, `src/markdown.tsx`, `src/templates.ts`, Node storage tests, Playwright E2E tests, CI workflow, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `features.md`, `docs/FEATURES.md`, `docs/MARKDOWN_SUPPORT.md`, `docs/ROADMAP.md`, `priority-features.md`, `upcoming-features.md`, `DEV_CONTEXT.md`, `dev-fixed.md` and `dev-build.md`.
+
+### Current implementation and verification
+
+- The current browser suite defines **28 Playwright Chromium scenarios**; the Node suite defines **30 tests**.
+- CI run [43618423075](https://github.com/iamjpsonkar/Wave/actions/runs/43618423075) completed successfully for the corrected template/selector baseline: Node tests, TypeScript typecheck, production build and all 28 Playwright scenarios passed.
+- The later diagram-accessibility change (commit `052840f834f879e54ac32567aecc3e4c7a0cad13`, test extension `ed34c50b6f21c134d762786f869801785b2452d3`) is present in current main. It moves image semantics to SVG elements so the source disclosure remains outside the image role. Its own CI result was not available during this review; do not infer that the patch is verified from the earlier green run.
+- No local test execution, native OS folder picker/revocation test, real browser-process termination test, screen-reader certification or cross-browser run was performed during this review.
+
+### Bug register reconciliation
+
+- **WAVE-052 is fixed and moved to `fixed-bugs.md`**. Current `src/templates.ts` uses a real newline separator; the dedicated template-selection/preview E2E scenario exists; run 43618423075 passed all 28 scenarios. Preserve the regression scenario.
+- **WAVE-031 remains open**: native picker/permission lifecycle, external filesystem mutation during operations, comprehensive accessibility and process-termination coverage remain incomplete. The newer diagram accessibility smoke test narrows one gap but is not a full accessibility audit.
+- **WAVE-039 remains open/partially mitigated**: strict IndexedDB durability and lifecycle retries cannot guarantee an edit survives process termination before transaction commit.
+- The active bug register now has two open findings (WAVE-031 and WAVE-039); the fixed register retains 50 findings including WAVE-052.
+
+### Feature and documentation findings
+
+- The implementation includes a substantial CommonMark/GFM subset, wiki links/backlinks, safe URL handling, local-only media, limited MathML, constrained Mermaid families and lightweight DOT/PlantUML/Vega/D2/AsciiDoc renderers. These are not full language implementations.
+- `features-gap.md` still contains stale earlier checklist/status statements: it says the technical-notes template is broken, reports 23 E2E scenarios, and lists several implemented Markdown extensions/diagram families as missing. Its appended remediation notes also predate the latest successful CI. Treat source + current tests + `docs/MARKDOWN_SUPPORT.md` as the current technical evidence until the gap checklist is reconciled.
+- `docs/FEATURES.md` and `docs/ROADMAP.md` still understate some shipped behavior (notably wiki-link/backlink workflows and recent Markdown renderer work) while `features.md` and `docs/MARKDOWN_SUPPORT.md` describe more of the current implementation. Reconcile the status map without deleting any planned capability.
+- `priority-features.md` has 104 unchecked planning items and `upcoming-features.md` has 972 unchecked catalogue entries. These are planning documents, not evidence that the capabilities are absent from the current app; preserve the full catalogue and distinguish planned scope from shipped status.
+- README and feature showcase should continue to state the real browser boundary (File System Access API / Chromium family), local-first storage and deliberate remote HTML/media exclusions.
+
+### Source review notes
+
+- Core architecture remains local-first: File System Access API workspace files, IndexedDB recovery journal, per-workspace serialization/locks, revision-guarded saves, external-edit conflict checks, Trash operation recovery, and integrity-checked backup creation.
+- Current automated coverage is strongest for storage allocation/collision/concurrency, backup snapshots, Trash recovery, Markdown rendering examples and the core browser journeys.
+- Remaining material verification gaps include large workspace/document performance budgets, Unicode and platform filename behavior, malformed/oversized parser inputs, full preview/source round-trip coverage across every extension, comprehensive keyboard/focus/contrast/screen-reader audit, cross-browser behavior, native picker/revocation, external-edit fault injection, and actual process termination during IndexedDB writes.
+- No additional confirmed source-level product defect was established in this review beyond the stale WAVE-052 register entry, which has now been reconciled. Treat the remaining items above as coverage/roadmap gaps, not confirmed bugs.
+
+### Repository changes for this review
+
+- `bugs.md`: removed WAVE-052 from the open register, corrected open count and current test/CI references.
+- `fixed-bugs.md`: added WAVE-052 with source/test evidence and a retained regression scenario; fixed register now contains 50 findings.
+- No application source, test source, feature catalogue or roadmap capability was removed or changed.
+- Documentation commits: `bbc7e1df6db98d87a08b8a8d0d2aca96bbb19700` and `9facb8bf1b71b4470ea661cb4b30a76660217f18`.
+
+### Recommended next actions
+
+1. Obtain and inspect a fresh CI run for the diagram-accessibility patch on current main; repair any failures without weakening behavior assertions.
+2. Reconcile `features-gap.md`, `docs/FEATURES.md`, `docs/ROADMAP.md` and the current feature showcase against source/tests; preserve every original planned feature.
+3. Expand WAVE-031 verification with native picker/permission revocation where supported, external filesystem mutation tests, accessibility tooling and process-lifecycle fault injection.
+4. Continue WAVE-039 durability investigation with controlled IndexedDB transaction delay and real browser-process termination tests; do not promise zero crash window.
+5. Add large-workspace performance budgets, Unicode/platform path fixtures, malformed/oversized parser limits and broader preview/source round-trip tests.
