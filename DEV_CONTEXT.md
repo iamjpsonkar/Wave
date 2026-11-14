@@ -443,3 +443,18 @@ This remains historical CI evidence and does not verify later commits. The curre
  
 - UI-020 test-helper correction: fixed the CSS RGB numeric-channel matcher used by the computed contrast ratio assertions. This ensures the helper can parse RGB channel values; it does not establish that any contrast assertion or browser test passed. Test commit: `ffc3be4ae9026ce76148ce3fbcaa86b4be0e0f73`. E2E source inventory remains 38.
 - Logs updated: `dev-fixed.md` `bf33131eec965ce0373c5dfd2967b5f6b88420e6`; `dev-build.md` `8871fb213f823b65685688ad1a65521e95424a27`. CI remains unavailable/unverified.
+
+
+## 32. UI continuation — block controls and dialog focus — 2026-11-14
+
+- Continued the UI-002/UI-018 work after re-reading this handoff and the UI register. Existing Markdown remains the portable source of truth; the original source editor and Preview are retained.
+- src/MarkdownBlockEditor.tsx: optional block mode now supports keyboard up/down reorder, draggable block handles, delete, and common-block insertion (paragraph, heading, list, quote, callout, fenced code, divider). Reordering moves source blocks while retaining whitespace separators.
+- src/App.tsx: template preview and command palette now trap Tab/Shift+Tab focus; template preview focuses its close control on open.
+- src/styles.css: theme-aware block control, drag and focus-visible styling.
+- tests/e2e/workspace.spec.ts: added block keyboard reorder, drag/drop, insertion and exact-source assertion; template preview focus-wrap assertions. E2E source inventory: **39 scenarios**; Node test source: **30 tests**.
+- docs/FEATURES.md records block mode as partial. ui-gaps.md updates UI-002 and UI-018 while retaining every original ID and remaining acceptance criterion. dev-fixed.md and dev-build.md contain implementation and verification notes.
+- Source commits: block insertion/reorder 9e4f29390447dcdbd43f80098da522385a270448; drag handle 7057ce25861bffce43ee05ce5f8afb305ae1d0e8; dialog focus 290f926c92caffe64d2ac34f1eea483df015f464; tests 8bb74c69ec4c9adad7d59c0e34e869224742fa42, f292e32e853fce640d44f05f554ee4bce1cbba72, b90369be8ef6ba66ab95f84e5f609b406afd87f7; styles 6bbd015307f55a0e385b6f041d383bdb07e6e87c, 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62.
+- Documentation commits: UI register af7db39acbc456fd3d929dc092f2eabdb2aa9320; dev fix log 6adb102cc0e1d6066e2ad222fcd7c823010d43a5; build log 3f71424b8169aa510a406302a912d9003e5defaf; feature map 9cc459e91e5b1588526c1371084501dea12d3db0.
+- Remaining UI-002 scope: slash-triggered block menu, bookmarks/embeds and rich inline editing. UI-018 still needs focus restoration and complete dialog/popover/disabled/error visual and accessibility review. UI-005/UI-014/UI-020 still need actual browser visual/accessibility verification; no existing UI ID or catalogue requirement was removed.
+- Verification: no local tests, typecheck, production build or screenshot review was run. Combined status and associated workflow-run lookups for latest code commit 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62 returned empty arrays. **No pass is claimed.** Latest test evidence remains the historical CI recorded in dev-build.md; refresh Actions before release decisions.
+- This handoff update is the final documentation step for this task.
