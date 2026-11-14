@@ -390,7 +390,7 @@ export async function readWorkspaceSettings(wave: FileSystemDirectoryHandle): Pr
 }
 export async function writeWorkspaceSettings(wave: FileSystemDirectoryHandle, settings: WorkspaceSettings): Promise<void> {
   const previous=settingsQueues.get(wave)??Promise.resolve();
-  const current=previous.catch(()=>undefined).then(()=>write(wave,'settings.json',JSON.stringify(settings,null,2)));
+  const current=previous.catch(()=>undefined).then(async()=>{await write(wave,'settings.json',JSON.stringify(settings,null,2));await updateManifest(wave);});
   settingsQueues.set(wave,current);
   try{await current;}finally{if(settingsQueues.get(wave)===current)settingsQueues.delete(wave);}
 }
