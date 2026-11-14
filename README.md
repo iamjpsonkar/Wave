@@ -23,6 +23,7 @@
 - [x] Favorite pages with persistent workspace settings
 - [x] Favorites navigation for quick access to pinned pages, including compact mobile shortcuts
 - [x] Duplicate an existing page without changing the original
+- [x] Full-window workspace layout with a responsive, width-expanding editor and content area
 - [ ] Full Notion/Quip-inspired feature set (see the feature map and roadmap)
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
