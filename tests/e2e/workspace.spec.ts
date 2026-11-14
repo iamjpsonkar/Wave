@@ -39,6 +39,20 @@ test('workspace creation and autosave write Markdown into the selected local fol
   expect(saved).toContain('Browser regression content');
 });
 
+test('an IndexedDB recovery draft survives a page reload before Markdown autosave', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Recovery Base');
+  await editor.fill('# Recovery Base\n\nDraft marker that is not yet in the Markdown file');
+  await expect(page.locator('.topright small')).toContainText('Recovery draft saved', { timeout: 5000 });
+  await page.reload();
+  await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(page.getByRole('button', { name: /Recovery Base/ })).toBeVisible();
+  page.once('dialog', dialog => dialog.accept());
+  await page.getByRole('button', { name: /Recovery Base/ }).click();
+  await expect(page.locator('textarea')).toContainText('Draft marker that is not yet in the Markdown file');
+  await expect(page.locator('.topright small')).toContainText('Recovered unsaved draft');
+});
+
 test('Trash move and restore preserve the Markdown page', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'Trash Round Trip');
