@@ -142,3 +142,12 @@ Source changes and the regression scenario are committed, but no local typecheck
 
 
 - CI follow-up: after the first selector fixes, Actions run `43618259567` passed Node, typecheck and build and reached **27/28 Playwright scenarios**. The remaining template failure was a strict locator across all H2 headings; changed the test to locate the two expected level-2 headings by accessible name. Commit: `026b0bdee17d05278dbf616afd4b4a323df264cd`. Final CI verification pending.
+
+
+## Markdown diagram accessibility — 2026-11-14
+
+- **Issue:** Diagram wrappers carried `role="img"` while also containing a keyboard-operable `<details>` source disclosure. The image role can flatten descendants in accessibility APIs and make the disclosure unavailable to assistive technology.
+- **Change:** Moved `role="img"` and the accessible name onto the SVG for all 15 local diagram renderers. The wrapper remains a normal container; the visible source disclosure remains a separate semantic control.
+- **Regression:** Extended the accessibility E2E scenario to verify a named sequence-diagram image, focus and Enter activation of **View diagram source**, and readable original source text.
+- **Related behavior retained:** The Code block toolbar action already supports selected multiline text, a placeholder when no selection exists, fenced preview rendering and clipboard fidelity.
+- **Verification:** Awaiting CI for the implementation and test commits. This is not a full WCAG audit or screen-reader certification.
