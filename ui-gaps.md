@@ -331,13 +331,14 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 ### New code and regression files
 
 - `src/EditorEnhancements.tsx`: document-local history, find/replace, outline and statistics.
+- `src/MarkdownBlockEditor.tsx`: optional source-preserving block mode for Markdown headings, paragraphs, lists, quotes/callouts, code, tables, dividers, images and attachment links.
 - `src/App.tsx`: mounts editor tools; adds folder breadcrumbs, live save status, searchable/preview-first templates, toolbar accessible names and Escape dismissal.
 - `src/styles.css`: productivity panel, template preview, readable functional text, folder breadcrumbs, mobile widths, dark-theme parity and System-light corrections.
 - `tests/e2e/workspace.spec.ts`: editor productivity, template preview and nested breadcrumb regressions; 30-state responsive/theme matrix with contrast assertions.
 
 ### Latest honest verification state
 
-- E2E source inventory: **37 scenarios** (34 previous + editor productivity + template preview + nested breadcrumb).
+- E2E source inventory: **38 scenarios** (34 previous + editor productivity + template preview + nested breadcrumb + source-preserving block editing).
 - Node test source inventory: **30 tests** (unchanged).
 - GitHub repository connection did not provide a current push-triggered Actions run or combined status for the latest code commits. No local project dependencies/test runner are available in this repository connection.
 - **No test, typecheck, production build, screenshot review or CI pass is claimed.** Treat all new work as implementation committed / CI pending.
