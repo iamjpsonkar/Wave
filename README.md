@@ -16,7 +16,8 @@
 - [x] Markdown formatting toolbar and sanitized live preview
 - [x] Nested folders and pages
 - [x] Search page titles and document content
-- [ ] Trash, backups, restore and revision history
+- [x] Create complete local backup snapshots of documents, assets and workspace settings
+- [ ] Trash, backup restore and revision history
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
 
