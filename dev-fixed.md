@@ -123,3 +123,11 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Added an end-to-end source-preservation scenario in `tests/e2e/workspace.spec.ts`.
 - The fixture includes hard breaks, ordinary and wiki links, inline/fenced code, escaped table pipes, fenced MathML input, a callout and raw-HTML text. It checks exact editor-source equality after Preview → Edit, exact saved-file bytes, and exact content after workspace reload/reopen.
 - This is a test-coverage addition, not a runtime code change. The source round-trip invariant is not marked fully verified until the scenario passes in CI.
+
+
+## 2026-11-14 — Multiline code blocks and accessibility smoke coverage
+
+- Added a dedicated editor toolbar action, **Code block**, in `src/App.tsx`. With a selection it wraps the selected text (including multiple lines) in triple-backtick fences and keeps the code selected; without a selection it inserts a `Write code here` placeholder inside the fence.
+- Added Playwright coverage for multiline TypeScript/JavaScript-style source insertion, preview rendering and exact clipboard contents.
+- Added semantic accessibility coverage for heading levels, link names, table headers, task checkboxes, NOTE callout role/name, DETAILS disclosure, and keyboard focus/activation.
+- Updated `docs/MARKDOWN_SUPPORT.md`. This is not a complete WCAG audit; runtime behavior remains pending CI execution.
