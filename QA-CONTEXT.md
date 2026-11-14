@@ -4,7 +4,8 @@
 > Repository: https://github.com/iamjpsonkar/Wave
 > Default branch: `main`
 > Last context refresh: 2026-11-14
-> Last inspected HEAD: `e53de9e554d4e5ccee32cfbaa72378dc0c6f9f44`
+> Last application/source baseline inspected: `e53de9e554d4e5ccee32cfbaa72378dc0c6f9f44`
+> Context-file commit: `ccc59b0ef9a55b41b6ca3a7b35ccf6ca61d065d0`
 
 ## Mandatory workflow for every future task
 
@@ -121,8 +122,8 @@ Important documentation drift observed at the same HEAD:
 
 **Task:** Create a persistent QA handoff file so future Wave tasks do not require the user to repeat project and QA context.
 
-**Changes:** Added this `QA-CONTEXT.md`. No application source code, open bug classification, or fixed-bug classification was changed as part of this task.
+**Changes:** Added this `QA-CONTEXT.md` in commit `ccc59b0ef9a55b41b6ca3a7b35ccf6ca61d065d0`. No application source code, open bug classification, or fixed-bug classification was changed as part of this task.
 
-**Verification:** Repository tree was inspected; current source/test/CI files, bug registers, current workflow run and failing job log were fetched. The context contents reflect the latest inspected HEAD `e53de9e...`. No local test suite was run during this documentation-only task.
+**Verification:** Repository tree was inspected; current source/test/CI files, bug registers, current workflow run and failing job log were fetched. The source/test baseline is `e53de9e...`; the context-only commit is `ccc59b0...`. No local test suite was run during this documentation-only task. CI for the context-only commit was queued at the time of this update.
 
 **Next action:** Triage and resolve the failing wiki-link/backlink E2E scenario, run the full CI suite, then refresh `bugs.md`, `fixed-bugs.md`, and this context file with the resulting revision and evidence.
