@@ -191,3 +191,5 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Implementation and regression are committed together; CI is pending. No local test runner was available through the repository connector. Do not report browser, typecheck or production-build success until Actions completes.
 
 - Follow-up regression also checks focus wrapping, applied editor font size/line height and shared preview content width. The test waits for the persisted-preference completion state before reading `settings.json` to avoid an asynchronous-write race.
+
+- Added the final keyboard regression for Escape dismissal; UI-001/012 are recorded as implemented pending CI, while UI-003 remains partial pending responsive/wide-content verification.
