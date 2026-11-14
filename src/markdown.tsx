@@ -169,7 +169,7 @@ function convertInlineExtensions(line: string): string {
 }
 
 function MathExpression({ source, display = false }: { source: string; display?: boolean }) {
-  const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ', pi:'π', rho:'ρ', sigma:'σ', phi:'φ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', approx:'≈', infty:'∞', sum:'∑', int:'∫', to:'→', rightarrow:'→', leftarrow:'←', sin:'sin', cos:'cos', tan:'tan', log:'log', ln:'ln', exp:'exp', lim:'lim', cdots:'⋯', ldots:'…', neq:'≠' };
+  const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ', pi:'π', rho:'ρ', sigma:'σ', phi:'φ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', approx:'≈', infty:'∞', sum:'∑', int:'∫', to:'→', rightarrow:'→', leftarrow:'←', sin:'sin', cos:'cos', tan:'tan', log:'log', ln:'ln', exp:'exp', lim:'lim', cdots:'⋯', ldots:'…' };
   function groupAt(input:string,start:number):{value:string;end:number} {
     if(input[start]!=='{')return {value:input[start]??'',end:start+1};
     let depth=1,index=start+1;
