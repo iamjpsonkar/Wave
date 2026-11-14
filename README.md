@@ -18,6 +18,7 @@
 - [x] Search page titles and document content
 - [x] Create complete local backup snapshots of documents, assets and workspace settings
 - [x] Move documents to local Trash, restore them or permanently delete them
+- [x] Remember the most recently opened workspace handle locally and offer permission-aware reopening
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
 
@@ -46,7 +47,7 @@ Open the Vite URL and choose a folder to initialize a workspace.
 ```
 
 ## Privacy and browser support
-The app has no server API or analytics. The File System Access API requires a secure context (HTTPS or localhost), explicit user permission and a supported browser. Permissions may need to be granted again after reload. Chromium-based browsers currently provide the intended experience; Firefox and Safari need an alternate adapter. The interface uses system fonts and makes no third-party font requests. The app can work without contacting an application server after it has been loaded.
+The app has no server API or analytics. The File System Access API requires a secure context (HTTPS or localhost), explicit user permission and a supported browser. Wave stores only the selected directory handle in browser IndexedDB to offer a recent-workspace shortcut; it does not store document contents there. Permissions may need to be granted again after reload or when the browser revokes access. Chromium-based browsers currently provide the intended experience; Firefox and Safari need an alternate adapter. The interface uses system fonts and makes no third-party font requests. The app can work without contacting an application server after it has been loaded.
 
 The UI uses a small storage adapter in `src/storage.ts`. Keep this boundary independent of React so a future Tauri adapter can provide the same operations.
 
