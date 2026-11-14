@@ -128,3 +128,19 @@ html,body{height:100%}
 .markdown-preview .contains-task-list{padding-left:1.2em}
 .markdown-preview .footnotes{margin-top:2em;padding-top:1em;border-top:1px solid #e5e8e1;font-size:12px;color:#737b70}
 @media(prefers-reduced-motion:reduce){.markdown-copy{transition:none}}
+
+
+/* Keyboard-first command palette. */
+.command-backdrop{position:fixed;z-index:80;inset:0;display:flex;align-items:flex-start;justify-content:center;padding:14vh 18px 24px;background:#17251b70;backdrop-filter:blur(3px)}
+.command-palette{width:min(560px,100%);max-height:min(560px,72vh);display:flex;flex-direction:column;overflow:hidden;border:1px solid #e1e6dc;border-radius:12px;background:#fff;box-shadow:0 24px 80px #14251b35}
+.command-input{display:flex;align-items:center;gap:11px;padding:15px 17px;border-bottom:1px solid #edf0e9;color:#73806f}
+.command-input input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#283329;font:inherit;font-size:14px}
+.command-input kbd{padding:3px 6px;border:1px solid #e3e7df;border-radius:4px;color:#8a9185;font-size:9px}
+.command-results{overflow:auto;padding:7px}
+.command-option{display:flex;align-items:center;justify-content:space-between;width:100%;padding:11px 12px;border:0;border-radius:7px;background:transparent;color:#384238;text-align:left;font-size:12px;cursor:pointer}
+.command-option small{color:#92998e;font-size:10px}
+.command-option.selected,.command-option:hover{background:#eef3eb;color:#405d42}
+.command-empty{padding:18px;color:#8a9185;text-align:center;font-size:12px}
+.command-palette>footer{display:flex;gap:15px;padding:10px 14px;border-top:1px solid #edf0e9;color:#92998e;font-size:9px}
+.command-palette>footer span:first-of-type{margin-left:auto}
+@media(max-width:520px){.command-backdrop{padding:9vh 10px 16px}.command-palette{max-height:78vh}}
