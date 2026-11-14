@@ -1,5 +1,7 @@
 # Wave documentation
 
+> For the complete product, repository architecture, project instructions and AI-agent onboarding, start with the [Wave Wiki](../wiki.md).
+
 Start here based on what you need:
 
 ## Understand and use Wave
