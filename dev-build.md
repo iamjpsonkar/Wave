@@ -111,3 +111,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Browser test source count: **25 scenarios**. Node test source remains **30 tests**.
 - Updated the Markdown compatibility guide with the intended URL sanitization and local-asset resolution contract.
 - No local execution or CI run for this commit has been inspected. Treat the new scenario as defined, not passed. No application runtime code changed in this step.
+
+
+## 2026-11-14 — Preview/source round-trip coverage (awaiting CI)
+
+- Added one Playwright E2E scenario that asserts exact Markdown equality across preview toggling, completed save, on-disk file read and workspace reload/reopen.
+- Fixture covers hard breaks, links/wiki links, inline and fenced code, escaped table pipes, fenced math, callouts and raw-HTML source text.
+- Browser test source count: **26 scenarios**; Node test source remains **30 tests**.
+- No local test execution or CI run for this change has been inspected. Treat the scenario as defined, not passed.
