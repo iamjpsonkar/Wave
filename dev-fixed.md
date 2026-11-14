@@ -86,3 +86,10 @@ Source changes and the regression scenario are committed, but no local typecheck
 ### Follow-up conformance coverage
 - Preserved Markdown image alt text/title and link titles through Wave's local asset/link components; remote images remain unrequested and use the missing-asset fallback.
 - Added a Playwright scenario for CommonMark hard breaks, reference links, linked remote-image fallback, escaped table pipes, nested list rendering and unsafe `javascript:` link sanitization.
+
+
+### CI-driven Markdown corrections
+- Heading IDs now run as a rehype transformer after sanitization, so sanitized preview nodes receive stable unique IDs without enabling arbitrary HTML.
+- DETAILS disclosure summary extraction now handles parser output where the marker and summary are split into separate child nodes.
+- Corrected a malformed MathML parser newline and removed a duplicate math command key detected by CI typecheck.
+- Adjusted the existing wiki-link E2E journey to wait for the asynchronous page-list refresh instead of reading the sidebar immediately.
