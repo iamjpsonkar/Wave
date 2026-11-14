@@ -3,7 +3,7 @@
 > Audit date: 2026-11-14  
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed revision: 9840fa3d10ef1cb0a2bd6916981cc2b3a2afb6a5  
+> Reviewed revision: 2f3d53e72e3cde9893b8a93ca830ebfa8967874e  
 > App version: 0.2.0  
 > Review type: Static source-code and documentation review
 
@@ -767,7 +767,7 @@ This section supersedes the original unchecked remediation lists above. It recor
 - **Navigation and usability:** recursive folder navigation, folder-scoped page lists, path/snippet search results, arrow/Enter search navigation, multiline toolbar formatting, mobile drawer navigation and short-viewport layout are implemented.
 - **Error handling and metadata:** settings corruption is surfaced without overwriting the original file and can be backed up before resetting defaults; manifest updatedAt is refreshed after workspace mutations; placeholder controls are clearly non-interactive.
 - **Build reproducibility:** package-lock.json is committed and CI uses npm ci.
-- **Regression tests:** Node's built-in test runner covers path/slug behavior, non-overwriting page creation, Trash restore collisions, corrupt Trash isolation, backup completion, external edit detection, folder collisions, permission errors, concurrent allocation and incomplete backup exclusion.
+- **Regression tests:** Node's built-in test runner covers path/slug behavior, non-overwriting page creation, Trash restore collisions, corrupt Trash isolation, backup completion, external edit detection, folder collisions, permission errors, concurrent allocation, incomplete backup exclusion, interrupted Trash recovery and corrupt-settings backup/reset.
 
 ## Partially complete — do not treat as fully closed
 
@@ -788,6 +788,6 @@ This section supersedes the original unchecked remediation lists above. It recor
 
 ## CI and release gate
 
-The repository now includes a committed npm lockfile and uses `npm ci`. The CI workflow runs `npm test`, `npm run typecheck` and `npm run build`. Latest verified run: [43599601850](https://github.com/iamjpsonkar/Wave/actions/runs/43599601850) — success; 13 tests passed, 0 failed.
+The repository now includes a committed npm lockfile and uses `npm ci`. The CI workflow runs `npm test`, `npm run typecheck` and `npm run build`. Latest verified run: [43599727201](https://github.com/iamjpsonkar/Wave/actions/runs/43599727201) — success; 14 tests passed, 0 failed.
 
 Do not begin the next feature milestone until the current CI run is green and the remaining browser-level verification items have been reviewed. No storage reliability claim should be interpreted as a substitute for keeping an independent backup of important data.
