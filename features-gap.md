@@ -255,3 +255,18 @@ Rechecked the current default-branch source at commit `186e7ec3dd817a42a610e51c6
 3. Add accessibility, cross-browser, visual, malformed-input/resource-limit and preview/source round-trip coverage.
 4. Keep full language compatibility explicitly partial unless an actual compatible parser/renderer and broader conformance fixtures are adopted.
 5. Preserve all original showcase requirements and security boundaries. Do not remove features from the acceptance checklist merely because they are not implemented yet.
+
+
+---
+
+## Remediation checkpoint — 2026-11-14
+
+The first code/test remediation pass has been committed, but is **awaiting CI verification**:
+
+- [~] WAVE-052 template defect: `src/templates.ts` now joins technical learning-notes sections with actual newlines. A new Playwright scenario selects the template and checks editor line breaks plus preview headings, code fence, table and operational notes. Keep this item partial until CI passes.
+- [~] Wiki-link E2E assertion now checks the rendered button and absence of an internal URL anchor.
+- [~] Syntax-highlighting E2E assertion now narrows to the expected keyword token.
+- [~] Mermaid flowchart E2E assertion now checks visible node labels rather than SVG primitive implementation details.
+- Browser suite source now defines 24 scenarios; Node suite source remains 30 tests.
+- No local tests were run and no CI result for the new commits has been verified. The previous 20/23 E2E result remains the last verified run.
+- This does not close full compatibility or quality gaps. Full TeX/Mermaid and external-renderer compatibility, grammar-based highlighting/diff parsing, comprehensive accessibility, cross-browser/visual checks, malformed/oversized-input limits and preview/source round-trip coverage remain open. Raw HTML and remote media remain deliberate security boundaries; GitHub references remain inert pending a product decision.
