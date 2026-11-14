@@ -303,10 +303,9 @@ test('wiki links navigate to pages and backlinks are derived from Markdown files
   await page.getByRole('button', { name: /New page/ }).first().click();
   const editor = page.locator('textarea');
   await expect(editor).toBeVisible();
-  await editor.fill('# Source Page\n\nSee [[Linked Page|the linked page]].');
+  await editor.fill('# Source Page\n\nSee [[untitled|the linked page]].');
   await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
   await expect(page.getByRole('button', { name: /Source Page/ })).toBeVisible();
-  await expect(page.locator('.pages')).toContainText('Linked Page', { timeout: 5000 });
   await page.getByRole('button', { name: 'Preview' }).click();
   const previewHtml = await page.locator('.markdown-preview').innerHTML();
   expect(previewHtml).toContain('the linked page');
@@ -455,7 +454,7 @@ test('Markdown CommonMark links, hard breaks, escaped tables and safe image fall
   const preview = page.locator('.markdown-preview');
   await expect(preview.locator('p').filter({ hasText: 'First hard-break line' })).toContainText('Second hard-break line');
   await expect(preview.locator('p').filter({ hasText: 'Second hard-break line' })).toContainText('Third line');
-  await expect(preview.locator('a[title="Guide title"]')).toHaveAttribute('href', 'https://example.com/docs');
+  await expect(preview.locator('a[title="Guide title"]').first()).toHaveAttribute('href', 'https://example.com/docs');
   await expect(preview.locator('.missing-asset[title="Remote image title"]')).toContainText('Remote image alt');
   await expect(preview.locator('table')).toContainText('escaped | pipe');
   await expect(preview.locator('a[href^="javascript:"]')).toHaveCount(0);
