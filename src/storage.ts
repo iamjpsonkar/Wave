@@ -1,9 +1,9 @@
 export interface Workspace { root: FileSystemDirectoryHandle; wave: FileSystemDirectoryHandle; documents: FileSystemDirectoryHandle; assets: FileSystemDirectoryHandle; backups: FileSystemDirectoryHandle; trash: FileSystemDirectoryHandle }
 export interface Doc { id: string; path: string; title: string; updatedAt: number; content: string }
 export interface TrashItem { id: string; title: string; originalPath: string; deletedAt: string }
-export async function openWorkspace(): Promise<Workspace> {
-  if (!('showDirectoryPicker' in window)) throw new Error('Folder access requires Chrome or Edge in this preview.');
-  const root = await window.showDirectoryPicker({ mode: 'readwrite' });
+export async function openWorkspace(rootHandle?: FileSystemDirectoryHandle): Promise<Workspace> {
+  if (!rootHandle && !('showDirectoryPicker' in window)) throw new Error('Folder access requires Chrome or Edge in this preview.');
+  const root = rootHandle ?? await window.showDirectoryPicker({ mode: 'readwrite' });
   const wave = await root.getDirectoryHandle('.wave', { create: true });
   const documents = await wave.getDirectoryHandle('documents', { create: true });
   const assets = await wave.getDirectoryHandle('assets', { create: true });
