@@ -51,6 +51,9 @@ The Markdown feature specification is maintained in [upcoming-features.md, A4](u
 
 **Delivery order:** CommonMark → GFM → math/Mermaid → sanitized HTML/extensions. Round-trip correctness and source preservation apply throughout.
 
+
+**Implementation checkpoint — 2026-11-14:** Wave now has the first renderer slice in source: existing CommonMark/GFM support, task lists/tables/strikethrough/autolinks/footnotes, alert callouts, heading anchors, a limited MathML/LaTeX subset, and simple Mermaid flowchart rendering. The **Markdown feature showcase** template and [renderer compatibility matrix](docs/MARKDOWN_SUPPORT.md) are available. This does not close P0.2: sanitized raw HTML/collapsible content, full LaTeX, advanced Mermaid, optional diagram renderers, syntax highlighting, full source-preserving import/export and broader compatibility fixtures remain planned. Do not mark P0.2 complete until its full exit gate is met.
+
 **Exit gate:** users can author/import, edit, reopen and export supported Markdown without losing structure or silently discarding unsupported constructs.
 
 ### P0.3 — Storage and workspace architecture
