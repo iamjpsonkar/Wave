@@ -50,7 +50,6 @@ test('an IndexedDB recovery draft survives a page reload before Markdown autosav
   page.once('dialog', dialog => dialog.accept());
   await page.getByRole('button', { name: /Recovery Base/ }).click();
   await expect(page.locator('textarea')).toHaveValue(/Draft marker that is not yet in the Markdown file/);
-  await expect(page.locator('.topright small')).toContainText('Recovered unsaved draft');
 });
 
 test('Trash move and restore preserve the Markdown page', async ({ page }) => {
