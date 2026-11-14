@@ -1133,9 +1133,11 @@ test('toolbar code actions have distinct icons and accessible names', async ({ p
   await expect(codeBlock).toHaveAttribute('title', 'Code block');
   await expect(inlineCode.locator('svg')).toHaveClass(/lucide-code-2/);
   await expect(codeBlock.locator('svg')).toHaveClass(/lucide-file-code-2/);
-  await inlineCode.click();
-  await expect(page.locator('.editor textarea')).toHaveValue('``');
   const editor = page.locator('.editor textarea');
+  await editor.fill('const wave = true;');
+  await editor.selectText();
+  await inlineCode.click();
+  await expect(editor).toHaveValue('`const wave = true;`');
   await editor.fill('const wave = true;');
   await editor.selectText();
   await codeBlock.click();
