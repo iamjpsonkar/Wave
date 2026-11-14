@@ -521,7 +521,7 @@ test('Markdown inline syntax, code literal preservation, duplicate slugs, nested
   await expect(preview.locator('a').filter({ hasText: /@waveuser|#123|owner\/repo#456/ })).toHaveCount(0);
   await expect(preview.locator('code').filter({ hasText: ':rocket: ==not transformed==' })).toHaveCount(1);
   await expect(preview.locator('ul ul ul')).toContainText('Deep item');
-  await expect(preview.locator('.syntax-keyword')).toContainText('def');
+  await expect(preview.locator('.syntax-keyword').filter({ hasText: /^def$/ })).toBeVisible();
   await expect(preview.locator('.syntax-diff-removed')).toHaveText('-old value');
   await expect(preview.locator('.syntax-diff-added')).toHaveText('+new value');
   await context.grantPermissions(['clipboard-read', 'clipboard-write']);
@@ -535,11 +535,11 @@ test('Markdown inline syntax, code literal preservation, duplicate slugs, nested
 test('Technical learning notes template contains real Markdown newlines and previews structurally', async ({ page }) => {
   await openWorkspace(page);
   await page.getByRole('button', { name: 'New from template' }).click();
-  await page.getByRole('button', { name: /Technical learning notes/ }).click();
+  await page.locator('.sidebar-templates').getByRole('button', { name: /Technical learning notes/ }).click();
   const editor = page.locator('textarea');
   const markdown = await editor.inputValue();
-  expect(markdown).toContain('## Introduction\\n\\nWhat is this technology');
-  expect(markdown).toContain('## Open questions\\n\\n- [ ]');
+  expect(markdown).toContain('## Introduction\n\nWhat is this technology');
+  expect(markdown).toContain('## Open questions\n\n- [ ]');
   await page.getByRole('button', { name: 'Preview' }).click();
   await expect(page.locator('.markdown-preview h2')).toContainText('Introduction');
   await expect(page.locator('.markdown-preview h2')).toContainText('Open questions');
@@ -654,7 +654,7 @@ test('Markdown Mermaid class, ER, state, Gantt, git and extended flowchart diagr
   await expect(diagrams.nth(0)).toContainText('Done');
   await expect(diagrams.nth(0)).toContainText('Finish');
   await expect(diagrams.nth(1).locator('text').filter({ hasText: 'Animal' })).toBeVisible();
-  await expect(diagrams.nth(2).locator('text').filter({ hasText: 'CUSTOMER' })).toBeVisible();
+  await expect(diagrams.nth(2).locator('text').filter({ hasText: /^CUSTOMER$/ })).toBeVisible();
   await expect(diagrams.nth(3).locator('text').filter({ hasText: 'Moving' })).toBeVisible();
   await expect(diagrams.nth(4).locator('rect')).toHaveCount(2);
   await expect(diagrams.nth(5).locator('circle')).toHaveCount(3);
@@ -809,7 +809,7 @@ test('Markdown preview exposes accessible semantic structure and keyboard-operab
   await expect(preview.getByRole('heading', { level: 2, name: 'Navigation' })).toBeVisible();
   await expect(preview.getByRole('link', { name: 'Wave documentation' })).toHaveAttribute('href', 'https://example.com/docs');
   await expect(preview.getByRole('table')).toBeVisible();
-  await expect(preview.getByRole('columnheader')).toHaveCount(2);
+  await expect(preview.locator('thead th')).toHaveCount(2);
   await expect(preview.getByRole('checkbox')).toHaveCount(2);
   await expect(preview.getByRole('note', { name: 'NOTE' })).toContainText('Semantic callout content.');
   await expect(preview.getByText('More information')).toBeVisible();
