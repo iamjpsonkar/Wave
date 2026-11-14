@@ -13,7 +13,7 @@
 - [x] Initialize `.wave/` with manifest, settings, documents and assets
 - [x] List, create, open and autosave Markdown documents
 - [x] Store images and file attachments locally with collision-safe names
-- [x] Markdown formatting toolbar and sanitized live preview
+- [x] Markdown formatting toolbar and sanitized live preview with local asset rendering
 - [x] Nested folders and pages
 - [x] Search page titles and document content
 - [x] Create complete local backup snapshots of documents, assets and workspace settings
@@ -39,8 +39,10 @@ Open the Vite URL and choose a folder to initialize a workspace.
 └── .wave/
     ├── manifest.json
     ├── settings.json
-    ├── documents/  # Markdown pages
-    └── assets/     # Uploaded images and files
+    ├── documents/  # Markdown pages and nested folders
+    ├── assets/     # Uploaded images and files
+    ├── backups/    # Local workspace snapshots
+    └── trash/      # Recoverable deleted pages
 ```
 
 ## Privacy and browser support
