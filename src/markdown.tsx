@@ -1,7 +1,7 @@
 import { Children, cloneElement, createElement, isValidElement, type ReactNode } from 'react';
 import { Copy } from 'lucide-react';
 
-type MarkdownElementProps = { children?: ReactNode };
+type MarkdownElementProps = { children?: ReactNode; className?: string };
 type WikiDoc = { path: string; title: string };
 
 const ALERTS = new Set(['NOTE', 'TIP', 'IMPORTANT', 'WARNING', 'CAUTION']);
