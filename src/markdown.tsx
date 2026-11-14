@@ -175,7 +175,7 @@ function MathExpression({ source, display = false }: { source: string; display?:
     sum:'∑',prod:'∏',int:'∫',iint:'∬',iiint:'∭',oint:'∮',to:'→',rightarrow:'→',leftarrow:'←',leftrightarrow:'↔',Rightarrow:'⇒',Leftarrow:'⇐',
     cdots:'⋯',ldots:'…',vdots:'⋮',ddots:'⋱',forall:'∀',exists:'∃',in:'∈',notin:'∉',subset:'⊂',subseteq:'⊆',supset:'⊃',supseteq:'⊇',
     cup:'∪',cap:'∩',land:'∧',lor:'∨',neg:'¬',therefore:'∴',because:'∵',perp:'⊥',parallel:'∥',angle:'∠',degree:'°',
-    times:'×',div:'÷',star:'⋆',circ:'∘',bullet:'•',oplus:'⊕',otimes:'⊗',mapsto:'↦',iff:'⟺',implies:'⟹'
+    div:'÷',star:'⋆',circ:'∘',bullet:'•',oplus:'⊕',otimes:'⊗',mapsto:'↦',iff:'⟺',implies:'⟹'
   };
   const functions=new Set(['sin','cos','tan','cot','sec','csc','arcsin','arccos','arctan','sinh','cosh','tanh','log','ln','exp','lim','min','max','sup','inf','det','dim','ker','gcd','Pr']);
   function groupAt(input:string,start:number):{value:string;end:number}{
@@ -210,7 +210,309 @@ function MathExpression({ source, display = false }: { source: string; display?:
       const ch=input[i];
       if(ch==='\\'){
         const rest=input.slice(i+1),command=rest.match(/^[A-Za-z]+/)?.[0]??'';
-        if(!command){const escaped=input[i+1]??'\\';nodes.push(createElement('mo',{key:'esc'+i},escaped));i+=2;continue;}
+        if(!command){const escaped=input[i+1]??'\\';i+=2;const widths:Record<string,string>={',':'0.167em',':':'0.222em',';':'0.278em','!':'-0.167em',' ':'0.333em'};nodes.push(widths[escaped]?createElement('mspace',{key:'space'+i,width:widths[escaped]}):createElement('mo',{key:'esc'+i},({'{':'{','}':'}','%':'%','
+        i+=command.length+1;
+        if(command==='begin'){
+          const env=groupAt(input,i);i=env.end;
+          if(env.value==='array'){const spec=groupAt(input,i);i=spec.end;}
+          const ending='\\end{'+env.value+'}',close=input.indexOf(ending,i);
+          if(close<0){nodes.push(createElement('mtext',{key:'bad-env'+i},'\\begin{'+env.value+'}'));continue;}
+          nodes.push(envNode(env.value,input.slice(i,close)));i=close+ending.length;continue;
+        }
+        if(command==='end'||command==='limits'||command==='nolimits'||command==='displaystyle'||command==='textstyle'||command==='scriptstyle'||command==='quadskip')continue;
+        if(command==='left'||command==='right')continue;
+        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='binom'){
+          const a=groupAt(input,i);i=a.end;const b=groupAt(input,i);i=b.end;
+          const frac=createElement('mfrac',{key:'frac'+i,linethickness:command==='binom'?'0':'1'},createElement('mrow',null,...parse(a.value)),createElement('mrow',null,...parse(b.value)));
+          nodes.push(command==='binom'?createElement('mfenced',{key:'binom'+i,open:'(',close:')'},frac):frac);continue;
+        }
+        if(command==='sqrt'){
+          let index:string|undefined;
+          if(input[i]==='['){const close=input.indexOf(']',i);if(close>=0){index=input.slice(i+1,close);i=close+1;}}
+          const radicand=groupAt(input,i);i=radicand.end;
+          nodes.push(index?createElement('mroot',{key:'root'+i},createElement('mrow',null,...parse(radicand.value)),createElement('mrow',null,...parse(index))):createElement('msqrt',{key:'root'+i},...parse(radicand.value)));continue;
+        }
+        if(['overline','bar','underline','hat','widehat','tilde','widetilde','vec','dot','ddot','overrightarrow','overleftarrow'].includes(command)){
+          const a=groupAt(input,i);i=a.end;
+          const accent:Record<string,string>={overline:'¯',bar:'¯',underline:'_',hat:'^',widehat:'^',tilde:'~',widetilde:'~',vec:'→',dot:'˙',ddot:'¨',overrightarrow:'→',overleftarrow:'←'};
+          const over=!['underline'].includes(command);
+          nodes.push(over?createElement('mover',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])):createElement('munder',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])));continue;
+        }
+        if(command==='text'||command==='textrm'||command==='textbf'||command==='mathrm'||command==='mathbf'||command==='mathit'||command==='operatorname'){
+          const a=groupAt(input,i);i=a.end;nodes.push(createElement('mtext',{key:'text'+i},a.value));continue;
+        }
+        if(['\,','\\,',';','!','quad','qquad','enspace','thinspace'].includes(command)){
+          const width:Record<string,string>={',':'0.167em',';':'0.278em','!':'-0.167em',quad:'1em',qquad:'2em',enspace:'0.5em',thinspace:'0.167em'};
+          nodes.push(createElement('mspace',{key:'space'+i,width:width[command]??'0.167em'}));continue;
+        }
+        if(command==='\\'){nodes.push(createElement('mspace',{key:'newline'+i,linebreak:'newline'}));continue;}
+        if(symbols[command]){nodes.push(createElement('mo',{key:'sym'+i},symbols[command]));continue;}
+        if(functions.has(command)){nodes.push(createElement('mi',{key:'fn'+i},command));continue;}
+        if(command==='langle'||command==='rangle'){nodes.push(createElement('mo',{key:'angle'+i},command==='langle'?'⟨':'⟩'));continue;}
+        if(command==='lbrace'||command==='rbrace'){nodes.push(createElement('mo',{key:'brace'+i},command==='lbrace'?'{':'}'));continue;}
+        nodes.push(createElement('mi',{key:'unknown'+i},command));continue;
+      }
+      if(ch==='^'||ch==='_'){
+        const previous=nodes.pop(),arg=groupAt(input,i+1);i=arg.end;
+        const script=createElement('mrow',null,...parse(arg.value));
+        if(previous&&isValidElement(previous)&&previous.type==='msup'&&ch==='_'){
+          const parts=Children.toArray((previous.props as {children?:ReactNode}).children);
+          nodes.push(createElement('msubsup',{key:'both'+i},parts[0],script,parts[1]));
+        }else if(previous&&isValidElement(previous)&&previous.type==='msub'&&ch==='^'){
+          const parts=Children.toArray((previous.props as {children?:ReactNode}).children);
+          nodes.push(createElement('msubsup',{key:'both'+i},parts[0],parts[1],script));
+        }else{
+          nodes.push(ch==='^'?createElement('msup',{key:'sup'+i},previous??createElement('mi',null,''),script):createElement('msub',{key:'sub'+i},previous??createElement('mi',null,''),script));
+        }
+        continue;
+      }
+      if(ch==='{'){const a=groupAt(input,i);i=a.end;nodes.push(createElement('mrow',{key:'group'+i},...parse(a.value)));continue;}
+      if(ch==='}') {nodes.push(createElement('mo',{key:'close'+i},'}'));i++;continue;}
+      if(ch==='&'){nodes.push(createElement('mo',{key:'amp'+i},'&'));i++;continue;}
+      if(/\s/.test(ch)){nodes.push(' ');i++;continue;}
+      if(/[0-9]/.test(ch)){const token=input.slice(i).match(/^\d+(?:\.\d+)?/)?.[0]??ch;nodes.push(createElement('mn',{key:'num'+i},token));i+=token.length;continue;}
+      if(/[A-Za-z]/.test(ch)){nodes.push(createElement('mi',{key:'id'+i},ch));i++;continue;}
+      nodes.push(createElement('mo',{key:'op'+i},ch));i++;
+    }
+    return nodes;
+  }
+  const tree=createElement('math',{xmlns:'http://www.w3.org/1998/Math/MathML',display:display?'block':'inline'},createElement('mrow',null,...parse(source)));
+  return createElement(display?'div':'span',{className:display?'markdown-math-display':'markdown-math-inline'},tree);
+}
+
+function MermaidFallback({source}:{source:string}) {
+  return <div className="mermaid-fallback"><p>This Mermaid syntax is not supported by the local renderer yet. The source remains available:</p><pre>{source}</pre></div>;
+}
+
+function MermaidPie({source}:{source:string}) {
+  const rows=source.split('\n').slice(1).map(line=>line.match(/^["']?(.+?)["']?\s*:\s*(\d+(?:\.\d+)?)/)).filter(Boolean) as RegExpMatchArray[];
+  const total=rows.reduce((sum,row)=>sum+Number(row[2]),0);
+  if(!rows.length||!total)return <MermaidFallback source={source}/>;
+  let angle=-Math.PI/2;
+  const colors=['#55785a','#8c9f77','#c1a36b','#7b91a8','#b47d76','#8e82a9','#6d9c9a'];
+  const slices=rows.map((row,index)=>{const value=Number(row[2]),next=angle+value/total*Math.PI*2;const x1=100+80*Math.cos(angle),y1=100+80*Math.sin(angle),x2=100+80*Math.cos(next),y2=100+80*Math.sin(next);const large=next-angle>Math.PI?1:0;const path=`M 100 100 L ${x1} ${y1} A 80 80 0 ${large} 1 ${x2} ${y2} Z`;const item={path,color:colors[index%colors.length],label:row[1],value};angle=next;return item;});
+  return <div className="mermaid-diagram mermaid-pie" role="img" aria-label={linesTitle(source)||'Mermaid pie chart'}><svg viewBox="0 0 200 200" width="220">{slices.map((slice,index)=><path key={index} d={slice.path} fill={slice.color} stroke="white" strokeWidth="1"/>)}</svg><ul>{slices.map((slice,index)=><li key={index}><i style={{background:slice.color}}/>{slice.label}: {slice.value}</li>)}</ul></div>;
+}
+function linesTitle(source:string){return source.split('\n').find(line=>/^title\s+/i.test(line))?.replace(/^title\s+/i,'').trim();}
+
+function MermaidSequence({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(Boolean);
+  const participants=Array.from(new Set(lines.flatMap(line=>{const m=line.match(/^([\w-]+)\s*[-=]+>>?\s*([\w-]+)\s*:/);return m?[m[1],m[2]]:[]})));
+  const messages=lines.map(line=>line.match(/^([\w-]+)\s*([- =]+>>?[- =]*)\s*([\w-]+)\s*:\s*(.+)$/)).filter(Boolean) as RegExpMatchArray[];
+  if(!participants.length||!messages.length)return <MermaidFallback source={source}/>;
+  const width=Math.max(320,participants.length*150),height=100+messages.length*55;
+  const nodes:ReactNode[]=[];
+  participants.forEach((name,index)=>{const x=55+index*145;nodes.push(createElement('rect',{key:'p'+name,x:x-48,y:8,width:96,height:30,rx:5,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{key:'t'+name,x,y:28,textAnchor:'middle',fontSize:11,fill:'currentColor'},name),createElement('line',{key:'l'+name,x1:x,y1:40,x2:x,y2:height-8,stroke:'currentColor',strokeDasharray:'4 4',opacity:.55}));});
+  messages.forEach((message,index)=>{const from=participants.indexOf(message[1]),to=participants.indexOf(message[3]);const y=65+index*55,x1=55+from*145,x2=55+to*145;nodes.push(createElement('line',{key:'m'+index,x1,y1:y,x2,y2:y,stroke:'currentColor',strokeWidth:1.5,markerEnd:'url(#wave-seq-arrow)'}),createElement('text',{key:'label'+index,x:(x1+x2)/2,y:y-7,textAnchor:'middle',fontSize:10,fill:'currentColor'},message[4]));});
+  return <div className="mermaid-diagram" role="img" aria-label="Mermaid sequence diagram"><svg viewBox={`0 0 ${width} ${height}`} width="100%"><defs><marker id="wave-seq-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{nodes}</svg></div>;
+}
+
+function MermaidFlowchart({ source }: { source: string }) {
+  const lines = source.split('\n').map(line=>line.trim()).filter(Boolean);
+  const direction=lines[0]?.match(/^flowchart\s+(TD|TB|LR|RL|BT)/i)?.[1]?.toUpperCase();
+  const edges = lines.slice(1).map(line=>line.match(/^([\w-]+)\s*(?:\[(.*?)\])?\s*-->\s*([\w-]+)\s*(?:\[(.*?)\])?/)).filter(Boolean) as RegExpMatchArray[];
+  if (!direction || !edges.length) return <MermaidFallback source={source}/>;
+  const labels = new Map<string,string>();
+  edges.forEach(edge=>{labels.set(edge[1],edge[2]||labels.get(edge[1])||edge[1]);labels.set(edge[3],edge[4]||labels.get(edge[3])||edge[3]);});
+  const ids=Array.from(labels.keys()), horizontal=direction==='LR'||direction==='RL';
+  const width=horizontal?Math.max(240,ids.length*180):420, height=horizontal?150:Math.max(130,ids.length*95);
+  const position=(id:string)=>{const index=ids.indexOf(id);return horizontal?{x:20+index*175,y:30}:{x:135,y:15+index*90};};
+  const svgNodes:ReactNode[]=[];
+  edges.forEach((edge,index)=>{const a=position(edge[1]),b=position(edge[3]);svgNodes.push(createElement('line',{key:'e'+index,x1:a.x+65,y1:a.y+25,x2:b.x+65,y2:b.y+25,stroke:'currentColor',strokeWidth:1.5,markerEnd:'url(#wave-mermaid-arrow)'}));});
+  ids.forEach(id=>{const p=position(id);svgNodes.push(createElement('g',{key:id},createElement('rect',{x:p.x,y:p.y,width:130,height:50,rx:7,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{x:p.x+65,y:p.y+30,textAnchor:'middle',fontSize:12,fill:'currentColor'},labels.get(id))));});
+  return <div className="mermaid-diagram" role="img" aria-label="Mermaid flowchart"><svg viewBox={`0 0 ${width} ${height}`} width="100%"><defs><marker id="wave-mermaid-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{svgNodes}</svg></div>;
+}
+
+function highlightedCode(source:string, language:string):ReactNode[] {
+  const lang=language.toLowerCase();
+  const supported=/^(javascript|js|typescript|ts|jsx|tsx|json|css|scss|html|xml|bash|sh|shell|python|py|sql|yaml|yml|diff|text|txt|markdown|md)$/i.test(lang);
+  if(!supported)return [source];
+  if(lang==='diff'){
+    return source.split(/(\n)/).flatMap((line,index):ReactNode[]=>{
+      if(line==='\n')return ['\n'];
+      const kind=line.startsWith('+++')||line.startsWith('---')?'header':line.startsWith('+')?'added':line.startsWith('-')?'removed':line.startsWith('@@')?'hunk':'context';
+      return [createElement('span',{key:'diff'+index,className:'syntax-diff-'+kind},line)];
+    });
+  }
+  const keywords=/^(const|let|var|function|return|if|else|elif|for|while|class|new|import|from|export|default|async|await|true|false|null|undefined|def|print|pass|with|try|except|finally|raise|yield|lambda|None|True|False|select|where|insert|update|delete|create|table|as|and|or|not|join|left|right|inner|outer|group|by|order|limit|values|into|on|interface|type|extends|implements|public|private|static|void|fn|mut)$/i;
+  const pattern=/(\/\*[\s\S]*?\*\/|\/\/[^\n]*|--[^\n]*|#[^\n]*|\x22(?:\\.|[^\x22\\])*\x22|'(?:\\.|[^'\\])*'|\x60(?:\\.|[^\x60\\])*\x60|\b(?:const|let|var|function|return|if|else|elif|for|while|class|new|import|from|export|default|async|await|true|false|null|undefined|def|print|pass|with|try|except|finally|raise|yield|lambda|None|True|False|select|where|insert|update|delete|create|table|as|and|or|not|join|left|right|inner|outer|group|by|order|limit|values|into|on|interface|type|extends|implements|public|private|static|void|fn|mut)\b|\b\d+(?:\.\d+)?\b|[{}()[\];,.]|[=+*/<>!-])/gi;
+  const result:ReactNode[]=[];let last=0,index=0;
+  for(const match of source.matchAll(pattern)){const at=match.index??0;if(at>last)result.push(source.slice(last,at));const token=match[0];let kind='operator';if(/^\/\*|^\/\/|^--|^#/.test(token))kind='comment';else if(/^[\x22'\x60]/.test(token))kind='string';else if(/^\d/.test(token))kind='number';else if(keywords.test(token))kind='keyword';result.push(createElement('span',{key:'t'+index++,className:'syntax-'+kind},token));last=at+token.length;}
+  if(last<source.length)result.push(source.slice(last));return result;
+}
+export function MarkdownCode({ children, className }: MarkdownElementProps) {
+  const source=plainText(children);
+  if (className?.includes('language-mermaid')) {
+    if(/^\s*pie\b/i.test(source))return <MermaidPie source={source}/>;
+    if(/^\s*sequenceDiagram\b/i.test(source))return <MermaidSequence source={source}/>;
+    if(/^\s*flowchart\b/i.test(source))return <MermaidFlowchart source={source}/>;
+    return <MermaidFallback source={source}/>;
+  }
+  if (className?.includes('language-math')) return <MathExpression source={source} display/>;
+  if (typeof children==='string' && children.startsWith('math:')) return <MathExpression source={children.slice(5)}/>;
+  if(typeof children==='string'&&children.startsWith('wave-')){
+    const split=children.indexOf(':');const kind=children.slice(5,split),value=children.slice(split+1);
+    if(kind==='mark')return <mark>{value}</mark>;
+    if(kind==='underline')return <u>{value}</u>;
+    if(kind==='sup')return <sup>{value}</sup>;
+    if(kind==='sub')return <sub>{value}</sub>;
+    if(kind==='kbd')return <kbd>{value}</kbd>;
+  }
+  const language=className?.replace(/^language-/,'')??'';
+  return <code className={className}>{className?highlightedCode(source,language):children}</code>;
+}
+:'
+        i+=command.length+1;
+        if(command==='begin'){
+          const env=groupAt(input,i);i=env.end;
+          if(env.value==='array'){const spec=groupAt(input,i);i=spec.end;}
+          const ending='\\end{'+env.value+'}',close=input.indexOf(ending,i);
+          if(close<0){nodes.push(createElement('mtext',{key:'bad-env'+i},'\\begin{'+env.value+'}'));continue;}
+          nodes.push(envNode(env.value,input.slice(i,close)));i=close+ending.length;continue;
+        }
+        if(command==='end'||command==='limits'||command==='nolimits'||command==='displaystyle'||command==='textstyle'||command==='scriptstyle'||command==='quadskip')continue;
+        if(command==='left'||command==='right')continue;
+        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='binom'){
+          const a=groupAt(input,i);i=a.end;const b=groupAt(input,i);i=b.end;
+          const frac=createElement('mfrac',{key:'frac'+i,linethickness:command==='binom'?'0':'1'},createElement('mrow',null,...parse(a.value)),createElement('mrow',null,...parse(b.value)));
+          nodes.push(command==='binom'?createElement('mfenced',{key:'binom'+i,open:'(',close:')'},frac):frac);continue;
+        }
+        if(command==='sqrt'){
+          let index:string|undefined;
+          if(input[i]==='['){const close=input.indexOf(']',i);if(close>=0){index=input.slice(i+1,close);i=close+1;}}
+          const radicand=groupAt(input,i);i=radicand.end;
+          nodes.push(index?createElement('mroot',{key:'root'+i},createElement('mrow',null,...parse(radicand.value)),createElement('mrow',null,...parse(index))):createElement('msqrt',{key:'root'+i},...parse(radicand.value)));continue;
+        }
+        if(['overline','bar','underline','hat','widehat','tilde','widetilde','vec','dot','ddot','overrightarrow','overleftarrow'].includes(command)){
+          const a=groupAt(input,i);i=a.end;
+          const accent:Record<string,string>={overline:'¯',bar:'¯',underline:'_',hat:'^',widehat:'^',tilde:'~',widetilde:'~',vec:'→',dot:'˙',ddot:'¨',overrightarrow:'→',overleftarrow:'←'};
+          const over=!['underline'].includes(command);
+          nodes.push(over?createElement('mover',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])):createElement('munder',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])));continue;
+        }
+        if(command==='text'||command==='textrm'||command==='textbf'||command==='mathrm'||command==='mathbf'||command==='mathit'||command==='operatorname'){
+          const a=groupAt(input,i);i=a.end;nodes.push(createElement('mtext',{key:'text'+i},a.value));continue;
+        }
+        if(['\,','\\,',';','!','quad','qquad','enspace','thinspace'].includes(command)){
+          const width:Record<string,string>={',':'0.167em',';':'0.278em','!':'-0.167em',quad:'1em',qquad:'2em',enspace:'0.5em',thinspace:'0.167em'};
+          nodes.push(createElement('mspace',{key:'space'+i,width:width[command]??'0.167em'}));continue;
+        }
+        if(command==='\\'){nodes.push(createElement('mspace',{key:'newline'+i,linebreak:'newline'}));continue;}
+        if(symbols[command]){nodes.push(createElement('mo',{key:'sym'+i},symbols[command]));continue;}
+        if(functions.has(command)){nodes.push(createElement('mi',{key:'fn'+i},command));continue;}
+        if(command==='langle'||command==='rangle'){nodes.push(createElement('mo',{key:'angle'+i},command==='langle'?'⟨':'⟩'));continue;}
+        if(command==='lbrace'||command==='rbrace'){nodes.push(createElement('mo',{key:'brace'+i},command==='lbrace'?'{':'}'));continue;}
+        nodes.push(createElement('mi',{key:'unknown'+i},command));continue;
+      }
+      if(ch==='^'||ch==='_'){
+        const previous=nodes.pop(),arg=groupAt(input,i+1);i=arg.end;
+        const script=createElement('mrow',null,...parse(arg.value));
+        if(previous&&isValidElement(previous)&&previous.type==='msup'&&ch==='_'){
+          const parts=Children.toArray((previous.props as {children?:ReactNode}).children);
+          nodes.push(createElement('msubsup',{key:'both'+i},parts[0],script,parts[1]));
+        }else if(previous&&isValidElement(previous)&&previous.type==='msub'&&ch==='^'){
+          const parts=Children.toArray((previous.props as {children?:ReactNode}).children);
+          nodes.push(createElement('msubsup',{key:'both'+i},parts[0],parts[1],script));
+        }else{
+          nodes.push(ch==='^'?createElement('msup',{key:'sup'+i},previous??createElement('mi',null,''),script):createElement('msub',{key:'sub'+i},previous??createElement('mi',null,''),script));
+        }
+        continue;
+      }
+      if(ch==='{'){const a=groupAt(input,i);i=a.end;nodes.push(createElement('mrow',{key:'group'+i},...parse(a.value)));continue;}
+      if(ch==='}') {nodes.push(createElement('mo',{key:'close'+i},'}'));i++;continue;}
+      if(ch==='&'){nodes.push(createElement('mo',{key:'amp'+i},'&'));i++;continue;}
+      if(/\s/.test(ch)){nodes.push(' ');i++;continue;}
+      if(/[0-9]/.test(ch)){const token=input.slice(i).match(/^\d+(?:\.\d+)?/)?.[0]??ch;nodes.push(createElement('mn',{key:'num'+i},token));i+=token.length;continue;}
+      if(/[A-Za-z]/.test(ch)){nodes.push(createElement('mi',{key:'id'+i},ch));i++;continue;}
+      nodes.push(createElement('mo',{key:'op'+i},ch));i++;
+    }
+    return nodes;
+  }
+  const tree=createElement('math',{xmlns:'http://www.w3.org/1998/Math/MathML',display:display?'block':'inline'},createElement('mrow',null,...parse(source)));
+  return createElement(display?'div':'span',{className:display?'markdown-math-display':'markdown-math-inline'},tree);
+}
+
+function MermaidFallback({source}:{source:string}) {
+  return <div className="mermaid-fallback"><p>This Mermaid syntax is not supported by the local renderer yet. The source remains available:</p><pre>{source}</pre></div>;
+}
+
+function MermaidPie({source}:{source:string}) {
+  const rows=source.split('\n').slice(1).map(line=>line.match(/^["']?(.+?)["']?\s*:\s*(\d+(?:\.\d+)?)/)).filter(Boolean) as RegExpMatchArray[];
+  const total=rows.reduce((sum,row)=>sum+Number(row[2]),0);
+  if(!rows.length||!total)return <MermaidFallback source={source}/>;
+  let angle=-Math.PI/2;
+  const colors=['#55785a','#8c9f77','#c1a36b','#7b91a8','#b47d76','#8e82a9','#6d9c9a'];
+  const slices=rows.map((row,index)=>{const value=Number(row[2]),next=angle+value/total*Math.PI*2;const x1=100+80*Math.cos(angle),y1=100+80*Math.sin(angle),x2=100+80*Math.cos(next),y2=100+80*Math.sin(next);const large=next-angle>Math.PI?1:0;const path=`M 100 100 L ${x1} ${y1} A 80 80 0 ${large} 1 ${x2} ${y2} Z`;const item={path,color:colors[index%colors.length],label:row[1],value};angle=next;return item;});
+  return <div className="mermaid-diagram mermaid-pie" role="img" aria-label={linesTitle(source)||'Mermaid pie chart'}><svg viewBox="0 0 200 200" width="220">{slices.map((slice,index)=><path key={index} d={slice.path} fill={slice.color} stroke="white" strokeWidth="1"/>)}</svg><ul>{slices.map((slice,index)=><li key={index}><i style={{background:slice.color}}/>{slice.label}: {slice.value}</li>)}</ul></div>;
+}
+function linesTitle(source:string){return source.split('\n').find(line=>/^title\s+/i.test(line))?.replace(/^title\s+/i,'').trim();}
+
+function MermaidSequence({source}:{source:string}) {
+  const lines=source.split('\n').map(line=>line.trim()).filter(Boolean);
+  const participants=Array.from(new Set(lines.flatMap(line=>{const m=line.match(/^([\w-]+)\s*[-=]+>>?\s*([\w-]+)\s*:/);return m?[m[1],m[2]]:[]})));
+  const messages=lines.map(line=>line.match(/^([\w-]+)\s*([- =]+>>?[- =]*)\s*([\w-]+)\s*:\s*(.+)$/)).filter(Boolean) as RegExpMatchArray[];
+  if(!participants.length||!messages.length)return <MermaidFallback source={source}/>;
+  const width=Math.max(320,participants.length*150),height=100+messages.length*55;
+  const nodes:ReactNode[]=[];
+  participants.forEach((name,index)=>{const x=55+index*145;nodes.push(createElement('rect',{key:'p'+name,x:x-48,y:8,width:96,height:30,rx:5,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{key:'t'+name,x,y:28,textAnchor:'middle',fontSize:11,fill:'currentColor'},name),createElement('line',{key:'l'+name,x1:x,y1:40,x2:x,y2:height-8,stroke:'currentColor',strokeDasharray:'4 4',opacity:.55}));});
+  messages.forEach((message,index)=>{const from=participants.indexOf(message[1]),to=participants.indexOf(message[3]);const y=65+index*55,x1=55+from*145,x2=55+to*145;nodes.push(createElement('line',{key:'m'+index,x1,y1:y,x2,y2:y,stroke:'currentColor',strokeWidth:1.5,markerEnd:'url(#wave-seq-arrow)'}),createElement('text',{key:'label'+index,x:(x1+x2)/2,y:y-7,textAnchor:'middle',fontSize:10,fill:'currentColor'},message[4]));});
+  return <div className="mermaid-diagram" role="img" aria-label="Mermaid sequence diagram"><svg viewBox={`0 0 ${width} ${height}`} width="100%"><defs><marker id="wave-seq-arrow" markerWidth="7" markerHeight="7" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{nodes}</svg></div>;
+}
+
+function MermaidFlowchart({ source }: { source: string }) {
+  const lines = source.split('\n').map(line=>line.trim()).filter(Boolean);
+  const direction=lines[0]?.match(/^flowchart\s+(TD|TB|LR|RL|BT)/i)?.[1]?.toUpperCase();
+  const edges = lines.slice(1).map(line=>line.match(/^([\w-]+)\s*(?:\[(.*?)\])?\s*-->\s*([\w-]+)\s*(?:\[(.*?)\])?/)).filter(Boolean) as RegExpMatchArray[];
+  if (!direction || !edges.length) return <MermaidFallback source={source}/>;
+  const labels = new Map<string,string>();
+  edges.forEach(edge=>{labels.set(edge[1],edge[2]||labels.get(edge[1])||edge[1]);labels.set(edge[3],edge[4]||labels.get(edge[3])||edge[3]);});
+  const ids=Array.from(labels.keys()), horizontal=direction==='LR'||direction==='RL';
+  const width=horizontal?Math.max(240,ids.length*180):420, height=horizontal?150:Math.max(130,ids.length*95);
+  const position=(id:string)=>{const index=ids.indexOf(id);return horizontal?{x:20+index*175,y:30}:{x:135,y:15+index*90};};
+  const svgNodes:ReactNode[]=[];
+  edges.forEach((edge,index)=>{const a=position(edge[1]),b=position(edge[3]);svgNodes.push(createElement('line',{key:'e'+index,x1:a.x+65,y1:a.y+25,x2:b.x+65,y2:b.y+25,stroke:'currentColor',strokeWidth:1.5,markerEnd:'url(#wave-mermaid-arrow)'}));});
+  ids.forEach(id=>{const p=position(id);svgNodes.push(createElement('g',{key:id},createElement('rect',{x:p.x,y:p.y,width:130,height:50,rx:7,fill:'var(--markdown-diagram-node,#f0f3ed)',stroke:'currentColor'}),createElement('text',{x:p.x+65,y:p.y+30,textAnchor:'middle',fontSize:12,fill:'currentColor'},labels.get(id))));});
+  return <div className="mermaid-diagram" role="img" aria-label="Mermaid flowchart"><svg viewBox={`0 0 ${width} ${height}`} width="100%"><defs><marker id="wave-mermaid-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0 0 L0 6 L7 3 z" fill="currentColor"/></marker></defs>{svgNodes}</svg></div>;
+}
+
+function highlightedCode(source:string, language:string):ReactNode[] {
+  const lang=language.toLowerCase();
+  const supported=/^(javascript|js|typescript|ts|jsx|tsx|json|css|scss|html|xml|bash|sh|shell|python|py|sql|yaml|yml|diff|text|txt|markdown|md)$/i.test(lang);
+  if(!supported)return [source];
+  if(lang==='diff'){
+    return source.split(/(\n)/).flatMap((line,index):ReactNode[]=>{
+      if(line==='\n')return ['\n'];
+      const kind=line.startsWith('+++')||line.startsWith('---')?'header':line.startsWith('+')?'added':line.startsWith('-')?'removed':line.startsWith('@@')?'hunk':'context';
+      return [createElement('span',{key:'diff'+index,className:'syntax-diff-'+kind},line)];
+    });
+  }
+  const keywords=/^(const|let|var|function|return|if|else|elif|for|while|class|new|import|from|export|default|async|await|true|false|null|undefined|def|print|pass|with|try|except|finally|raise|yield|lambda|None|True|False|select|where|insert|update|delete|create|table|as|and|or|not|join|left|right|inner|outer|group|by|order|limit|values|into|on|interface|type|extends|implements|public|private|static|void|fn|mut)$/i;
+  const pattern=/(\/\*[\s\S]*?\*\/|\/\/[^\n]*|--[^\n]*|#[^\n]*|\x22(?:\\.|[^\x22\\])*\x22|'(?:\\.|[^'\\])*'|\x60(?:\\.|[^\x60\\])*\x60|\b(?:const|let|var|function|return|if|else|elif|for|while|class|new|import|from|export|default|async|await|true|false|null|undefined|def|print|pass|with|try|except|finally|raise|yield|lambda|None|True|False|select|where|insert|update|delete|create|table|as|and|or|not|join|left|right|inner|outer|group|by|order|limit|values|into|on|interface|type|extends|implements|public|private|static|void|fn|mut)\b|\b\d+(?:\.\d+)?\b|[{}()[\];,.]|[=+*/<>!-])/gi;
+  const result:ReactNode[]=[];let last=0,index=0;
+  for(const match of source.matchAll(pattern)){const at=match.index??0;if(at>last)result.push(source.slice(last,at));const token=match[0];let kind='operator';if(/^\/\*|^\/\/|^--|^#/.test(token))kind='comment';else if(/^[\x22'\x60]/.test(token))kind='string';else if(/^\d/.test(token))kind='number';else if(keywords.test(token))kind='keyword';result.push(createElement('span',{key:'t'+index++,className:'syntax-'+kind},token));last=at+token.length;}
+  if(last<source.length)result.push(source.slice(last));return result;
+}
+export function MarkdownCode({ children, className }: MarkdownElementProps) {
+  const source=plainText(children);
+  if (className?.includes('language-mermaid')) {
+    if(/^\s*pie\b/i.test(source))return <MermaidPie source={source}/>;
+    if(/^\s*sequenceDiagram\b/i.test(source))return <MermaidSequence source={source}/>;
+    if(/^\s*flowchart\b/i.test(source))return <MermaidFlowchart source={source}/>;
+    return <MermaidFallback source={source}/>;
+  }
+  if (className?.includes('language-math')) return <MathExpression source={source} display/>;
+  if (typeof children==='string' && children.startsWith('math:')) return <MathExpression source={children.slice(5)}/>;
+  if(typeof children==='string'&&children.startsWith('wave-')){
+    const split=children.indexOf(':');const kind=children.slice(5,split),value=children.slice(split+1);
+    if(kind==='mark')return <mark>{value}</mark>;
+    if(kind==='underline')return <u>{value}</u>;
+    if(kind==='sup')return <sup>{value}</sup>;
+    if(kind==='sub')return <sub>{value}</sub>;
+    if(kind==='kbd')return <kbd>{value}</kbd>;
+  }
+  const language=className?.replace(/^language-/,'')??'';
+  return <code className={className}>{className?highlightedCode(source,language):children}</code>;
+}
+,'#':'#','_':'_','&':'&'} as Record<string,string>)[escaped]??escaped));continue;}
         i+=command.length+1;
         if(command==='begin'){
           const env=groupAt(input,i);i=env.end;
