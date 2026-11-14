@@ -64,7 +64,6 @@ Inline: $E = mc^2$
 ```math
 \frac{a}{b}
 ```
-$
 
 ## Mermaid flowchart
 
