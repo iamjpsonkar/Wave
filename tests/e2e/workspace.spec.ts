@@ -630,3 +630,61 @@ test('Markdown Mermaid class, ER, state, Gantt, git and extended flowchart diagr
   await expect(diagrams.nth(5).locator('circle')).toHaveCount(3);
   await expect(diagrams.locator('.diagram-source summary')).toHaveCount(6);
 });
+
+
+test('Markdown local DOT, PlantUML, Vega-Lite, D2 and AsciiDoc renderers stay offline', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Other Local Renderers');
+  await editor.fill([
+    '# Other Local Renderers',
+    '',
+    '```dot',
+    'digraph {',
+    '  A [label="Start"];',
+    '  A -> B;',
+    '  B -> C;',
+    '}',
+    '```',
+    '',
+    '```plantuml',
+    '@startuml',
+    'Alice -> Bob : hello',
+    'Bob --> Alice : reply',
+    '@enduml',
+    '```',
+    '',
+    '```vega-lite',
+    '{"title":"Sales","data":{"values":[{"category":"A","amount":5},{"category":"B","amount":9}]},"mark":"bar","encoding":{"x":{"field":"category","type":"nominal"},"y":{"field":"amount","type":"quantitative"}}}',
+    '```',
+    '',
+    '```d2',
+    'browser: Browser',
+    'api: API',
+    'browser -> api: Request',
+    '```',
+    '',
+    '```asciidoc',
+    '= Training Notes',
+    '',
+    '== Overview',
+    '',
+    'This is *bold* and _italic_.',
+    '',
+    '* First item',
+    '* Second item',
+    '',
+    '----',
+    'const answer = 42;',
+    '----',
+    '```'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview.locator('.mermaid-diagram')).toHaveCount(4);
+  await expect(preview.locator('.mermaid-diagram svg')).toHaveCount(4);
+  await expect(preview.locator('.asciidoc-preview h1')).toHaveText('Training Notes');
+  await expect(preview.locator('.asciidoc-preview strong')).toHaveText('bold');
+  await expect(preview.locator('.asciidoc-preview em')).toHaveText('italic');
+  await expect(preview.locator('.asciidoc-preview ul li')).toHaveCount(2);
+  await expect(preview.locator('.asciidoc-preview pre code')).toContainText('const answer = 42;');
+});
