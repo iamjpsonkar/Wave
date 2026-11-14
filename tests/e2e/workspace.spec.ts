@@ -1457,3 +1457,33 @@ test('foreground and background color formatting round-trip through Markdown pre
   await page.getByRole('button', { name: 'Edit' }).click();
   await expect(editor).toHaveValue(/Literal code: `\[\[color:#123456\|not colored\]\]`/);
 });
+
+test('color presets, reset and block background formatting are available', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Color Palette');
+  await editor.fill('Preset text\n\nBlock background text');
+  await editor.evaluate((node: HTMLTextAreaElement) => {
+    const start = node.value.indexOf('Preset text');
+    node.focus(); node.setSelectionRange(start, start + 'Preset text'.length);
+  });
+  await page.getByRole('button', { name: 'Apply text color #26734D' }).click();
+  await expect(editor).toHaveValue(/\[\[color:#26734D\|Preset text\]\]/);
+  await editor.evaluate((node: HTMLTextAreaElement) => {
+    const start = node.value.indexOf('Preset text');
+    node.focus(); node.setSelectionRange(start, start + node.value.slice(start).indexOf(']]') + 2);
+  });
+  await page.getByRole('button', { name: 'Remove color formatting' }).click();
+  await expect(editor).toHaveValue('Preset text\n\nBlock background text');
+  await editor.evaluate((node: HTMLTextAreaElement) => {
+    const start = node.value.indexOf('Block background text');
+    node.focus(); node.setSelectionRange(start, start + 'Block background text'.length);
+  });
+  await page.locator('input[aria-label="Block background color"]').evaluate((node: HTMLInputElement) => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(node, '#eaf2e8');
+    node.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await expect(editor).toHaveValue(/> \[!COLOR=#EAF2E8\]\n> Block background text/);
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toContainText('Block background text');
+  await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toHaveAttribute('style', /background-color:\s*#eaf2e8/i);
+});
