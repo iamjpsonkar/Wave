@@ -722,3 +722,72 @@ test('Markdown embeds only local audio and video assets and rejects remote media
   await expect(preview.locator('.missing-asset')).toContainText('Only local workspace media can be embedded.');
   await expect(preview.locator('audio[src^="https://"], video[src^="https://"]')).toHaveCount(0);
 });
+
+
+test('Markdown Mermaid mindmap, timeline, quadrant, requirement and architecture renderers expose source', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'More Mermaid Families');
+  await editor.fill([
+    '# More Mermaid Families',
+    '',
+    '```mermaid',
+    'mindmap',
+    '  root((Wave))',
+    '    Writing',
+    '      Markdown',
+    '    Workspace',
+    '```',
+    '',
+    '```mermaid',
+    'timeline',
+    'title Wave history',
+    '2024 : First notes',
+    '2025 : Local workspace',
+    '2026 : Markdown preview',
+    '```',
+    '',
+    '```mermaid',
+    'quadrantChart',
+    'title Priorities',
+    'x-axis Low --> High',
+    'y-axis Low --> High',
+    'quadrant-1 Do next',
+    'quadrant-2 Plan',
+    'quadrant-3 Later',
+    'quadrant-4 Avoid',
+    'Reliability: [0.8, 0.9]',
+    'Polish: [0.4, 0.6]',
+    '```',
+    '',
+    '```mermaid',
+    'requirementDiagram',
+    'requirement localStorage {',
+    '  id: R1',
+    '  text: Local persistence',
+    '  risk: high',
+    '  verifymethod: test',
+    '}',
+    'element workspace {',
+    '  type: system',
+    '}',
+    'workspace - satisfies -> localStorage',
+    '```',
+    '',
+    '```mermaid',
+    'architecture-beta',
+    'group cloud(cloud)[Cloud]',
+    'service api(server)[API] in cloud',
+    'service db(database)[Database] in cloud',
+    'api:R -- L:db',
+    '```'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const diagrams = page.locator('.markdown-preview .mermaid-diagram');
+  await expect(diagrams).toHaveCount(5);
+  await expect(diagrams.nth(0).locator('rect')).toHaveCount(3);
+  await expect(diagrams.nth(1).locator('circle')).toHaveCount(3);
+  await expect(diagrams.nth(2).locator('circle')).toHaveCount(2);
+  await expect(diagrams.nth(3).locator('rect')).toHaveCount(2);
+  await expect(diagrams.nth(4).locator('rect')).toHaveCount(3);
+  await expect(diagrams.locator('.diagram-source summary')).toHaveCount(5);
+});
