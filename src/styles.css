@@ -325,3 +325,69 @@ html,body{height:100%}
  .app.theme-system .settings-dialog>header button,
  .app.theme-system .settings-reset { color:#dce5d7;background:#293329;border-color:#566354; }
 }
+
+/* Editor productivity controls: compact, keyboard-visible and theme-aware. */
+.editor-enhancements{width:min(var(--editor-content-width,860px),calc(100% - 48px));margin:0 auto 12px;flex:0 0 auto;color:#50594e;font-size:12px}
+.editor-utility-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:34px;border-bottom:1px solid #e8ece4;padding:3px 0}
+.editor-utility-actions{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.editor-utility-actions button,.find-actions button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:29px;padding:5px 8px;border:1px solid transparent;border-radius:6px;background:transparent;color:#586354;font-size:12px;cursor:pointer}
+.editor-utility-actions button:hover,.find-actions button:hover:not(:disabled){background:#f0f3ed;border-color:#e0e7dc;color:#293f33}
+.editor-utility-actions button:disabled,.find-actions button:disabled{opacity:.4;cursor:not-allowed}
+.utility-count{display:inline-grid;place-items:center;min-width:17px;height:17px;border-radius:9px;background:#edf1e9;color:#596b54;font-size:10px}
+.document-statistics{display:flex;align-items:center;gap:12px;color:#667061;font-size:11px;white-space:nowrap}
+.document-statistics span:last-child{display:inline-flex;align-items:center;gap:4px}
+.document-find{display:flex;align-items:end;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid #e8ece4}
+.find-fields{display:flex;align-items:end;gap:10px;flex:1;min-width:220px}
+.find-fields label{display:grid;gap:4px;min-width:0;flex:1;color:#667061;font-size:10px}
+.find-fields input:not([type=checkbox]){width:100%;min-width:0;min-height:32px;border:1px solid #dfe5da;border-radius:6px;background:#fff;color:#30382f;padding:6px 8px;font:inherit;font-size:12px}
+.find-fields .find-case{display:flex;align-items:center;gap:5px;white-space:nowrap;padding-bottom:8px}
+.find-actions{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.find-actions>span{font-size:10px;color:#697466;margin-right:4px;white-space:nowrap}
+.find-actions button{border-color:#e0e6dc;background:#fff}
+.find-actions button:focus-visible,.editor-utility-actions button:focus-visible,.document-outline button:focus-visible{outline:2px solid #668e66;outline-offset:2px}
+.document-outline{display:grid;gap:2px;max-height:220px;overflow:auto;padding:8px 0;border-bottom:1px solid #e8ece4}
+.document-outline button{width:100%;text-align:left;border:0;border-radius:5px;background:transparent;color:#465343;padding:5px 8px;font-size:12px;cursor:pointer;overflow-wrap:anywhere}
+.document-outline button:hover{background:#f0f3ed}
+.document-outline .outline-level-2{padding-left:22px}
+.document-outline .outline-level-3{padding-left:36px}
+.document-outline .outline-level-4,.document-outline .outline-level-5,.document-outline .outline-level-6{padding-left:50px}
+.document-outline p{margin:4px 8px;color:#737d6f;font-size:11px}
+.app.theme-dark .editor-enhancements,.app.theme-system .editor-enhancements{color:#c0cbb9}
+.app.theme-dark .editor-utility-bar,.app.theme-dark .document-find,.app.theme-dark .document-outline,.app.theme-system .editor-utility-bar,.app.theme-system .document-find,.app.theme-system .document-outline{border-color:#3a453a}
+.app.theme-dark .editor-utility-actions button,.app.theme-dark .find-actions button,.app.theme-system .editor-utility-actions button,.app.theme-system .find-actions button{color:#c7d2c1}
+.app.theme-dark .editor-utility-actions button:hover,.app.theme-dark .find-actions button:hover:not(:disabled),.app.theme-system .editor-utility-actions button:hover,.app.theme-system .find-actions button:hover:not(:disabled){background:#303c30;border-color:#4a5948;color:#f0f5ed}
+.app.theme-dark .utility-count,.app.theme-system .utility-count{background:#354435;color:#d5e2ce}
+.app.theme-dark .document-statistics,.app.theme-system .document-statistics,.app.theme-dark .find-actions>span,.app.theme-system .find-actions>span{color:#b9c5b4}
+.app.theme-dark .find-fields label,.app.theme-system .find-fields label{color:#c0cbb9}
+.app.theme-dark .find-fields input:not([type=checkbox]),.app.theme-system .find-fields input:not([type=checkbox]){background:#182019;border-color:#465344;color:#e5e9e1}
+.app.theme-dark .find-actions button,.app.theme-system .find-actions button{background:#252d25;border-color:#465344}
+.app.theme-dark .document-outline button,.app.theme-system .document-outline button{color:#d5dfd1}
+.app.theme-dark .document-outline button:hover,.app.theme-system .document-outline button:hover{background:#303c30}
+@media(prefers-color-scheme:dark){
+ .app.theme-system .editor-utility-bar,.app.theme-system .document-find,.app.theme-system .document-outline{border-color:#3a453a}
+ .app.theme-system .editor-utility-actions button,.app.theme-system .find-actions button{color:#c7d2c1}
+ .app.theme-system .editor-utility-actions button:hover,.app.theme-system .find-actions button:hover:not(:disabled){background:#303c30;border-color:#4a5948;color:#f0f5ed}
+ .app.theme-system .utility-count{background:#354435;color:#d5e2ce}
+ .app.theme-system .document-statistics,.app.theme-system .find-actions>span,.app.theme-system .find-fields label{color:#b9c5b4}
+ .app.theme-system .find-fields input:not([type=checkbox]){background:#182019;border-color:#465344;color:#e5e9e1}
+ .app.theme-system .find-actions button{background:#252d25;border-color:#465344}
+ .app.theme-system .document-outline button{color:#d5dfd1}
+ .app.theme-system .document-outline button:hover{background:#303c30}
+}
+@media(max-width:720px){
+ .editor-enhancements{width:calc(100% - 28px)}
+ .editor-utility-bar{align-items:flex-start;flex-direction:column;gap:5px;padding:6px 0}
+ .editor-utility-actions button{min-height:32px;padding:6px 7px}
+ .document-statistics{width:100%;justify-content:flex-start;flex-wrap:wrap;gap:10px;font-size:10px}
+ .document-find{align-items:stretch;flex-direction:column}
+ .find-fields{flex-wrap:wrap}
+ .find-fields label{min-width:calc(50% - 8px)}
+ .find-fields .find-case{min-width:100%;padding:0}
+ .find-actions{justify-content:flex-start}
+}
+@media(max-width:380px){
+ .editor-enhancements{width:calc(100% - 20px)}
+ .editor-utility-actions button span:not(.utility-count){display:none}
+ .document-statistics{font-size:9px;gap:8px}
+ .find-fields label{min-width:100%}
+}
