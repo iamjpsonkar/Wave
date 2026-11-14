@@ -1398,3 +1398,22 @@ test('optional block editing preserves untouched Markdown source and edits one b
   await page.getByRole('button', { name: 'Block editing' }).click();
   await expect(page.locator('.editor textarea')).toHaveValue(source.replace('Paragraph stays intact.', 'Edited paragraph text.'));
 });
+
+
+test('block editor reorders blocks without losing separators and inserts common Markdown blocks', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Block Controls');
+  const source = '# First\n\nParagraph block.\n\n- List item';
+  await editor.fill(source);
+  await page.getByRole('button', { name: 'Block editing' }).click();
+  const blocks = page.getByRole('region', { name: 'Markdown block editor' });
+  await blocks.getByRole('button', { name: 'Move block 2 down' }).click();
+  await expect(blocks.getByRole('textbox', { name: 'Edit list block 2' })).toHaveValue('- List item');
+  await expect(blocks.getByRole('textbox', { name: 'Edit paragraph block 3' })).toHaveValue('Paragraph block.');
+  await blocks.getByRole('button', { name: 'Move block 3 up' }).click();
+  await blocks.getByRole('button', { name: 'Add block' }).click();
+  await blocks.getByRole('menu', { name: 'Add a Markdown block' }).getByRole('menuitem', { name: 'Heading' }).click();
+  await expect(blocks.getByRole('textbox', { name: 'Edit heading block 4' })).toHaveValue('## New heading');
+  await page.getByRole('button', { name: 'Block editing' }).click();
+  await expect(page.locator('.editor textarea')).toHaveValue(source + '\n\n## New heading');
+});
