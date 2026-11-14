@@ -5,7 +5,8 @@
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Default branch: `main`  
 > Context reviewed: 2026-11-15  
-> Canonical detailed handoff: [DEV_CONTEXT.md](./DEV_CONTEXT.md)  
+> Canonical detailed handoff: [DEV_CONTEXT.md](./DEV_CONTEXT.md)
+> Start here for the complete project/product/agent guide: [wiki.md](./wiki.md)  
 > Product scope source of truth: [upcoming-features.md](./upcoming-features.md)
 
 ---
