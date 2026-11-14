@@ -279,6 +279,10 @@ test('command palette supports filtering and keyboard execution of workspace act
   await input.press('Enter');
   await expect(page.locator('textarea')).toHaveValue(/# Meeting notes/);
   await expect(dialog).toHaveCount(0);
+  await page.keyboard.press('Control+k');
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(dialog).toHaveCount(0);
 });
 
 test('wiki links navigate to pages and backlinks are derived from Markdown files', async ({ page }) => {
