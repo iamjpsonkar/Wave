@@ -276,3 +276,6 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `ui-gaps.md`, `ui-features.md` and `features-gap.md`. Nested inline color ranges, Blocks-mode selection, non-Wave rendering and user-color contrast review remain open.
 - Source commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`, renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`, styles `7020028201eeee4be404a003b4e2c2abc7925c9a`, E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
 - No local test, typecheck, build or visual review was performed; CI pending.
+
+
+- 2026-11-15: Added per-block background color controls to the optional Markdown Blocks editor. Color selection wraps the block in the validated Wave color-callout directive; changing the color updates the marker rather than nesting another wrapper. Updated block classification and dark/light control styling. E2E source adds apply/update/preview coverage. Source commits: block editor `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`, styles `93bf0eb5dc809e373292570d900066161f6e7be3`, E2E `0cf474ff0d0765f882916c04efbb69e49c95cb85`. Execution and CI remain pending.
