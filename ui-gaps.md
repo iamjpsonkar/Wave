@@ -289,3 +289,12 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 - UI-018/UI-019: brought Edit/Preview segmented controls, Backup, toolbar buttons and the sidebar wordmark into the dark theme. Remaining popovers/dialogs and the full navigation contrast matrix still need review.
 - UI-020: the new test adds a representative system-dark Preview slice, not the full Light/Dark/System × Edit/Preview × desktop/mobile matrix. Keep the gap partially open until that matrix exists and is reviewed.
 - UI-001/UI-012 are implemented in source; QA/visual verification remains pending. UI-003's centered width controls are implemented; responsive and long-content verification remains open. All other gap IDs and acceptance criteria are preserved.
+
+
+## Implementation update — UI-020 theme and responsive matrix — 2026-11-14
+
+- Added theme-aware dark/system-dark styling for Markdown callouts, disclosures, math fallback surfaces, diagram/fallback surfaces, syntax tokens, diff tokens, missing-image fallbacks, copy controls, and Settings dialog controls. Existing light-theme styling remains the default; explicit Light mode is not overridden by the OS dark preference.
+- Added a Playwright matrix covering Light/Dark/System × Edit/Preview × desktop/mobile (12 states) using representative headings, links, inline/fenced code, tables, alerts, DETAILS disclosures, math, Mermaid diagrams and missing-image fallbacks.
+- The regression checks key computed foreground/surface colors, rendered content and horizontal overflow at 1440px and 390px.
+- **Status: implementation and test source added — CI pending.** UI-020 is not closed until the new main-branch workflow passes and the visual results are reviewed. This is computed-style/interaction coverage, not a complete screenshot-diff suite or WCAG contrast certification.
+- All existing UI gap IDs and acceptance criteria remain preserved. UI-005 contrast audit, UI-014 broader responsive breakpoints, and UI-018/UI-019 dialog/popover/navigation audit remain open.
