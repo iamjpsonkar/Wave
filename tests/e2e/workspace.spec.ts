@@ -288,6 +288,7 @@ test('command palette supports filtering and keyboard execution of workspace act
 test('wiki links navigate to pages and backlinks are derived from Markdown files', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'Linked Page');
+  await expect(page.getByRole('button', { name: /Linked Page/ })).toBeVisible();
   await page.getByRole('button', { name: /New page/ }).first().click();
   const editor = page.locator('textarea');
   await expect(editor).toBeVisible();
