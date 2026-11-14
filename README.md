@@ -68,3 +68,8 @@ The UI uses a small storage adapter in `src/storage.ts`. Keep this boundary inde
 **Early MVP:** do not rely on this preview as the only copy of important documents until recovery and backup features are implemented.
 
 The expanded blueprint also covers specialist workflows including typed knowledge graphs, research and PDF annotation, visual/technical diagramming, static documentation publishing, workflow automation, personal productivity, digital asset management, lightweight CRM, and cross-cutting requirements for data integrity, accessibility, security, performance and portability.
+
+
+## Product architecture direction
+
+Wave is planned as a two-mode workspace: an offline-capable personal core and an online layer for collaboration, sharing and connected services. User content remains in a portable, user-controlled workspace; the planned canonical store is a versioned SQLite database with ordinary asset files and Markdown/JSON/CSV export. A user-managed Docker deployment is a later target for online services. See [section 20 of the product blueprint](upcoming-features.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers) for the detailed decisions, migration strategy, security model, vertical slices and release gates.
