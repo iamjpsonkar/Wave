@@ -72,7 +72,7 @@ export function markdownSource(source: string, docs: WikiDoc[] = []): string {
       return '[' + label + '](' + href + ')';
     });
   });
-  return converted.join('\n').replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION|DETAILS)\][ \t]*/gim, '$1**$2** ');
+  return converted.join('\n').replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*/gim, '$1**$2** ');
 }
 
 export function MarkdownBlockquote({ children }: MarkdownElementProps) {
