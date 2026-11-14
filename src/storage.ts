@@ -255,7 +255,9 @@ export async function createBackup(workspace: Workspace): Promise<string> {
       try{const file=await(await workspace.wave.getFileHandle(filename)).getFile();await write(backup,filename,file);}
       catch(error){if(!isNotFound(error))throw error;}
     }
-    const afterManifest=await optionalFileSnapshot(workspace.wave,'manifest.json'),afterSettings=await optionalFileSnapshot(workspace.wave,'settings.json');\n    if(beforeManifest!==afterManifest||beforeSettings!==afterSettings)throw new Error('Workspace settings changed during backup. The snapshot is marked incomplete; retry when editing has stopped.');\n    const complete={status:'complete',startedAt,completedAt:new Date().toISOString(),documents:docs.files,assets:assets.files};
+    const afterManifest=await optionalFileSnapshot(workspace.wave,'manifest.json'),afterSettings=await optionalFileSnapshot(workspace.wave,'settings.json');
+    if(beforeManifest!==afterManifest||beforeSettings!==afterSettings)throw new Error('Workspace settings changed during backup. The snapshot is marked incomplete; retry when editing has stopped.');
+    const complete={status:'complete',startedAt,completedAt:new Date().toISOString(),documents:docs.files,assets:assets.files};
     await write(backup,'backup-status.json',JSON.stringify(complete,null,2));
     return name;
   } catch(error) {
