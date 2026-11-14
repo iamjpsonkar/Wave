@@ -2,7 +2,7 @@
 
 > Review date: 2026-11-14  
 > Repository: https://github.com/iamjpsonkar/Wave  
-> Evidence: user-provided 2048 × 1330 desktop screenshot, current `main` source at `af366a055f4f11e14743f0c6f3d70b491c0822e6`, `src/App.tsx`, `src/styles.css`, and `docs/FEATURES.md`.  
+> Evidence: user-provided 2048 × 1330 desktop Edit/Preview screenshots; current `main` source reviewed at `4713725f0e09efae0d0b8e6c9da880f5513e18ca`, including `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, and `docs/FEATURES.md`.  
 > Scope: UI/UX observations and product-facing interface gaps. This is not a claim that every gap is a confirmed functional bug.
 
 ## How to read this register
@@ -24,7 +24,7 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 ### UI-001 — Settings is visibly unavailable
 
 - Priority: **P1**
-- Status: **Implemented — CI pending**
+- Status: **Implemented in source — QA verification pending**
 - Original evidence: the sidebar footer displayed “Settings” with “NOT AVAILABLE YET”; the inert placeholder is now an accessible, keyboard-operable Settings dialog with focus containment and Escape dismissal.
 - Implemented scope: workspace-persisted theme, typography, content width and reduced-motion preferences; local storage/recovery explanation; save status and basic page/folder diagnostics. More advanced editor/privacy/diagnostic controls remain future scope.
 - Regression coverage checks preference persistence in `.wave/settings.json`, application and reload/reopen behavior. Do not mark complete until CI passes.
@@ -44,7 +44,7 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 ### UI-003 — Writing canvas uses the available width without a readable content measure
 
 - Priority: **P1**
-- Status: **Partially implemented — CI pending**
+- Status: **Core behavior implemented — responsive QA pending**
 - Original evidence: the screenshot showed content starting near the left edge of a very wide pane without a centered measure or width control. The editor and preview now share a centered 860px default measure with narrow, wide and full-width preferences. Responsive review and specialized wide-content behavior remain open.
 - User impact: long lines become difficult to scan and the document feels visually sparse on large displays.
 - Target: introduce a comfortable default writing measure (for example, a centered 720–900px content column) with optional wider/full-width modes for tables, code and diagrams.
@@ -53,11 +53,11 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 ### UI-004 — Toolbar actions are icon-heavy and some actions look indistinguishable
 
 - Priority: **P2**
-- Status: **Observed**
-- Evidence: screenshot shows a compact row of icons with no visible text labels. Two adjacent code-shaped controls appear similar; the screenshot does not show their tooltip behavior.
-- User impact: new users may not know which action inserts inline code versus a fenced code block, or what less common formatting controls do.
-- Target: add accessible names and tooltips for every icon action; group related actions; distinguish inline code from code-block insertion with clear icons/labels; consider a responsive “More formatting” menu.
-- Acceptance: every action has a unique accessible name, visible tooltip on hover/focus, and a keyboard-operable trigger; the two code actions are visually distinguishable.
+- Status: **Partially implemented — regression pending**
+- Evidence: source confirmed both adjacent code actions rendered the same `Code2` icon and the inline-code button had only the generic accessible name “Code”. The inline-code action now uses `Code2` with the explicit name/tooltip “Inline code”; fenced insertion uses the distinct `FileCode2` icon and “Code block” name/tooltip.
+- User impact: users can now distinguish the two code actions by icon and accessible label; other icon-only toolbar controls still need a complete labeling/tooltip audit.
+- Target: complete the toolbar-wide accessible-name and hover/focus tooltip audit, then consider grouping advanced actions in a responsive More menu.
+- Acceptance: every toolbar action has a unique accessible name, visible tooltip on hover/focus, and keyboard-operable trigger; inline and fenced code actions use distinct visual icons and clear names. A Playwright regression asserts both icon identities, labels and insertion behavior.
 
 ### UI-005 — Small and low-emphasis interface text
 
@@ -125,7 +125,7 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 ### UI-012 — Settings, appearance and typography controls are not exposed
 
 - Priority: **P1**
-- Status: **Implemented — CI pending**
+- Status: **Implemented in source — QA verification pending**
 - Original evidence: appearance and typography controls were planned and Settings was unavailable. A workspace Settings dialog now exposes working theme, font family/size, line spacing, content width and reduced-motion preferences. Privacy/local-storage and recovery explanations are informational rather than fictitious toggles.
 - Preferences use the existing `.wave/settings.json` store and apply to editor/preview. Contrast and full component coverage still require accessibility review.
 - User impact: users can now adapt theme and writing typography; complete visual consistency and contrast still need review.
@@ -223,7 +223,7 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 ### UI-016 — Dark-theme Markdown preview code block has a mismatched light surface
 
 - Priority: **P1**
-- Status: **Observed in Preview screenshot; source-level CSS review required**
+- Status: **Dark-theme source mitigation added — visual regression pending**
 - Evidence: the dark workspace Preview screenshot shows a large near-white code block surface against the dark editor canvas. The code text appears very pale, so the content is difficult to read.
 - User impact: code samples become visually glaring and code text is low-contrast in the dark theme.
 - Target: make code block background, foreground, border, inline code and copy control use coherent theme tokens. Preserve syntax-color contrast independently for light and dark themes.
@@ -232,7 +232,7 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 ### UI-017 — Dark-theme heading/Markdown body contrast is inconsistent
 
 - Priority: **P1**
-- Status: **Observed in Preview screenshot**
+- Status: **Dark-theme source mitigation added — visual regression pending**
 - Evidence: the rendered “Hii” heading appears extremely dark and subdued against the dark canvas, while other interface controls remain bright. This suggests a heading or Markdown color token is not consistently applied in the shown preview.
 - User impact: headings lose hierarchy and can become difficult to read, especially in longer documents.
 - Target: define explicit theme-aware foreground tokens for all Markdown elements: body, headings, links, emphasis, blockquotes, tables, callouts, code and fallback content.
@@ -241,7 +241,7 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 ### UI-018 — Dark theme mixes dark workspace surfaces with light controls
 
 - Priority: **P2**
-- Status: **Observed**
+- Status: **Partially mitigated in source — visual audit pending**
 - Evidence: dark screenshots show the dark canvas and sidebar alongside bright white Edit/Preview segmented controls, Backup button and code block panel. Some light controls may be intentional emphasis, but their surface treatment is not visually integrated.
 - User impact: inconsistent surfaces make the interface feel partially themed rather than intentionally designed; bright panels draw attention away from writing.
 - Target: define theme-aware surface, raised-surface, border and selected-control tokens. Reserve high-contrast light surfaces for deliberate primary actions only.
@@ -250,7 +250,7 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 ### UI-019 — Brand wordmark and selected navigation need stronger dark-theme contrast
 
 - Priority: **P2**
-- Status: **Observed**
+- Status: **Brand contrast mitigation added — visual regression pending**
 - Evidence: in the dark screenshot, the “wave” wordmark beside the green icon is barely distinguishable from the sidebar background. Muted navigation and helper labels also appear subdued.
 - User impact: brand identity and navigation affordances are harder to recognize in dark mode.
 - Target: add theme-specific brand and navigation color tokens, preserving the quiet aesthetic without sacrificing legibility.
@@ -259,7 +259,7 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 ### UI-020 — Preview-mode typography and code styling need dedicated visual regression coverage
 
 - Priority: **P2**
-- Status: **Needs verification**
+- Status: **Partially implemented — theme coverage incomplete**
 - Evidence: the paired screenshots show Edit and Preview states, but only one short heading and one code block. There is no evidence for tables, links, blockquotes, alerts, diagrams, math, long headings or nested lists in dark mode.
 - User impact: theme regressions may remain hidden until users open real technical documents.
 - Target: add a theme matrix of representative Markdown fixtures and screenshot tests for both Edit and Preview.
@@ -280,3 +280,12 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 - No Settings dialog screenshot, mobile/tablet screenshot, light-theme Preview screenshot, accessibility tree, keyboard/focus recording or contrast measurements were supplied.
 - Visual observations identify likely contrast defects; computed WCAG contrast ratios and the precise CSS rule responsible still require browser inspection.
 - No application code was changed by this screenshot review.
+
+
+## Implementation update — toolbar distinction and dark-theme parity — 2026-11-14
+
+- UI-004: separated the two code toolbar actions visually and semantically. Inline code uses `Code2` and the accessible label/tooltip `Inline code`; fenced code uses `FileCode2` and `Code block`. Playwright checks both icon identities, labels and insertion behavior. Other toolbar controls still need a complete accessible-name/tooltip audit.
+- UI-016/UI-017: added explicit dark and system-dark preview styles for code surfaces, inline code, headings, links, blockquotes, table headers/borders and horizontal rules. Added system-dark E2E assertions for heading/code contrast and dark surfaces.
+- UI-018/UI-019: brought Edit/Preview segmented controls, Backup, toolbar buttons and the sidebar wordmark into the dark theme. Remaining popovers/dialogs and the full navigation contrast matrix still need review.
+- UI-020: the new test adds a representative system-dark Preview slice, not the full Light/Dark/System × Edit/Preview × desktop/mobile matrix. Keep the gap partially open until that matrix exists and is reviewed.
+- UI-001/UI-012 are implemented in source; QA/visual verification remains pending. UI-003's centered width controls are implemented; responsive and long-content verification remains open. All other gap IDs and acceptance criteria are preserved.
