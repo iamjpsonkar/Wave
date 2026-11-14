@@ -14,6 +14,8 @@
 - [x] List, create, open and autosave Markdown documents
 - [x] Store images and file attachments locally with collision-safe names
 - [x] Markdown formatting toolbar and sanitized live preview with local asset rendering
+- [x] GFM tables, task lists, strikethrough, footnotes, alerts and heading anchors
+- [x] Inline/display MathML for a documented LaTeX subset and simple Mermaid flowchart previews
 - [x] Nested folders and pages, including empty folders
 - [x] Search page titles and document content
 - [x] Create verified local backup snapshots with incomplete-snapshot detection
