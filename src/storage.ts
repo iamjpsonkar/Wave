@@ -465,6 +465,15 @@ export async function writeWorkspaceSettings(wave: FileSystemDirectoryHandle, se
   settingsQueues.set(wave,current);
   try{await current;}finally{if(settingsQueues.get(wave)===current)settingsQueues.delete(wave);}
 }
+export async function backUpAndResetWorkspaceSettings(wave:FileSystemDirectoryHandle):Promise<string>{
+  const original=await(await wave.getFileHandle('settings.json')).getFile();
+  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+  let backupName='settings.corrupt-'+stamp+'.json',suffix=2;
+  while(await existsFile(wave,backupName))backupName='settings.corrupt-'+stamp+'-'+suffix+++'.json';
+  await write(wave,backupName,original);
+  await writeWorkspaceSettings(wave,{format:'markdown',appearance:'system',favorites:[]});
+  return backupName;
+}
 declare global {
   interface Window { showDirectoryPicker: (options?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle> }
   interface FileSystemDirectoryHandle { entries(): AsyncIterableIterator<[string, FileSystemHandle]> }
