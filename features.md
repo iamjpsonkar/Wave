@@ -78,7 +78,7 @@ Wave's bigger ambition includes a rich block editor, internal page links and bac
 
 ## Run locally
 
-Requires Node.js 22+ and a supported Chromium browser.
+Requires Node.js 22.6+ and a supported Chromium browser.
 
 ```bash
 npm install
