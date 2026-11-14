@@ -219,3 +219,10 @@ These items are inspired by spreadsheet-specific controls in the screenshot. The
 ## Status
 
 All UIF items are **proposed / not implemented by this document**. Existing toolbar actions mentioned as current state are observations from source inspection; verify current behavior and tests before changing their status.
+
+
+## Implemented color controls follow-up — 2026-11-15
+
+- The selection-based color foundation now includes six quick foreground swatches, remove-formatting, source-toolbar block fills and per-block background color pickers in Blocks mode.
+- Blocks-mode color actions preserve the original Markdown model by adding or updating `> [!COLOR=#RRGGBB]` directives. Nested inline color ranges, portable fallback rendering and custom-color contrast guidance remain open.
+- UI-021 remains a tracked implementation item; no earlier UI feature proposal is removed or downgraded.
