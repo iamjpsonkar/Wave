@@ -326,3 +326,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 
 
 - CI follow-up: the initial container-job edit added image construction; a subsequent review caught that the Compose validation step had not been inserted by the first text update. Corrected the workflow to run `docker compose config -q` before `docker build --pull -t wave:ci .`. Workflow-file correction commit: b41adbeb2ea68fd1632975ca1275c01f6e9b87dd. Verify the new run for both steps; the earlier Docker image builds passed but do not prove Compose validation.
+
+
+## 2026-11-15 — Comprehensive Wave wiki and AI-agent guide
+
+- Added root `wiki.md` as the main orientation document for developers and AI agents.
+- Consolidated durable product-owner directions from the available Wave project conversation context: preserve all agreed scope, keep the full catalogue separate from priority order, implement requested behavior with regression tests, retain development histories, and update `DEV_CONTEXT.md` last.
+- Documented product constitution, offline/online modes, current stack/source map/workspace layout, reliability invariants, Markdown/editor behavior, UI requests, Docker boundary, QA evidence limits, roadmap coverage, documentation map and recommended improvements.
+- Added direct discovery links from `README.md` and `docs/README.md`.
+- Verification: GitHub repository contents were fetched and reviewed; no local test/build or CI run was performed for this documentation-only change.
