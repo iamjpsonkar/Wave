@@ -1,15 +1,36 @@
 import { test, expect } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
+async function installWorkspaceFixture(page: import('@playwright/test').Page) {
   await page.addInitScript(async () => {
-    // Use Chromium's real Origin Private File System handles as a deterministic
-    // browser filesystem fixture. Only the picker gesture is stubbed.
+    // A stable OPFS entry lets multiple tabs open the same workspace while
+    // each test still receives an isolated browser context.
     const opfsRoot = await navigator.storage.getDirectory();
-    const root = await opfsRoot.getDirectoryHandle('wave-e2e-' + crypto.randomUUID(), { create: true });
+    const root = await opfsRoot.getDirectoryHandle('wave-e2e-shared-workspace', { create: true });
     Object.defineProperty(window, '__waveTestRoot', { value: root, configurable: true });
     Object.defineProperty(window, 'showDirectoryPicker', { value: async () => root, configurable: true });
+    const permissionPrototype = Object.getPrototypeOf(root);
+    Object.defineProperty(permissionPrototype, 'queryPermission', {
+      configurable: true,
+      value: async () => localStorage.getItem('wave-e2e-permission') || 'granted'
+    });
+    Object.defineProperty(permissionPrototype, 'requestPermission', {
+      configurable: true,
+      value: async () => localStorage.getItem('wave-e2e-permission') === 'denied' ? 'denied' : 'granted'
+    });
+    const originalTransaction = IDBDatabase.prototype.transaction;
+    Object.defineProperty(IDBDatabase.prototype, 'transaction', {
+      configurable: true,
+      value: function(storeNames: string | string[], mode?: IDBTransactionMode, options?: IDBTransactionOptions) {
+        if (this.name === 'wave-draft-journal' && mode === 'readwrite') {
+          (window as any).__waveDraftDurability = options?.durability || 'default';
+        }
+        return originalTransaction.call(this, storeNames, mode, options);
+      }
+    });
   });
-});
+}
+
+test.beforeEach(async ({ page }) => installWorkspaceFixture(page));
 
 async function openWorkspace(page: import('@playwright/test').Page) {
   await page.goto('/');
@@ -114,4 +135,57 @@ test('backup and restore create a separate verified workspace folder', async ({ 
     return names;
   });
   expect(restored).toHaveLength(1);
+});
+
+
+test('draft journal requests strict durability before reporting a committed recovery draft', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Durable Draft');
+  await editor.fill('# Durable Draft\\n\\nStrict durability marker');
+  await expect(page.locator('.topright small')).toContainText('Recovery draft saved', { timeout: 5000 });
+  const durability = await page.evaluate(() => (window as any).__waveDraftDurability);
+  expect(durability).toBe('strict');
+});
+
+test('recent workspace permission denial is surfaced without opening the workspace', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Permission Protected');
+  await page.reload();
+  await page.evaluate(() => localStorage.setItem('wave-e2e-permission', 'denied'));
+  await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(page.locator('.error')).toContainText('does not have permission', { timeout: 5000 });
+  await expect(page.locator('textarea')).toHaveCount(0);
+});
+
+test('two tabs editing the same workspace do not silently overwrite each other', async ({ page, context }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Concurrent Editing');
+  const firstEditor = page.locator('textarea');
+
+  const second = await context.newPage();
+  await installWorkspaceFixture(second);
+  await second.goto('/');
+  await second.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(second.getByRole('button', { name: /Concurrent Editing/ })).toBeVisible();
+  await second.getByRole('button', { name: /Concurrent Editing/ }).click();
+  const secondEditor = second.locator('textarea');
+  await expect(secondEditor).toBeVisible();
+
+  await firstEditor.fill('# Concurrent Editing\\n\\nChange from first tab');
+  await secondEditor.fill('# Concurrent Editing\\n\\nChange from second tab');
+  await expect(page.locator('.topright small')).toContainText(/Saved locally|conflict/i, { timeout: 10000 });
+  await expect(second.locator('.topright small')).toContainText(/Saved locally|conflict/i, { timeout: 10000 });
+  await page.waitForTimeout(900);
+  const contents = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const docs = await (await root.getDirectoryHandle('.wave')).getDirectoryHandle('documents');
+    const values: string[] = [];
+    for await (const [name, handle] of docs.entries()) {
+      if (handle.kind !== 'file' || !name.endsWith('.md')) continue;
+      values.push(await (await handle.getFile()).text());
+    }
+    return values.join('\\n');
+  });
+  expect(contents).toContain('Change from first tab');
+  expect(contents).toContain('Change from second tab');
 });
