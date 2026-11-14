@@ -7,7 +7,7 @@ This page is the compatibility contract for Wave's local Markdown preview. The e
 - CommonMark-style paragraphs, hard line breaks, headings (levels 1–6), Setext headings, emphasis, inline code, fenced and indented code, blockquotes, nested blockquotes, ordered/unordered/nested/mixed lists, links, images, thematic breaks, escaping, and reference-style links/images.
 - GFM through `remark-gfm`: tables and column alignment, strikethrough, task lists, autolinks, and footnotes.
 - Wave extensions: internal wiki links and backlinks, GitHub-style NOTE/TIP/IMPORTANT/WARNING/CAUTION callouts, safe DETAILS disclosure blocks, copyable and lightly syntax-highlighted fenced code, unique heading IDs, inline/display math with recursive groups/fractions/roots/scripts and common symbols, inline formatting shorthands, emoji shortcodes, and local Mermaid flowchart/sequence/pie previews.
-- Local image attachments resolve from the workspace assets directory. External images are not fetched by the preview.
+- Local image attachments resolve from the workspace assets directory; Markdown image alt text and titles are retained. External images are not fetched by the preview and display a readable missing-asset fallback.
 - Direct Unicode emoji and symbols work as ordinary text.
 
 ## Math
@@ -35,7 +35,7 @@ PlantUML, Graphviz/DOT, Vega/Vega-Lite, D2, and AsciiDoc diagrams require dedica
 | CommonMark writing syntax | Supported |
 | GFM tables, tasks, strikethrough, autolinks, footnotes | Supported |
 | GitHub-style alert callouts | Supported |
-| Local images and Markdown links | Supported with local-asset and URL safety rules |
+| Local images and Markdown links | Supported with local-asset and URL safety rules; titles/alt text retained |
 | Heading anchors | Supported with deterministic duplicate suffixes |
 | MathML | Partial: nested groups/fractions/roots/scripts and common commands; no matrices or aligned environments |
 | Mermaid | Partial: simple flowcharts, basic sequence diagrams and pie charts |
