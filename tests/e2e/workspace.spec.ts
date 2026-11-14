@@ -775,9 +775,9 @@ test('Markdown preview is source-preserving across toggle, save and workspace re
     '| --- | --- |',
     '| escaped \\| pipe | value |',
     '',
-    '$',
+    '```math',
     '\\frac{1}{\\sqrt{x_1 + \\alpha^2}}',
-    '$',
+    '```',
     '',
     '> [!NOTE]',
     '> Preview must not rewrite this source.',
@@ -790,7 +790,7 @@ test('Markdown preview is source-preserving across toggle, save and workspace re
   await page.getByRole('button', { name: 'Preview' }).click();
   await expect(page.locator('.markdown-preview h1')).toHaveText('Source Round Trip');
   await expect(page.locator('.markdown-preview table')).toContainText('escaped | pipe');
-  await expect(page.locator('.markdown-preview .math-expression, .markdown-preview math')).toBeVisible();
+  await expect(page.locator('.markdown-preview .markdown-math-display math')).toBeVisible();
   await expect(page.locator('.markdown-preview .wiki-link-unresolved')).toContainText('Missing Page');
   await page.getByRole('button', { name: 'Edit' }).click();
   await expect(page.locator('textarea')).toHaveValue(original);
