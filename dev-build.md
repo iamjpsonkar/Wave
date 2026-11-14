@@ -212,3 +212,5 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - E2E source inventory: **34 scenarios** (previously 33); Node test source remains **30 tests**.
 - No local test runner is available through this repository connection. No test, typecheck or production-build pass is claimed. Check the workflow for the latest main commit before marking UI-020 verified.
 - Scope limitations: computed-style and interaction assertions are included; screenshot baseline/diff review, a full WCAG contrast audit, tablet/320px breakpoints, and broader dialog/popover/navigation review remain open.
+
+- Test-source follow-up commit: `5b110945a45596de28c13f34435816a87907089f` simplifies the overflow assertion in the UI-020 matrix. Latest combined status was not exposed by the repository connector; no CI pass is claimed. Recheck the Actions run on this commit.
