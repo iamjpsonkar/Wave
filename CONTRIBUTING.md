@@ -65,9 +65,9 @@ Do not claim a check passed unless it was actually executed. Report any unrun ch
 
 Keep each document's purpose intact:
 
-- `upcoming-features.md` is the complete product blueprint; do not prune agreed scope.
-- `priority-features.md` controls delivery order, not feature retention.
-- `features.md` and `docs/FEATURES.md` describe shipped capabilities.
+- `upcoming-FEATURES.md` is the complete product blueprint; do not prune agreed scope.
+- `priority-FEATURES.md` controls delivery order, not feature retention.
+- `FEATURES.md` and `FEATURES.md` describe shipped capabilities.
 - `docs/ROADMAP.md` tracks delivery phases.
 - `dev-fixed.md` and `dev-build.md` record implementation and verification history.
 - `DEV_CONTEXT.md` is the canonical developer handoff and must be updated at the end of each implementation batch.
