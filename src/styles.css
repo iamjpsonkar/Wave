@@ -176,3 +176,19 @@ html,body{height:100%}
 .markdown-preview kbd{display:inline-block;margin:0;padding:2px 5px;border:1px solid #d9ddd4;border-bottom-width:2px;border-radius:4px;background:#f7f8f5;color:#596153;font:11px ui-monospace,monospace}
 .markdown-preview mark{background:#fff1a8;color:#4c4428;padding:0 2px;border-radius:2px}
 .markdown-preview u{text-decoration-thickness:1px;text-underline-offset:3px}
+
+/* Local Markdown syntax highlighting and accessible diagram layouts */
+.markdown-preview .syntax-keyword{color:#8757a5;font-weight:600}
+.markdown-preview .syntax-string{color:#39734b}
+.markdown-preview .syntax-number{color:#a35c31}
+.markdown-preview .syntax-comment{color:#8b9186;font-style:italic}
+.markdown-preview .syntax-operator{color:#647b9b}
+.markdown-preview .mermaid-diagram{max-width:100%;overflow:auto;margin:18px 0;padding:12px;border:1px solid #e7eae2;border-radius:8px;background:#fbfcfa}
+.markdown-preview .mermaid-diagram svg{display:block;max-width:100%;height:auto;margin:auto}
+.markdown-preview .mermaid-pie{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.markdown-preview .mermaid-pie ul{list-style:none;padding:0;margin:0;display:grid;gap:7px;font-size:12px}
+.markdown-preview .mermaid-pie li{display:flex;align-items:center;gap:8px}
+.markdown-preview .mermaid-pie li i{display:inline-block;width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+.markdown-preview .mermaid-fallback{margin:16px 0}
+.markdown-preview .mermaid-fallback p{font-size:12px;color:#777d71;margin:0 0 6px}
+.markdown-preview h1[id],.markdown-preview h2[id],.markdown-preview h3[id],.markdown-preview h4[id],.markdown-preview h5[id],.markdown-preview h6[id]{scroll-margin-top:24px}
