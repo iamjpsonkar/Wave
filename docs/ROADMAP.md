@@ -28,7 +28,8 @@ Wave is being developed as a local-first alternative to hosted workspaces. The r
 - [ ] Backup browser and restore workflow
 - [ ] Atomic writes and interrupted-save recovery
 - [ ] Schema migration framework
-- [ ] Empty-folder persistence and folder rename/delete
+- [x] Empty-folder persistence and navigation
+- [ ] Folder rename/delete
 - [ ] Document rename and move
 - [ ] Automated storage-adapter tests
 
