@@ -194,3 +194,10 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 - It does not show preview mode, open backlinks, search results, template gallery, backup history, Trash, dialogs, mobile/tablet breakpoints or keyboard/focus states.
 - Do not infer that a feature is broken merely because its control is not visible in this screenshot.
 - This review created a UI gap register only; no application UI code was changed.
+
+
+## Implementation update — 2026-11-14
+
+- UI-001 and UI-012: replaced the unavailable Settings footer placeholder with a keyboard-accessible dialog. Added workspace-scoped theme, font family, text size, line spacing, content width and reduced-motion preferences, persisted through the existing settings file. Added explicit local-storage, autosave/recovery and workspace-count information; no cloud or unsupported controls were introduced.
+- Added a Playwright regression for preference persistence, application and workspace reopen. Status remains **Implemented — CI pending** until the full browser suite passes.
+- All other UI gap IDs and acceptance criteria remain unchanged and open. This is the first implementation slice, not completion of the entire UI gap register.
