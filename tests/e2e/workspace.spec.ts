@@ -197,3 +197,40 @@ test('two tabs editing the same workspace do not silently overwrite each other',
   await expect.poll(readPersistedAndDraftContent, { timeout: 12000 }).toContain('Change from first tab');
   await expect.poll(readPersistedAndDraftContent, { timeout: 12000 }).toContain('Change from second tab');
 });
+test('recovery prompt identifies a draft created in another tab and preserves its record when declined', async ({ page, context }) => {
+  await openWorkspace(page);
+  const firstEditor = await createPage(page, 'Cross-tab Recovery');
+  await firstEditor.fill('# Cross-tab Recovery\\n\\nUnsaved change owned by first tab');
+  await expect(page.locator('.topright small')).toContainText('Recovery draft saved', { timeout: 5000 });
+
+  const second = await context.newPage();
+  await installWorkspaceFixture(second);
+  await second.goto('/');
+  await second.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(second.getByRole('button', { name: /Cross-tab Recovery/ })).toBeVisible();
+
+  let promptMessage = '';
+  second.once('dialog', async dialog => {
+    promptMessage = dialog.message();
+    await dialog.dismiss();
+  });
+  await second.getByRole('button', { name: /Cross-tab Recovery/ }).click();
+  await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\\n\\nBrowser regression content');
+  expect(promptMessage).toContain('another browser tab');
+
+  const retainedDrafts = await second.evaluate(async () => {
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('wave-draft-journal', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const drafts = await new Promise<Array<{ content: string }>>((resolve, reject) => {
+      const request = db.transaction('drafts', 'readonly').objectStore('drafts').getAll();
+      request.onsuccess = () => resolve(request.result as Array<{ content: string }>);
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    return drafts.map(record => record.content);
+  });
+  expect(retainedDrafts).toContain('# Cross-tab Recovery\\n\\nUnsaved change owned by first tab');
+});
