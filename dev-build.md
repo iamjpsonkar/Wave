@@ -293,3 +293,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Scope: browser print dialog → Save as PDF; this is not a direct PDF download engine. Pagination, headers/footers and background-color inclusion depend on browser print settings.
 - Commits: App `e6800b1725f1471fcd56a403e001ff7fa7302cbb`; print CSS `26dc983d85a531e4a1431624ec7558b5b5dcb2b2`; E2E `8608f04f7c4347d4f59dff4016d45b52db15219b`.
 - No local tests, typecheck, build or screenshot review have been performed for this batch. CI status must be checked before claiming verification.
+## 2026-11-15 — PDF export UI bug remediation (UIB-001–UIB-006)
+
+- Print mode now applies a deterministic white-page print palette with dark text, normalized component surfaces, table-cell visibility/layout, and collapsed DETAILS body visibility. Custom validated Wave foreground colors are retained through a dedicated print CSS token.
+- Fixed the inline color renderer regex so the full label after `wave-color:#RRGGBB:` / `wave-bg:#RRGGBB:` is rendered as styled text rather than visible serialization.
+- Updated the Complete Feature Test summation to the documented `$$` display delimiter and added a print E2E fixture for the table Priority value `1`, custom color, rendered MathML and collapsed disclosure content.
+- Expanded the existing PDF export E2E scenario; it remains **44 Playwright scenario definitions** and **30 Node test definitions**. These are source counts, not run results.
+- Commits: renderer `05275f7c18594918a64e19ab5166300c5cab6424`, `b68d2a0a43e918fa52f9ebeeb87ef1d3e8676f5b`; CSS `27678927380002a17400697bb6a6f890032063be`, `33bbcfdcf00f5200c2f1bd125573d0596d94b188`; template `d4049b2e5228b77b8befd7e989252d8b81eed201`, `6f594bab5e4e6e503a77023ca7cac2089e678349`; E2E `2c34b20ad21b930be260f84bcf463075dff4f6d8`, `45c9cd0e2e43a57252f734bb4cfa40a4f085c823`; `ui-bug.md` `2942b71734064433f9816caca86ab2ba452e749e`.
+- CI run `43630578833` for the defect-register commit was **in progress** at the time of inspection. Subsequent commits trigger their own CI runs. No local test, typecheck, production build or screenshot review was run; do not claim a pass. UIB-005 still requires a fresh PDF visual check to establish whether the missing `1` is fully resolved.
