@@ -20,7 +20,7 @@ async function installWorkspaceFixture(page: import('@playwright/test').Page) {
     const originalTransaction = IDBDatabase.prototype.transaction;
     Object.defineProperty(IDBDatabase.prototype, 'transaction', {
       configurable: true,
-      value: function(storeNames: string | string[], mode?: IDBTransactionMode, options?: IDBTransactionOptions) {
+      value: function(this: IDBDatabase, storeNames: string | string[], mode?: IDBTransactionMode, options?: IDBTransactionOptions) {
         if (this.name === 'wave-draft-journal' && mode === 'readwrite') {
           (window as any).__waveDraftDurability = options?.durability || 'default';
         }
