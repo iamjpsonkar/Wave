@@ -463,6 +463,7 @@ export async function permanentlyDeleteTrashItem(trash: FileSystemDirectoryHandl
   await withDirectoryWorkspaceLock(trash,async()=>{
     try{await trash.removeEntry(id+'.md');}catch(error){if(!isNotFound(error))throw error;}
     try{await trash.removeEntry(id+'.json');}catch(error){if(!isNotFound(error))throw error;}
+    try{await trash.removeEntry(id+'.op.json');}catch(error){if(!isNotFound(error))throw error;}
   });
 }
 export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Promise<string> {
@@ -506,22 +507,25 @@ export async function readWorkspaceSettings(wave: FileSystemDirectoryHandle): Pr
   if(!parsed||typeof parsed!=='object'||Array.isArray(parsed))throw new Error('Workspace settings have an invalid format. The original file was preserved.');
   return parsed as WorkspaceSettings;
 }
-export async function writeWorkspaceSettings(wave: FileSystemDirectoryHandle, settings: WorkspaceSettings): Promise<void> {
-  await withDirectoryWorkspaceLock(wave,async()=>{
+async function writeWorkspaceSettingsUnlocked(wave:FileSystemDirectoryHandle,settings:WorkspaceSettings):Promise<void>{
   const previous=settingsQueues.get(wave)??Promise.resolve();
   const current=previous.catch(()=>undefined).then(async()=>{await write(wave,'settings.json',JSON.stringify(settings,null,2));await updateManifest(wave);});
   settingsQueues.set(wave,current);
   try{await current;}finally{if(settingsQueues.get(wave)===current)settingsQueues.delete(wave);}
-  });
+}
+export async function writeWorkspaceSettings(wave:FileSystemDirectoryHandle,settings:WorkspaceSettings):Promise<void>{
+  await withDirectoryWorkspaceLock(wave,()=>writeWorkspaceSettingsUnlocked(wave,settings));
 }
 export async function backUpAndResetWorkspaceSettings(wave:FileSystemDirectoryHandle):Promise<string>{
-  const original=await(await wave.getFileHandle('settings.json')).getFile();
-  const stamp=new Date().toISOString().replace(/[:.]/g,'-');
-  let backupName='settings.corrupt-'+stamp+'.json',suffix=2;
-  while(await existsFile(wave,backupName))backupName='settings.corrupt-'+stamp+'-'+suffix+++'.json';
-  await write(wave,backupName,original);
-  await writeWorkspaceSettings(wave,{format:'markdown',appearance:'system',favorites:[]});
-  return backupName;
+  return withDirectoryWorkspaceLock(wave,async()=>{
+    const original=await(await wave.getFileHandle('settings.json')).getFile();
+    const stamp=new Date().toISOString().replace(/[:.]/g,'-');
+    let backupName='settings.corrupt-'+stamp+'.json',suffix=2;
+    while(await existsFile(wave,backupName))backupName='settings.corrupt-'+stamp+'-'+suffix+++'.json';
+    await write(wave,backupName,original);
+    await writeWorkspaceSettingsUnlocked(wave,{format:'markdown',appearance:'system',favorites:[]});
+    return backupName;
+  });
 }
 declare global {
   interface Window { showDirectoryPicker: (options?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle> }
