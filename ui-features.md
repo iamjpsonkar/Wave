@@ -83,7 +83,7 @@
 - **Proposal:** extend this foundation with accessible preset swatches, remove/reset formatting, nested color ranges and block-level fills after the portable syntax and selection model are validated.
 - **Acceptance:**
   - Highlight syntax is documented, sanitized and round-trips exactly.
-  - Palette is keyboard accessible and has visible selected state.
+  - Native color inputs have accessible labels and keyboard operation; a curated swatch palette and selected-state styling remain future work.
   - No arbitrary CSS, HTML style attributes or unsafe rendering is introduced.
   - Color values accept only six-digit hexadecimal tokens; no raw CSS or HTML style attributes are accepted.
   - Markdown source remains exact across Edit/Preview; non-Wave readers see the explicit Wave directive syntax as plain text.
