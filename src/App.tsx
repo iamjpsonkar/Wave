@@ -3,7 +3,7 @@ import { Archive, BookOpen, Bold, Check, ChevronDown, Code2, FilePlus2, FileText
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
-import { addAsset, createBackup, createFolder, listDocs, listTrash, moveDocToTrash, permanentlyDeleteTrashItem, restoreTrashItem, openWorkspace, readDoc, saveDoc, slug, type Doc, type TrashItem, type Workspace } from './storage';
+import { addAsset, createBackup, createFolder, listDocs, listFolders, listTrash, moveDocToTrash, permanentlyDeleteTrashItem, restoreTrashItem, openWorkspace, readDoc, saveDoc, slug, type Doc, type TrashItem, type Workspace } from './storage';
 import { ensureWorkspacePermission, getRememberedWorkspace, rememberWorkspace } from './workspaceRegistry';
 
 function useLocalAssetUrl(assets: FileSystemDirectoryHandle, source?: string) {
@@ -23,12 +23,11 @@ function LocalMarkdownLink({href,children,assets}:{href?:string;children:ReactNo
 }
 
 export default function App() {
- const [ws,setWs]=useState<Workspace|null>(null),[recentWorkspace,setRecentWorkspace]=useState<FileSystemDirectoryHandle|null>(null),[docs,setDocs]=useState<Doc[]>([]),[active,setActive]=useState(''),[content,setContent]=useState(''),[query,setQuery]=useState(''),[search,setSearch]=useState(false),[menu,setMenu]=useState(false),[status,setStatus]=useState('All changes saved'),[error,setError]=useState(''),[busy,setBusy]=useState(false),[preview,setPreview]=useState(false),[selectedFolder,setSelectedFolder]=useState(''),[showTrash,setShowTrash]=useState(false),[trashItems,setTrashItems]=useState<TrashItem[]>([]);
+ const [ws,setWs]=useState<Workspace|null>(null),[recentWorkspace,setRecentWorkspace]=useState<FileSystemDirectoryHandle|null>(null),[docs,setDocs]=useState<Doc[]>([]),[folders,setFolders]=useState<string[]>([]),[active,setActive]=useState(''),[content,setContent]=useState(''),[query,setQuery]=useState(''),[search,setSearch]=useState(false),[menu,setMenu]=useState(false),[status,setStatus]=useState('All changes saved'),[error,setError]=useState(''),[busy,setBusy]=useState(false),[preview,setPreview]=useState(false),[selectedFolder,setSelectedFolder]=useState(''),[showTrash,setShowTrash]=useState(false),[trashItems,setTrashItems]=useState<TrashItem[]>([]);
  const editorRef=useRef<HTMLTextAreaElement>(null);
  useEffect(()=>{void getRememberedWorkspace().then(setRecentWorkspace).catch(()=>setRecentWorkspace(null));},[]);
  const filtered=useMemo(()=>docs.filter(d=>(d.title+' '+d.content).toLowerCase().includes(query.toLowerCase())),[docs,query]);
- const folders=useMemo(()=>Array.from(new Set(docs.flatMap(d=>{const parts=d.path.split('/').slice(0,-1);return parts.map((_,i)=>parts.slice(0,i+1).join('/'));}))).sort((a,b)=>a.split('/').length-b.split('/').length||a.localeCompare(b)),[docs]);
- async function refresh(w:Workspace){setDocs(await listDocs(w.documents));}
+ async function refresh(w:Workspace){const [nextDocs,nextFolders]=await Promise.all([listDocs(w.documents),listFolders(w.documents)]);setDocs(nextDocs);setFolders(nextFolders);}
  async function loadTrash(){if(!ws)return;setTrashItems(await listTrash(ws.trash));setShowTrash(true);setActive('');setContent('');}
  async function restore(id:string){if(!ws)return;try{const path=await restoreTrashItem(ws.trash,ws.documents,id);await refresh(ws);await loadTrash();setStatus('Restored '+path);}catch(e){setError(e instanceof Error?e.message:'Could not restore this page.');}}
  async function removeForever(id:string){if(!ws||!window.confirm('Permanently delete this item? This cannot be undone.'))return;try{await permanentlyDeleteTrashItem(ws.trash,id);await loadTrash();}catch(e){setError(e instanceof Error?e.message:'Could not delete this item.');}}
