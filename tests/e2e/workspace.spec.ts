@@ -1159,3 +1159,104 @@ test('system dark theme keeps Markdown and workspace controls readable', async (
   await expect(page.locator('.brand')).toHaveCSS('color', 'rgb(229, 233, 225)');
   await expect(page.locator('.backup-button')).toHaveCSS('background-color', 'rgb(37, 45, 37)');
 });
+
+
+test('UI-020 theme and editor/preview matrix keeps representative Markdown readable at desktop and mobile widths', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Theme Matrix');
+  await editor.fill([
+    '# Theme matrix heading',
+    '',
+    'Readable body text with [a local-first link](https://example.com), **bold**, and \`inline code\`.',
+    '',
+    '\`\`\`ts',
+    'const wave = "portable";',
+    '\`\`\`',
+    '',
+    '> [!NOTE]',
+    '> A readable note callout.',
+    '',
+    '> [!DETAILS] Disclosure example',
+    '> Disclosure body text.',
+    '',
+    '| Feature | Status |',
+    '| --- | --- |',
+    '| Markdown | Local |',
+    '',
+    '\`\`\`math',
+    '\\frac{1}{2}',
+    '\`\`\`',
+    '',
+    '\`\`\`mermaid',
+    'flowchart TD',
+    '  A[Local] --> B[Portable]',
+    '\`\`\`',
+    '',
+    '![Missing illustration](assets/not-present.png)'
+  ].join('\n'));
+
+  const themes = [
+    { name: 'light', system: 'light', expectedClass: 'theme-light' },
+    { name: 'dark', system: 'dark', expectedClass: 'theme-dark' },
+    { name: 'system', system: 'dark', expectedClass: 'theme-system' }
+  ];
+  const states: Array<{ theme: string; viewport: string; mode: string; colors: Record<string, string> }> = [];
+  for (const theme of themes) {
+    await page.emulateMedia({ colorScheme: theme.system as 'light' | 'dark' });
+    await page.getByRole('button', { name: 'Settings' }).click();
+    const dialog = page.getByRole('dialog', { name: 'Settings' });
+    await dialog.getByLabel('Theme').selectOption(theme.name);
+    await dialog.getByRole('button', { name: 'Done' }).click();
+    await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(new RegExp(theme.expectedClass));
+
+    for (const viewport of [{ name: 'desktop', width: 1440, height: 1000 }, { name: 'mobile', width: 390, height: 844 }]) {
+      await page.setViewportSize({ width: viewport.width, height: viewport.height });
+      for (const mode of ['edit', 'preview']) {
+        if (mode === 'preview') await page.getByRole('button', { name: 'Preview' }).click();
+        else await page.getByRole('button', { name: 'Edit' }).click();
+        let colors: Record<string, string> = {};
+        if (mode === 'edit') {
+          await expect(page.locator('.editor textarea')).toBeVisible();
+          await expect(page.locator('.editor textarea')).toHaveValue(/Theme matrix heading/);
+          colors = await page.locator('.editor textarea').evaluate(node => ({
+            foreground: getComputedStyle(node).color,
+            background: getComputedStyle(node).backgroundColor
+          }));
+        } else {
+          const preview = page.locator('.markdown-preview');
+          await expect(preview.locator('h1')).toContainText('Theme matrix heading');
+          await expect(preview.locator('a')).toHaveCount(1);
+          await expect(preview.locator('pre')).toBeVisible();
+          await expect(preview.locator('.markdown-alert')).toBeVisible();
+          await expect(preview.locator('.markdown-details')).toBeVisible();
+          await expect(preview.locator('table')).toBeVisible();
+          await expect(preview.locator('.markdown-math-display')).toBeVisible();
+          await expect(preview.locator('.mermaid-diagram svg')).toBeVisible();
+          await expect(preview.getByRole('img', { name: 'Missing illustration' })).toBeVisible();
+          colors = await preview.evaluate(node => {
+            const style = (selector: string) => {
+              const element = node.querySelector(selector);
+              return element ? getComputedStyle(element) : null;
+            };
+            return {
+              foreground: getComputedStyle(node).color,
+              heading: style('h1')?.color ?? '',
+              codeSurface: style('pre')?.backgroundColor ?? '',
+              alertSurface: style('.markdown-alert')?.backgroundColor ?? '',
+              detailsSurface: style('.markdown-details')?.backgroundColor ?? '',
+              diagramSurface: style('.mermaid-diagram')?.backgroundColor ?? ''
+            };
+          });
+          for (const [key, value] of Object.entries(colors)) {
+            expect(value, \`\${theme.name}/\${viewport.name}/\${key} should have a computed color\`).not.toBe('');
+            expect(value).not.toBe('rgba(0, 0, 0, 0)');
+          }
+        }
+        const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
+        expect(overflow, \`\${theme.name}/\${viewport.name}/\${mode} should not overflow horizontally\`).toBe(false);
+        states.push({ theme: theme.name, viewport: viewport.name, mode, colors });
+      }
+    }
+  }
+  expect(states).toHaveLength(12);
+});
