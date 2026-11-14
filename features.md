@@ -11,7 +11,7 @@ This page is the showcase of features that are implemented today. For the comple
 ### ✍️ Write and create
 - **Markdown documents** — create, open and edit portable `.md` pages.
 - **Autosave** — edits are saved back to your selected workspace folder automatically, with revision-ordered writes.
-- **Draft recovery** — unsaved text is journaled in browser-local IndexedDB and can be recovered after a reload or tab close. Clearing browser site data removes this recovery copy.
+- **Draft recovery** — unsaved text is journaled in browser-local IndexedDB, serialized across tabs where Web Locks are available, and the newest recovery record is selected. Clearing browser site data removes this recovery copy.
 - **Formatting toolbar** — headings, bold, italic, strikethrough, lists, quotes, inline code and links.
 - **Live preview** — switch between editing Markdown and a sanitized rendered preview.
 - **File attachments** — add images and other files; Wave copies them into your local assets folder and inserts a Markdown reference.
@@ -29,11 +29,11 @@ This page is the showcase of features that are implemented today. For the comple
 - **Search navigation** — view path context and matching snippets, then move through results with arrow keys and Enter.
 
 ### 💾 Own your data
-- **Local-first storage** — your selected folder is the source of truth.
+- **Local-first storage** — your selected folder is the source of truth. Workspace-generation guards prevent late async actions from publishing stale state, and editor transitions persist newer revisions before switching pages.
 - **No account required** — the current app has no application backend.
 - **Portable Markdown** — page content remains readable and editable in any Markdown editor.
 - **Ordinary asset files** — images and attachments are stored as regular files.
-- **Local backups** — create timestamped snapshots of documents, assets and workspace settings. Wave verifies that source files did not change during the copy, marks incomplete snapshots, and offers restore into a separate folder.
+- **Local backups** — create timestamped snapshots of documents, assets and workspace settings. Wave checks SHA-256 content snapshots before and after copying, allocates collision-safe restore folders, and marks incomplete restores so they cannot be opened accidentally.
 - **Workspace settings** — favorites and workspace preferences are stored in `.wave/settings.json`; malformed settings are preserved and can be backed up before resetting defaults.
 - **No silent sync** — Wave does not upload your workspace to a Wave server.
 - **External edit protection** — Wave checks the saved version before writing and offers reload or save-as-copy when it detects an outside change.
