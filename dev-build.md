@@ -79,3 +79,17 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Workflow [43614071812](https://github.com/iamjpsonkar/Wave/actions/runs/43614071812), commit `1df330599916a9d657e83838b03231bd39296ae5`: all 30 Node tests, typecheck and production build passed; **14/17 Playwright scenarios passed**. Three E2E failures were: wiki-link scenario assumed a document title would remain in the sidebar after creating another page; DETAILS summary parsing included the marker/body in the summary; and a reference-link selector matched both the text link and linked image.
 - Follow-up changes: DETAILS now extracts the first line as the disclosure summary; wiki-link E2E uses the page's stable workspace path rather than depending on the transient title label; reference-link assertion selects the first matching link. Commits: `9648f202c23d5771799dd3f59e30800ce20df6c0`, `d3c4da59c8796a42e7e3acc378a5bdac53e99c8b`.
 - These corrections require the latest workflow to complete before the browser suite can be considered passing.
+
+
+## 2026-11-14 — Markdown gap recheck
+
+- Source revision audited: `186e7ec3dd817a42a610e51c6a3c4a3d8b3d8f19`.
+- Workflow [43616005399](https://github.com/iamjpsonkar/Wave/actions/runs/43616005399): install passed; **30/30 Node tests passed**; TypeScript typecheck passed; production build passed; Playwright E2E **failed with 20 passed / 3 failed**.
+- Remaining E2E failures:
+  1. Wiki-link journey asserts the serialized `wave.invalid` URL, but the rendered wiki link is a Wave button. Assert the actual accessible button behavior instead.
+  2. Syntax-highlighting test applies a strict assertion to multiple `.syntax-keyword` spans. Narrow the locator to the expected token or assert the collection.
+  3. Mermaid flowchart test expects `polygon` and `ellipse` elements, but the current local renderer uses different SVG primitives. Assert the intended labels/edges and actual output shape.
+- The same run passed the supplied math, local DOT/PlantUML/Vega-Lite/D2/AsciiDoc, local audio/video, and additional Mermaid-family fixtures. These tests validate only their examples, not full spec compatibility.
+- Browser suite source contains **23 unique scenarios** (the run executed 20 successfully and 3 failed). Node suite contains **30 tests**.
+- The gap audit is updated in [features-gap.md](./features-gap.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](./docs/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
+- Do not call the Markdown showcase complete. Remaining work includes fixing the three E2E failures, expanding accessibility/conformance/round-trip/browser coverage, and documenting the strict limits of the local TeX/Mermaid/other-format renderers.
