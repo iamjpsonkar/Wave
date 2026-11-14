@@ -36,7 +36,7 @@ Before making any change:
 - Separate source inspection, test definitions, local test execution, CI execution, manual QA and native-environment QA in all reports.
 - Keep changes scoped, readable, typed and consistent with existing architecture. Avoid unnecessary dependencies and premature abstractions.
 - Update the relevant development log(s): `dev-fixed.md` for fixes and regressions; `dev-build.md` for features, build/CI and implementation batches. Keep both histories useful and append/update rather than erasing prior entries.
-- **Update `DEV_CONTEXT.md) as the final documentation action of an implementation batch.** It is the concise, current developer handoff and should point to the detailed logs and trackers.
+- **Update `DEV_CONTEXT.md` as the final documentation action of an implementation batch.** It is the concise, current developer handoff and should point to the detailed logs and trackers.
 - The user explicitly instructed that development work should use `dev-fixed.md` and `dev-build.md`, not keep editing the legacy `bugs.md` / `fixed-bugs.md` registers as general progress logs. Keep the bug registers as their own QA records; only change them when a task explicitly calls for a bug-register reconciliation or a real status change.
 - Never silently delete, merge destructively, rename or rewrite a context file. If consolidation is requested, first migrate every unique requirement, status, ID, decision, evidence item and link; verify references; only then remove a source file with explicit scope approval.
 - When a user asks for a broad audit, inspect the actual repository and trackers. Do not infer completeness from a previous assistant response.
