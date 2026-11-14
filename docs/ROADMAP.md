@@ -24,7 +24,7 @@ Wave is being developed as a local-first alternative to hosted workspaces. The r
 
 ## Release 0.3 — Storage reliability
 
-- [ ] Workspace reopen flow and permission recovery
+- [x] Workspace reopen flow and permission recovery
 - [ ] Backup browser and restore workflow
 - [ ] Atomic writes and interrupted-save recovery
 - [ ] Schema migration framework
