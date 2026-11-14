@@ -188,7 +188,7 @@ export const pageTemplates: PageTemplate[] = [
       '## Open questions',
       '',
       '- [ ] '
-    ].join('\\n')
+    ].join('\n')
   },
   { id: 'blank', name: 'Blank page', description: 'Start with an empty page', icon: '＋', content: '# Untitled\n\n' },
   { id: 'meeting', name: 'Meeting notes', description: 'Agenda, notes and action items', icon: '◷', content: '# Meeting notes\n\n**Date:** \n**Attendees:** \n**Meeting:** \n\n## Agenda\n- \n\n## Notes\n\n\n## Decisions\n- \n\n## Action items\n- [ ] Task — Owner — Due date\n' },
