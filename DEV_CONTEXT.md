@@ -210,3 +210,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `docs/MARKDOWN_SUPPORT.md`: canonical syntax compatibility/security matrix. Raw HTML remains disabled; full LaTeX, advanced Mermaid, PlantUML, Graphviz, Vega, D2, AsciiDoc, syntax highlighting and media embeds are not claimed as supported.
 - E2E test source now contains 14 scenarios, including the new math/flowchart/heading scenario. Run 43612461372 passed `npm ci` and 30 Node tests but failed typecheck because `MarkdownElementProps` lacked `className`; fixed in `035e442a90d7e8cb48b88e4e9df93971a1bcaa24`. Follow-up run 43612488927 passed install, 30 Node tests, typecheck and production build; Playwright install/E2E remained in progress at last check. Latest run 43612554015 on `983055ca882936345a37abbf8de5b9a90a0ea9fc` had passed install, Node tests and typecheck, with build/E2E still in progress. Check `dev-build.md` before claiming a full pass.
 - Always read `docs/MARKDOWN_SUPPORT.md` before extending Markdown support; preserve local-only rendering and sanitization boundaries.
+
+
+## 13. Markdown showcase gap audit — 2026-11-14
+
+- Audited the complete user-provided 20-section Markdown Feature Showcase against the current renderer, App preview wiring, styles, templates, `docs/MARKDOWN_SUPPORT.md`, `features.md`, `docs/FEATURES.md` and E2E test source.
+- Conclusion: Markdown is **not feature-complete** against that showcase. Existing support includes common Markdown/GFM, alert callouts, wiki links/backlinks, local images, heading anchors, a small MathML subset and simple Mermaid flowcharts.
+- Created [features-gap.md](./features-gap.md) as the canonical itemized gap/acceptance checklist. Major gaps: full LaTeX/math grammar, advanced Mermaid diagram families and syntax, syntax highlighting/diff coloring, safe HTML-like inline formatting and collapsible sections, emoji shortcodes, GitHub mention/issue references, Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, media embeds, duplicate-heading slugs, and broader accessibility/conformance coverage.
+- Raw HTML and arbitrary media remain deliberately disabled for safety; any future support must use explicit safe components/allowlists rather than enabling unrestricted HTML.
+- Updated `dev-build.md` with the audit record. This was a source/documentation audit only; no application code changed and no tests were run for this audit. Existing CI evidence is historical and must not be described as full Markdown showcase verification.
+- Latest documentation commits: `features-gap.md` `0b85dd6`; `dev-build.md` `69f749a`. This handoff update is the final documentation step for the task.
