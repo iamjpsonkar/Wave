@@ -235,3 +235,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Still not full parity: complete TeX/LaTeX environments, all Mermaid diagram families and advanced syntax, full grammar-based syntax/diff highlighting, GitHub mention/issue semantics, PlantUML/Graphviz/Vega/D2/AsciiDoc renderers, arbitrary media embeds, cross-browser/visual/accessibility audits and a full conformance fixture suite. Raw HTML remains disabled intentionally.
 - Explicitly untouched in this task: `bugs.md`, `fixed-bugs.md`, and `features-gap.md`.
 - Final documentation handoff commit follows this update; check the current Actions run before relying on browser-test status.
+
+
+## 15. Markdown E2E follow-up — 2026-11-14
+
+- Latest E2E feedback from [43614071812](https://github.com/iamjpsonkar/Wave/actions/runs/43614071812): 14/17 browser scenarios passed. Remaining test failures identified DETAILS summary extraction and two test assertions (stable path targeting for wiki-link navigation and duplicate reference-link matches).
+- Corrected DETAILS to split summary/body on the first line in `9648f202c23d5771799dd3f59e30800ce20df6c0`; updated wiki-link and reference-link E2E assertions in `d3c4da59c8796a42e7e3acc378a5bdac53e99c8b`.
+- The latest code/test workflow [43614377295](https://github.com/iamjpsonkar/Wave/actions/runs/43614377295), commit `d3c4da59c8796a42e7e3acc378a5bdac53e99c8b`, passed npm ci, 30 Node tests, typecheck and production build; Playwright dependency install was in progress at last inspection, so browser verification remains pending.
+- Development log updates are in `dev-build.md` and `dev-fixed.md`. `DEV_CONTEXT.md` is the final handoff update for this task.
