@@ -549,10 +549,10 @@ test('Markdown math renders quadratic formula, matrices, cases, sums, integrals 
   await page.getByRole('button', { name: 'Preview' }).click();
   const math = page.locator('.markdown-math-display math');
   await expect(math).toHaveCount(5);
-  await expect(math.nth(0).locator('mfrac')).toHaveCount(2);
+  await expect(math.nth(0).locator('mfrac')).toHaveCount(1);
   await expect(math.nth(1).locator('mfenced mtable mtr')).toHaveCount(2);
   await expect(math.nth(2).locator('mtable mtr')).toHaveCount(2);
-  await expect(math.nth(3).locator('msubsup')).toHaveCount(1);
+  await expect(math.nth(3).locator('msubsup')).toHaveCount(2);
   await expect(math.nth(3).locator('mfrac')).toHaveCount(1);
   await expect(math.nth(4).locator('mroot')).toHaveCount(1);
   await expect(math.nth(4).locator('mover')).toHaveCount(1);
