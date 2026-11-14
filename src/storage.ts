@@ -163,3 +163,33 @@ export async function createFolder(dir: FileSystemDirectoryHandle, path: string)
 }
 export function slug(title: string) { return (title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) || 'untitled') + '.md'; }
 declare global { interface Window { showDirectoryPicker: (options?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle> } interface FileSystemDirectoryHandle { entries(): AsyncIterableIterator<[string, FileSystemHandle]> } }
+
+export interface WorkspaceSettings {
+  format?: string;
+  appearance?: 'system' | 'light' | 'dark';
+  favorites?: string[];
+  [key: string]: unknown;
+}
+
+export async function readWorkspaceSettings(wave: FileSystemDirectoryHandle): Promise<WorkspaceSettings> {
+  try {
+    const file = await (await wave.getFileHandle('settings.json')).getFile();
+    const parsed: unknown = JSON.parse(await file.text());
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return parsed as WorkspaceSettings;
+  } catch {
+    return {};
+  }
+}
+
+export async function writeWorkspaceSettings(wave: FileSystemDirectoryHandle, settings: WorkspaceSettings): Promise<void> {
+  await write(wave, 'settings.json', JSON.stringify(settings, null, 2));
+}
+
+export async function listBackups(backups: FileSystemDirectoryHandle): Promise<string[]> {
+  const names: string[] = [];
+  for await (const [name, handle] of backups.entries()) {
+    if (handle.kind === 'directory' && name.startsWith('backup-')) names.push(name);
+  }
+  return names.sort((a, b) => b.localeCompare(a));
+}
