@@ -57,7 +57,8 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] Recoverable trash and local snapshot backups
 - [ ] Global search with filters, snippets and keyboard navigation
 - [ ] Command palette, customizable shortcuts and quick switcher
-- [ ] Favorites, pinned pages, recent history and workspace home
+- [x] Favorite pages pinned in the sidebar and persisted in workspace settings
+- [ ] Recent history and workspace home
 - [ ] Customizable sidebar, page tree drag/drop and multiple workspaces
 - [ ] Settings for appearance, typography, editor behavior and privacy
 - [ ] Notifications center, inbox and reminders
