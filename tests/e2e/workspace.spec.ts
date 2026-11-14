@@ -754,6 +754,47 @@ test('Markdown embeds only local audio and video assets and rejects remote media
 });
 
 
+test('Markdown link schemes and local media paths enforce the preview security boundary', async ({ page }) => {
+  await openWorkspace(page);
+  await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const assets = await wave.getDirectoryHandle('assets');
+    const secret = await assets.getFileHandle('secret.mp3', { create: true });
+    const writer = await secret.createWritable();
+    await writer.write(new Blob(['must not be exposed by traversal'], { type: 'audio/mpeg' }));
+    await writer.close();
+  });
+  const editor = await createPage(page, 'Markdown Security Matrix');
+  await editor.fill([
+    '# Markdown Security Matrix',
+    '',
+    '[HTTPS](https://example.com/safe)',
+    '[Mail](mailto:wave@example.com)',
+    '[JavaScript](javascript:alert(1))',
+    '[Data](data:text/html,alert(1))',
+    '[VBScript](vbscript:msgbox(1))',
+    '[File](file:///etc/passwd)',
+    '[Mixed case](JaVaScRiPt:alert(1))',
+    '',
+    '[[audio:assets/../secret.mp3]]',
+    '[[audio:assets/%2e%2e/secret.mp3]]',
+    '[[audio:/assets/secret.mp3]]',
+    '[[audio:C:\\secret.mp3]]',
+    '[[audio:https://example.com/secret.mp3]]'
+  ].join('\\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview.locator('a[href="https://example.com/safe"]')).toHaveCount(1);
+  await expect(preview.locator('a[href="mailto:wave@example.com"]')).toHaveCount(1);
+  for (const scheme of ['javascript:', 'data:', 'vbscript:', 'file:']) {
+    await expect(preview.locator('a[href^="' + scheme + '"]')).toHaveCount(0);
+  }
+  await expect(preview.locator('a[href*="JaVaScRiPt"]')).toHaveCount(0);
+  await expect(preview.locator('audio[src], video[src]')).toHaveCount(0);
+  await expect(preview.locator('.missing-asset')).toHaveCount(5);
+});
+
 test('Markdown Mermaid mindmap, timeline, quadrant, requirement and architecture renderers expose source', async ({ page }) => {
   await openWorkspace(page);
   const editor = await createPage(page, 'More Mermaid Families');
