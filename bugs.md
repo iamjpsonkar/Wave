@@ -509,46 +509,46 @@ These belong in the product roadmap. The data-loss, restore-collision, and navig
 
 ## Release gate A — Protect user data
 
-- [ ] [x] WAVE-001 — Flush before opening Trash.
-- [ ] [x] WAVE-002 — Flush before workspace switch.
-- [ ] [x] WAVE-003 — Collision-safe restore with no overwrite.
-- [ ] [x] WAVE-004 — Serialized, revision-aware document writes.
-- [ ] [~] WAVE-005 — Trash operation journal and interrupted-operation reporting; automatic reconciliation remains.
-- [ ] [x] WAVE-006 — Per-item Trash validation and error isolation.
-- [ ] [x] WAVE-021 — Catch async failures and preserve drafts.
-- [ ] [x] WAVE-022 — Revision-aware save status.
-- [ ] [~] WAVE-031 — Storage regression tests run in CI; browser E2E tests remain.
+- [x] WAVE-001 — Flush before opening Trash.
+- [x] WAVE-002 — Flush before workspace switch.
+- [x] WAVE-003 — Collision-safe restore with no overwrite.
+- [x] WAVE-004 — Serialized, revision-aware document writes.
+- [~] WAVE-005 — Trash operation journal and interrupted-operation reporting; automatic reconciliation remains.
+- [x] WAVE-006 — Per-item Trash validation and error isolation.
+- [x] WAVE-021 — Catch async failures and preserve drafts.
+- [x] WAVE-022 — Revision-aware save status.
+- [~] WAVE-031 — Storage regression tests run in CI; browser E2E tests remain.
 
 ## Release gate B — Make core workflows dependable
 
-- [ ] [x] WAVE-007 — Transactional workspace activation.
-- [ ] [x] WAVE-008 — Bind attachment upload to its originating document.
-- [ ] [x] WAVE-010 — Correct local/external URL classification.
-- [ ] [x] WAVE-011 — Guard malformed URL decoding.
-- [ ] [x] WAVE-017 — Avoid reading all Markdown content on every refresh.
-- [ ] [x] WAVE-018 — Implement backup browser and restore workflow (restore creates a separate workspace folder).
-- [ ] [~] WAVE-019 — Detect and prevent external overwrite; reload/save-as-copy actions are available, browser conflict tests remain.
-- [ ] [x] WAVE-023 — Preserve and report corrupt settings.
+- [x] WAVE-007 — Transactional workspace activation.
+- [x] WAVE-008 — Bind attachment upload to its originating document.
+- [x] WAVE-010 — Correct local/external URL classification.
+- [x] WAVE-011 — Guard malformed URL decoding.
+- [x] WAVE-017 — Avoid reading all Markdown content on every refresh.
+- [x] WAVE-018 — Implement backup browser and restore workflow (restore creates a separate workspace folder).
+- [~] WAVE-019 — Detect and prevent external overwrite; reload/save-as-copy actions are available, browser conflict tests remain.
+- [x] WAVE-023 — Preserve and report corrupt settings.
 
 ## Release gate C — Improve daily usability
 
-- [ ] [x] WAVE-009 — Reset attachment input.
-- [ ] [x] WAVE-012 — Multi-line toolbar formatting.
-- [ ] [x] WAVE-013 — Recursive folder tree.
-- [ ] [x] WAVE-014 — Clear folder selection semantics.
-- [ ] [x] WAVE-015 — Search snippets and keyboard navigation.
-- [ ] [x] WAVE-016 — Reconcile stale favorite references after deletion/restore.
-- [ ] [x] WAVE-024 — Serialize settings updates.
-- [ ] [x] WAVE-025 — Mobile navigation.
-- [ ] [x] WAVE-026 — Short viewport layout.
-- [ ] [x] WAVE-027 — Focus-aware keyboard shortcuts.
-- [ ] [x] WAVE-028 — Clarify placeholder controls.
+- [x] WAVE-009 — Reset attachment input.
+- [x] WAVE-012 — Multi-line toolbar formatting.
+- [x] WAVE-013 — Recursive folder tree.
+- [x] WAVE-014 — Clear folder selection semantics.
+- [x] WAVE-015 — Search snippets and keyboard navigation.
+- [x] WAVE-016 — Reconcile stale favorite references after deletion/restore.
+- [x] WAVE-024 — Serialize settings updates.
+- [x] WAVE-025 — Mobile navigation.
+- [x] WAVE-026 — Short viewport layout.
+- [x] WAVE-027 — Focus-aware keyboard shortcuts.
+- [x] WAVE-028 — Clarify placeholder controls.
 
 ## Release gate D — Documentation and scale
 
-- [ ] [~] WAVE-020 — Detect source changes during backup and reject inconsistent snapshots; no global lock/hash-based snapshot yet.
-- [ ] [x] WAVE-029 — Align privacy/font documentation.
-- [ ] [x] WAVE-030 — Maintain manifest metadata.
+- [~] WAVE-020 — Detect source changes during backup and reject inconsistent snapshots; no global lock/hash-based snapshot yet.
+- [x] WAVE-029 — Align privacy/font documentation.
+- [x] WAVE-030 — Maintain manifest metadata.
 - [ ] R-01 through R-08 — Verify additional risks.
 
 ---
@@ -741,12 +741,12 @@ Create a nested path at root and under an already selected folder. Verify the se
 ## Supplemental remediation priorities
 
 - [ ] **Immediate data-safety gate:** [x] WAVE-032 — prevent cross-workspace autosave contamination.
-- [ ] [~] WAVE-039 — IndexedDB draft journal with a 120 ms debounce and pagehide best-effort flush; an abrupt kill inside the debounce window is not an absolute guarantee.
-- [ ] [x] WAVE-034 — distinguish missing assets from permission/I/O failures.
-- [ ] [x] WAVE-033 — mark or clean up incomplete backup snapshots.
-- [ ] [x] WAVE-036 and WAVE-037 — guard asynchronous navigation and concurrent creation.
-- [ ] [x] WAVE-035 and WAVE-040 — make folder creation collision and path semantics explicit.
-- [ ] [x] WAVE-038 — commit a lockfile and use deterministic CI installation.
+- [~] WAVE-039 — IndexedDB draft journal with a 120 ms debounce and pagehide best-effort flush; an abrupt kill inside the debounce window is not an absolute guarantee.
+- [x] WAVE-034 — distinguish missing assets from permission/I/O failures.
+- [x] WAVE-033 — mark or clean up incomplete backup snapshots.
+- [x] WAVE-036 and WAVE-037 — guard asynchronous navigation and concurrent creation.
+- [x] WAVE-035 and WAVE-040 — make folder creation collision and path semantics explicit.
+- [x] WAVE-038 — commit a lockfile and use deterministic CI installation.
 
 **Updated audit count:** 40 numbered findings (WAVE-001 through WAVE-040), plus the 8 cross-cutting risks listed earlier. Findings with timing-dependent behavior should also be covered by automated browser/storage tests before being treated as fully reproduced in production.
 
