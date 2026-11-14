@@ -1094,6 +1094,7 @@ test('workspace settings persist appearance and typography preferences locally',
   await dialog.getByLabel('Line spacing').selectOption('1.9');
   await dialog.getByLabel('Content width').selectOption('narrow');
   await dialog.getByLabel('Reduce interface motion').check();
+  await expect(dialog.locator('.settings-info')).toContainText('Preferences saved');
   await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(/theme-dark/);
   await expect(page.locator('.editor')).toHaveAttribute('data-content-width', 'narrow');
   await expect(page.locator('.editor textarea')).toHaveCSS('font-size', '18px');
