@@ -1436,7 +1436,7 @@ test('foreground and background color formatting round-trip through Markdown pre
     const start = node.value.indexOf('Foreground sample');
     node.focus(); node.setSelectionRange(start, start + 'Foreground sample'.length);
   });
-  await page.getByRole('textbox', { name: 'Text color' }).evaluate((node: HTMLInputElement) => {
+  await page.locator('input[aria-label="Text color"]').evaluate((node: HTMLInputElement) => {
     node.value = '#123456'; node.dispatchEvent(new Event('input', { bubbles: true })); node.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await expect(editor).toHaveValue(/\[\[color:#123456\|Foreground sample\]\]/);
@@ -1444,7 +1444,7 @@ test('foreground and background color formatting round-trip through Markdown pre
     const start = node.value.indexOf('Background sample');
     node.focus(); node.setSelectionRange(start, start + 'Background sample'.length);
   });
-  await page.getByRole('textbox', { name: 'Text background color' }).evaluate((node: HTMLInputElement) => {
+  await page.locator('input[aria-label="Text background color"]').evaluate((node: HTMLInputElement) => {
     node.value = '#fff0a8'; node.dispatchEvent(new Event('input', { bubbles: true })); node.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await expect(editor).toHaveValue(/\[\[bg:#FFF0A8\|Background sample\]\]/);
