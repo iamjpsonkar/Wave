@@ -187,3 +187,5 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Added Playwright regression for control behavior, settings-file persistence and workspace reload/reopen.
 - Files: `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, `ui-gaps.md`, `docs/FEATURES.md`.
 - Verification: awaiting GitHub Actions for this patch; no test pass is claimed. Full contrast review, broader workspace diagnostics and remaining UI gap IDs stay open.
+
+- Follow-up hardening: Settings now contains keyboard focus while open, supports Escape dismissal, and reports preference-save completion/failure. The centered writing measure (860px default with width choices) also partially addresses UI-003; responsive and wide-content review remains open.
