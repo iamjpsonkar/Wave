@@ -86,3 +86,12 @@ The current Markdown-based MVP includes the following protections while the long
 - Page, folder, asset, backup and Trash-restore allocation is serialized, uses cross-tab Web Locks where available, and avoids case-only collisions across common filesystems. Restoring the same Trash item concurrently produces only one restored page.
 - Async workspace mutations carry a generation token so late completions cannot publish state into a different active workspace. Editor transitions flush revisions until the text is stable; destructive Trash transitions temporarily lock the editor.
 - Storage and concurrency-helper regression tests run in CI with Node's built-in test runner. Playwright Chromium E2E tests also exercise workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root and nested attachments, and the mobile navigation drawer using native OPFS directory handles. The suite also checks the File System Access permission-denial contract and same-workspace concurrent edits across two tabs. Native picker prompts/revocation, external-editor fault injection, comprehensive accessibility checks and abrupt browser-process termination remain outstanding.
+
+
+## Deployment boundary — static Docker hosting
+
+The optional Docker image is a **static delivery layer**, not another storage adapter or a backend. A Node 22 build stage runs the existing Vite production build; an unprivileged Nginx runtime serves `dist/` on port 8080. Docker Compose applies a read-only root filesystem, drops Linux capabilities, enables no-new-privileges and provides only a temporary writable filesystem.
+
+The browser still runs the React application. The File System Access API continues to access a directory selected by the browser user on that user's device. The container does not mount, own, synchronize or back up that directory. IndexedDB remains browser-local and is not shared by the container. Consequently, static hosting does not provide accounts, multi-user access, collaboration, remote persistence, an API or SQLite.
+
+For remote deployment, terminate TLS at a trusted reverse proxy and use HTTPS so browser secure-context requirements are met. Authentication and network access controls must be supplied by the deployment environment if needed. See [Docker deployment](DOCKER.md) for exact commands and limitations.
