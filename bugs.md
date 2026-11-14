@@ -2,7 +2,7 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed source revision: `b11b46eebc1558de9910d8523cdaa027817b087d` (documentation follow-ups are recorded below)  
+> Source review: current default-branch file contents fetched during QA recheck on 2026-11-14; exact branch-head commit SHA was not exposed by the file-fetch response.  
 > Review date: 2026-11-14  
 > Scope: only defects or material reliability/QA gaps that remain in the current implementation.
 
@@ -31,13 +31,13 @@
 
 ### Problem
 
-The repository now runs 30 Node storage/concurrency tests plus nine Playwright Chromium E2E tests. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments, mobile navigation, simulated permission denial and same-workspace two-tab editing.
+The checked-in test files currently define 30 Node storage/concurrency tests plus 13 Playwright Chromium E2E scenarios. The latest CI evidence in `dev-build.md` is for an earlier 10-scenario suite; this recheck did not execute the current suite. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments, mobile navigation, simulated permission denial and same-workspace two-tab editing.
 
 The remaining gap is specifically the native user-picked-folder permission prompt and OS/browser permission revocation: the OPFS fixture simulates the File System Access permission contract rather than exercising the real picker lifecycle. External filesystem edits during active operations, comprehensive keyboard/accessibility paths, and actual abrupt browser-process termination also remain untested.
 
 ### Impact
 
-The current suite now covers key simulated permission and cross-tab journeys, but cannot yet establish behavior for the native picker lifecycle, external filesystem races, full accessibility interactions, or process termination.
+The current test source covers simulated permission denial, two-tab editing, and cross-tab draft provenance. It still does not establish behavior for the native picker lifecycle, OS permission revocation, external filesystem races during active operations, full accessibility interactions, or process termination.
 
 ### Reproduction / recheck scenario
 
@@ -101,7 +101,7 @@ Keep the write in the input-event path, request strict IndexedDB durability, exp
 
 ## Follow-up remediation — 2026-11-14
 
-- WAVE-031: added Chromium coverage for permission denial through the File System Access permission contract and concurrent edits from two tabs sharing the same OPFS workspace. The denial contract is simulated; the native picker prompt and OS-level permission revocation are not yet automated. The browser suite now contains ten scenarios, including a check that a recovery prompt identifies a draft originating in another tab.
+- WAVE-031: added Chromium coverage for permission denial through the File System Access permission contract and concurrent edits from two tabs sharing the same OPFS workspace. The denial contract is simulated; the native picker prompt and OS-level permission revocation are not yet automated. The browser suite source now contains 13 scenarios, including a check that a recovery prompt identifies a draft originating in another tab.
 - WAVE-042: the new two-tab scenario exposed that one tab could overwrite or clear another tab's single shared recovery-draft record. Drafts are now isolated by a session-scoped tab ID, and clearing after a successful save removes only the current tab's record. Both edits must survive as saved Markdown or as the other tab's retained recovery draft.
 - WAVE-039: draft journal writes now request IndexedDB `strict` transaction durability, with a compatibility fallback for browsers that reject the option. A browser regression test verifies the strict option is requested. This reduces the durability window but cannot eliminate the interval before an asynchronous transaction commits; WAVE-039 remains partial rather than falsely marked fixed.
 - WAVE-042 is now closed: per-tab draft isolation passed the two-tab Chromium regression test.
