@@ -348,3 +348,43 @@ test('Markdown preview renders inline/display math, Mermaid flowcharts and headi
   await expect(page.locator('.markdown-math-display math')).toBeVisible();
   await expect(page.locator('.mermaid-diagram svg')).toBeVisible();
 });
+
+
+test('Markdown extended preview highlights code, expands heading anchors, emoji and Mermaid sequence/pie', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Markdown Extended Features');
+  await editor.fill([
+    '# Markdown Extended Features',
+    '',
+    '## Repeated heading',
+    '## Repeated heading',
+    '',
+    'Emoji shortcodes :rocket: :smile: :+1: stay readable.',
+    '',
+    '```typescript',
+    'const answer = 42;',
+    '```',
+    '',
+    '```mermaid',
+    'sequenceDiagram',
+    'Alice->>Bob: Hello Bob',
+    'Bob-->>Alice: Hello Alice',
+    '```',
+    '',
+    '```mermaid',
+    'pie showData',
+    'title Browser share',
+    '"Chrome" : 65',
+    '"Firefox" : 20',
+    '"Safari" : 15',
+    '```'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview h2#repeated-heading')).toHaveCount(1);
+  await expect(page.locator('.markdown-preview h2#repeated-heading-1')).toHaveCount(1);
+  await expect(page.locator('.markdown-preview')).toContainText('🚀 😄 👍');
+  await expect(page.locator('.markdown-preview .syntax-keyword')).toContainText('const');
+  await expect(page.locator('.markdown-preview .syntax-number')).toContainText('42');
+  await expect(page.locator('.markdown-preview .mermaid-diagram svg')).toHaveCount(2);
+  await expect(page.locator('.markdown-preview .mermaid-pie')).toBeVisible();
+});
