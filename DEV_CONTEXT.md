@@ -220,3 +220,18 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Raw HTML and arbitrary media remain deliberately disabled for safety; any future support must use explicit safe components/allowlists rather than enabling unrestricted HTML.
 - Updated `dev-build.md` with the audit record. This was a source/documentation audit only; no application code changed and no tests were run for this audit. Existing CI evidence is historical and must not be described as full Markdown showcase verification.
 - Latest documentation commits: `features-gap.md` `0b85dd6`; `dev-build.md` `69f749a`. This handoff update is the final documentation step for the task.
+
+
+## 14. Markdown implementation follow-up — 2026-11-14
+
+- Audited `features-gap.md` and implemented an additional source-supported subset without modifying that file, `bugs.md`, or `fixed-bugs.md`.
+- `src/markdown.tsx`: safe inline formatting shorthands (`==mark==`, `++underline++`, `^sup^`, `~sub~`, `[[kbd:...]]`), common emoji shortcodes, lightweight token coloring for common code languages, recursive MathML groups/fractions/roots/scripts and common commands, local Mermaid sequence and pie renderers, safe DETAILS disclosure blocks, and a rehype heading-ID plugin that runs after sanitization.
+- `src/App.tsx`: the heading-ID plugin is ordered after `rehypeSanitize`; local image fallback retains alt/title and links retain title metadata.
+- `src/styles.css`: styles for syntax tokens, diagrams, inline styles and disclosure.
+- `src/templates.ts`: expanded Markdown showcase examples, including math, sequence/pie charts, inline syntax and details.
+- Added E2E scenarios for extended rendering and CommonMark conformance. Current browser suite source: **17 scenarios**; Node suite source: **30 tests**.
+- Updated `features.md`, `docs/FEATURES.md`, `docs/MARKDOWN_SUPPORT.md`, `README.md`, `dev-fixed.md` and `dev-build.md`.
+- Verification: workflow [43614071812](https://github.com/iamjpsonkar/Wave/actions/runs/43614071812), code commit `1df330599916a9d657e83838b03231bd39296ae5`: `npm ci`, 30 Node tests, typecheck and production build passed; Playwright E2E was still in progress at last check. Earlier E2E run [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208) failed four preview journeys; the heading/disclosure/sidebar timing corrections were added afterwards and need the new E2E result before verification is complete.
+- Still not full parity: complete TeX/LaTeX environments, all Mermaid diagram families and advanced syntax, full grammar-based syntax/diff highlighting, GitHub mention/issue semantics, PlantUML/Graphviz/Vega/D2/AsciiDoc renderers, arbitrary media embeds, cross-browser/visual/accessibility audits and a full conformance fixture suite. Raw HTML remains disabled intentionally.
+- Explicitly untouched in this task: `bugs.md`, `fixed-bugs.md`, and `features-gap.md`.
+- Final documentation handoff commit follows this update; check the current Actions run before relying on browser-test status.
