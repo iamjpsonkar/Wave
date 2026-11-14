@@ -54,7 +54,7 @@ export default function EditorEnhancements({ content, onChange, editorRef, previ
   function replaceAll() {
     if (!matches.length) return;
     const escaped = query.replace(/[.*+?^$\x7b\x7d()|[\]\\]/g, '\\$&');
-    onChange(content.replace(new RegExp(escaped, caseSensitive ? 'g' : 'gi'), replacement)); setMatchIndex(0);
+    onChange(content.replace(new RegExp(escaped, caseSensitive ? 'g' : 'gi'), () => replacement)); setMatchIndex(0);
   }
   function jumpToHeading(heading: (typeof headings)[number]) {
     if (preview) {
