@@ -543,6 +543,9 @@ test('Technical learning notes template contains real Markdown newlines and prev
   await page.getByRole('button', { name: 'Preview' }).click();
   await expect(page.locator('.markdown-preview h2')).toContainText('Introduction');
   await expect(page.locator('.markdown-preview h2')).toContainText('Open questions');
+  await expect(page.locator('.markdown-preview pre code')).toContainText('Add a small, self-contained example');
+  await expect(page.locator('.markdown-preview table')).toContainText('Symptom');
+  await expect(page.locator('.markdown-preview')).toContainText('Trust boundaries:');
 });
 
 test('Markdown math renders quadratic formula, matrices, cases, sums, integrals and limits', async ({ page }) => {
