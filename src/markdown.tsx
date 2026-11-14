@@ -44,7 +44,7 @@ function convertMathSource(source: string): string {
   for (const line of source.split('\n')) {
     if (/^\s*(`{3,}|~{3,})/.test(line) && !mathBlock) { fence = !fence; output.push(line); continue; }
     if (fence) { output.push(line); continue; }
-    if (line.trim() === '$') { mathBlock = !mathBlock; output.push(mathBlock ? '```math' : '```'); continue; }
+    if (line.trim().length === 2 && line.trim()[0] === String.fromCharCode(36) && line.trim()[1] === String.fromCharCode(36)) { mathBlock = !mathBlock; output.push(mathBlock ? '```math' : '```'); continue; }
     if (mathBlock) { output.push(line); continue; }
     output.push(line.replace(/\$([^$\n]+)\$/g, (_match, expression: string) => '`math:' + expression.replace(/`/g, '') + '`'));
   }
