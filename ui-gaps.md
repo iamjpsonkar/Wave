@@ -28,8 +28,8 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 - Original evidence: the sidebar footer displayed “Settings” with “NOT AVAILABLE YET”; the inert placeholder is now an accessible, keyboard-operable Settings dialog with focus containment and Escape dismissal.
 - Implemented scope: workspace-persisted theme, typography, content width and reduced-motion preferences; local storage/recovery explanation; save status and basic page/folder diagnostics. More advanced editor/privacy/diagnostic controls remain future scope.
 - Regression coverage checks preference persistence in `.wave/settings.json`, application and reload/reopen behavior. Do not mark complete until CI passes.
-- User impact: users cannot configure appearance, typography, editor behavior, privacy or workspace preferences from the product UI.
-- Target: implement a real settings destination with clear sections, persistence and safe defaults. At minimum cover appearance/theme, typography/editor preferences, autosave/recovery status, privacy/local-storage information and workspace diagnostics.
+- User impact: core appearance and typography preferences are now configurable; more advanced editor behavior, privacy controls and deeper diagnostics are not yet configurable.
+- Target: extend the Settings destination only with controls that have real effects. Keep autosave/recovery and local-data explanations accurate, and add deeper diagnostics when supported by reliable workspace data.
 - Acceptance: Settings opens by mouse and keyboard; focus remains within the dialog and Escape closes it; implemented preferences persist across reload/reopen; reset changes preferences only and preserves documents/recovery data.
 
 ### UI-002 — Editor is a plain-text surface rather than a rich writing experience
@@ -128,8 +128,8 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 - Status: **Implemented — CI pending**
 - Original evidence: appearance and typography controls were planned and Settings was unavailable. A workspace Settings dialog now exposes working theme, font family/size, line spacing, content width and reduced-motion preferences. Privacy/local-storage and recovery explanations are informational rather than fictitious toggles.
 - Preferences use the existing `.wave/settings.json` store and apply to editor/preview. Contrast and full component coverage still require accessibility review.
-- User impact: the product cannot yet adapt to different reading/writing preferences.
-- Target: after UI-001, add light/dark/system theme, font family/size, line height, content width and reduced-motion preferences. Do not add controls that have no working effect.
+- User impact: users can now adapt theme and writing typography; complete visual consistency and contrast still need review.
+- Target: maintain the implemented theme, font family/size, line height, content width and reduced-motion controls; expand only where a setting has a real, testable effect.
 - Acceptance: preferences persist per workspace; theme and typography changes apply to editor and preview; contrast review across every component remains open.
 
 ### UI-013 — Backup action lacks visible context about backup history and safety
