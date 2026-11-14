@@ -21,7 +21,7 @@ Start here based on what you need:
 
 ## Development and quality
 
-- [Developer context / AI handoff](../DEV_CONTEXT.md)
+- [Contributor guide](../CONTRIBUTING.md)\n- [Developer context / AI handoff](../DEV_CONTEXT.md)
 - [QA context](../QA-CONTEXT.md)
 - [Current QA context notes](../qa-context.md)
 - [Development build and CI history](../dev-build.md)
