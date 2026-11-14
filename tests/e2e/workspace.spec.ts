@@ -1078,3 +1078,38 @@ test('Math rendering rejects malformed and oversized input within explicit resou
   await expect(fallbacks.nth(2)).toContainText('expression exceeds the 8192-character limit');
   await expect(fallbacks.nth(2).locator('code')).toContainText('…');
 });
+
+
+test('workspace settings persist appearance and typography preferences locally', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Settings Preferences');
+  await page.getByRole('button', { name: 'Settings' }).click();
+  const dialog = page.getByRole('dialog', { name: 'Settings' });
+  await expect(dialog).toBeVisible();
+  await dialog.getByLabel('Theme').selectOption('dark');
+  await dialog.getByLabel('Font family').selectOption('serif');
+  await dialog.getByLabel('Text size').selectOption('18');
+  await dialog.getByLabel('Line spacing').selectOption('1.9');
+  await dialog.getByLabel('Content width').selectOption('narrow');
+  await dialog.getByLabel('Reduce interface motion').check();
+  await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(/theme-dark/);
+  await expect(page.locator('.editor')).toHaveAttribute('data-content-width', 'narrow');
+  await expect(page.locator('.editor textarea')).toHaveCSS('font-size', '18px');
+  await dialog.getByRole('button', { name: 'Done' }).click();
+  const settings = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    return JSON.parse(await (await (await wave.getFileHandle('settings.json')).getFile()).text());
+  });
+  expect(settings.appearance).toBe('dark');
+  expect(settings.fontFamily).toBe('serif');
+  expect(settings.fontSize).toBe(18);
+  expect(settings.lineHeight).toBe(1.9);
+  expect(settings.contentWidth).toBe('narrow');
+  expect(settings.reducedMotion).toBe(true);
+  await page.reload();
+  await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(/theme-dark/);
+  await page.getByRole('button', { name: 'Settings' }).click();
+  await expect(page.getByRole('dialog', { name: 'Settings' }).getByLabel('Font family')).toHaveValue('serif');
+});
