@@ -146,7 +146,7 @@ function convertInlineExtensions(line: string): string {
 }
 
 function MathExpression({ source, display = false }: { source: string; display?: boolean }) {
-  const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ', pi:'π', rho:'ρ', sigma:'σ', phi:'φ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', approx:'≈', infty:'∞', sum:'∑', int:'∫', to:'→', rightarrow:'→', leftarrow:'←' };
+  const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ', pi:'π', rho:'ρ', sigma:'σ', phi:'φ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', approx:'≈', infty:'∞', sum:'∑', int:'∫', to:'→', rightarrow:'→', leftarrow:'←', sin:'sin', cos:'cos', tan:'tan', log:'log', ln:'ln', exp:'exp', lim:'lim', cdots:'⋯', ldots:'…', neq:'≠' };
   function groupAt(input:string,start:number):{value:string;end:number} {
     if(input[start]!=='{')return {value:input[start]??'',end:start+1};
     let depth=1,index=start+1;
@@ -161,7 +161,7 @@ function MathExpression({ source, display = false }: { source: string; display?:
         const command=input.slice(i+1).match(/^[A-Za-z]+/)?.[0]??'';
         if(!command){nodes.push(createElement('mo',{key:'m'+i},'\\\\'));i++;continue;}
         i+=command.length+1;
-        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='sqrt'){
+        if(command==='left'||command==='right')continue;\n        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='sqrt'){
           const a=groupAt(input,i);i=a.end;
           if(command==='sqrt')nodes.push(createElement('msqrt',{key:'r'+i},...parse(a.value)));
           else{const b=groupAt(input,i);i=b.end;nodes.push(createElement('mfrac',{key:'f'+i},createElement('mrow',null,...parse(a.value)),createElement('mrow',null,...parse(b.value))));}
@@ -181,7 +181,7 @@ function MathExpression({ source, display = false }: { source: string; display?:
       if(ch==='{'){const a=groupAt(input,i);i=a.end;nodes.push(createElement('mrow',{key:'b'+i},...parse(a.value)));continue;}
       if(/\s/.test(ch)){nodes.push(' ');i++;continue;}
       if(/[0-9]/.test(ch)){const token=input.slice(i).match(/^\d+(?:\.\d+)?/)?.[0]??ch;nodes.push(createElement('mn',{key:'n'+i},token));i+=token.length;continue;}
-      if(/[A-Za-z]/.test(ch)){const token=input.slice(i).match(/^[A-Za-z]+/)?.[0]??ch;nodes.push(createElement('mi',{key:'i'+i},token));i+=token.length;continue;}
+      if(/[A-Za-z]/.test(ch)){nodes.push(createElement('mi',{key:'i'+i},ch));i++;continue;}
       nodes.push(createElement('mo',{key:'o'+i},ch));i++;
     }
     return nodes;
