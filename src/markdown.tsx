@@ -82,9 +82,11 @@ export function MarkdownBlockquote({ children }: MarkdownElementProps) {
   const kind = (marker?.[1] || label?.[1])?.toUpperCase();
   if (kind === 'DETAILS' && marker) {
     const items = Children.toArray(children);
-    const first = items[0];
-    const summary = plainText(first).replace(/^\[!DETAILS\]\s*/i, '').trim() || 'Details';
-    return <details className="markdown-details"><summary>{summary}</summary>{items.slice(1)}</details>;
+    const firstText = plainText(items[0]).replace(/^\[!DETAILS\]\s*/i, '').trim();
+    const nextTextIndex = items.findIndex((item,index) => index > 0 && Boolean(plainText(item).trim()));
+    const summary = firstText || (nextTextIndex >= 0 ? plainText(items[nextTextIndex]).trim() : 'Details');
+    const body = firstText ? items.slice(1) : items.filter((_item,index) => index !== 0 && index !== nextTextIndex);
+    return <details className="markdown-details"><summary>{summary}</summary>{body}</details>;
   }
   if (kind && ALERTS.has(kind)) {
     return <blockquote className={'markdown-alert markdown-alert-' + kind.toLowerCase()} role="note" aria-label={kind}>
@@ -114,6 +116,27 @@ export function MarkdownPre({ children }: MarkdownElementProps) {
     <pre>{children}</pre>
     <button type="button" className="markdown-copy" onClick={() => void copyCode()} aria-label="Copy code block" title="Copy code"><Copy size={13}/></button>
   </div>;
+}
+
+export function rehypeWaveHeadingIds() {
+  return (tree: { children?: any[] }) => {
+    const seen = new Map<string, number>();
+    const textOf = (node: any): string => {
+      if (typeof node?.value === 'string') return node.value;
+      return Array.isArray(node?.children) ? node.children.map(textOf).join('') : '';
+    };
+    const visit = (node: any) => {
+      if (node?.type === 'element' && /^h[1-6]$/.test(node.tagName ?? '')) {
+        const raw = textOf(node).trim().toLocaleLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '');
+        const base = raw.replace(/[^a-z0-9\s-]/g, '').trim().replace(/\s+/g, '-').replace(/-+/g, '-') || 'section';
+        const count = seen.get(base) ?? 0;
+        seen.set(base, count + 1);
+        node.properties = { ...(node.properties ?? {}), id: count ? base + '-' + count : base };
+      }
+      if (Array.isArray(node?.children)) node.children.forEach(visit);
+    };
+    visit(tree);
+  };
 }
 
 export function markdownHeadingId(node: ReactNode, seen?: Map<string, number>): string {
