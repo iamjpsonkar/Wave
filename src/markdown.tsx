@@ -81,12 +81,11 @@ export function MarkdownBlockquote({ children }: MarkdownElementProps) {
   const label = text.match(/^(NOTE|TIP|IMPORTANT|WARNING|CAUTION|DETAILS)\b/i);
   const kind = (marker?.[1] || label?.[1])?.toUpperCase();
   if (kind === 'DETAILS' && marker) {
-    const items = Children.toArray(children);
-    const firstText = plainText(items[0]).replace(/^\[!DETAILS\]\s*/i, '').trim();
-    const nextTextIndex = items.findIndex((item,index) => index > 0 && Boolean(plainText(item).trim()));
-    const summary = firstText || (nextTextIndex >= 0 ? plainText(items[nextTextIndex]).trim() : 'Details');
-    const body = firstText ? items.slice(1) : items.filter((_item,index) => index !== 0 && index !== nextTextIndex);
-    return <details className="markdown-details"><summary>{summary}</summary>{body}</details>;
+    const detailText = text.replace(/^\[!DETAILS\]\s*/i, '');
+    const detailLines = detailText.split(/\r?\n/);
+    const summary = detailLines.shift()?.trim() || 'Details';
+    const body = detailLines.join('\n').trim();
+    return <details className="markdown-details"><summary>{summary}</summary>{body && <p>{body}</p>}</details>;
   }
   if (kind && ALERTS.has(kind)) {
     return <blockquote className={'markdown-alert markdown-alert-' + kind.toLowerCase()} role="note" aria-label={kind}>
