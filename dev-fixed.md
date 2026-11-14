@@ -131,3 +131,11 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Added Playwright coverage for multiline TypeScript/JavaScript-style source insertion, preview rendering and exact clipboard contents.
 - Added semantic accessibility coverage for heading levels, link names, table headers, task checkboxes, NOTE callout role/name, DETAILS disclosure, and keyboard focus/activation.
 - Updated `docs/MARKDOWN_SUPPORT.md`. This is not a complete WCAG audit; runtime behavior remains pending CI execution.
+
+
+## 2026-11-14 — CI Playwright assertion fixes
+
+- Corrected strict-mode selectors in syntax highlighting and Mermaid ER diagram tests.
+- Scoped the Technical Learning Notes template choice to the sidebar template list and corrected assertions to expect actual newline characters.
+- Changed the accessibility table-header assertion to inspect rendered `thead th` elements directly; follow-up CI will determine whether any runtime semantic fix is needed.
+- These changes repair test assumptions; they do not mark Markdown renderer features or accessibility gaps complete.
