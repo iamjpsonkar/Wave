@@ -75,7 +75,7 @@ Source changes and the regression scenario are committed, but no local typecheck
 - `src/styles.css`: styles syntax tokens, diagrams, disclosure blocks and inline formatting.
 - `src/templates.ts`: expanded the Markdown showcase template with new syntax and diagram examples.
 - `tests/e2e/workspace.spec.ts`: added coverage for duplicate heading IDs, emoji, code token colors, sequence/pie diagrams, safe inline syntax, disclosure interaction and nested math.
-- Updated `features.md`, `docs/FEATURES.md`, `docs/MARKDOWN_SUPPORT.md` and `README.md` to describe the actual shipped subset and remaining limits.
+- Updated `features.md`, `FEATURES.md`, `docs/MARKDOWN_SUPPORT.md` and `README.md` to describe the actual shipped subset and remaining limits.
 
 ### Verification
 - Workflow [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208), commit `679b9eef2b14272356d245553abd218612fd92ce`: `npm ci`, 30 Node tests, TypeScript typecheck and production build passed; Playwright E2E was still running at the time of this log update.
@@ -185,7 +185,7 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Added local-first explanation, save/recovery status and basic workspace page/folder counts. Reset affects preferences only; document and recovery data are not touched.
 - Editor and Markdown preview share the configured writing measure and typography. Added dark-theme and system-dark styling for core workspace surfaces.
 - Added Playwright regression for control behavior, settings-file persistence and workspace reload/reopen.
-- Files: `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, `ui-gaps.md`, `docs/FEATURES.md`.
+- Files: `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, `UI_BACKLOG.md`, `FEATURES.md`.
 - Verification: awaiting GitHub Actions for this patch; no test pass is claimed. Full contrast review, broader workspace diagnostics and remaining UI gap IDs stay open.
 
 - Follow-up hardening: Settings now contains keyboard focus while open, supports Escape dismissal, and reports preference-save completion/failure. The centered writing measure (860px default with width choices) also partially addresses UI-003; responsive and wide-content review remains open.
@@ -207,7 +207,7 @@ Source changes and the regression scenario are committed, but no local typecheck
 - **Gap:** Dark-theme Markdown and workspace surfaces were only partially covered; there was no full Light/Dark/System × Edit/Preview × desktop/mobile regression matrix.
 - **Change:** Added theme-aware styles for callouts, DETAILS disclosures, math/fallbacks, diagram surfaces, syntax/diff tokens, missing-image fallbacks, copy controls and Settings dialog controls. Light mode remains independent of the operating-system dark preference.
 - **Regression:** Added a 12-state Playwright matrix using representative headings, links, inline/fenced code, tables, alerts, disclosures, math, Mermaid and missing-image fallback content. It checks computed colors/surfaces and horizontal overflow at desktop and mobile widths.
-- **Files:** `src/styles.css`, `tests/e2e/workspace.spec.ts`, `ui-gaps.md`, `dev-fixed.md`, `dev-build.md`, `DEV_CONTEXT.md`.
+- **Files:** `src/styles.css`, `tests/e2e/workspace.spec.ts`, `UI_BACKLOG.md`, `dev-fixed.md`, `dev-build.md`, `DEV_CONTEXT.md`.
 - **Verification:** CI pending. This is not a full screenshot-diff or WCAG contrast audit; UI-005, UI-014 and remaining UI-018/UI-019 reviews remain open.
 
  
@@ -259,21 +259,21 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Added toolbar color pickers for foreground text and background fill. The selected Markdown source is wrapped with `[[color:#RRGGBB|text]]` or `[[bg:#RRGGBB|text]]`; existing highlight syntax remains unchanged.
 - Preview rendering accepts only six-digit hexadecimal color tokens and applies them through React span styles. Raw HTML and arbitrary style strings remain disabled.
 - Added theme-aware toolbar styling and a Playwright regression for both color modes, literal inline-code preservation and source retention when returning from Preview.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `features-gap.md`, `ui-features.md` and `ui-gaps.md`. UI-021 is source-implemented; palette presets, clear/reset, nested ranges, block fills and Blocks-mode selection remain future work.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `UI_BACKLOG.md` and `UI_BACKLOG.md`. UI-021 is source-implemented; palette presets, clear/reset, nested ranges, block fills and Blocks-mode selection remain future work.
 - Commits: `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`, `4f68b91243e17a2a2642961ec45c01550893aaa4`, `3464fd936b96bd280db1794f230a378041945a07`, `53779f8f9705c1b78195761c794935e7aa1c6230`, `323f49e33ab59f38cb2790628d83630f934d6282`, `48af3998748b51779a0abe75ca5853dd80fa03b1`.
 - Verification: no local test, typecheck, production build or visual run was performed; CI remains pending.
 
 
 - Regression follow-up: strengthened the color E2E source to exercise native color-input change events, invalid color tokens remaining literal, and inline-code preservation. Latest test-source commits: `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`. CI remains pending.
 
-- Documentation precision follow-up: `docs/MARKDOWN_SUPPORT.md` now lists the exact color directives and six-digit-hex restriction; `features-gap.md` records the remaining renderer/palette limitations; `ui-features.md` distinguishes accessible native color inputs from the future curated swatch palette. Commits: `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`, `99007028e8f9c98de8baa5d32d55ce97d346d183`, `bd27ca629c7556b3f2fbeac75e3b600b976365b9`.
+- Documentation precision follow-up: `docs/MARKDOWN_SUPPORT.md` now lists the exact color directives and six-digit-hex restriction; `features-gap.md` records the remaining renderer/palette limitations; `UI_BACKLOG.md` distinguishes accessible native color inputs from the future curated swatch palette. Commits: `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`, `99007028e8f9c98de8baa5d32d55ce97d346d183`, `bd27ca629c7556b3f2fbeac75e3b600b976365b9`.
 
 
 ## 2026-11-15 — Color formatting follow-up
 
 - Added quick foreground swatches, a remove-color-formatting action, and block background color selection. Block fills are stored as Markdown quote syntax beginning `> [!COLOR=#RRGGBB]`; the renderer validates six-digit hex and emits a styled blockquote. Inline color directives remain unchanged.
 - Added an E2E regression for applying a quick swatch, removing it, applying a block fill and rendering the filled block.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `ui-gaps.md`, `ui-features.md` and `features-gap.md`. Nested inline color ranges, Blocks-mode selection, non-Wave rendering and user-color contrast review remain open.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md` and `features-gap.md`. Nested inline color ranges, Blocks-mode selection, non-Wave rendering and user-color contrast review remain open.
 - Source commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`, renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`, styles `7020028201eeee4be404a003b4e2c2abc7925c9a`, E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
 - No local test, typecheck, build or visual review was performed; CI pending.
 
