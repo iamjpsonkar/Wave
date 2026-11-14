@@ -3,7 +3,7 @@
 > Audit date: 2026-11-14  
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed revision: 5ea1657ff50235cbff46cc9e120a1b650e5fa953  
+> Reviewed revision: 9840fa3d10ef1cb0a2bd6916981cc2b3a2afb6a5  
 > App version: 0.2.0  
 > Review type: Static source-code and documentation review
 
@@ -513,7 +513,7 @@ These belong in the product roadmap. The data-loss, restore-collision, and navig
 - [x] WAVE-002 — Flush before workspace switch.
 - [x] WAVE-003 — Collision-safe restore with no overwrite.
 - [x] WAVE-004 — Serialized, revision-aware document writes.
-- [~] WAVE-005 — Trash operation journal and interrupted-operation reporting; automatic reconciliation remains.
+- [x] WAVE-005 — Trash operation journal, safe rollback/finalization and automatic reconciliation when inspecting Trash.
 - [x] WAVE-006 — Per-item Trash validation and error isolation.
 - [x] WAVE-021 — Catch async failures and preserve drafts.
 - [x] WAVE-022 — Revision-aware save status.
@@ -789,6 +789,6 @@ This section supersedes the original unchecked remediation lists above. It recor
 
 ## CI and release gate
 
-The repository now includes a committed npm lockfile and uses `npm ci`. The CI workflow runs `npm test`, `npm run typecheck` and `npm run build`. Latest verified run: [43599474006](https://github.com/iamjpsonkar/Wave/actions/runs/43599474006) — success; 11 tests passed, 0 failed.
+The repository now includes a committed npm lockfile and uses `npm ci`. The CI workflow runs `npm test`, `npm run typecheck` and `npm run build`. Latest verified run: [43599601850](https://github.com/iamjpsonkar/Wave/actions/runs/43599601850) — success; 13 tests passed, 0 failed.
 
 Do not begin the next feature milestone until the current CI run is green and the remaining browser-level verification items have been reviewed. No storage reliability claim should be interpreted as a substitute for keeping an independent backup of important data.
