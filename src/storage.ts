@@ -1,19 +1,19 @@
-export interface Workspace { root: FileSystemDirectoryHandle; wave: FileSystemDirectoryHandle; documents: FileSystemDirectoryHandle; assets: FileSystemDirectoryHandle; backups: FileSystemDirectoryHandle }
-export interface Doc { id: string; path: string; title: string; updatedAt: number; content: string }
+export interface Workspace { root: FileSystemDirectoryHandle; wave: FileSystemDirectoryHandle; documents: FileSystemDirectoryHandle; assets: FileSystemDirectoryHandle; backups: FileSystemDirectoryHandle; trash: FileSystemDirectoryHandle }
+export interface Doc { id: string; path: string; title: string; updatedAt: number; content: string }\nexport interface TrashItem { id: string; title: string; originalPath: string; deletedAt: string }
 export async function openWorkspace(): Promise<Workspace> {
   if (!('showDirectoryPicker' in window)) throw new Error('Folder access requires Chrome or Edge in this preview.');
   const root = await window.showDirectoryPicker({ mode: 'readwrite' });
   const wave = await root.getDirectoryHandle('.wave', { create: true });
   const documents = await wave.getDirectoryHandle('documents', { create: true });
   const assets = await wave.getDirectoryHandle('assets', { create: true });
-  const backups = await wave.getDirectoryHandle('backups', { create: true });
+  const backups = await wave.getDirectoryHandle('backups', { create: true });\n  const trash = await wave.getDirectoryHandle('trash', { create: true });
   const now = new Date().toISOString();
   try { await wave.getFileHandle('manifest.json'); }
   catch {
     await write(wave, 'manifest.json', JSON.stringify({ schemaVersion: 1, name: root.name, createdAt: now, updatedAt: now }, null, 2));
     await write(wave, 'settings.json', JSON.stringify({ format: 'markdown', appearance: 'system' }, null, 2));
   }
-  return { root, wave, documents, assets, backups };
+  return { root, wave, documents, assets, backups, trash };
 }
 async function write(dir: FileSystemDirectoryHandle, name: string, data: string | File) {
   const handle = await dir.getFileHandle(name, { create: true });
@@ -78,6 +78,46 @@ export async function createBackup(workspace: Workspace): Promise<string> {
     } catch { /* Settings may be absent in an older workspace; documents and assets are still backed up. */ }
   }
   return name;
+}
+
+export async function moveDocToTrash(documents: FileSystemDirectoryHandle, trash: FileSystemDirectoryHandle, path: string): Promise<void> {
+  const file = await fileForPath(documents, path);
+  const text = await (await file.getFile()).text();
+  const id = crypto.randomUUID();
+  const title = text.split('\n').find(line => line.trim())?.replace(/^#\s*/, '').trim() || path.split('/').pop() || 'Untitled';
+  await write(trash, id + '.md', text);
+  await write(trash, id + '.json', JSON.stringify({ id, title, originalPath: path, deletedAt: new Date().toISOString() }, null, 2));
+  const parts = path.split('/').filter(Boolean);
+  const name = parts.pop();
+  const parent = await directoryForPath(documents, parts.join('/'));
+  if (name) await parent.removeEntry(name);
+}
+export async function listTrash(trash: FileSystemDirectoryHandle): Promise<TrashItem[]> {
+  const items: TrashItem[] = [];
+  for await (const [name, handle] of trash.entries()) {
+    if (handle.kind !== 'file' || !name.endsWith('.json')) continue;
+    const data = JSON.parse(await (await (handle as FileSystemFileHandle).getFile()).text()) as TrashItem;
+    items.push(data);
+  }
+  return items.sort((a,b)=>b.deletedAt.localeCompare(a.deletedAt));
+}
+export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documents: FileSystemDirectoryHandle, id: string): Promise<string> {
+  const metadata = JSON.parse(await (await (await trash.getFileHandle(id + '.json')).getFile()).text()) as TrashItem;
+  const content = await (await (await trash.getFileHandle(id + '.md')).getFile()).text();
+  let target = metadata.originalPath;
+  try {
+    await fileForPath(documents, target);
+    const dot = target.lastIndexOf('.');
+    target = (dot > target.lastIndexOf('/') ? target.slice(0,dot) : target) + '-restored' + (dot > target.lastIndexOf('/') ? target.slice(dot) : '.md');
+  } catch { /* Original path is free. */ }
+  await saveDoc(documents, target, content);
+  await trash.removeEntry(id + '.md');
+  await trash.removeEntry(id + '.json');
+  return target;
+}
+export async function permanentlyDeleteTrashItem(trash: FileSystemDirectoryHandle, id: string): Promise<void> {
+  await trash.removeEntry(id + '.md');
+  await trash.removeEntry(id + '.json');
 }
 
 export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Promise<string> {
