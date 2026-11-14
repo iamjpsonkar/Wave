@@ -1271,7 +1271,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
             };
           });
           for (const [key, value] of Object.entries(colors)) {
-            expect(value, \`\${theme.name}/\${viewport.name}/\${key} should have a computed color\`).not.toBe('');
+            expect(value).not.toBe('');
             expect(value).not.toBe('rgba(0, 0, 0, 0)');
           }
           expect(colors.bodyContrast).toBeGreaterThanOrEqual(4.5);
