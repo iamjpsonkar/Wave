@@ -1,0 +1,571 @@
+# Wave — Bug and Engineering Risk Audit
+
+> Audit date: 2026-11-14  
+> Repository: https://github.com/iamjpsonkar/Wave  
+> Branch: main  
+> Reviewed revision: 5b1949d27a6e14834ce40f9cbde93a4dd7f0485c  
+> App version: 0.2.0  
+> Review type: Static source-code and documentation review
+
+This report records implementation defects, reliability risks, and usability issues found in the current source. It distinguishes confirmed code-path problems from risks requiring runtime reproduction and from planned features that are not bugs.
+
+## Severity and confidence
+
+| Priority | Meaning |
+|---|---|
+| P0 — Data safety | An ordinary workflow can lose or overwrite document data. Fix before relying on Wave for important content. |
+| P1 — High | A core workflow is incorrect, fragile, or can fail without safe recovery. |
+| P2 — Medium | Significant usability, performance, accessibility, or maintainability issue. |
+| P3 — Low | Documentation, polish, or lower-impact engineering debt. |
+
+Confidence:
+- **Confirmed:** behavior is directly visible in the implementation.
+- **High:** a concrete failure path exists, but runtime reproduction is still recommended.
+- **Needs verification:** behavior depends on browser scheduling, filesystem semantics, workspace size, or external edits.
+
+This was a static audit. Browser automation, filesystem fault injection, and a production build were not run. Do not treat an item as a reproduced runtime failure unless explicitly stated.
+
+---
+
+# 1. Data safety and persistence
+
+## WAVE-001 — Opening Trash can discard pending editor changes
+
+- Priority: **P0** | Confidence: **Confirmed**
+- Files: src/App.tsx:32,47
+
+### Problem
+loadTrash() clears the active document and editor content without flushing the editor first. Autosave is debounced by 600 ms. Clearing active causes the autosave effect cleanup to cancel a pending timer. If the user types and immediately opens Trash, the latest text may never reach disk.
+
+### Reproduction
+1. Open a page and type a change.
+2. Open Trash within 600 ms.
+3. Reopen the page and compare its saved content.
+
+### Expected and fix
+Navigation must flush or preserve the current unsaved revision before clearing editor state. Route all navigation through a save-and-navigate operation. If saving fails, keep the editor and draft available and abort navigation.
+
+### Regression tests
+- Open Trash within the debounce interval and verify the latest text survives.
+- Revoke permission before navigation and verify the draft remains recoverable.
+- Repeat while a write is already running.
+
+## WAVE-002 — Switching workspaces can discard pending edits
+
+- Priority: **P0** | Confidence: **Confirmed**
+- Files: src/App.tsx:39-42
+
+### Problem
+The switch flow activates a new workspace without flushing the previously active document. activateWorkspace() replaces workspace state and resets active/content. If the user switches before autosave fires, effect cleanup can cancel the pending timer and the old workspace retains the older version.
+
+### Reproduction
+Edit a page in Workspace A, immediately switch to Workspace B, then reopen A and inspect the page.
+
+### Expected and fix
+Save the old workspace successfully before replacing it. Abort the transition if saving fails. Load and validate the new workspace before committing it to UI state.
+
+### Regression tests
+Switch within the debounce interval, during an in-flight write, and after revoking write permission.
+
+## WAVE-003 — Restore can overwrite an existing -restored document
+
+- Priority: **P0** | Confidence: **Confirmed**
+- Files: src/storage.ts:122-134,70-73
+
+### Problem
+If the original path exists, restoreTrashItem() generates one -restored candidate but does not check whether that candidate also exists. saveDoc() opens with create:true and writes to the path, replacing existing content.
+
+### Reproduction
+1. Trash Notes.md.
+2. Create a different Notes.md.
+3. Create a different Notes-restored.md.
+4. Restore the trashed item.
+
+### Expected and fix
+Restore must select an unused path and never overwrite an existing document. Check candidates in a loop, serialize check-and-create, validate metadata paths, and retain the Trash copy until the restored file is verified.
+
+### Regression tests
+Original path occupied; original plus first restored candidate occupied; multiple collisions; interruption after destination creation.
+
+## WAVE-004 — Autosave and explicit saves have no revision ordering
+
+- Priority: **P1** | Confidence: **High; browser write ordering needs runtime verification**
+- Files: src/App.tsx:37,47-48; src/storage.ts:70-73
+
+### Problem
+Autosave, keyboard save, navigation flush, and backup can call saveDoc independently. There is no per-document write queue, revision number, or stale-write guard. Clearing the debounce timer cannot cancel a write that has already started. Save status is updated by whichever promise resolves, not by checking that the saved revision is still current.
+
+### Impact
+An older save may race a newer save depending on filesystem scheduling. The UI can also report Saved locally while a newer revision remains pending.
+
+### Fix
+Assign monotonically increasing document revisions; serialize writes per document; mark a revision saved only after its write closes; prevent older revisions replacing newer ones; make flush await the current revision.
+
+### Tests
+Type during delayed writes, trigger Ctrl/Cmd+S during autosave, navigate during a pending write, and deliberately vary write completion order.
+
+## WAVE-005 — Trash operations can leave partial records
+
+- Priority: **P1** | Confidence: **Confirmed failure windows; recovery needs fault injection**
+- Files: src/storage.ts:101-111,122-138
+
+### Problem
+Moving to Trash writes the Markdown file, writes metadata JSON, then removes the original. Restore and permanent deletion also remove two files sequentially. A failure between steps can leave orphan metadata, orphan Markdown, or duplicate content.
+
+### Fix
+Add an operation journal with operation ID and state. Make steps idempotent; verify the Trash copy before deleting the source; validate metadata/file pairs; provide a recovery report for incomplete operations.
+
+### Tests
+Inject a failure after every write/remove step and verify retry/recovery returns the workspace to a consistent state.
+
+## WAVE-006 — One malformed Trash metadata file can break the entire Trash view
+
+- Priority: **P1** | Confidence: **Confirmed**
+- Files: src/storage.ts:113-120; src/App.tsx:32
+
+### Problem
+listTrash() parses every JSON file without per-item error handling or schema validation. One truncated or edited file rejects the whole operation. loadTrash() does not catch the rejection, leaving an unhandled promise rejection instead of a usable Trash screen.
+
+### Fix
+Validate id, title, originalPath, and deletedAt; isolate parse errors per item; show valid entries while identifying corrupt entries; recover orphaned Markdown files; catch errors at the UI boundary.
+
+### Tests
+Malformed JSON, missing fields, metadata without Markdown, and Markdown without metadata.
+
+## WAVE-007 — Workspace activation changes UI state before initialization succeeds
+
+- Priority: **P1** | Confidence: **Confirmed**
+- File: src/App.tsx:39
+
+### Problem
+activateWorkspace() calls setWs(w) before reading settings and refreshing documents/folders. If settings or enumeration fails, the UI may already point to the new workspace while initialization is incomplete.
+
+### Fix
+Load settings, documents, and folders into local variables first. Commit the new workspace only after required initialization succeeds. Keep the previous workspace active if activation fails.
+
+### Tests
+Force settings read, document enumeration, and folder enumeration to fail independently. Verify the previous workspace remains usable.
+
+---
+
+# 2. Document and attachment correctness
+
+## WAVE-008 — Attachment upload can append a link to the wrong document
+
+- Priority: **P1** | Confidence: **High; reproduce with delayed file write**
+- File: src/App.tsx:51
+
+### Problem
+attachment() calculates a relative asset URL using the active document path, then awaits addAsset(). After the await, it appends Markdown using the current content state. If the user switches documents during upload, the link can be appended to the newly active document even though its relative path was calculated for the previous document.
+
+### Fix
+Capture document identity and revision at upload start. On completion, append to that same document or detect that the active document changed and ask where to insert the attachment. Never append to whichever document happens to be active when the promise resolves.
+
+### Test
+Delay addAsset(), switch documents, then verify the link is inserted only into the intended document with the correct relative path.
+
+## WAVE-009 — Attachment input is not reset after selection
+
+- Priority: **P2** | Confidence: **Confirmed**
+- File: src/App.tsx:54
+
+### Problem
+The file input handles onChange but does not clear its value after upload. Selecting the same file again may not emit another change event.
+
+### Fix and test
+Clear the input value after capturing the selected file, including on failure. Attach the same file twice without selecting another file in between.
+
+## WAVE-010 — Local Markdown link detection relies on a substring
+
+- Priority: **P2** | Confidence: **Confirmed**
+- File: src/App.tsx:19-23
+
+### Problem
+A link is treated as a local asset whenever its URL contains assets/. An external URL such as https://example.com/assets/guide.pdf can be misclassified as a local file. Other relative links that do not follow this substring convention are treated as external.
+
+### Fix
+Parse URLs and allow only explicitly supported workspace-relative asset paths. Reject schemes/origins in the local resolver, normalize path segments, and keep external URLs on the external-link path.
+
+### Tests
+Workspace assets, external URLs containing /assets/, query strings, encoded names, root-relative paths, and unsupported schemes.
+
+## WAVE-011 — Invalid percent encoding can throw during Markdown asset resolution
+
+- Priority: **P2** | Confidence: **High**
+- File: src/App.tsx:10-12
+
+### Problem
+decodeURIComponent() is evaluated before the promise chain is created. Malformed percent encoding in user-authored Markdown can throw synchronously inside the effect and bypass the chained catch.
+
+### Fix and test
+Use a guarded parser and render a missing-asset state on invalid input. Preview documents with malformed percent-encoded image and file paths.
+
+## WAVE-012 — Toolbar list formatting only prefixes the first selected line
+
+- Priority: **P2** | Confidence: **Confirmed**
+- File: src/App.tsx:50
+
+### Problem
+linePrefix() inserts one prefix at the start of the line containing selectionStart. Selecting multiple lines and clicking Bulleted list, Numbered list, Quote, or Heading modifies only the first line. The numbered-list button always inserts 1. rather than incrementing numbers for a multi-line selection.
+
+### Fix
+Determine the complete selected line range, prefix every selected line, preserve selection/cursor, generate sequential ordered-list markers, and define behavior for partially selected first/last lines.
+
+### Tests
+Select 1, 2, and 5 lines and apply each line-based formatting action.
+
+---
+
+# 3. Navigation and search
+
+## WAVE-013 — Nested folders are discovered but rendered as a flat list
+
+- Priority: **P2** | Confidence: **Confirmed**
+- Files: src/App.tsx:31,54; src/storage.ts:55-67
+
+### Problem
+The storage adapter discovers folders recursively, but the sidebar renders every folder at the same level. Documents are associated with their immediate parent, but folder ancestry is not represented as a recursive tree.
+
+### Fix
+Build a recursive tree from folder paths. Render direct child folders and documents with stable IDs and independent expand/collapse state.
+
+### Tests
+Use root documents, empty folders, and at least four nested levels. Verify hierarchy, expansion, selection, and search.
+
+## WAVE-014 — Selecting a folder does not scope the visible page list
+
+- Priority: **P2** | Confidence: **Confirmed**
+- File: src/App.tsx:54
+
+### Problem
+Clicking a folder changes selectedFolder, which affects where a newly created page is stored. It does not filter the sidebar or show a scoped folder view. All folders and pages remain rendered.
+
+### Fix
+Define folder-selection semantics. Show the selected folder's direct contents and breadcrumbs or an explicit tree selection state. Keep search results distinct from normal browsing.
+
+## WAVE-015 — Search has no path context or keyboard result navigation
+
+- Priority: **P2** | Confidence: **Confirmed**
+- File: src/App.tsx:30,54
+
+### Problem
+Search filters title and body content in memory. Results have no matching snippet, folder breadcrumb, match highlighting, or arrow/Enter navigation.
+
+### Fix
+Show title, snippet, and folder path; add keyboard navigation and Escape; separate search results from folder rendering; use a rebuildable local index for large workspaces.
+
+## WAVE-016 — Favorite references can become stale
+
+- Priority: **P2** | Confidence: **Confirmed**
+- Files: src/App.tsx:40,52
+
+### Problem
+Favorites are stored as document path strings. Moving a page to Trash does not remove its favorite reference. Restoring under a different path leaves a stale reference; reusing the original path can make an unrelated page inherit the old favorite state.
+
+### Fix
+Prefer stable document IDs, or reconcile favorite paths whenever documents move, restore, rename, or delete. Remove invalid references during integrity checks.
+
+---
+
+# 4. Performance, backups, and external changes
+
+## WAVE-017 — Every refresh reads every Markdown document in full
+
+- Priority: **P1** | Confidence: **Confirmed**
+- Files: src/storage.ts:39-53; src/App.tsx:31,37,47
+
+### Problem
+listDocs() recursively reads the full text of every Markdown file. refresh() calls listDocs() and listFolders(). Refresh runs after autosave and explicit flushes. Saving one page can therefore cause every page to be read again and every document body to be held in React state.
+
+### Impact
+Large workspaces incur unnecessary filesystem I/O, memory use, and UI latency. Cost grows with total Markdown content, not just the active document.
+
+### Fix
+Separate lightweight metadata listing from content loading; keep only the active document body in editor state; cache metadata and invalidate only the changed path; use a rebuildable search index; avoid a full workspace refresh after each save.
+
+### Performance tests
+Benchmark 100, 1,000, and 10,000 Markdown files. Measure initial load, typing-to-save latency, memory, and search latency.
+
+## WAVE-018 — Backup creation has no restore workflow or retention policy
+
+- Priority: **P1** | Confidence: **Confirmed missing capability, not a defect in the copy routine**
+- Files: src/storage.ts:75-99,189-195; src/App.tsx:38,54
+
+### Problem
+Wave creates snapshots and can list backup directory names, but there is no user-facing backup browser, restore preview, or restore operation. Repeated backups have no retention/cleanup policy.
+
+### Fix
+Add a backup browser with timestamps and file counts; validate snapshots; restore to a new workspace/staging directory first; show a preview/diff and require confirmation before replacement; report partial failures. Add retention only after safe restore exists.
+
+### Test
+Back up, modify/delete files, restore to a separate workspace, and compare contents and metadata.
+
+## WAVE-019 — External filesystem changes are not detected
+
+- Priority: **P2** | Confidence: **Confirmed missing capability; conflict risk depends on usage**
+- Files: src/storage.ts:39-73; docs/ROADMAP.md
+
+### Problem
+Users can edit workspace Markdown outside Wave, but the app does not watch for changes or compare the on-disk version before writing. An external editor, sync client, or another Wave tab can change a file while Wave holds stale content.
+
+### Fix
+Record last observed modification time and preferably a content hash. Check the on-disk version before replacement. Offer reload, keep local, or save conflicted copy. A future desktop file watcher helps, but should not replace pre-write conflict checks.
+
+## WAVE-020 — Backup snapshots can be inconsistent with external edits
+
+- Priority: **P2** | Confidence: **Needs runtime verification**
+- File: src/storage.ts:75-99
+
+### Problem
+Backup copies documents and assets sequentially. The UI flushes the active editor, but the copy is not coordinated with external modifications or other Wave tabs. A snapshot may contain files from different points in time.
+
+### Fix
+Use a workspace-level operation lock for Wave-managed writes, capture source metadata before/after copying, and flag snapshots if source files changed during backup.
+
+### Test
+Modify a document and asset while a slowed backup runs. Verify the snapshot is consistent or explicitly marked incomplete.
+
+---
+
+# 5. Error handling and state management
+
+## WAVE-021 — Async UI actions can reject without user feedback
+
+- Priority: **P1** | Confidence: **Confirmed**
+- Files: src/App.tsx:32,35,37,43-48
+
+### Problem
+Some event handlers invoke async operations with void but do not catch errors. Examples include document creation, template creation, opening a document, and keyboard-triggered flush. Permission revocation or filesystem failures can become unhandled promise rejections instead of visible, recoverable errors.
+
+### Fix
+Catch errors at event boundaries or use a shared async action wrapper. Preserve the current draft on failure, show actionable feedback and retry, and add an application error boundary for render-time failures.
+
+## WAVE-022 — Save status is not tied to a document revision
+
+- Priority: **P1** | Confidence: **Confirmed**
+- File: src/App.tsx:37,47
+
+### Problem
+A completed save can set Saved locally even if a newer edit happened after that save began. Opening a document also sets All changes saved without comparing persisted and current revisions.
+
+### Fix
+Derive status from current revision, saved revision, pending write, and last error. Show saved only when revisions match.
+
+## WAVE-023 — Settings parsing silently hides corruption and read errors
+
+- Priority: **P2** | Confidence: **Confirmed**
+- File: src/storage.ts:174-183
+
+### Problem
+readWorkspaceSettings() catches every error and returns an empty object. Missing settings, malformed JSON, and permission failures are treated identically. A later write can replace unreadable settings and lose preferences.
+
+### Fix
+Distinguish missing files from malformed content and access errors. Preserve the original file, report corruption, and offer a recoverable reset.
+
+## WAVE-024 — Favorite writes are not serialized
+
+- Priority: **P2** | Confidence: **High**
+- File: src/App.tsx:40
+
+### Problem
+Each toggle reads settings, computes an array from the current React state closure, and writes the whole settings object. Rapid toggles can overlap and resolve out of order, losing updates.
+
+### Fix and test
+Serialize settings mutations and compute each update from the latest committed state. Toggle multiple pages rapidly and verify persistence after reload.
+
+---
+
+# 6. Responsive UI and accessibility
+
+## WAVE-025 — Mobile sidebar hides essential navigation
+
+- Priority: **P2** | Confidence: **Confirmed**
+- File: src/styles.css:2
+
+### Problem
+Below 520 px, CSS hides page rows and all navigation buttons except the first. Folder links and settings are also hidden. There is no replacement drawer or mobile navigation surface.
+
+### Fix
+Use a slide-out navigation drawer or mobile workspace switcher. Preserve search, folders, Trash, and page access. Add open/close controls and focus management.
+
+### Tests
+Test 320, 375, 430 px, tablet, and desktop widths. Verify core actions remain reachable by touch and keyboard.
+
+## WAVE-026 — Short viewport layout can clip the workspace
+
+- Priority: **P2** | Confidence: **High; verify on actual short/mobile viewports**
+- File: src/styles.css:2
+
+### Problem
+The app uses height:100vh with min-height:560px. On viewports shorter than 560 px, the app can exceed the visible viewport. The rule does not use dynamic viewport units for mobile browser chrome changes.
+
+### Fix
+Use dynamic viewport-aware sizing with a fallback, allow inner panels to scroll, and avoid forcing the whole app above the viewport height.
+
+## WAVE-027 — Keyboard shortcuts intercept keys without checking focus
+
+- Priority: **P2** | Confidence: **Confirmed**
+- File: src/App.tsx:48
+
+### Problem
+The global handler intercepts Ctrl/Cmd+N and Ctrl/Cmd+K regardless of the focused element. This can conflict with browser/input behavior. The effect is also re-registered on every render because it has no dependency array.
+
+### Fix
+Ignore shortcuts inside inputs, textareas, selects, and editable content unless explicitly supported there. Use a stable effect/current callbacks. Add Escape behavior and keyboard navigation for search/dialogs.
+
+## WAVE-028 — Some visible controls are placeholders or non-interactive
+
+- Priority: **P3** | Confidence: **Confirmed**
+- File: src/App.tsx:54
+
+### Problem
+Settings explicitly displays SOON. The overflow icon/avatar are rendered as visual elements without corresponding actions.
+
+### Fix
+Implement the affordance or render it clearly as disabled/non-interactive with an explanation.
+
+---
+
+# 7. Documentation and project quality
+
+## WAVE-029 — Privacy/font documentation contradicts the stylesheet
+
+- Priority: **P2** | Confidence: **Confirmed**
+- Files: src/styles.css:1; README.md; docs/ARCHITECTURE.md
+
+### Problem
+The stylesheet imports DM Sans, DM Mono, and Playfair Display from Google Fonts. README mentions Google Fonts, while the architecture document says the UI uses system fonts and does not request third-party font files.
+
+### Fix
+Choose one policy: keep Google Fonts and accurately disclose the third-party request/offline fallback, or bundle fonts/use system fonts and remove the external import. Verify the network panel and update both documents.
+
+## WAVE-030 — Workspace manifest updatedAt is initialized but not maintained
+
+- Priority: **P3** | Confidence: **Confirmed**
+- File: src/storage.ts:12-16
+
+### Problem
+The manifest receives createdAt and updatedAt when first created, but updatedAt is not updated as workspace content changes.
+
+### Fix
+Update metadata through a centralized repository operation, or remove the field until its semantics are implemented. Document which operations affect it.
+
+## WAVE-031 — No automated storage/browser regression tests are configured
+
+- Priority: **P1** | Confidence: **Confirmed**
+- Files: package.json; .github/workflows/ci.yml
+
+### Problem
+Package scripts expose typecheck and build. CI runs install, typecheck, and build, but no test script or unit/integration/browser test suite is configured.
+
+### Fix
+Add:
+1. Unit tests for path validation, slug generation, and metadata validation.
+2. Storage-adapter tests using a fake filesystem or browser-compatible test environment.
+3. Fault-injection tests for Trash, restore, and backup.
+4. Browser tests for workspace switching, autosave, attachment upload, and mobile navigation.
+5. CI execution of all tests on pull requests.
+
+A successful typecheck/build is not evidence that data-integrity workflows are correct.
+
+---
+
+# 8. Additional risks to verify
+
+These are not asserted as confirmed defects. They need explicit tests before a wider release.
+
+| ID | Risk | Why it matters | Verification |
+|---|---|---|---|
+| R-01 | Multiple Wave tabs on one workspace | Both tabs can hold stale document state and write to the same files | Edit the same document in two tabs; verify conflict detection |
+| R-02 | Permission revoked while editor is open | Pending saves and later actions can fail | Revoke permission during typing and during a save |
+| R-03 | Very large Markdown files | Full-file reads and textarea editing can cause latency | Test 1 MB, 5 MB, and 10 MB documents |
+| R-04 | Very large asset collections | Backup copies assets sequentially | Benchmark thousands of assets |
+| R-05 | Backup interrupted by tab close/crash | Partial snapshots may remain | Terminate during copy; verify incomplete-backup detection |
+| R-06 | Concurrent uploads with the same filename | Name check and write are separate operations | Run simultaneous uploads; verify unique names |
+| R-07 | Browser compatibility outside Chromium | File System Access API is not uniformly supported | Test Firefox/Safari and provide adapter or clear unsupported state |
+| R-08 | Unicode and case-sensitive paths | Slugging/normalization can collide across filesystems | Test Unicode, case-only differences, and platform-specific paths |
+
+---
+
+# 9. Planned features, not bugs
+
+These are explicitly absent from the current MVP or roadmap and should not be treated as regressions:
+
+- Rich block editor, slash commands, and draggable blocks.
+- Database engine and table/board/gallery/calendar/timeline views.
+- Comments, mentions, collaboration, presence, and team permissions.
+- Page history and revision comparison.
+- Internal page links and backlinks.
+- Folder rename/delete and document rename/move.
+- Import/export beyond the current Markdown workflow.
+- Tauri desktop shell, native file watching, and cross-browser storage adapters.
+- Optional encrypted sync.
+
+These belong in the product roadmap. The data-loss, restore-collision, and navigation-transition findings above are defects or reliability gaps in already implemented workflows.
+
+---
+
+# 10. Recommended remediation order
+
+## Release gate A — Protect user data
+
+- [ ] WAVE-001 — Flush before opening Trash.
+- [ ] WAVE-002 — Flush before workspace switch.
+- [ ] WAVE-003 — Collision-safe restore with no overwrite.
+- [ ] WAVE-004 — Serialized, revision-aware document writes.
+- [ ] WAVE-005 — Recoverable Trash operation journal.
+- [ ] WAVE-006 — Per-item Trash validation and error isolation.
+- [ ] WAVE-021 — Catch async failures and preserve drafts.
+- [ ] WAVE-022 — Revision-aware save status.
+- [ ] WAVE-031 — Automated storage regression tests.
+
+## Release gate B — Make core workflows dependable
+
+- [ ] WAVE-007 — Transactional workspace activation.
+- [ ] WAVE-008 — Bind attachment upload to its originating document.
+- [ ] WAVE-010 — Correct local/external URL classification.
+- [ ] WAVE-011 — Guard malformed URL decoding.
+- [ ] WAVE-017 — Avoid reading all Markdown content on every refresh.
+- [ ] WAVE-018 — Implement backup browser and restore workflow.
+- [ ] WAVE-019 — Detect external modifications/conflicts.
+- [ ] WAVE-023 — Preserve and report corrupt settings.
+
+## Release gate C — Improve daily usability
+
+- [ ] WAVE-009 — Reset attachment input.
+- [ ] WAVE-012 — Multi-line toolbar formatting.
+- [ ] WAVE-013 — Recursive folder tree.
+- [ ] WAVE-014 — Clear folder selection semantics.
+- [ ] WAVE-015 — Search snippets and keyboard navigation.
+- [ ] WAVE-016 — Stable favorite references.
+- [ ] WAVE-024 — Serialize settings updates.
+- [ ] WAVE-025 — Mobile navigation.
+- [ ] WAVE-026 — Short viewport layout.
+- [ ] WAVE-027 — Focus-aware keyboard shortcuts.
+- [ ] WAVE-028 — Clarify placeholder controls.
+
+## Release gate D — Documentation and scale
+
+- [ ] WAVE-020 — Consistent backup snapshots.
+- [ ] WAVE-029 — Align privacy/font documentation.
+- [ ] WAVE-030 — Maintain manifest metadata.
+- [ ] R-01 through R-08 — Verify additional risks.
+
+---
+
+# 11. Definition of done for the reliability milestone
+
+Wave should not consider its local-first reliability milestone complete until:
+
+- A user cannot lose a recent edit by opening Trash, switching workspaces, or navigating away.
+- Older saves cannot overwrite newer document revisions.
+- Restore never silently replaces an existing document.
+- Interrupted Trash operations can be detected and recovered.
+- Corrupt Trash/settings metadata does not make the rest of the workspace inaccessible.
+- Save status reflects the actual persisted revision.
+- Failed writes leave the draft available for retry or export.
+- Backups can be validated and restored safely.
+- External modifications are detected before a conflicting overwrite.
+- Storage and browser regression tests run in CI.
+
+**Audit conclusion:** Wave has a promising local-first foundation, but the highest priority is data safety. Fix navigation flush paths and restore collision first, then introduce serialized revision-aware writes and recovery tests. Rich editor and database work should follow only after these guarantees are in place.
