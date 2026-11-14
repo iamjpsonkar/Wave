@@ -18,49 +18,47 @@
 ## Current summary
 
 - **2 remaining partial findings:** WAVE-031, WAVE-039. Permission-denial and same-workspace two-tab journeys are now covered in Chromium; draft writes request strict IndexedDB durability where supported.
-- **50 source-verified fixes:** tracked in `fixed-bugs.md`.
+- **49 source-verified fixes:** tracked in `fixed-bugs.md`.
 - CI runs Node storage/concurrency tests and nine Playwright Chromium E2E journeys using native OPFS handles. Simulated permission denial and same-workspace two-tab editing are covered; native picker prompts/revocation, external-editor fault injection, comprehensive accessibility checks and abrupt process-termination tests remain outstanding.
 - Verified code CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) — 30 Node tests and all 9 Chromium E2E tests passed; typecheck and production build passed.
 
 ---
 
-## WAVE-031 — Browser regression coverage still lacks real picker-permission and cross-tab scenarios
+## WAVE-031 — Native picker permission and browser lifecycle/accessibility coverage remains incomplete
 
 - Priority: **P1** | Confidence: **Confirmed**
 - Files: `package.json`, `.github/workflows/ci.yml`, `tests/storage.test.js`
 
 ### Problem
 
-The repository now runs 30 Node storage/concurrency tests plus nine Playwright Chromium E2E tests. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments and mobile navigation.
+The repository now runs 30 Node storage/concurrency tests plus nine Playwright Chromium E2E tests. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments, mobile navigation, simulated permission denial and same-workspace two-tab editing.
 
-The browser suite now exercises permission denial through the File System Access permission contract and concurrent editing from two tabs sharing one OPFS workspace. The permission contract is deterministically simulated because Chromium's OPFS fixture does not produce the native user-picked-folder prompt. External editor changes during active operations, comprehensive keyboard/accessibility paths, native picker prompt/revocation, and actual abrupt browser-process termination remain outstanding.
+The remaining gap is specifically the native user-picked-folder permission prompt and OS/browser permission revocation: the OPFS fixture simulates the File System Access permission contract rather than exercising the real picker lifecycle. External filesystem edits during active operations, comprehensive keyboard/accessibility paths, and actual abrupt browser-process termination also remain untested.
 
 ### Impact
 
-Source-level and storage-adapter fixes can pass CI while browser-only races, permissions, focus behavior, and user-visible failures remain undetected.
+The current suite now covers key simulated permission and cross-tab journeys, but cannot yet establish behavior for the native picker lifecycle, external filesystem races, full accessibility interactions, or process termination.
 
 ### Reproduction / recheck scenario
 
-Inspect the test scripts and CI workflow, then verify whether automated browser tests cover:
-1. Workspace creation, switching, and reopening.
-2. Autosave, navigation during a delayed save, and conflict recovery.
-3. Trash, restore, backup, and interrupted operations.
-4. Draft recovery across reload/pagehide and strict IndexedDB transaction durability.
-5. Attachment upload in root and nested pages.
-6. Mobile navigation and two-tab concurrent editing.
-7. Permission denial/revocation and unavailable File System Access API behavior.
+Recheck the current Playwright suite and add browser-supported tests for the remaining gaps:
+1. Exercise the real user-picked-folder permission prompt and permission revocation where the browser runner supports it.
+2. Modify a Markdown file externally while Wave is reading, saving, backing up, or restoring it; verify no silent overwrite or inconsistent snapshot.
+3. Exercise keyboard-only navigation, focus order, focus restoration, accessible names, and screen-reader semantics.
+4. Terminate the browser process during an IndexedDB journal transaction and verify the documented recovery behavior.
+5. Keep the existing simulated permission-denial, same-workspace two-tab, autosave, recovery, Trash, backup, attachment, and mobile journeys as regression coverage.
 
 ### Expected behavior
 
-A browser automation suite should run in CI and cover the critical user journeys using a browser-supported filesystem test strategy. Tests should include deterministic delays and failure injection where possible.
+CI should retain the nine current Chromium journeys and add deterministic coverage for the native picker lifecycle, external filesystem changes, accessibility, and browser-process termination when supported.
 
 ### Fix direction
 
-Add Playwright (or an equivalent browser automation framework), provide a controlled File System Access API test adapter/fixture, and run the critical E2E suite in CI. Keep the Node storage tests as a faster lower-level layer.
+Extend the existing Playwright suite with permission/picker integration coverage, external-edit fault injection, accessibility tooling, and lifecycle fault injection. Keep the OPFS fixture for deterministic tests and the Node storage tests as the faster lower-level layer.
 
 ### Regression coverage
 
-Keep the current nine Chromium scenarios in CI. Add native user-picked-folder prompt/revocation, external filesystem edits, keyboard/accessibility checks and browser lifecycle fault injection when a supported browser fixture is available.
+Keep all nine current Chromium scenarios in CI. Add native picker prompt/revocation, external filesystem edits during active operations, keyboard/accessibility checks, and browser lifecycle fault injection when supported.
 
 ---
 
