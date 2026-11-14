@@ -386,3 +386,5 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `tests/e2e/workspace.spec.ts`: added 2 Playwright scenarios for unique toolbar icon/label/insertion behavior and system-dark Preview colors. E2E source count 33; Node source count 30.
 - `ui-gaps.md`: reconciled source evidence to current HEAD `4713725f0e09efae0d0b8e6c9da880f5513e18ca`; UI-004 is partially implemented pending regression, UI-016/017 source mitigations await visual regression, UI-018/019 partial, UI-020 partial. UI-001/012 source implementation awaits QA; UI-003 responsive QA remains open. All 20 IDs preserved.
 - No tests or build are claimed to pass until the latest main workflow reports success.
+
+- Test review follow-up: toolbar insertion regression now selects actual text before wrapping it in inline/fenced code, matching the current selection-based implementation. UI gap headings/order were rewritten to reflect implemented source behavior and the remaining verification work without dropping IDs.
