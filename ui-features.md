@@ -79,12 +79,14 @@
 ### UIF-006 — Text color and highlight palette (Markdown-safe)
 
 - **Inspiration:** text color and fill-color controls.
-- **Proposal:** add a limited, documented highlight palette using Wave's safe inline mark syntax; treat arbitrary text color as exploratory until a portable Markdown representation is agreed.
+- **Status:** Partially implemented in source. The toolbar now exposes native foreground and background color pickers. Selected text is stored as `[[color:#RRGGBB|text]]` or `[[bg:#RRGGBB|text]]`; existing `==highlight==` remains supported.
+- **Proposal:** extend this foundation with accessible preset swatches, remove/reset formatting, nested color ranges and block-level fills after the portable syntax and selection model are validated.
 - **Acceptance:**
   - Highlight syntax is documented, sanitized and round-trips exactly.
   - Palette is keyboard accessible and has visible selected state.
   - No arbitrary CSS, HTML style attributes or unsafe rendering is introduced.
-  - Text color is not shipped until export and non-Wave fallback behavior are defined.
+  - Color values accept only six-digit hexadecimal tokens; no raw CSS or HTML style attributes are accepted.
+  - Markdown source remains exact across Edit/Preview; non-Wave readers see the explicit Wave directive syntax as plain text.
 
 ### UIF-007 — Alignment and indentation controls
 
@@ -202,7 +204,7 @@ These items are inspired by spreadsheet-specific controls in the screenshot. The
 3. Add heading-style menu and safe insert menu (UIF-004/UIF-008).
 4. Improve table and link workflows (UIF-009/UIF-010).
 5. Add document statistics and focus/zoom (UIF-011/UIF-012).
-6. Decide portable semantics before shipping color, paragraph alignment or other rich-text-only formatting (UIF-006/UIF-007).
+6. Extend the shipped Markdown-safe inline color foundation with presets/reset and decide portable semantics before paragraph alignment (UIF-006/UIF-007).
 7. Build spreadsheet-specific controls only with the planned spreadsheet data model and dedicated sheet UI (UIF-015–UIF-018).
 8. Defer comments, toolbar customization and collaboration-dependent actions until their prerequisites are stable (UIF-019/UIF-020).
 
