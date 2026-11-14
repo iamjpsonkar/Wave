@@ -4,7 +4,7 @@
 
 Wave is a local-first workspace. The user chooses a directory and Wave creates a `.wave/` folder inside it. Documents, attachments, backups and trash live in that folder. Wave does not require an account and the application has no document-storage backend.
 
-The browser may retain a local permission handle in a future release to make reopening easier, but that handle is only a pointer/permission record. It must never become a second copy of user content.
+The browser stores the most recently selected FileSystemDirectoryHandle in IndexedDB to offer a reopen shortcut. This is only a handle/permission reference, never a copy of document or asset content. Reopening checks read-write permission and requests it again from an explicit user action when needed. Users can always choose a folder again instead.
 
 ## Current workspace format
 
@@ -55,6 +55,7 @@ A future Tauri adapter should implement the same storage operations. The editor 
 - Markdown is rendered with sanitization. Local images and attachment links are resolved from the selected workspace; remote images are not fetched by the preview.
 - External links open separately with `rel="noreferrer"`.
 - The browser permission model is explicit and can require user re-authorization.
+- IndexedDB stores only the recent directory handle; workspace documents and assets remain in the selected folder.
 
 ## Browser constraints
 
