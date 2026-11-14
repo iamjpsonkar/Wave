@@ -1171,7 +1171,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
     '',
     String.fromCharCode(96).repeat(3) + 'ts',
     'const wave = "portable";',
-    String.fromCharCode(96).repeat(3)
+    String.fromCharCode(96).repeat(3),
     '',
     '> [!NOTE]',
     '> A readable note callout.',
