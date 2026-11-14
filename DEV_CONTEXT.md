@@ -15,7 +15,7 @@ Non-negotiable principles:
 - Portable content: Markdown documents and ordinary asset files remain inspectable outside Wave.
 - Privacy by default: don't introduce uploads, analytics, remote processing, or third-party services without an explicit product decision and disclosure.
 - Reliability before breadth: integrity, safe failure, recovery, backup/restore, migration, accessibility and export are release gates.
-- Preserve scope: never silently prune agreed features. `upcoming-FEATURES.md` is the complete scope catalogue; `priority-FEATURES.md` assigns delivery order, not permission to drop requirements.
+- Preserve scope: never silently prune agreed features. `upcoming-features.md` is the complete scope catalogue; `priority-FEATURES.md` assigns delivery order, not permission to drop requirements.
 
 ## 2. Stack and development commands
 
@@ -121,7 +121,7 @@ Preserve all of the following:
 
 ## 6. Project documents and their separate responsibilities
 
-- `upcoming-FEATURES.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
+- `upcoming-features.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
 - `priority-FEATURES.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
 - `FEATURES.md`: concise shipped-feature showcase.
 - `FEATURES.md`: detailed shipped/planned feature map.
@@ -171,7 +171,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 6. Keep README/docs/catalogues consistent with actual behavior.
 
 ### At the end of every task
-- Feature work: update `FEATURES.md`, `FEATURES.md`, `priority-FEATURES.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `upcoming-FEATURES.md` catalogue.
+- Feature work: update `FEATURES.md`, `FEATURES.md`, `priority-FEATURES.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `upcoming-features.md` catalogue.
 - Bug work: current findings only in `bugs.md`; move to `fixed-bugs.md` only after verification; retain IDs and regression scenarios.
 - Code fixes: append problem, changes, files, tests, commit/CI and limitations to `dev-fixed.md`.
 - Build/test/CI: append exact commit and suite-level outcome to `dev-build.md`; distinguish not run, queued, failed and passed.
