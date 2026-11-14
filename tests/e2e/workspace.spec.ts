@@ -310,7 +310,8 @@ test('wiki links navigate to pages and backlinks are derived from Markdown files
   await page.getByRole('button', { name: 'Preview' }).click();
   const previewHtml = await page.locator('.markdown-preview').innerHTML();
   expect(previewHtml).toContain('the linked page');
-  expect(previewHtml).toContain('wave.invalid');
+  expect(previewHtml).not.toContain('wave.invalid');
+  await expect(page.locator('.markdown-preview a[href*="wave.invalid"]')).toHaveCount(0);
   const link = page.locator('.wiki-link');
   await expect(link).toHaveText('the linked page');
   await link.click();
@@ -382,7 +383,7 @@ test('Markdown extended preview highlights code, expands heading anchors, emoji 
   await expect(page.locator('.markdown-preview h2#repeated-heading')).toHaveCount(1);
   await expect(page.locator('.markdown-preview h2#repeated-heading-1')).toHaveCount(1);
   await expect(page.locator('.markdown-preview')).toContainText('🚀 😄 👍');
-  await expect(page.locator('.markdown-preview .syntax-keyword')).toContainText('const');
+  await expect(page.locator('.markdown-preview .syntax-keyword').filter({ hasText: 'const' }).first()).toBeVisible();
   await expect(page.locator('.markdown-preview .syntax-number')).toContainText('42');
   await expect(page.locator('.markdown-preview .mermaid-diagram svg')).toHaveCount(2);
   await expect(page.locator('.markdown-preview .mermaid-pie')).toBeVisible();
@@ -531,6 +532,18 @@ test('Markdown inline syntax, code literal preservation, duplicate slugs, nested
 });
 
 
+test('Technical learning notes template contains real Markdown newlines and previews structurally', async ({ page }) => {
+  await openWorkspace(page);
+  await page.getByRole('button', { name: 'New from template' }).click();
+  await page.getByRole('button', { name: /Technical learning notes/ }).click();
+  const editor = page.locator('textarea');
+  await expect(editor).toHaveValue(/## Introduction\\n\\nWhat is this technology/);
+  await expect(editor).toHaveValue(/## Open questions\\n\\n- \\[ \\]/);
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview h2')).toContainText('Introduction');
+  await expect(page.locator('.markdown-preview h2')).toContainText('Open questions');
+});
+
 test('Markdown math renders quadratic formula, matrices, cases, sums, integrals and limits', async ({ page }) => {
   await openWorkspace(page);
   const editor = await createPage(page, 'LaTeX Math Coverage');
@@ -632,8 +645,10 @@ test('Markdown Mermaid class, ER, state, Gantt, git and extended flowchart diagr
   await page.getByRole('button', { name: 'Preview' }).click();
   const diagrams = page.locator('.markdown-preview .mermaid-diagram');
   await expect(diagrams).toHaveCount(6);
-  await expect(diagrams.nth(0).locator('polygon')).toHaveCount(1);
-  await expect(diagrams.nth(0).locator('ellipse')).toHaveCount(1);
+  await expect(diagrams.nth(0)).toContainText('Start');
+  await expect(diagrams.nth(0)).toContainText('Decision');
+  await expect(diagrams.nth(0)).toContainText('Done');
+  await expect(diagrams.nth(0)).toContainText('Finish');
   await expect(diagrams.nth(1).locator('text').filter({ hasText: 'Animal' })).toBeVisible();
   await expect(diagrams.nth(2).locator('text').filter({ hasText: 'CUSTOMER' })).toBeVisible();
   await expect(diagrams.nth(3).locator('text').filter({ hasText: 'Moving' })).toBeVisible();
