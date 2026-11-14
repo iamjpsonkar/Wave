@@ -491,3 +491,16 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Remaining next work: implement safe nested inline color spans (or explicitly disallow overlapping ranges in the editor), enable block fill from the optional Blocks editor where selection semantics are defined, add contrast guidance for arbitrary colors and confirm all Actions results.
 - This handoff update is the final documentation step for this batch.
 
+
+
+## Implementation update — Blocks-mode block background colors — 2026-11-15
+
+- Extended the optional Markdown Blocks editor with an accessible per-block native background color picker. Applying a color wraps the original block source in the safe `> [!COLOR=#RRGGBB]` quote directive; changing a previously colored block updates the marker in place rather than nesting another color wrapper.
+- Updated block classification so Wave color blocks are recognized as callout blocks. Added light/dark theme styling and an E2E source scenario covering first application, changing the color, switching to Preview and checking the rendered block.
+- Fixed a TypeScript error in the existing source-toolbar block-color cursor calculation. CI for the preceding color batch exposed that a concatenated marker expression produced a string cursor argument; the code now computes a single marker string and uses its numeric length.
+- Updated compatibility and feature records: `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `ui-gaps.md`, `ui-features.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-001–UI-020 and all previous feature proposals remain preserved; UI-021 is expanded, not replaced.
+- Source commits: Blocks editor `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`; styles `93bf0eb5dc809e373292570d900066161f6e7be3`; E2E `0cf474ff0d0765f882916c04efbb69e49c95cb85`; toolbar TypeScript fix `efd19504e8d44ab16869f6b82482b00da816d162`.
+- Documentation commits: Markdown support `4e895839c50e6f42d5b1e3830de86d0e1a921066`; feature inventory `6fe3fff45580b238d433ed353f5588ecbc9e80ed`; UI gaps `ea0d90b7e96d6d060bab06a5319297f0bc52e208`; UI feature backlog `a07722b61658e6df1008373323da757f18fc1dd3`; renderer feature gaps `f68a9ac601b7b3aeffdeb6b153c5c29a0446bf19`; dev-fixed `9f85560bfcf7cc921fa46084e8b06d9549c2abc7`; dev-build `dce84d4c2f7dd4d236f8f8676f8676c692bcf730`.
+- Regression source inventory: **42 Playwright E2E scenarios** and **30 Node test definitions**. These are source counts only. The CI run for the preceding docs commit failed at TypeScript because of the cursor expression; Node tests passed 30/30, while build and E2E steps were skipped. The fix is committed; CI run `43627887363` for `efd19504e8d44ab16869f6b82482b00da816d162` was **in progress** at handoff. No pass is claimed yet.
+- Remaining color scope: nested inline color ranges, portable non-Wave fallback rendering, custom-color contrast guidance and theme/visual review. The color controls remain Wave-specific Markdown and do not enable arbitrary HTML or CSS.
+- This handoff update is the final documentation action for this batch.
