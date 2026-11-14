@@ -17,8 +17,28 @@ function withoutAlertMarker(node: ReactNode): ReactNode {
   return node;
 }
 
-export function markdownSource(source: string): string {
-  return source.replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*/gim, '$1**$2** ');
+export function markdownSource(source: string, docs: Array<{ path: string; title: string }> = []): string {
+  const lines = source.split('\\n');
+  let fence: { character: string; length: number } | null = null;
+  const converted = lines.map(line => {
+    const opening = line.match(/^\\s*(`{3,}|~{3,})/);
+    if (opening) {
+      const token = opening[1];
+      if (!fence) fence = { character: token[0], length: token.length };
+      else if (token[0] === fence.character && token.length >= fence.length) fence = null;
+      return line;
+    }
+    if (fence) return line;
+    return line.replace(/(`+)([\\s\\S]*?)\\1|\\[\\[([^\\]|]+)(?:\\|([^\\]]+))?\\]\\]/g, (match, ticks, _code, target, alias) => {
+      if (ticks || !target) return match;
+      const normalizedTarget = target.trim();
+      const path = resolveWikiLinkTarget(normalizedTarget, docs);
+      const label = (alias || normalizedTarget).trim();
+      const href = path ? '#wave-page=' + encodeURIComponent(path) : '#wave-unresolved=' + encodeURIComponent(normalizedTarget);
+      return '[' + label + '](' + href + ')';
+    });
+  });
+  return converted.join('\\n').replace(/^(\\s*>\\s*)\\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\\][ \\t]*/gim, '$1**$2** ');
 }
 
 export function MarkdownBlockquote({ children }: MarkdownElementProps) {
@@ -57,68 +77,3 @@ export function MarkdownPre({ children }: MarkdownElementProps) {
 }
 
 
-type WikiDoc = { path: string; title: string };
-type MarkdownNode = {
-  type?: string;
-  value?: string;
-  url?: string;
-  title?: string | null;
-  children?: MarkdownNode[];
-  data?: { hProperties?: Record<string, unknown> };
-};
-
-export function resolveWikiLinkTarget(target: string, docs: WikiDoc[]): string | null {
-  const normalized = target.trim().replace(/\.md$/i, '').toLocaleLowerCase();
-  if (!normalized) return null;
-  const pathMatches = docs.filter(doc => doc.path.replace(/\.md$/i, '').toLocaleLowerCase() === normalized);
-  if (pathMatches.length === 1) return pathMatches[0].path;
-  if (pathMatches.length > 1) return null;
-  const titleMatches = docs.filter(doc => doc.title.trim().toLocaleLowerCase() === normalized);
-  return titleMatches.length === 1 ? titleMatches[0].path : null;
-}
-
-export function extractWikiLinks(markdown: string): string[] {
-  const source = markdown
-    .replace(/\x60{3}[\s\S]*?\x60{3}/g, '')
-    .replace(/~~~[\s\S]*?~~~/g, '')
-    .replace(/\x60[^\x60\n]*\x60/g, '');
-  return Array.from(source.matchAll(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g), match => match[1].trim()).filter(Boolean);
-}
-
-export function remarkWikiLinks(docs: WikiDoc[]) {
-  return function attachWikiLinkTransformer() {
-    return function transformWikiLinks(tree: MarkdownNode) {
-      function visit(parent: MarkdownNode) {
-        if (!Array.isArray(parent.children)) return;
-        const next: MarkdownNode[] = [];
-        for (const child of parent.children) {
-          if (child.type === 'text' && typeof child.value === 'string' && child.value.includes('[[')) {
-            const pattern = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
-            let cursor = 0;
-            for (const match of child.value.matchAll(pattern)) {
-              const index = match.index ?? 0;
-              if (index > cursor) next.push({ type: 'text', value: child.value.slice(cursor, index) });
-              const target = match[1].trim();
-              const path = resolveWikiLinkTarget(target, docs);
-              const alias = (match[2] || target).trim();
-              next.push({
-                type: 'link',
-                url: path ? '#wave-page:' + encodeURIComponent(path) : '#wave-unresolved:' + encodeURIComponent(target),
-                title: path ? 'Open ' + target : 'No page matches ' + target,
-                children: [{ type: 'text', value: alias }],
-                data: { hProperties: { className: [path ? 'wiki-link' : 'wiki-link-unresolved'] } }
-              });
-              cursor = index + match[0].length;
-            }
-            if (cursor < child.value.length) next.push({ type: 'text', value: child.value.slice(cursor) });
-          } else {
-            if (child.type !== 'link') visit(child);
-            next.push(child);
-          }
-        }
-        parent.children = next;
-      }
-      visit(tree);
-    };
-  };
-}
