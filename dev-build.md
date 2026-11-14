@@ -247,3 +247,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Playwright source inventory: **39 scenarios**; Node test source inventory: **30 tests**. Counts do not indicate execution.
 - Latest code/test/style commits: 9e4f29390447dcdbd43f80098da522385a270448, 7057ce25861bffce43ee05ce5f8afb305ae1d0e8, 290f926c92caffe64d2ac34f1eea483df015f464, 8bb74c69ec4c9adad7d59c0e34e869224742fa42, f292e32e853fce640d44f05f554ee4bce1cbba72, b90369be8ef6ba66ab95f84f5e609b406afd87f7, 6bbd015307f55a0e385b6f041d383bdb07e6e87c, 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62.
 - Checked combined status and commit-associated workflow runs for 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62: both returned empty arrays. No current CI evidence is available. No tests, typecheck or production build are claimed to have passed.
+
+## 2026-11-15 — Inline color formatting regression (CI pending)
+
+- Added foreground/background toolbar color pickers and safe Markdown preview support; added one Playwright scenario covering both directives, inline-code non-transformation and Edit/Preview source preservation.
+- Browser E2E source inventory: **40 scenarios** (previously 39); Node test source remains **30 tests**. These are source counts, not execution results.
+- Source commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; Markdown renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; CSS `3464fd936b96bd280db1794f230a378041945a07` and system-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282` and locator follow-up `48af3998748b51779a0abe75ca5853dd80fa03b1`.
+- No local test/typecheck/build runner was executed. No CI result or screenshot review is claimed. Wait for the workflow on the latest main commit before treating the regression as passed.
