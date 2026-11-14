@@ -4,7 +4,7 @@
 
 Wave is a local-first workspace for notes, documents and ideas. Choose a folder and Wave creates a portable `.wave/` workspace inside it. Your Markdown pages and attachments remain ordinary files you own.
 
-[Features](features.md) · [Roadmap](docs/ROADMAP.md) · [Architecture](docs/ARCHITECTURE.md) · [Documentation index](docs/README.md) · [Docker guide](docs/DOCKER.md)
+[Features](./FEATURES.md) · [Roadmap](docs/ROADMAP.md) · [Architecture](docs/ARCHITECTURE.md) · [Documentation index](docs/README.md) · [Docker guide](docs/DOCKER.md)
 
 ## What Wave includes today
 
@@ -15,7 +15,7 @@ Wave is a local-first workspace for notes, documents and ideas. Choose a folder 
 - **Data safety:** autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore to a separate workspace.
 - **Responsive workspace:** full-window editor, mobile navigation and keyboard-oriented workflows.
 
-See the [implemented feature showcase](features.md) and [detailed feature map](docs/FEATURES.md) for the current implementation inventory. The [complete product blueprint](upcoming-features.md) and [priority plan](priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
+See the [implemented feature showcase](./FEATURES.md) and [detailed feature map](./FEATURES.md) for the current implementation inventory. The [complete product blueprint](upcoming-features.md) and [priority plan](priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
 
 ## Choose how to run Wave
 
