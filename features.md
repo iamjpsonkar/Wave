@@ -14,9 +14,9 @@ This page is the showcase of features that are implemented today. For the comple
 - **Draft recovery** — unsaved text is journaled in browser-local IndexedDB, serialized across tabs where Web Locks are available, and the newest recovery record is selected. Clearing browser site data removes this recovery copy.
 - **Formatting toolbar** — headings, bold, italic, strikethrough, lists, quotes, inline code and links.
 - **Live preview** — switch between editing Markdown and a sanitized rendered preview.
-- **Markdown compatibility** — CommonMark and GFM, wiki links/backlinks, alerts and collapsible DETAILS blocks, unique heading anchors, safe inline formatting shorthands, common emoji shortcodes, lightweight local code coloring, recursive MathML for a documented TeX subset, and Mermaid flowchart/sequence/pie previews. Raw HTML stays disabled; advanced diagram and math syntax remain partial. See [the compatibility contract](docs/MARKDOWN_SUPPORT.md).
+- **Markdown compatibility** — CommonMark and GFM, wiki links/backlinks, alerts and collapsible DETAILS blocks, unique heading anchors, safe inline formatting shorthands, common emoji shortcodes, lightweight local code coloring, recursive MathML for a documented TeX subset, and local Mermaid family previews (flowchart, sequence, pie, class, ER, state, Gantt, git graph, mindmap, timeline, quadrant, requirement and architecture-beta), plus constrained DOT/PlantUML/Vega/D2/AsciiDoc renderers. Raw HTML stays disabled; advanced diagram and math syntax remain partial. See [the compatibility contract](docs/MARKDOWN_SUPPORT.md).
 - **File attachments** — add images and other files; Wave copies them into your local assets folder and inserts a Markdown reference.
-- **Starter templates** — create a blank page, meeting notes, project brief, task list, weekly plan, research notes, decision records or an expanded Markdown feature showcase.
+- **Starter templates** — create a blank page, meeting notes, project brief, task list, weekly plan, research notes, decision records an expanded Markdown feature showcase or technical learning notes.
 
 ### 🗂️ Organize your knowledge
 - **Nested folders** — create folders and organize pages into a hierarchy.
