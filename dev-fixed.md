@@ -38,3 +38,23 @@ When a document had an unsaved recovery draft from another browser tab, opening 
 ### Remaining limitations
 - IndexedDB is asynchronous; a process kill before a draft transaction commits can still lose the latest edit.
 - Native folder picker permission prompts/revocation, external filesystem fault injection, comprehensive accessibility checks, and actual process termination remain outside current automated coverage.
+
+
+## 2026-11-14 — Markdown preview extensions
+
+### Scope
+Implement a useful, local-first subset of the attached Markdown Feature Showcase while retaining Wave's sanitized preview and avoiding third-party render services.
+
+### Changes
+- `src/markdown.tsx`: added inline/display MathML rendering for a small documented LaTeX subset; added local SVG rendering for simple Mermaid flowcharts; added stable heading IDs; added math source preprocessing while keeping fenced code intact.
+- `src/App.tsx`: connected heading IDs and custom code rendering to the ReactMarkdown component map.
+- `src/styles.css`: added MathML, Mermaid diagram, heading-level, keyboard-key and preview styles.
+- `src/templates.ts`: added a Markdown feature showcase starter template.
+- `tests/e2e/workspace.spec.ts`: added a browser scenario for inline/display math, Mermaid flowchart rendering and heading anchors.
+- Added `docs/MARKDOWN_SUPPORT.md` and updated README, feature map and shipped-features documentation.
+
+### Deliberate boundaries
+Raw HTML remains disabled. Advanced Mermaid syntax/diagram families and PlantUML, Graphviz, Vega, D2 and AsciiDoc are not rendered. The math renderer is a small MathML subset, not a complete TeX engine. No external rendering service or network dependency was added.
+
+### Verification
+Source changes and the regression scenario are committed, but no local typecheck/build/test run was available during this task. The new browser scenario and current source require a fresh CI run before being marked verified. No test pass is claimed.
