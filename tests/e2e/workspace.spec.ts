@@ -1594,3 +1594,55 @@ test('PDF export uses a readable print palette and preserves Markdown content', 
   await expect(preview.locator('tbody tr').first().locator('td').nth(2)).toHaveText('1');
   await page.emulateMedia({ media: 'screen' });
 });
+
+test('sample library previews Markdown examples and inserts source at the editor selection', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Sample Library');
+  const editor = page.locator('.editor-work-main > textarea');
+  const panel = page.getByRole('complementary', { name: 'Markdown sample library' });
+  await expect(panel).toBeVisible();
+  await panel.getByRole('button', { name: 'Headings' }).click();
+  await expect(panel.locator('.snippet-preview')).toContainText('Main heading');
+  await panel.getByRole('button', { name: 'Task checklist' }).click();
+  await expect(panel.locator('.snippet-preview')).toContainText('To do');
+  await editor.evaluate((node: HTMLTextAreaElement) => {
+    const start = node.value.indexOf('Browser regression content');
+    node.focus();
+    node.setSelectionRange(start, start + 'Browser regression content'.length);
+  });
+  await panel.getByRole('button', { name: 'Insert into document' }).click();
+  await expect(editor).toHaveValue(/- \[ \] To do\n- \[x\] Completed\n- \[ \] Follow up/);
+  await expect(editor).toHaveValue(/# Sample Library/);
+});
+
+test('Enter continues ordered, bulleted and task lists and exits an empty item', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'List Enter Behavior');
+  const editor = page.locator('.editor-work-main > textarea');
+
+  await editor.fill('1. First step');
+  await editor.press('End');
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('1. First step\n2. ');
+  await editor.type('Second step');
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('1. First step\n2. Second step\n3. ');
+
+  await editor.fill('- First item');
+  await editor.press('End');
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('- First item\n- ');
+  await editor.type('Second item');
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('- First item\n- Second item\n- ');
+
+  await editor.fill('- [ ] First task');
+  await editor.press('End');
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('- [ ] First task\n- [ ] ');
+  await editor.type('Second task');
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('- [ ] First task\n- [ ] Second task\n- [ ] ');
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('- [ ] First task\n- [ ] Second task\n');
+});
