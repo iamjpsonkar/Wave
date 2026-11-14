@@ -7,6 +7,81 @@ export interface PageTemplate {
 }
 
 export const pageTemplates: PageTemplate[] = [
+  { id: 'markdown-showcase', name: 'Markdown feature showcase', description: 'Try Markdown, GFM, math, alerts and Mermaid flowcharts', icon: '✳', content: `# Markdown feature showcase
+
+> A practical page for checking Wave's Markdown preview.
+
+## Text and headings
+
+**Bold**, *italic*, ***bold italic***, ~~strikethrough~~, and `inline code`.
+
+### Lists and task lists
+
+- First item
+  - Nested item
+- Second item
+
+1. Ordered item
+2. Another item
+
+- [x] GFM task
+- [ ] Pending task
+
+## Links and tables
+
+[Wave repository](https://github.com/iamjpsonkar/Wave "Wave on GitHub")
+
+| Feature | Status |
+|:---|:---:|
+| Tables | Ready |
+| Task lists | Ready |
+| Footnotes | Ready |
+
+## Code
+
+```typescript
+type Note = { title: string; saved: boolean };
+const note: Note = { title: 'Hello Wave', saved: true };
+```
+
+## Alerts
+
+> [!NOTE]
+> Notes stay in your local workspace.
+
+> [!WARNING]
+> Keep an independent backup of important work.
+
+## Footnotes
+
+A statement with a footnote.[^wave]
+
+[^wave]: Footnotes are supported by the GFM plugin.
+
+## Math
+
+Inline: $E = mc^2$
+
+$
+\\frac{a}{b}
+$
+
+## Mermaid flowchart
+
+```mermaid
+flowchart TD
+  A[Write] --> B[Preview]
+  B --> C[Save locally]
+```
+
+## Emoji
+
+🚀 🎯 💡 ☑️
+
+## Compatibility note
+
+Wave safely renders Markdown and GFM. Raw HTML, advanced Mermaid diagram types, PlantUML, Graphviz, Vega, D2, and AsciiDoc require additional renderer support; unsupported diagram source is kept readable rather than executed.
+` },
   { id: 'blank', name: 'Blank page', description: 'Start with an empty page', icon: '＋', content: '# Untitled\n\n' },
   { id: 'meeting', name: 'Meeting notes', description: 'Agenda, notes and action items', icon: '◷', content: '# Meeting notes\n\n**Date:** \n**Attendees:** \n**Meeting:** \n\n## Agenda\n- \n\n## Notes\n\n\n## Decisions\n- \n\n## Action items\n- [ ] Task — Owner — Due date\n' },
   { id: 'project', name: 'Project brief', description: 'Goals, scope and milestones', icon: '◇', content: '# Project brief\n\n## Overview\n\n## Problem\n\n## Goals and success metrics\n- \n\n## Scope\n### In scope\n- \n### Out of scope\n- \n\n## Milestones\n- [ ] Discovery\n- [ ] Implementation\n- [ ] Review\n- [ ] Launch\n\n## Risks and dependencies\n\n## Open questions\n' },
