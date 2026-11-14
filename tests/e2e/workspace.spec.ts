@@ -537,8 +537,9 @@ test('Technical learning notes template contains real Markdown newlines and prev
   await page.getByRole('button', { name: 'New from template' }).click();
   await page.getByRole('button', { name: /Technical learning notes/ }).click();
   const editor = page.locator('textarea');
-  await expect(editor).toHaveValue(/## Introduction\\n\\nWhat is this technology/);
-  await expect(editor).toHaveValue(/## Open questions\\n\\n- \\[ \\]/);
+  const markdown = await editor.inputValue();
+  expect(markdown).toContain('## Introduction\\n\\nWhat is this technology');
+  expect(markdown).toContain('## Open questions\\n\\n- [ ]');
   await page.getByRole('button', { name: 'Preview' }).click();
   await expect(page.locator('.markdown-preview h2')).toContainText('Introduction');
   await expect(page.locator('.markdown-preview h2')).toContainText('Open questions');
