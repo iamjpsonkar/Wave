@@ -1239,3 +1239,370 @@ Use this checklist to check that the plan considers the major product categories
 - [ ] Security, permissions, governance and portability.
 
 **Coverage does not mean feature parity.** Each capability still needs a clear Wave use case, a local-first data contract, a priority and a maintenance cost estimate.
+
+
+---
+
+# 14. Additional specialist products and workflows
+
+The previous comparison covers broad workspace products. This section adds specialist tools whose workflows are easy to overlook when designing an all-purpose workspace. Wave should borrow the useful primitives, not attempt to replace every specialist application.
+
+## 14.1 Local-first and open-source all-in-one workspaces
+
+**Reference products:** AppFlowy, AFFiNE, SiYuan, Trilium Notes, Standard Notes.
+
+- [ ] **Local-first document model:** workspace remains readable and editable without an account or network.
+- [ ] Explicit distinction between source files, metadata, indexes, caches and generated previews.
+- [ ] Rebuildable indexes with integrity checks and deterministic re-indexing.
+- [ ] Safe migration between workspace schema versions, with backup and rollback.
+- [ ] Optional self-hosted sync service, separate from the local-only core.
+- [ ] Offline-first operation with a visible sync state when sync is enabled.
+- [ ] User-controlled encryption, key recovery guidance and clear threat model.
+- [ ] Workspace portability: copy the directory to another machine and recover content.
+- [ ] Open export format and documented storage schema.
+- [ ] Plugin/theme extensions with permission boundaries and compatibility checks.
+- [ ] Local API/CLI for scripting and automation.
+- [ ] Recovery tools for damaged manifests, missing assets and stale indexes.
+
+**Wave-specific design rule:** Markdown and ordinary asset files should remain recoverable without running Wave. Structured features may add sidecar metadata, but must not silently make the workspace dependent on a proprietary database.
+
+## 14.2 Typed knowledge graphs and object-centric workspaces
+
+**Reference products:** Tana, Capacities, Anytype, Logseq.
+
+- [ ] User-defined object types such as Person, Project, Meeting, Book, Topic, Task and Decision.
+- [ ] Type schemas with required/optional fields, validation and default values.
+- [ ] Apply a type to an existing block or page without losing its original content.
+- [ ] Object templates and reusable field groups.
+- [ ] Relations between objects with explicit relation names and cardinality.
+- [ ] Backlinks and relation navigation in both directions.
+- [ ] Query all objects of a type, including objects embedded inside other pages.
+- [ ] Saved queries that can be displayed as tables, lists, boards or calendars.
+- [ ] Schema evolution: rename, merge, deprecate or migrate types and fields safely.
+- [ ] Graph view with filters, clusters and a way to avoid overwhelming hairballs.
+- [ ] Daily notes and automatic capture of dated events.
+- [ ] Block-level references, embeds and transclusion.
+- [ ] Reference integrity report for missing, orphaned or deleted targets.
+
+**Important distinction:** tags classify content; object types define a schema. Wave should support both instead of treating every tag as a database type.
+
+## 14.3 Research library, reading and reference management
+
+**Reference products:** Zotero, Readwise Reader, Raindrop.io, Omnivore-style read-it-later workflows, DEVONthink, Eagle.
+
+- [ ] Unified inbox for URLs, PDFs, EPUBs, files, screenshots and copied text.
+- [ ] Browser capture and share-sheet capture, with source URL and capture date.
+- [ ] Read-it-later queue with unread, reading, completed and archived states.
+- [ ] Reader mode for saved web articles, preserving source attribution.
+- [ ] PDF viewer with highlights, comments, bookmarks and page references.
+- [ ] EPUB reader and annotations where supported by the chosen rendering library.
+- [ ] OCR for scanned PDFs and images, with local processing option.
+- [ ] Metadata extraction: title, author, publication, date, DOI, ISBN and URL.
+- [ ] Reference collections, nested folders, tags and smart collections.
+- [ ] Duplicate detection by DOI, ISBN, normalized URL, file hash and title similarity.
+- [ ] Citation records and bibliography generation using CSL styles.
+- [ ] Citation insertion into documents with a stable reference identifier.
+- [ ] Bidirectional links between a source, its highlights and Wave notes.
+- [ ] Highlight review queue and resurfacing of saved passages.
+- [ ] Export citations and annotations to BibTeX, RIS, CSL JSON and Markdown.
+- [ ] Preserve original files and never silently rewrite imported source material.
+- [ ] Batch import/export and a clear report for unsupported metadata.
+
+**Wave boundary:** Wave can provide a useful research inbox and connected reading notes; advanced reference-library management should remain interoperable with Zotero rather than reimplementing every scholarly workflow.
+
+## 14.4 Visual thinking, diagrams and technical architecture
+
+**Reference products:** Miro, FigJam, Excalidraw, tldraw, draw.io/diagrams.net, Lucidchart, Whimsical, Eraser, IcePanel, Mermaid.
+
+- [ ] Infinite canvas with pan, zoom, selection, grouping, layers and alignment guides.
+- [ ] Sticky notes, shapes, connectors, freehand drawing and text.
+- [ ] Mind maps, concept maps, user journeys and storyboards.
+- [ ] Flowcharts, sequence diagrams, ER diagrams, UML and network diagrams.
+- [ ] Software architecture diagrams with reusable icon libraries.
+- [ ] Mermaid and other text-based diagrams rendered from source.
+- [ ] Import/export common formats such as SVG, PNG, PDF and supported editable formats.
+- [ ] Embed a diagram in a document while retaining a link to its editable source.
+- [ ] Convert selected outline/list content into mind-map nodes or sticky notes.
+- [ ] Convert canvas objects into tasks or database records.
+- [ ] Board templates, presentation mode and frame-based walkthroughs.
+- [ ] Version history and recovery for diagram edits.
+- [ ] Keyboard-first drawing and accessible object labels.
+- [ ] Large-board performance, virtualization and autosave safeguards.
+- [ ] Optional real-time cursors, comments and voting when collaboration is enabled.
+
+**Engineering constraint:** diagram source should be stored in a documented, exportable format. Mermaid text is especially valuable because it can live beside Markdown in Git.
+
+## 14.5 Publishing, documentation sites and knowledge portals
+
+**Reference products:** Ghost, Docusaurus, MkDocs, GitBook, Read the Docs, Helpjuice, Outline.
+
+- [ ] Publish a selected page or collection without exposing the entire workspace.
+- [ ] Static-site export from Markdown and local assets.
+- [ ] Documentation navigation tree, breadcrumbs and previous/next links.
+- [ ] Versioned documentation for multiple product or API versions.
+- [ ] Search index generated locally during static export.
+- [ ] Custom themes, logo, favicon, typography and code highlighting.
+- [ ] Custom domain configuration for an optional hosted deployment.
+- [ ] Draft, review, scheduled and published states.
+- [ ] Preview builds before publishing.
+- [ ] Redirect mapping when a published page slug changes.
+- [ ] SEO metadata, canonical URLs, Open Graph metadata and sitemap.
+- [ ] RSS/Atom feeds for published updates.
+- [ ] Localization and language-version relationships.
+- [ ] Public/private page access rules for hosted deployments.
+- [ ] Downloadable offline documentation bundle.
+- [ ] Export a complete site that can be hosted on ordinary static hosting.
+- [ ] Content freshness, broken-link and missing-image checks before release.
+
+**Wave boundary:** static publishing should work without a Wave account or hosted service. Hosted publishing, memberships and newsletters are optional services, not prerequisites for owning content.
+
+## 14.6 Workflow automation and event-driven operations
+
+**Reference products:** Zapier, Make, n8n, Power Automate, Airtable Automations, Coda Automations.
+
+- [ ] Trigger/action automation builder with a readable execution graph.
+- [ ] Triggers for page created/updated, property changed, task due, form submitted and scheduled time.
+- [ ] Conditions, filters, branching, delays and multi-step actions.
+- [ ] Local event hooks and command-line scripts for offline workflows.
+- [ ] Webhooks and API actions only when the workspace owner enables network access.
+- [ ] Retry policy, idempotency keys and duplicate-event protection.
+- [ ] Execution history, logs, error details and manual retry.
+- [ ] Dry-run mode and sample payload inspection.
+- [ ] Per-automation permissions and explicit approval for destructive actions.
+- [ ] Secret storage that never writes credentials into Markdown or exported files.
+- [ ] Automation import/export as a portable declarative file.
+- [ ] Pause all automations instantly and show which ones can access the network.
+
+## 14.7 Personal productivity, journaling and habit systems
+
+**Reference products:** Day One, Journey, Todoist, TickTick, Amazing Marvin, Habitica.
+
+- [ ] Daily journal and dated note templates.
+- [ ] Calendar timeline for notes, tasks, meetings and milestones.
+- [ ] Habit definitions, schedules, streaks and completion history.
+- [ ] Recurring tasks with clear handling of missed occurrences.
+- [ ] Focus sessions, lightweight time tracking and activity summaries.
+- [ ] Weekly/monthly review templates and reflection prompts.
+- [ ] Goals with measurable outcomes and linked projects.
+- [ ] Private journal areas and optional encryption boundary.
+- [ ] Export personal history in readable Markdown/CSV/JSON.
+- [ ] No guilt-oriented streak mechanics; allow pauses and retrospective edits.
+
+## 14.8 Knowledge capture and asset libraries
+
+**Reference products:** Evernote, Eagle, Raindrop.io, DEVONthink.
+
+- [ ] Universal capture inbox with source, timestamp and capture method.
+- [ ] Drag-and-drop ingestion for files, folders, URLs and images.
+- [ ] Local full-text indexing for supported document types.
+- [ ] OCR and metadata extraction with a review step for uncertain results.
+- [ ] Image/video/audio preview and metadata panels.
+- [ ] Tags, collections, ratings and smart filters for assets.
+- [ ] Similar-image and duplicate-file detection.
+- [ ] Backlinks from assets to every page that references them.
+- [ ] Bulk rename, move and tag operations with undo.
+- [ ] Missing-file detection and relink workflow.
+- [ ] Asset usage report before deleting or replacing a file.
+
+## 14.9 Forms, surveys and lightweight CRM
+
+**Reference products:** Typeform, Tally, Jotform, Airtable Forms, HubSpot CRM.
+
+- [ ] Contact/person/company records with customizable fields.
+- [ ] Lead, opportunity and interaction history as optional object types.
+- [ ] Relationship timeline and linked meeting notes.
+- [ ] Form builder with validation, conditional logic and response review.
+- [ ] CSV import/export with field mapping and duplicate handling.
+- [ ] Local-only forms for data entry inside the workspace.
+- [ ] Hosted forms only through an explicitly configured publishing service.
+- [ ] Consent, retention and deletion controls for collected personal data.
+- [ ] Avoid turning Wave into a full marketing automation or sales platform by default.
+
+## 14.10 Enterprise content governance and records management
+
+**Reference products:** Confluence, SharePoint, Slite, Notion Enterprise, Microsoft Purview.
+
+- [ ] Document owner, reviewer, classification and retention metadata.
+- [ ] Review intervals and verification expiry.
+- [ ] Page lifecycle: draft, active, deprecated, archived and superseded.
+- [ ] Legal hold and protected records mode for deployments that require it.
+- [ ] Exportable audit history for access and content changes.
+- [ ] Workspace-level retention and deletion policies.
+- [ ] Permission inheritance visualization and access review.
+- [ ] Redaction workflow for exported or shared documents.
+- [ ] Policy acknowledgement and approval records.
+- [ ] Governance features must be clearly scoped; local personal mode should not inherit enterprise complexity.
+
+---
+
+# 15. Cross-cutting capabilities that are easy to miss
+
+These are not standalone modules. They are quality requirements that should apply across the product.
+
+## 15.1 Editing and content integrity
+
+- [ ] Reliable undo/redo across block operations, not just text input.
+- [ ] Autosave state with last-saved timestamp and unsaved-change indicator.
+- [ ] Crash recovery and restore of the last valid editor state.
+- [ ] Conflict-safe editing when the same workspace is opened in multiple windows.
+- [ ] Atomic writes, temporary files and recovery after interrupted writes.
+- [ ] Stable block/page IDs that survive rename and move.
+- [ ] Schema validation and migration tests for every persisted data format.
+- [ ] Unicode, emoji, RTL and multilingual text support.
+- [ ] Copy/paste fidelity from browsers, office suites and Markdown sources.
+- [ ] Import preview, warnings and rollback for bulk operations.
+
+## 15.2 Findability and navigation
+
+- [ ] Global command palette and keyboard shortcut discovery.
+- [ ] Quick switcher across pages, blocks, objects and recent searches.
+- [ ] Search filters for type, path, tag, date, author and file kind.
+- [ ] Search operators and saved searches.
+- [ ] Backlinks, forward links, breadcrumbs and recently visited history.
+- [ ] Broken-link and orphan-page reports.
+- [ ] Context-aware navigation for large workspaces.
+- [ ] Search result snippets with highlighted matches and file paths.
+
+## 15.3 Data portability and long-term durability
+
+- [ ] Documented workspace format and compatibility policy.
+- [ ] Full-fidelity export, including metadata, relationships and assets.
+- [ ] Round-trip tests: export, re-import and compare content.
+- [ ] Stable IDs and deterministic filenames where practical.
+- [ ] No hidden dependency on a proprietary cloud service for local reading.
+- [ ] Clear policy for unknown fields so newer metadata is not destroyed by older clients.
+- [ ] Backup verification by actually restoring into a temporary workspace.
+- [ ] Workspace migration report listing converted, skipped and failed items.
+
+## 15.4 Performance and scale
+
+- [ ] Virtualized page tree, tables, search results and long documents.
+- [ ] Incremental indexing rather than rescanning the entire workspace on every edit.
+- [ ] Background thumbnail and preview generation.
+- [ ] Debounced search with cancellation of stale queries.
+- [ ] Large-file and large-attachment safeguards.
+- [ ] Performance budgets for startup, typing latency, search and page switching.
+- [ ] Benchmark fixtures with thousands of pages and large asset libraries.
+- [ ] Memory usage monitoring and cleanup of unused object URLs/resources.
+
+## 15.5 Accessibility and usability
+
+- [ ] Complete keyboard-only navigation and editing.
+- [ ] Screen-reader semantics for editor blocks, tables, dialogs and menus.
+- [ ] Visible focus indicators and predictable focus restoration.
+- [ ] High contrast, reduced motion and scalable typography.
+- [ ] Accessible color choices and non-color status indicators.
+- [ ] Touch-friendly controls for tablet layouts.
+- [ ] Localization-ready dates, numbers, time zones and pluralization.
+- [ ] Onboarding that explains workspace location, permissions and backup behavior.
+
+## 15.6 Security and privacy
+
+- [ ] Threat model for local workspace, browser storage, plugins and optional sync.
+- [ ] Safe Markdown/HTML rendering and sanitization tests.
+- [ ] Strict Content Security Policy and dependency review.
+- [ ] Validate file types, sizes and paths during import and attachment handling.
+- [ ] Prevent path traversal and unsafe archive extraction.
+- [ ] Plugin capability permissions and sandbox boundaries.
+- [ ] Network access indicator and per-feature opt-in.
+- [ ] No secrets in logs, URLs, workspace exports or crash reports.
+- [ ] Security review for public publishing and share links.
+- [ ] Clear deletion semantics for trash, backups, caches and synced replicas.
+
+---
+
+# 16. Additional competitor coverage checklist
+
+Use this list to identify specialist workflows that were not explicit in the earlier matrix.
+
+- [ ] Local-first all-in-one workspace: AppFlowy and AFFiNE.
+- [ ] Block-based privacy-first knowledge base: SiYuan.
+- [ ] Typed knowledge graph and supertags: Tana.
+- [ ] Object-centric personal knowledge management: Capacities and Anytype.
+- [ ] Outliner and block-reference workflows: Logseq.
+- [ ] Academic reference management: Zotero.
+- [ ] Read-it-later and annotation workflows: Readwise Reader.
+- [ ] Digital asset management: Eagle and DEVONthink.
+- [ ] Bookmark and web collection management: Raindrop.io.
+- [ ] Visual workshops and collaborative canvases: Miro, FigJam and Mural.
+- [ ] Sketch-based diagrams: Excalidraw and tldraw.
+- [ ] Structured diagrams and technical architecture: draw.io, Lucidchart, Eraser and IcePanel.
+- [ ] Static documentation and versioned docs: Docusaurus, MkDocs and Read the Docs.
+- [ ] Publishing, subscriptions and newsletters: Ghost.
+- [ ] Enterprise portals and records governance: SharePoint and Confluence.
+- [ ] Workflow automation: n8n, Make, Zapier and Power Automate.
+- [ ] Personal journaling and habit tracking: Day One, Journey and Habitica.
+- [ ] Forms and lightweight CRM: Tally, Typeform, Jotform and HubSpot.
+- [ ] Cross-cutting requirements: reliability, accessibility, security, performance and portability.
+
+---
+
+# 17. Prioritization: what Wave should actually build
+
+A comprehensive catalogue is a research inventory, not a commitment to implement every feature. Prioritize based on user value, local-first fit, implementation cost and long-term maintenance.
+
+| Priority | Capability | Why it belongs |
+|---|---|---|
+| P0 | Storage integrity, backups, recovery, migrations | Protects user data and every later feature |
+| P0 | Block editor, keyboard UX, undo/redo | Core writing experience |
+| P0 | Search, links, backlinks, navigation | Makes a growing workspace usable |
+| P1 | Typed objects, properties and saved views | Adds structured knowledge without abandoning documents |
+| P1 | Tasks, calendar and project views | Makes notes actionable |
+| P1 | Research inbox, attachments and PDF annotations | High-value capture and learning workflow |
+| P1 | Import/export and static publishing | Keeps content portable and useful outside Wave |
+| P2 | Whiteboard and diagram embeds | Complements writing and technical documentation |
+| P2 | Templates, reusable blocks and automation | Reduces repeated work |
+| P2 | Local API, CLI and plugin framework | Makes Wave extensible |
+| P3 | Optional sync and real-time collaboration | Valuable, but introduces major conflict and infrastructure complexity |
+| P3 | AI workflows | Only after source attribution, permissions and review are reliable |
+| P3 | Enterprise governance and hosted publishing | Serve explicit team/organization use cases |
+
+## 17.1 Explicit non-goals unless validated
+
+- Rebuilding a full office suite or spreadsheet engine.
+- Replacing specialist citation managers, design tools or project trackers.
+- Mandatory account creation, cloud storage or telemetry.
+- A proprietary-only document format.
+- Autonomous AI edits, publishing or destructive actions.
+- Enterprise administration in the default personal workspace.
+- Feature parity checklists that encourage shallow, unfinished implementations.
+
+---
+
+# 18. Research references for the additional coverage
+
+The following references informed the additional categories. Product capabilities change, so validate exact behavior and licensing before implementation.
+
+- [AFFiNE — local-first docs and whiteboards](https://affine.pro/)
+- [AFFiNE — page docs](https://affine.pro/pagedoc)
+- [SiYuan — project features and storage overview](https://github.com/siyuan-note/siyuan)
+- [SiYuan — workspace file-system layout](https://github.com/siyuan-community/siyuan/blob/master/docs/WORKSPACE.md)
+- [SiYuan — document format and mutation guidance](https://github.com/siyuan-community/siyuan/blob/master/docs/SY-FORMAT.md)
+- [Tana — Supertags](https://outliner.tana.inc/learn/features/supertags)
+- [Tana — knowledge graph concepts](https://outliner.tana.inc/help/knowledge-graph-concepts)
+- [Zotero — documentation](https://www.zotero.org/support/)
+- [Zotero — collections and tags](https://www.zotero.org/support/collections_and_tags/)
+- [Readwise Reader — documentation](https://docs.readwise.io/reader)
+- [Figma — visual collaboration tools](https://www.figma.com/resource-library/visual-collaboration-tools/)
+- [Excalidraw — project](https://github.com/excalidraw/excalidraw)
+- [Docusaurus — documentation](https://docusaurus.io/docs)
+- [Ghost — product manual](https://ghost.org/help/manual/)
+
+---
+
+# 19. Final completeness and implementation rule
+
+Before adding a capability to the active roadmap, answer all of these questions:
+
+1. What user problem does it solve in Wave?
+2. Which specialist product demonstrates the workflow well?
+3. Does it work offline and preserve local ownership?
+4. What is the source of truth: Markdown, a sidecar file, or a derived index?
+5. How will it migrate, export, recover and interoperate?
+6. What happens when the feature is disabled or removed?
+7. What are the accessibility, privacy and security implications?
+8. What is the smallest useful vertical slice?
+9. What tests prove correctness and prevent data loss?
+10. What maintenance burden does it add?
+
+A feature is not complete when its UI exists. It is complete when its data model, recovery behavior, keyboard/accessibility experience, tests, documentation and export story are also in place.
