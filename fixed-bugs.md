@@ -1601,3 +1601,35 @@ The draft tests exercise the newest-record selector and queue primitives; they d
 - Current source contains 30 Node test definitions and 13 Playwright Chromium E2E scenarios. The latter include recovery draft provenance, simulated permission denial, same-workspace two-tab editing, Markdown safety/features, command-palette keyboard execution, and wiki-link/backlink navigation.
 - The latest CI evidence recorded in `dev-build.md` covers an earlier 10-scenario E2E suite. Do not treat the three additional current E2E scenarios as CI-verified until a run for their containing commit succeeds.
 - If any historical scenario fails when executed, reopen the original WAVE ID in `bugs.md`; do not create a duplicate.
+
+---
+
+## WAVE-052 — Technical learning-notes template used a literal backslash-n separator
+
+- Priority: **P2** | Disposition: **Fixed; source and Chromium regression verified**
+- Files: `src/templates.ts`, `tests/e2e/workspace.spec.ts`
+
+### Original defect
+
+The `technical-notes` template joined its Markdown lines with a string containing literal backslash-n characters, producing one long line instead of separate Markdown blocks. Headings, paragraphs, lists, code fences and the troubleshooting table therefore did not render as intended.
+
+### Fix
+
+The template now joins its retained content with actual newline characters. Its sections and examples remain intact. A dedicated Playwright scenario selects **Technical learning notes**, checks real line breaks in the editor, and verifies the Introduction/Open questions headings, TypeScript code fence, troubleshooting table and operational notes in Preview.
+
+### Verification evidence
+
+- Workflow [43618423075](https://github.com/iamjpsonkar/Wave/actions/runs/43618423075) completed successfully: Node tests, TypeScript typecheck, production build and Playwright E2E all passed.
+- The corrected suite contained 28 Playwright scenarios and 30 Node tests at that verification point.
+- Source review at current main confirms the template uses the actual newline separator and the regression scenario remains present.
+
+### Regression scenario
+
+1. Open a workspace and select **New from template → Technical learning notes**.
+2. Verify the editor value contains actual newline characters between sections.
+3. Switch to Preview and verify representative headings, code fence, table and checklist content render as separate blocks.
+4. Save/reopen the workspace and ensure the Markdown source remains structured.
+
+### Evidence boundary
+
+This closes the template separator defect only. It does not establish full Markdown compatibility or verify the later diagram-accessibility patch.
