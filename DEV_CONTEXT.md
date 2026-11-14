@@ -190,3 +190,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 - [ ] Product docs and separate development logs updated.
 - [ ] `DEV_CONTEXT.md` updated as the final documentation step.
 - [ ] Exact commit/CI evidence and remaining limitations recorded.
+
+
+## 11. Latest QA handoff — 2026-11-14
+
+- Source-only QA recheck recorded in [qa-context.md](./qa-context.md).
+- Open findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed in source.
+- Current test source defines 30 Node tests and 13 Chromium E2E scenarios. The successful CI result currently documented in `dev-build.md` covers an earlier 10-scenario suite; no fresh execution was performed in this QA task.
+- QA documentation commits: `bugs.md` `453f44268b694ded80109f785054d4e80b0ca5bb` (superseded by inventory correction in this task); `fixed-bugs.md` `c0b7503991190d6a84d3f381136bdd75fe98078a`; `qa-context.md` `4f52cbfd016a7419848cf4b2d100266c260cc290`. See current GitHub history for the final corrected `bugs.md` commit.
