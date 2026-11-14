@@ -1,4 +1,4 @@
-export interface DraftLike { updatedAt:number; id?:number; [key:string]:unknown }
+export interface DraftLike { updatedAt:number; id?:number }
 export function newestDraft<T extends DraftLike>(records:T[]):T|undefined{
   return records.reduce<T|undefined>((latest,record)=>!latest||record.updatedAt>latest.updatedAt||(record.updatedAt===latest.updatedAt&&(record.id??0)>(latest.id??0))?record:latest,undefined);
 }
