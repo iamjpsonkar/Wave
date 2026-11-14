@@ -1511,3 +1511,28 @@ test('block editor applies and updates a block background without leaving block 
   await page.getByRole('button', { name: 'Preview' }).click();
   await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toContainText('A paragraph to color.');
 });
+
+
+test('Wave Complete Feature Test template is available and previews its feature sections', async ({ page }) => {
+  await openWorkspace(page);
+  await page.getByRole('button', { name: 'New from template' }).click();
+  await page.locator('.sidebar-templates').getByRole('button', { name: /Wave Complete Feature Test/ }).click();
+  await expect(page.getByRole('dialog', { name: 'Template preview' })).toContainText('Comprehensive Markdown');
+  await page.getByRole('button', { name: 'Create from template' }).click();
+  const editor = page.locator('.editor textarea');
+  const markdown = await editor.inputValue();
+  expect(markdown).toContain('## 6. Text colors and block backgrounds');
+  expect(markdown).toContain('[[color:#365FBA|blue]]');
+  expect(markdown).toContain('```mermaid');
+  expect(markdown).toContain('[[audio:sample-audio.mp3]]');
+  expect(markdown).toContain('## 15. Editor and workspace checklist');
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview.getByRole('heading', { name: 'Wave Complete Feature Test' })).toBeVisible();
+  await expect(preview.locator('span[style*="color: rgb(54, 95, 186)"]')).toContainText('blue');
+  await expect(preview.locator('blockquote.markdown-color-block')).toContainText('soft green background');
+  await expect(preview.locator('svg[role="img"]')).toBeVisible();
+  await page.getByRole('button', { name: 'Edit' }).click();
+  await expect(editor).toHaveValue(markdown);
+});
+});
