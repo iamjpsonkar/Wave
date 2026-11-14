@@ -48,6 +48,36 @@ Before making any change:
 
 ---
 
+## Documentation enforcement after every task
+
+**A task is not complete until its Markdown impact has been reviewed.** This applies to features, bug fixes, refactors, QA audits, dependency/configuration changes, CI/deployment changes and user-visible behavior changes.
+
+### Required end-of-task documentation pass
+
+1. Identify the behavior, decision, status or architecture that changed.
+2. Update the existing authoritative Markdown source(s), not every file indiscriminately:
+   - Shipped behavior → `FEATURES.md`, relevant user guide and/or `docs/MARKDOWN_SUPPORT.md`.
+   - Product scope or a new idea → `upcoming-features.md`; delivery ordering/dependencies → `priority-features.md`.
+   - UI defects/gaps/proposals → `UI_BACKLOG.md`, preserving UIB/UI/UIF IDs.
+   - Open/fixed defect status → `bugs.md` / `fixed-bugs.md` only when a genuine QA register change is required.
+   - QA evidence and limitations → `QA_CONTEXT.md`.
+   - Fix/regression history → `dev-fixed.md`; features/build/CI/deployment history → `dev-build.md`.
+   - Architecture/deployment/contributor guidance → relevant file under `docs/` or `CONTRIBUTING.md`.
+3. Update cross-links and navigation indexes (`README.md`, `docs/README.md`, `wiki.md`) when the file map, onboarding or durable project rules change.
+4. Update `DEV_CONTEXT.md` **last** with the current baseline, changed areas, verification state and links to the detailed records.
+5. If no existing Markdown needs a content change, record in the appropriate development log why documentation was not applicable. Never create filler edits.
+
+### Markdown quality rules
+
+- One authoritative location per type of information; link to it rather than copy/paste competing status tables.
+- Keep current status separate from dated history. Label historical counts, CI results and implementation snapshots with their commit/date.
+- Preserve stable IDs, acceptance criteria, meaningful owner decisions, rationale and evidence. Do not mark work shipped/fixed without verification.
+- Use relative, case-correct links and verify every renamed/moved/deleted path.
+- New Markdown files require a unique purpose, an owner/update rule and a navigation link. Search for an existing destination first.
+- Consolidate related files when responsibilities overlap. Before deleting a Markdown file, migrate its meaningful information into an authoritative destination, update inbound links, verify the destination and only then delete the old file.
+- Do not delete the full product catalogue, priority plan, development logs or distinct open/fixed bug registers merely to reduce file count.
+- Do not update every Markdown file for every task. Update only the files whose facts or responsibilities changed, plus the required development log and final handoff.
+
 ## 2. Product vision and promise
 
 Wave is evolving from a local-first Markdown workspace into a complete workspace for documents, knowledge, data and work. Its intended combination draws lessons from Notion, Quip, Coda, Obsidian, Anytype and Outline without copying proprietary implementations.
@@ -209,7 +239,7 @@ This section consolidates durable directions repeatedly given by the product own
 - `dev-build.md` records features, implementation batches, build/CI and verification evidence.
 - `bugs.md` is the current open-bug register; `fixed-bugs.md` is the historical fixed-bug/regression register. They are not general implementation journals.
 - The user explicitly directed development logs to be maintained in `dev-fixed.md` and `dev-build.md`, not to keep editing the legacy bug files for every implementation.
-- Keep `features-gap.md` as the Markdown compatibility checklist; `UI_BACKLOG.md`, `UI_BACKLOG.md` and `UI_BACKLOG.md` have separate UI audit/backlog purposes unless a deliberate lossless consolidation is requested.
+- Keep `features-gap.md` as the Markdown compatibility checklist. UI bugs, UI gaps and UI feature proposals now share `UI_BACKLOG.md` with separate sections.
 - Keep `upcoming-features.md` (full product scope) distinct from `priority-features.md` (delivery order).
 - Update relevant user-facing docs and trackers for every shipped feature. Update `DEV_CONTEXT.md` last in each implementation batch.
 
@@ -239,8 +269,7 @@ This section consolidates durable directions repeatedly given by the product own
 Markdown is a core Wave capability and a major compatibility promise. Consult:
 - [Markdown support guide](./docs/MARKDOWN_SUPPORT.md)
 - [Markdown feature-gap checklist](./features-gap.md)
-- [UI backlog](./UI_BACKLOG.md)
-- [UI feature backlog](./UI_BACKLOG.md)
+- [Consolidated UI backlog — bugs, gaps and feature proposals](./UI_BACKLOG.md)
 
 Key areas to preserve and test:
 - CommonMark inline formatting, paragraphs, headings, anchors, links, images, escaping and literal characters.
@@ -427,20 +456,16 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
 | `upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
 | `priority-features.md` | Delivery order, priorities and dependencies | Reprioritize transparently; preserve complete scope |
-| `FEATURES.md` | Concise shipped-feature showcase | Update only for genuinely implemented features |
-| `FEATURES.md` | Detailed feature map/status by product area | Update shipped/planned status with evidence |
+| `FEATURES.md` | Combined shipped-feature overview and detailed feature map | Update shipped/planned status with evidence |
 | `docs/ROADMAP.md` | Release sequencing | Update when delivery milestones change |
 | `docs/ARCHITECTURE.md` | Current architecture, boundaries, privacy and reliability | Update when architecture changes |
 | `docs/MARKDOWN_SUPPORT.md` | User-facing Markdown syntax/support guide | Update when parser, renderer or export behavior changes |
 | `features-gap.md` | Markdown compatibility gap checklist | Update checklist status and acceptance evidence |
-| `UI_BACKLOG.md` | Export/print/theme UI defect register | Reconcile UI export defects and evidence |
-| `UI_BACKLOG.md` | UI audit/gap register | Update gap status, acceptance criteria and verification |
-| `UI_BACKLOG.md` | UI feature backlog | Add/update UI feature requests and implementation status |
+| `UI_BACKLOG.md` | Consolidated UIB/UI/UIF bug, gap and feature register | Preserve IDs, statuses, criteria, evidence and history |
 | `diagram-features.md` | Specialist diagram research, capability map and native diagram editor proposal | Consult for visual diagram scope/architecture |
 | `bugs.md` | Current open reliability/functional bug register | Update only during explicit bug-register/QA reconciliation |
 | `fixed-bugs.md` | Historical fixed bug descriptions and regression scenarios | Preserve history; recheck affected scenarios after related changes |
-| `QA_CONTEXT.md` | Current concise QA handoff and limitations | Refresh after QA/source review |
-| `QA_CONTEXT.md` | Detailed historical QA audits and evidence trail | Preserve historical review context; do not discard during consolidation |
+| `QA_CONTEXT.md` | Consolidated current QA disposition, test inventory and historical audit/evidence trail | Refresh current status while preserving useful historical findings |
 | `github-issues.md` | Index of GitHub defect/gap and roadmap issues | Refresh after issue creation/closure/reconciliation |
 | `docs/DOCKER.md` | Docker and Compose deployment instructions | Update when container/Nginx/Compose behavior changes |
 | `docs/README.md` | Documentation navigation index | Update when docs are added, renamed or reorganized |
