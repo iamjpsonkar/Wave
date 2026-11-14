@@ -141,7 +141,7 @@ test('backup and restore create a separate verified workspace folder', async ({ 
 test('draft journal requests strict durability before reporting a committed recovery draft', async ({ page }) => {
   await openWorkspace(page);
   const editor = await createPage(page, 'Durable Draft');
-  await editor.fill('# Durable Draft\\n\\nStrict durability marker');
+  await editor.fill('# Durable Draft\n\nStrict durability marker');
   await expect(page.locator('.topright small')).toContainText('Recovery draft saved', { timeout: 5000 });
   const durability = await page.evaluate(() => (window as any).__waveDraftDurability);
   expect(durability).toBe('strict');
@@ -171,8 +171,8 @@ test('two tabs editing the same workspace do not silently overwrite each other',
   const secondEditor = second.locator('textarea');
   await expect(secondEditor).toBeVisible();
 
-  await firstEditor.fill('# Concurrent Editing\\n\\nChange from first tab');
-  await secondEditor.fill('# Concurrent Editing\\n\\nChange from second tab');
+  await firstEditor.fill('# Concurrent Editing\n\nChange from first tab');
+  await secondEditor.fill('# Concurrent Editing\n\nChange from second tab');
   await expect(page.locator('.topright small')).toContainText(/Saved locally|conflict/i, { timeout: 10000 });
   await expect(second.locator('.topright small')).toContainText(/Saved locally|conflict/i, { timeout: 10000 });
   await page.waitForTimeout(900);
@@ -184,7 +184,7 @@ test('two tabs editing the same workspace do not silently overwrite each other',
       if (handle.kind !== 'file' || !name.endsWith('.md')) continue;
       values.push(await (await handle.getFile()).text());
     }
-    return values.join('\\n');
+    return values.join('\n');
   });
   expect(contents).toContain('Change from first tab');
   expect(contents).toContain('Change from second tab');
