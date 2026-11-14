@@ -376,7 +376,7 @@ export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Prom
   return queueWrite(dir,'__asset-allocation__',()=>withWorkspaceLock('asset-allocation',async()=>{
     for(let n=1;n<10000;n++){
       const candidate=n===1?cleaned:stem+'-'+n+ext;
-      if(await existsFile(dir,candidate))continue;
+      if(await hasCaseInsensitiveEntry(dir,candidate))continue;
       await write(dir,candidate,file);
       const saved=await(await dir.getFileHandle(candidate)).getFile();
       if(saved.size!==file.size)throw new Error('Attachment verification failed.');
