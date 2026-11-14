@@ -1117,5 +1117,8 @@ test('workspace settings persist appearance and typography preferences locally',
   await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(/theme-dark/);
   await page.getByRole('button', { name: 'Settings' }).click();
-  await expect(page.getByRole('dialog', { name: 'Settings' }).getByLabel('Font family')).toHaveValue('serif');
+  const reopenedDialog = page.getByRole('dialog', { name: 'Settings' });
+  await expect(reopenedDialog.getByLabel('Font family')).toHaveValue('serif');
+  await page.keyboard.press('Escape');
+  await expect(reopenedDialog).toBeHidden();
 });
