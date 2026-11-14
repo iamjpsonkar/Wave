@@ -515,3 +515,14 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Browser E2E source inventory is **43 scenarios** and Node test source remains **30 definitions**; these are source counts, not executed results. No local test, typecheck, production build or screenshot review was performed. GitHub Actions run [43628949071](https://github.com/iamjpsonkar/Wave/actions/runs/43628949071) for main commit `92ddcbdb179421d3ef761dde0fb64207c0489b8b` was **queued** at the time of this update. No pass is claimed.
 - Known test limitation: image, file, audio and video examples are placeholders and require matching local files in the user's workspace before those individual asset examples can render. The renderer compatibility remains the documented local subset; this template does not claim full TeX/diagram specification support.
 - This handoff update is the final documentation action for this batch.
+
+
+## Implementation update — Export rendered Preview as PDF — 2026-11-15
+
+- Added a Preview-only **Export PDF** action in `src/App.tsx`. It temporarily sets the active document title as the suggested print/PDF filename, invokes `window.print()`, and restores the original tab title on `afterprint`.
+- Added `@media print` and `@page` rules in `src/styles.css` so only `.markdown-preview` is visible in print output. Wave navigation, workspace chrome, editor toolbar, metadata, backlinks and status controls are hidden. Print rules preserve colors where supported, avoid splitting common content blocks, keep headings with following content and wrap long code lines. Audio/video controls are omitted.
+- Added Playwright E2E regression coverage for print invocation, title restoration and print-media visibility. Browser E2E source inventory is now **44 scenarios**; Node test source remains **30 definitions**. These are source counts, not executed results.
+- Updated `features.md`, `docs/FEATURES.md`, `ui-gaps.md` (new UI-022; UI-001–UI-021 retained) and `dev-build.md`.
+- Commits: App `e6800b1725f1471fcd56a403e001ff7fa7302cbb`; print CSS `26dc983d85a531e4a1431624ec7558b5b5dcb2b2`; E2E `8608f04f7c4347d4f59dff4016d45b52db15219b`; feature showcase `0981adaac8c88ee92b7c5e6dc418734b577dfaab`; feature map `f1da436367824bd726b8e63e5fccfa7c73a82359`; UI gap record `623d7ccab194baa3096a07d18ce5b1eb9340b167`; build log `456f4ba2f61a2a4e6c5cf65bf2544e3fc0f07ad3`.
+- Scope limitation: this uses the browser's print dialog and its **Save as PDF** destination; it does not yet generate/download a PDF file directly. Page size, pagination, headers/footers and background printing remain controlled by browser print settings.
+- No local test, typecheck, production build or screenshot review has been performed. Verify the latest GitHub Actions run before claiming success. This developer-context update is the final documentation action for this batch.
