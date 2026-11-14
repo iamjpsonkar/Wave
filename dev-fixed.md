@@ -58,3 +58,26 @@ Raw HTML remains disabled. Advanced Mermaid syntax/diagram families and PlantUML
 
 ### Verification
 Source changes and the regression scenario are committed, but no local typecheck/build/test run was available during this task. The new browser scenario and current source require a fresh CI run before being marked verified. No test pass is claimed.
+
+
+## 2026-11-14 — Markdown preview capability expansion
+
+### Implemented
+- `src/markdown.tsx`
+  - Added deterministic duplicate heading suffixes via per-preview heading counts.
+  - Added a small explicit shortcode map for common emoji; unknown shortcodes remain unchanged and inline code is protected.
+  - Added safe Markdown inline shorthands rendered as React elements (no raw HTML): `==highlight==`, `++underline++`, `^superscript^`, `~subscript~`, and `[[kbd:Ctrl+K]]`.
+  - Added keyboard-operable `> [!DETAILS] Summary` disclosure blocks.
+  - Expanded the recursive MathML parser for nested groups, nested fractions/roots, script groups, common Greek/operators and text groups. This remains a limited TeX subset.
+  - Added lightweight local token coloring for common code-language identifiers.
+  - Added local SVG rendering for basic Mermaid sequence diagrams and pie charts; retained simple flowcharts and safe source fallback for unsupported syntax.
+- `src/App.tsx`: creates a fresh duplicate-heading slug counter for each render.
+- `src/styles.css`: styles syntax tokens, diagrams, disclosure blocks and inline formatting.
+- `src/templates.ts`: expanded the Markdown showcase template with new syntax and diagram examples.
+- `tests/e2e/workspace.spec.ts`: added coverage for duplicate heading IDs, emoji, code token colors, sequence/pie diagrams, safe inline syntax, disclosure interaction and nested math.
+- Updated `features.md`, `docs/FEATURES.md`, `docs/MARKDOWN_SUPPORT.md` and `README.md` to describe the actual shipped subset and remaining limits.
+
+### Verification
+- Workflow [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208), commit `679b9eef2b14272356d245553abd218612fd92ce`: `npm ci`, 30 Node tests, TypeScript typecheck and production build passed; Playwright E2E was still running at the time of this log update.
+- An earlier E2E run [43613444479](https://github.com/iamjpsonkar/Wave/actions/runs/43613444479) failed while the inline converter function was not yet present in that commit. That failure is not being hidden; the later corrected source is being checked by the newer workflow.
+- No full TeX engine, complete Mermaid implementation, PlantUML/Graphviz/Vega/D2/AsciiDoc renderer, unrestricted HTML, or arbitrary media embed was added. Raw HTML remains deliberately disabled.
