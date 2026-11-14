@@ -553,6 +553,11 @@ export function MarkdownCode({ children, className }: MarkdownElementProps) {
     if(/^\s*flowchart\b/i.test(source))return <MermaidFlowchart source={source}/>;
     return <MermaidFallback source={source}/>;
   }
+  if(className?.includes('language-dot')||className?.includes('language-graphviz'))return <DotDiagram source={source}/>;
+  if(className?.includes('language-plantuml'))return <PlantUmlDiagram source={source}/>;
+  if(className?.includes('language-d2'))return <D2Diagram source={source}/>;
+  if(className?.includes('language-vega'))return <VegaDiagram source={source}/>;
+  if(className?.includes('language-asciidoc')||className?.includes('language-adoc'))return <AsciiDocBlock source={source}/>;
   if (className?.includes('language-math')) return <MathExpression source={source} display/>;
   if (typeof children==='string' && children.startsWith('math:')) return <MathExpression source={children.slice(5)}/>;
   if(typeof children==='string'&&children.startsWith('wave-')){
