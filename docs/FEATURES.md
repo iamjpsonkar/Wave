@@ -19,7 +19,7 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [ ] Inline formatting, text colors, highlights, comments and suggestions
 - [ ] Page icons, cover images, page outline and table of contents
 - [ ] Nested pages, breadcrumbs, favorites and recent pages
-- [ ] Internal links, backlinks, mentions and link previews
+- [~] Wiki links and backlinks are implemented for Markdown pages; mentions and rich link previews remain planned
 - [ ] Page history, restore points and compare revisions
 - [ ] Import/export: Markdown, HTML, DOCX, PDF and portable workspace archive
 
