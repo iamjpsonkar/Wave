@@ -24,5 +24,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
+      - name: Validate Compose configuration
+        run: docker compose config -q
       - name: Build production container image
         run: docker build --pull -t wave:ci .
