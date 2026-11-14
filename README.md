@@ -44,7 +44,7 @@ Open the Vite URL and choose a folder to initialize a workspace.
 ```
 
 ## Privacy and browser support
-The app has no server API or analytics. The File System Access API requires a secure context (HTTPS or localhost), explicit user permission and a supported browser. Permissions may need to be granted again after reload. Chromium-based browsers currently provide the intended experience; Firefox and Safari need an alternate adapter. Google Fonts are loaded remotely in this preview, but document content and assets are not sent to Google. Bundle fonts locally before claiming fully offline operation.
+The app has no server API or analytics. The File System Access API requires a secure context (HTTPS or localhost), explicit user permission and a supported browser. Permissions may need to be granted again after reload. Chromium-based browsers currently provide the intended experience; Firefox and Safari need an alternate adapter. The interface uses system fonts and makes no third-party font requests. The app can work without contacting an application server after it has been loaded.
 
 The UI uses a small storage adapter in `src/storage.ts`. Keep this boundary independent of React so a future Tauri adapter can provide the same operations.
 
