@@ -338,12 +338,25 @@ export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documen
   if(!/^[a-f0-9-]{16,64}$/i.test(id))throw new Error('Invalid Trash item.');
   const metadata=JSON.parse(await(await(await trash.getFileHandle(id+'.json')).getFile()).text()) as unknown;
   if(!validTrashItem(metadata)||metadata.id!==id)throw new Error('Trash metadata is invalid; the item was not changed.');
-  const content=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();
-  const target=await createDoc(documents,metadata.originalPath,content);
-  const check=await readDoc(documents,target);
-  if(check!==content)throw new Error('Restored page verification failed; the Trash copy was retained.');
-  await trash.removeEntry(id+'.md');
-  await trash.removeEntry(id+'.json');
+  let target='';
+  try{
+    const operation=JSON.parse(await(await(await trash.getFileHandle(id+'.op.json')).getFile()).text()) as {operation?:string;state?:string;target?:string};
+    if(operation.operation==='restore'&&typeof operation.target==='string'){
+      const existing=await readDoc(documents,operation.target);
+      const original=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();
+      if(existing===original)target=operation.target;
+    }
+  }catch{/* no resumable restore marker */}
+  if(!target){
+    const content=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();
+    target=await createDoc(documents,metadata.originalPath,content);
+    await write(trash,id+'.op.json',JSON.stringify({id,operation:'restore',state:'destination-verified',target,updatedAt:new Date().toISOString()},null,2));
+    const check=await readDoc(documents,target);
+    if(check!==content)throw new Error('Restored page verification failed; the Trash copy was retained.');
+  }
+  await trash.removeEntry(id+'.md').catch(error=>{if(!isNotFound(error))throw error;});
+  await trash.removeEntry(id+'.json').catch(error=>{if(!isNotFound(error))throw error;});
+  await trash.removeEntry(id+'.op.json').catch(error=>{if(!isNotFound(error))throw error;});
   return target;
 }
 export async function permanentlyDeleteTrashItem(trash: FileSystemDirectoryHandle, id: string): Promise<void> {
