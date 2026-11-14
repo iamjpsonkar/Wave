@@ -298,3 +298,47 @@ Two additional screenshots were supplied: a dark-theme editor state and a dark-t
 - The regression checks key computed foreground/surface colors, rendered content and horizontal overflow at 1440px and 390px.
 - **Status: implementation and test source added — CI pending.** UI-020 is not closed until the new main-branch workflow passes and the visual results are reviewed. This is computed-style/interaction coverage, not a complete screenshot-diff suite or WCAG contrast certification.
 - All existing UI gap IDs and acceptance criteria remain preserved. UI-005 contrast audit, UI-014 broader responsive breakpoints, and UI-018/UI-019 dialog/popover/navigation audit remain open.
+
+---
+
+## Implementation update — remaining editor, navigation, templates and responsive UI — 2026-11-14
+
+This is an additive status snapshot. All original UI-001–UI-020 IDs, original evidence and acceptance criteria remain intact. Statuses below describe source and regression coverage only; none is CI-verified in this update.
+
+| ID | Latest implementation | Remaining acceptance / verification |
+|---|---|---|
+| UI-001 | Settings dialog, preference persistence, focus containment and Escape behavior already exist; system/theme matrix now exercises broader appearance surfaces. | Run Settings-specific visual/accessibility checks and CI; verify preference reset/reopen on latest code. |
+| UI-002 | Markdown-safe formatting and insertion workflows remain the source-preserving editing path. | **Open:** a genuine optional block editor with paragraph/list/quote/callout/code/image/file/table blocks, block navigation and source round-trip is not implemented. Do not describe the plain textarea as a rich block editor. |
+| UI-003 | Centered configurable writing measure remains in place; responsive matrix now checks 320, 390, 768, 1024 and 1440 CSS-pixel widths. | Long table/code/diagram fixtures and visual review of wide/full-width modes remain. |
+| UI-004 | Every primary formatting toolbar action now has an explicit accessible name and title; Inline code and Code block retain distinct icons and labels. | CI and keyboard/tooltip review remain. |
+| UI-005 | Increased functional metadata/control text sizes; added 4.5:1 body and heading contrast assertions to the theme matrix. | **Partial:** audit all metadata, controls, disabled/error states and Settings surfaces; manual screen-reader/zoom review remains. Automated assertions are not a complete WCAG audit. |
+| UI-006 | Added clickable workspace/folder breadcrumbs and live save-status announcement. | Nested folder breadcrumb regression added; CI and deeper move/rename navigation review remain. |
+| UI-007 | Added collapsible heading outline with heading-level indentation and jump-to-heading in Edit/Preview. | Duplicate-heading anchor behavior and keyboard review remain. |
+| UI-008 | Existing Backlinks disclosure retains populated links and a clear “No pages link here yet” empty state. | CI and usability review of the return path remain. |
+| UI-009 | Added bounded in-memory undo/redo history, Ctrl/Cmd+Z and redo shortcuts, document-local find, case matching, next/previous, replace and replace-all. | CI; verify long-session history and page-switch isolation under browser interaction. |
+| UI-010 | Added live word count, Unicode character count and estimated reading time. | CI and count-definition review for Markdown syntax/code blocks remain. |
+| UI-011 | Template gallery now supports search and preview-before-create; Escape and outside-click dismiss the preview. | CI and keyboard focus-return audit remain. |
+| UI-012 | Existing persisted theme, font, text size, line spacing, content width and reduced-motion controls retained; System-light preview colors explicitly corrected. | Settings-specific latest-main CI and full component contrast audit remain. |
+| UI-013 | Existing verified backup history exposes timestamps and document/asset counts; restore creates a separate folder and explains the destination. | CI and visual review of failure/incomplete snapshot states remain. |
+| UI-014 | Expanded theme/editor matrix to five responsive widths (320, 390, 768, 1024, 1440) with document horizontal-overflow checks; existing mobile drawer regression retained. | Actual browser CI, touch/focus-return and screenshot review remain. |
+| UI-015 | Save/recovery states are announced through a polite live region; existing recovery-draft and autosave behavior remains unchanged. | User-facing version history/restore points remain a separate unimplemented capability. |
+| UI-016 | Dark/system-dark code, syntax, copy and fallback surfaces are theme-aware. | Contrast and screenshot review on latest CI remain. |
+| UI-017 | Dark/system-dark body and heading colors are explicit; matrix now asserts minimum 4.5:1 body/heading contrast against the resolved workspace surface. | Full semantic text/link/callout contrast audit remains. |
+| UI-018 | Added theme parity for productivity panel, template preview, command palette, templates, backlinks, Trash, search, Settings and controls; System-light overrides prevent dark panels in light OS mode. | Review every popover/dialog/disabled/error state with browser screenshots and CI. |
+| UI-019 | Wordmark, folder navigation, selected folder, status and supporting labels receive stronger dark/system-dark contrast. | Full selected/current/focus state review and CI remain. |
+| UI-020 | Matrix expanded to Light/Dark/System × Edit/Preview × 5 widths = **30 states**, including representative Markdown, computed colors, body/heading contrast and page overflow. | CI, screenshot-diff review and tablet/mobile visual inspection remain. |
+
+### New code and regression files
+
+- `src/EditorEnhancements.tsx`: document-local history, find/replace, outline and statistics.
+- `src/App.tsx`: mounts editor tools; adds folder breadcrumbs, live save status, searchable/preview-first templates, toolbar accessible names and Escape dismissal.
+- `src/styles.css`: productivity panel, template preview, readable functional text, folder breadcrumbs, mobile widths, dark-theme parity and System-light corrections.
+- `tests/e2e/workspace.spec.ts`: editor productivity, template preview and nested breadcrumb regressions; 30-state responsive/theme matrix with contrast assertions.
+
+### Latest honest verification state
+
+- E2E source inventory: **37 scenarios** (34 previous + editor productivity + template preview + nested breadcrumb).
+- Node test source inventory: **30 tests** (unchanged).
+- GitHub repository connection did not provide a current push-triggered Actions run or combined status for the latest code commits. No local project dependencies/test runner are available in this repository connection.
+- **No test, typecheck, production build, screenshot review or CI pass is claimed.** Treat all new work as implementation committed / CI pending.
+- UI-002 remains the substantive open product gap. UI-001/003/005/007/008/011/012/013/014/015/018/019 also retain the specific QA or acceptance items stated above. No gap ID is deleted or marked fully complete merely because source code was added.
