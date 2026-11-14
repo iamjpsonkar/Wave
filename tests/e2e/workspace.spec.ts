@@ -461,3 +461,60 @@ test('Markdown CommonMark links, hard breaks, escaped tables and safe image fall
   await expect(preview.locator('a[href^="javascript:"]')).toHaveCount(0);
   await expect(preview.locator('ul ul')).toContainText('Nested child');
 });
+
+
+test('Markdown inline syntax, code literal preservation, duplicate slugs, nested lists and diff highlighting', async ({ page, context }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Markdown Core Conformance');
+  await editor.fill([
+    '# Duplicate: Title!',
+    '# Duplicate: Title!',
+    '## Héading & punctuation?',
+    '',
+    '==marked== ++underlined++ ^super^ ~sub~ [[kbd:Alt+Shift]] :rocket: :unknown_shortcode:',
+    '',
+    'Inline code `:rocket: ==literal==` must stay literal.',
+    '',
+    '- Outer item',
+    '  Continuation paragraph',
+    '  - Nested item',
+    '    - Deep item',
+    '      ```js',
+    '      const nested = true;',
+    '      ```',
+    '',
+    '```python',
+    'def greet(name):',
+    '    return "hello " + name',
+    '```',
+    '',
+    '```diff',
+    '--- a/example.txt',
+    '+++ b/example.txt',
+    '@@ -1 +1 @@',
+    '-old value',
+    '+new value',
+    '```'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview.locator('h1#duplicate-title')).toHaveCount(1);
+  await expect(preview.locator('h1#duplicate-title-1')).toHaveCount(1);
+  await expect(preview.locator('h2#heading-punctuation')).toHaveCount(1);
+  await expect(preview.locator('mark')).toHaveText('marked');
+  await expect(preview.locator('u')).toHaveText('underlined');
+  await expect(preview.locator('sup')).toHaveText('super');
+  await expect(preview.locator('sub')).toHaveText('sub');
+  await expect(preview.locator('kbd')).toHaveText('Alt+Shift');
+  await expect(preview).toContainText('🚀 :unknown_shortcode:');
+  await expect(preview.locator('code').filter({ hasText: ':rocket: ==literal==' })).toHaveCount(1);
+  await expect(preview.locator('ul ul ul')).toContainText('Deep item');
+  await expect(preview.locator('.syntax-keyword')).toContainText('def');
+  await expect(preview.locator('.syntax-diff-removed')).toHaveText('-old value');
+  await expect(preview.locator('.syntax-diff-added')).toHaveText('+new value');
+  await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+  const pythonBlock = preview.locator('.markdown-code').filter({ hasText: 'def greet(name):' });
+  await pythonBlock.getByRole('button', { name: 'Copy code block' }).click();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toBe('def greet(name):\n    return "hello " + name\n');
+});
