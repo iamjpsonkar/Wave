@@ -1,6 +1,6 @@
 # Wave roadmap
 
-Wave is being developed as a local-first alternative to hosted workspaces. The roadmap prioritizes ownership, portability and safe local storage before collaboration.
+Wave is being developed as a user-owned workspace inspired by Notion and Quip. The product has an offline-capable personal core and an online layer for collaboration and connected features. The roadmap prioritizes storage integrity, portability and recovery before advanced collaboration.
 
 ## Release 0.1 — Foundation
 
@@ -22,7 +22,12 @@ Wave is being developed as a local-first alternative to hosted workspaces. The r
 - [x] Recoverable Trash with restore and permanent deletion
 - [x] CI typecheck and production build
 
-## Release 0.3 — Storage reliability
+## Release 0.3 — Storage reliability and canonical data foundation
+
+- [ ] Define the versioned SQLite workspace schema and storage adapter contract.
+- [ ] Add a migration/import path from the current Markdown-folder MVP.
+- [ ] Preserve original Markdown files until migration is verified.
+- [ ] Add transactional persistence, integrity checks and restore verification.
 
 - [x] Workspace reopen flow and permission recovery
 - [ ] Backup browser and restore workflow
@@ -99,8 +104,10 @@ Wave is being developed as a local-first alternative to hosted workspaces. The r
 
 ## Product guardrails
 
-- Local storage remains the default and does not require sign-in.
-- Cloud sync, if ever offered, must be opt-in and clearly separate.
-- Keep workspace files open and documented.
-- Never make the server a prerequisite for reading or editing a local workspace.
-- Backups and recovery are more important than adding cosmetic features.
+- The personal core must remain useful offline and must not require sign-in.
+- Online collaboration and connected features are optional and clearly identified.
+- Durable workspace content remains user-controlled; no mandatory Wave-operated readable-content repository.
+- Coordination/relay services may carry encrypted traffic but must not gain content access by default.
+- A self-hosted Docker deployment is a planned option, not a prerequisite for the browser client.
+- Keep the workspace format documented, portable and migratable.
+- Backups, recovery and data integrity take priority over cosmetic features.
