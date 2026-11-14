@@ -328,3 +328,17 @@ Important documentation drift observed at the same HEAD:
 - Historical fixed findings, including WAVE-052, were not reopened. Long-range roadmap catalogue entries were not misclassified as bugs or individually ticketed.
 - No application source or tests changed. Issues are open and unassigned; no implementation or CI pass is implied by issue creation.
 - Issue index commit: `f2b408aa6b05a4721bc1bb8fc3821da9799f0855`.
+
+---
+
+## Full roadmap issue creation — 2026-11-15
+
+- Parsed the current `upcoming-features.md` directly (1,983 lines). It contains 974 checkbox entries; one is already marked shipped, and two remaining entries are status-legend definitions rather than product features.
+- Created 80 roadmap tracking issues covering **971 unchecked/in-progress checklist entries**. Each issue is grouped by an existing blueprint subsection and contains the source wording, source line references, checkboxes and a definition-of-done checklist.
+- Coverage includes A–P, release 0.3 through Later, Q–AA, product coverage, specialist capability areas 14.1–14.10, cross-cutting areas 15.1–15.6 and competitor coverage.
+- Release roll-up and competitor/product coverage checklists were retained as traceability issues instead of being silently dropped. Where requirements overlap existing bug/gap tickets, canonical issue links are included where applicable.
+- An accidental duplicate A1 issue #90 was immediately closed as duplicate of canonical issue #11.
+- Created #91 for the additional competitor coverage checklist.
+- Verified GitHub search returned 90 open issues: #1–#89 and #91. The issue index `github-issues.md` now lists all 90 active issues.
+- No application source code was changed. No feature is claimed implemented by issue creation. Issues are tracking artifacts; completion still requires implementation, tests and documentation.
+- Issue index update commit: `4aa17e29acdd08eaeb3cdaa4ebf477e03857bb60`.
