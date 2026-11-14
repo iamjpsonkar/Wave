@@ -1391,6 +1391,10 @@ test('optional block editing preserves untouched Markdown source and edits one b
   await expect(blocks.getByRole('textbox', { name: 'Edit callout block 4' })).toBeVisible();
   await expect(blocks.getByRole('textbox', { name: 'Edit code block 5' })).toBeVisible();
   await blocks.getByRole('textbox', { name: 'Edit paragraph block 2' }).fill('Edited paragraph text.');
+  await page.getByRole('button', { name: 'Undo' }).click();
+  await expect(blocks.getByRole('textbox', { name: 'Edit paragraph block 2' })).toHaveValue('Paragraph stays intact.');
+  await page.getByRole('button', { name: 'Redo' }).click();
+  await expect(blocks.getByRole('textbox', { name: 'Edit paragraph block 2' })).toHaveValue('Edited paragraph text.');
   await page.getByRole('button', { name: 'Block editing' }).click();
   await expect(page.locator('.editor textarea')).toHaveValue(source.replace('Paragraph stays intact.', 'Edited paragraph text.'));
 });
