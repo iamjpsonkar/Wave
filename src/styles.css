@@ -632,3 +632,20 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 
 /* Per-block background color picker */
 .markdown-block-controls .block-color-control{display:inline-flex;align-items:center;justify-content:center;gap:3px;min-width:28px;min-height:27px;padding:0 5px;border:1px solid #e1e7dc;border-radius:5px;background:#fff;color:#53664f;font-size:12px;cursor:pointer}.block-color-control input[type=color]{width:15px;height:15px;padding:0;border:0;background:transparent;cursor:pointer}.block-color-control input[type=color]::-webkit-color-swatch{border:1px solid #aeb6a8;border-radius:3px}.app.theme-dark .block-color-control,.app.theme-system .block-color-control{background:#293328;border-color:#465344;color:#dce8d6}.app.theme-dark .block-color-control input[type=color]::-webkit-color-swatch,.app.theme-system .block-color-control input[type=color]::-webkit-color-swatch{border-color:#667260}.block-color-control:focus-within{outline:2px solid #6d9666;outline-offset:2px}
+
+/* Print only the rendered document preview; browser print dialog can save it as PDF. */
+@page{size:auto;margin:18mm 16mm}
+@media print{
+ html,body,#root{height:auto!important;min-height:0!important;overflow:visible!important;background:#fff!important}
+ body *{visibility:hidden!important}
+ .markdown-preview,.markdown-preview *{visibility:visible!important}
+ .app,.main,.editor{display:block!important;position:static!important;width:auto!important;height:auto!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;overflow:visible!important;background:#fff!important;border:0!important;box-shadow:none!important}
+ .markdown-preview{position:absolute!important;top:0!important;left:0!important;width:100%!important;min-height:0!important;height:auto!important;max-height:none!important;overflow:visible!important;padding:0!important;color:#222!important;font-size:11pt!important;line-height:1.6!important;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+ .markdown-preview h1,.markdown-preview h2,.markdown-preview h3,.markdown-preview h4{break-after:avoid-page;page-break-after:avoid}
+ .markdown-preview pre,.markdown-preview table,.markdown-preview blockquote,.markdown-preview img{break-inside:avoid-page;page-break-inside:avoid}
+ .markdown-preview pre{white-space:pre-wrap!important;overflow-wrap:anywhere!important}
+ .markdown-preview a{color:inherit!important;text-decoration:underline}
+ .markdown-preview img,.markdown-preview video{max-width:100%!important}
+ .markdown-preview audio,.markdown-preview video{display:none!important}
+ .markdown-preview .missing-asset{font-style:italic}
+}
