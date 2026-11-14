@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode, type KeyboardEvent as ReactKeyboardEvent } from 'react';
 import { Archive, BookOpen, Bold, Check, ChevronDown, Code2, FileCode2, FilePlus2, FileText, Folder, FolderPlus, FolderOpen, HardDrive, Heading1, Heading2, Italic, Link2, List, ListOrdered, LockKeyhole, MoreHorizontal, Paperclip, Plus, Printer, Quote, Search, Settings2, ShieldCheck, Sparkles, Strikethrough, Eye, Edit3, X, Trash2, RotateCcw, Star, Copy } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -113,7 +113,7 @@ export default function App() {
   setEditorContent(next);
   if(el)requestAnimationFrame(()=>{el.focus();el.setSelectionRange(cursor,cursor);});
  }
- function handleEditorKeyDown(event:React.KeyboardEvent<HTMLTextAreaElement>){
+ function handleEditorKeyDown(event:ReactKeyboardEvent<HTMLTextAreaElement>){
   if(event.key!=='Enter'||event.shiftKey||event.altKey||event.ctrlKey||event.metaKey)return;
   const el=editorRef.current;if(!el||el.selectionStart!==el.selectionEnd)return;
   const cursor=el.selectionStart,lineStart=content.lastIndexOf('\n',cursor-1)+1,breakAt=content.indexOf('\n',cursor),lineEnd=breakAt<0?content.length:breakAt,line=content.slice(lineStart,lineEnd);
