@@ -550,3 +550,42 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
  .app.theme-system .markdown-preview th,.app.theme-system .markdown-preview td{border-color:#e5e7df}
  .app.theme-system .markdown-preview blockquote{color:#737b70;border-color:#a9bba7}
 }
+
+.markdown-block-editor{width:min(var(--editor-content-width,860px),calc(100% - 48px));margin:0 auto;flex:1;min-height:0;overflow:auto;padding:0 2px 28px}
+.block-editor-intro{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;padding:4px 0 12px;color:#788173;font-size:11px}
+.block-editor-intro strong{color:#53664f;font-size:12px}
+.markdown-block{display:grid;gap:5px;margin:0 0 10px;padding:8px 10px;border:1px solid #e8ece4;border-left:3px solid #b6c7b0;border-radius:7px;background:#fff}
+.markdown-block>label{display:flex;justify-content:space-between;color:#84907f;font:10px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.4px}
+.markdown-block textarea,.block-editor-empty textarea{display:block;width:100%;min-height:36px;resize:vertical;border:0;outline:0;background:transparent;color:#34382f;font:13px/1.65 ui-monospace,monospace;white-space:pre-wrap;overflow-wrap:anywhere}
+.markdown-block-heading{border-left-color:#8aa889;background:#fbfcfa}
+.markdown-block-heading textarea{font:600 15px/1.5 'DM Sans',system-ui,sans-serif}
+.markdown-block-paragraph{border-left-color:#d3dbcf}
+.markdown-block-list{border-left-color:#9caf99;background:#fbfcfa}
+.markdown-block-quote,.markdown-block-callout{border-left-color:#8da78d;background:#f7faf6}
+.markdown-block-code{border-left-color:#7d9079;background:#f3f5f1}
+.markdown-block-code textarea{font-size:12px}
+.markdown-block-table{border-left-color:#a5a98a}
+.markdown-block-divider{border-left-color:#c4c9bd}
+.markdown-block-image,.markdown-block-attachment{border-left-color:#9aafbd}
+.block-editor-empty{padding:24px;border:1px dashed #dce3d8;border-radius:8px;color:#778271}
+.block-editor-empty p{font-size:12px}
+.app.theme-dark .block-editor-intro,.app.theme-system .block-editor-intro{color:#b3c0ad}
+.app.theme-dark .block-editor-intro strong,.app.theme-system .block-editor-intro strong{color:#c4d8bd}
+.app.theme-dark .markdown-block,.app.theme-system .markdown-block{background:#202820;border-color:#3a453a;color:#e0e8dc}
+.app.theme-dark .markdown-block textarea,.app.theme-dark .block-editor-empty textarea,.app.theme-system .markdown-block textarea,.app.theme-system .block-editor-empty textarea{color:#e0e8dc}
+.app.theme-dark .markdown-block-heading,.app.theme-dark .markdown-block-list,.app.theme-dark .markdown-block-quote,.app.theme-dark .markdown-block-callout,.app.theme-dark .markdown-block-code,.app.theme-system .markdown-block-heading,.app.theme-system .markdown-block-list,.app.theme-system .markdown-block-quote,.app.theme-system .markdown-block-callout,.app.theme-system .markdown-block-code{background:#252f26}
+.app.theme-dark .markdown-block>label,.app.theme-system .markdown-block>label{color:#b9c5b4}
+.app.theme-dark .block-editor-empty,.app.theme-system .block-editor-empty{border-color:#465344;color:#b9c5b4}
+@media(prefers-color-scheme:dark){
+ .app.theme-system .markdown-block,.app.theme-system .block-editor-empty{background:#202820;border-color:#3a453a}
+ .app.theme-system .markdown-block-heading,.app.theme-system .markdown-block-list,.app.theme-system .markdown-block-quote,.app.theme-system .markdown-block-callout,.app.theme-system .markdown-block-code{background:#252f26}
+}
+@media(prefers-color-scheme:light){
+ .app.theme-system .markdown-block{background:#fff;border-color:#e8ece4}
+ .app.theme-system .markdown-block-heading,.app.theme-system .markdown-block-list{background:#fbfcfa}
+ .app.theme-system .markdown-block-quote,.app.theme-system .markdown-block-callout{background:#f7faf6}
+ .app.theme-system .markdown-block-code{background:#f3f5f1}
+ .app.theme-system .markdown-block textarea,.app.theme-system .block-editor-empty textarea{color:#34382f}
+}
+@media(max-width:720px){.markdown-block-editor{width:calc(100% - 28px)}.markdown-block{padding:8px}.markdown-block textarea{font-size:12px}}
+@media(max-width:380px){.markdown-block-editor{width:calc(100% - 20px)}.block-editor-intro{font-size:10px}}
