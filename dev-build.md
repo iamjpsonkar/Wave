@@ -156,3 +156,14 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Updated `docs/MARKDOWN_SUPPORT.md` and `features-gap.md`; development fix recorded in `dev-fixed.md`.
 - The preceding baseline workflow [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed all CI steps, including Playwright. It predates these changes and is not verification of this patch.
 - **Current patch status:** no local test execution available through the GitHub repository connection; new CI run must pass before this accessibility correction is treated as verified.
+
+
+## QA register reconciliation and diagram accessibility CI — 2026-11-14
+
+- Reconciled `bugs.md` to only the two remaining open findings: WAVE-031 and WAVE-039. Corrected current suite counts to 30 Node tests and 28 Playwright scenarios; separated native permission/lifecycle coverage gaps from completed simulated coverage.
+- Reconciled `fixed-bugs.md`: retained all 50 historical WAVE IDs and their recheck scenarios; added an authoritative current verification addendum. WAVE-052 remains fixed based on the successful 28-scenario baseline.
+- Rebuilt `features-gap.md` as one current Markdown acceptance checklist. All 16 topic groups and original requirement families remain; stale contradictory audit snapshots were consolidated, not used to drop scope.
+- Diagram accessibility CI runs [43618788566](https://github.com/iamjpsonkar/Wave/actions/runs/43618788566) and [43618840380](https://github.com/iamjpsonkar/Wave/actions/runs/43618840380) failed the newly added accessibility assertion: sequence SVG accessible name was generic rather than using its Mermaid title.
+- Corrected in source commit `268de12338bce554f18e5feef27acbb5e9ea45fe` by using the sequence diagram's `title` directive as its SVG accessible name.
+- Verification run [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) is in progress; Node tests, typecheck and production build have passed, while Playwright was still running at the time of this log. Do not mark the accessibility correction fully verified until E2E and the current-main workflow pass.
+- Tracker commits: bugs `5e8e6963c49d3163405ffc267a1504b04bb5a7eb`; fixed bugs `54fb999bc97a784d13dbecdc8ff3981f1684ba02`; features gap `13aecf6eec05fc62710bbe338204f35c5114d558`.
