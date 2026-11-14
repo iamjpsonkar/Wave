@@ -12,3 +12,11 @@ export function relativeAssetPath(documentPath:string,assetName:string):string{
   const depth=documentPath.split('/').filter(Boolean).length;
   return '../'.repeat(depth)+'assets/'+assetName;
 }
+
+export function enqueueWorkspaceTask<T extends object>(queues:WeakMap<T,Promise<void>>,workspace:T,operation:()=>Promise<void>):Promise<void>{
+  const previous=queues.get(workspace)??Promise.resolve();
+  const current=previous.catch(()=>undefined).then(operation);
+  queues.set(workspace,current);
+  void current.finally(()=>{if(queues.get(workspace)===current)queues.delete(workspace);}).catch(()=>undefined);
+  return current;
+}
