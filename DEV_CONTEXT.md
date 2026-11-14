@@ -198,3 +198,15 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Open findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed in source.
 - Current test source defines 30 Node tests and 13 Chromium E2E scenarios. The successful CI result currently documented in `dev-build.md` covers an earlier 10-scenario suite; no fresh execution was performed in this QA task.
 - QA documentation commits: `bugs.md` `453f44268b694ded80109f785054d4e80b0ca5bb` (superseded by inventory correction in this task); `fixed-bugs.md` `c0b7503991190d6a84d3f381136bdd75fe98078a`; `qa-context.md` `4f52cbfd016a7419848cf4b2d100266c260cc290`. See current GitHub history for the final corrected `bugs.md` commit.
+
+
+## 12. Markdown compatibility implementation — 2026-11-14
+
+- Read the user-provided Markdown Feature Showcase and implemented the practical supported subset in the existing renderer without adding remote services or new npm dependencies.
+- `src/markdown.tsx`: wiki/alert preprocessing remains; added math delimiter preprocessing, MathML subset (basic tokens, Greek commands, simple fractions/roots and one superscript/subscript), simple Mermaid flowchart SVG rendering with readable source fallback for other Mermaid forms, and heading slug IDs.
+- `src/App.tsx`: maps Markdown heading levels to anchor IDs and routes code nodes through the custom renderer.
+- `src/styles.css`: preview styling for math, diagrams and heading levels.
+- `src/templates.ts`: adds the Markdown feature showcase template.
+- `docs/MARKDOWN_SUPPORT.md`: canonical syntax compatibility/security matrix. Raw HTML remains disabled; full LaTeX, advanced Mermaid, PlantUML, Graphviz, Vega, D2, AsciiDoc, syntax highlighting and media embeds are not claimed as supported.
+- E2E test source now contains 14 scenarios, including the new math/flowchart/heading scenario. Existing documented CI result predates these changes; no local tests or fresh CI result have been confirmed.
+- Always read `docs/MARKDOWN_SUPPORT.md` before extending Markdown support; preserve local-only rendering and sanitization boundaries.
