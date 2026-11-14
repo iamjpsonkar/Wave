@@ -209,3 +209,15 @@ Source changes and the regression scenario are committed, but no local typecheck
 - **Regression:** Added a 12-state Playwright matrix using representative headings, links, inline/fenced code, tables, alerts, disclosures, math, Mermaid and missing-image fallback content. It checks computed colors/surfaces and horizontal overflow at desktop and mobile widths.
 - **Files:** `src/styles.css`, `tests/e2e/workspace.spec.ts`, `ui-gaps.md`, `dev-fixed.md`, `dev-build.md`, `DEV_CONTEXT.md`.
 - **Verification:** CI pending. This is not a full screenshot-diff or WCAG contrast audit; UI-005, UI-014 and remaining UI-018/UI-019 reviews remain open.
+
+ 
+## 2026-11-14 — Editor productivity and remaining UI implementation batch
+
+- Added `src/EditorEnhancements.tsx`: bounded per-page in-memory undo/redo history (200 snapshots), editor-local find with case matching and next/previous navigation, literal replace/replace-all, Markdown heading outline with Edit/Preview navigation, and live word/Unicode-character/reading-time statistics.
+- Integrated the component through the existing autosave/recovery-aware `handleEditorChange` path. A follow-up corrected history bookkeeping after undo/redo and made replacement strings literal rather than interpreting replacement metacharacters.
+- `src/App.tsx`: added clickable workspace/folder breadcrumbs, polite live save status, searchable template gallery, preview-before-create dialog, Escape dismissal and explicit accessible names for primary toolbar controls.
+- `src/styles.css`: improved functional text sizing, visible focus rings, mobile layout at narrow widths, template preview surfaces, productivity panel styles, secondary-surface dark-theme parity and System-light overrides.
+- `tests/e2e/workspace.spec.ts`: added regressions for editor productivity, template search/preview and nested folder breadcrumbs. Expanded UI-020 from 12 to 30 theme/mode/viewport states (320, 390, 768, 1024, 1440) and added 4.5:1 body/heading contrast assertions.
+- UI-002 remains open: this batch does not pretend that a textarea plus Markdown insertion helpers is a full optional block editor. UI-005, UI-018/UI-019 and other visual/accessibility review items remain pending CI and manual audit.
+- E2E source inventory: 37 scenarios; Node test source: 30 tests. No test/typecheck/build/CI pass is claimed.
+- Relevant implementation commits include `103c0796e7816553b2864a639e132dd1edde2a35` (new editor component), `0e4bc6b89344f1a09c880322797eff8d9ff60f28` (integration), `2913af688afc024af3739b3980284e5476547273` (breadcrumbs/status), `cb278bce391d0c3a116724496bde88f385ef3a0c` / `ee9ba2c16d0c65e136b2e081c5545c75a0424d21` (template search/preview), and `a1ca18cbb2e987e2725de241e4807a7e01627bf8` (contrast regression).
