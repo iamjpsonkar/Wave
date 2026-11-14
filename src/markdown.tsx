@@ -162,7 +162,8 @@ const EMOJI_SHORTCODES: Record<string, string> = {
 
 function convertInlineExtensions(line: string): string {
   const tick=String.fromCharCode(96);
-  return line.replace(/(`+)([\s\S]*?)\1|==([^=\n]+)==|\+\+([^+\n]+)\+\+|\^([^^\n]+)\^|(?<!~)~([^~\n]+)~(?!~)|\[\[kbd:([^\]]+)\]\]|:([a-z0-9_+-]+):/gi,
+  const colored=line.replace(/(`+)([\s\S]*?)\1|\[\[(color|bg):(#[0-9a-f]{6})\|([^\]\n]+)\]\]/gi,(match,ticks,_code,kind,hex,value)=>ticks?match:tick+'wave-'+kind+':'+hex.toUpperCase()+':'+value+tick);
+  return colored.replace(/(`+)([\s\S]*?)\1|==([^=\n]+)==|\+\+([^+\n]+)\+\+|\^([^^\n]+)\^|(?<!~)~([^~\n]+)~(?!~)|\[\[kbd:([^\]]+)\]\]|:([a-z0-9_+-]+):/gi,
     (match,ticks,_code,mark,underline,sup,sub,kbd,emoji) => {
       if(ticks)return match;
       if(mark)return tick+'wave-mark:'+mark+tick;
@@ -645,6 +646,7 @@ export function MarkdownCode({ children, className }: MarkdownElementProps) {
   if(className?.includes('language-asciidoc')||className?.includes('language-adoc'))return <AsciiDocBlock source={source}/>;
   if (className?.includes('language-math')) return <MathExpression source={source} display/>;
   if (typeof children==='string' && children.startsWith('math:')) return <MathExpression source={children.slice(5)}/>;
+  if(typeof children==='string'){const colored=children.match(/^wave-(color|bg):(#[0-9a-f]{6}):([\\s\\S]*)$/i);if(colored){const [,kind,hex,value]=colored;return <span style={kind==='color'?{color:hex}:{backgroundColor:hex}}>{value}</span>;}}
   if(typeof children==='string'&&children.startsWith('wave-')){
     const split=children.indexOf(':');const kind=children.slice(5,split),value=children.slice(split+1);
     if(kind==='mark')return <mark>{value}</mark>;
