@@ -233,8 +233,8 @@ Important documentation drift observed at the same HEAD:
 
 - `bugs.md`: removed WAVE-052 from the open register, corrected open count and current test/CI references.
 - `fixed-bugs.md`: added WAVE-052 with source/test evidence and a retained regression scenario; fixed register now contains 50 findings.
-- No application source, test source, feature catalogue or roadmap capability was removed or changed.
-- Documentation commits: `bbc7e1df6db98d87a08b8a8d0d2aca96bbb19700` and `9facb8bf1b71b4470ea661cb4b30a76660217f18`.
+- No application source or test source changed. Feature and roadmap documentation wording/status was reconciled; no planned capability was removed or cancelled.
+- Documentation commits: `bbc7e1df6db98d87a08b8a8d0d2aca96bbb19700`, `9facb8bf1b71b4470ea661cb4b30a76660217f18`, `dd9c4954b1426a96c32614eb8a50c87ef1762670`, `75bb1ca7777aa87072c74d0ef9964a0ab2bc3a01`, `ecfc6488918869d426b40ec20e91391e70961f63`, `fd8a6ac3d4462c53405c535f5db17d2367830d27`, `311878abeb5b0f303b2befe52c83ea6a5242b9d4` and `4fd135fadce0ab45488581d7b785c9a44ab84548`.
 
 ### Recommended next actions
 
@@ -243,3 +243,14 @@ Important documentation drift observed at the same HEAD:
 3. Expand WAVE-031 verification with native picker/permission revocation where supported, external filesystem mutation tests, accessibility tooling and process-lifecycle fault injection.
 4. Continue WAVE-039 durability investigation with controlled IndexedDB transaction delay and real browser-process termination tests; do not promise zero crash window.
 5. Add large-workspace performance budgets, Unicode/platform path fixtures, malformed/oversized parser limits and broader preview/source round-trip tests.
+
+
+### Documentation reconciliation follow-up — 2026-11-14
+
+- Updated `bugs.md` to two open findings and 50 retained fixed findings; WAVE-052 is no longer open.
+- Updated the current verification addendum in `fixed-bugs.md` to distinguish the green 28-scenario CI baseline from the later unverified diagram-accessibility patch.
+- Appended a current status override to `features-gap.md`, preserving its original requirements while superseding stale implementation claims.
+- Updated `docs/FEATURES.md` and `docs/ROADMAP.md` to distinguish implemented wiki links/backlinks from still-planned mentions and rich link previews.
+- Updated `features.md` to describe the current constrained local diagram-renderer families and technical learning-notes template.
+- These are documentation-only changes; no source or test files changed. The CI run for the source/test baseline remains 43618423075. The newest documentation commits have not been independently checked in CI.
+- Main HEAD immediately before this QA-context update: `4fd135fadce0ab45488581d7b785c9a44ab84548`.
