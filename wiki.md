@@ -19,7 +19,7 @@ Before making any change:
 2. Read [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the current source baseline, implementation invariants, exact commands, latest known verification and task workflow.
 3. Read [CONTRIBUTING.md](./CONTRIBUTING.md) for repository contribution conventions.
 4. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
-5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [UI backlog](./UI_BACKLOG.md), [UI feature backlog](./ui-FEATURES.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-FEATURES.md), and/or [GitHub issue index](./github-issues.md).
+5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [UI backlog](./UI_BACKLOG.md), [UI feature backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
 6. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
 7. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
 
@@ -77,7 +77,7 @@ Wave is evolving from a local-first Markdown workspace into a complete workspace
 - Build useful end-to-end workflows, not feature parity for its own sake.
 - Reliability, data integrity, accessibility, recovery, portability and security are release gates, not optional polish.
 
-The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./upcoming-features.md). The actionable order is in [priority-FEATURES.md](./priority-FEATURES.md).
+The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./upcoming-features.md). The actionable order is in [priority-features.md](./priority-features.md).
 
 ---
 
@@ -196,7 +196,7 @@ This section consolidates durable directions repeatedly given by the product own
 ### Preserve the whole product
 
 - Wave has many features and long-term ideas. The user explicitly rejected removing earlier features when new priorities were added.
-- `upcoming-features.md` is the complete feature catalogue; `priority-FEATURES.md` orders work. Neither should be silently shortened.
+- `upcoming-features.md` is the complete feature catalogue; `priority-features.md` orders work. Neither should be silently shortened.
 - “Build all priority features” means implement the agreed priority scope in sensible batches, not delete lower-priority features or claim unimplemented work is shipped.
 - When choosing the next task, inspect the latest backlog and current source, then pick the next unfinished, dependency-ready item.
 - Maintain existing behavior, prior features, user decisions and historical context.
@@ -209,8 +209,8 @@ This section consolidates durable directions repeatedly given by the product own
 - `dev-build.md` records features, implementation batches, build/CI and verification evidence.
 - `bugs.md` is the current open-bug register; `fixed-bugs.md` is the historical fixed-bug/regression register. They are not general implementation journals.
 - The user explicitly directed development logs to be maintained in `dev-fixed.md` and `dev-build.md`, not to keep editing the legacy bug files for every implementation.
-- Keep `features-gap.md` as the Markdown compatibility checklist; `UI_BACKLOG.md`, `ui-FEATURES.md` and `UI_BACKLOG.md` have separate UI audit/backlog purposes unless a deliberate lossless consolidation is requested.
-- Keep `upcoming-features.md` (full product scope) distinct from `priority-FEATURES.md` (delivery order).
+- Keep `features-gap.md` as the Markdown compatibility checklist; `UI_BACKLOG.md`, `UI_BACKLOG.md` and `UI_BACKLOG.md` have separate UI audit/backlog purposes unless a deliberate lossless consolidation is requested.
+- Keep `upcoming-features.md` (full product scope) distinct from `priority-features.md` (delivery order).
 - Update relevant user-facing docs and trackers for every shipped feature. Update `DEV_CONTEXT.md` last in each implementation batch.
 
 ### UI/product requests recorded
@@ -240,7 +240,7 @@ Markdown is a core Wave capability and a major compatibility promise. Consult:
 - [Markdown support guide](./docs/MARKDOWN_SUPPORT.md)
 - [Markdown feature-gap checklist](./features-gap.md)
 - [UI backlog](./UI_BACKLOG.md)
-- [UI feature backlog](./ui-FEATURES.md)
+- [UI feature backlog](./UI_BACKLOG.md)
 
 Key areas to preserve and test:
 - CommonMark inline formatting, paragraphs, headings, anchors, links, images, escaping and literal characters.
@@ -361,7 +361,7 @@ The full catalogue in [upcoming-features.md](./upcoming-features.md) spans:
 - Z. Explicitly opt-in AI knowledge operations.
 - AA. Administration, observability and supportability.
 
-Specialist visual diagram capabilities and architecture are covered in [diagram-FEATURES.md](./diagram-FEATURES.md). Do not treat the existing Mermaid renderer as equivalent to a native diagrams.net-style canvas editor.
+Specialist visual diagram capabilities and architecture are covered in [diagram-features.md](./diagram-features.md). Do not treat the existing Mermaid renderer as equivalent to a native diagrams.net-style canvas editor.
 
 ### Priority model
 
@@ -378,7 +378,7 @@ Dependencies matter. For example:
 - Public publishing requires access control, safe rendering, revocation and export semantics.
 - Plugins require a permission/capability model and sandboxing.
 
-[priority-FEATURES.md](./priority-FEATURES.md) is the practical execution sequence. [github-issues.md](./github-issues.md) indexes the roadmap issues and defect/gap issues. GitHub issue counts and checklists are snapshots; re-fetch before reporting current status.
+[priority-features.md](./priority-features.md) is the practical execution sequence. [github-issues.md](./github-issues.md) indexes the roadmap issues and defect/gap issues. GitHub issue counts and checklists are snapshots; re-fetch before reporting current status.
 
 ---
 
@@ -401,7 +401,7 @@ UI-001 through UI-024 cover settings/dialog QA, editor experience, canvas width,
 
 Use the source file for full descriptions, statuses, acceptance criteria and evidence limitations.
 
-### UI feature backlog — `ui-FEATURES.md`
+### UI feature backlog — `UI_BACKLOG.md`
 
 UIF-001 through UIF-021 cover undo/redo, find, toolbar grouping/discoverability, heading styles, shortcut hints, color/highlight, alignment/indentation, insert menu, table helpers, link editing/preview, document statistics, zoom/focus mode, reading layout, contextual formatting, spreadsheet number formats/cell formatting/grid/formulas, comments/review, toolbar customization and context menu/command palette parity.
 
@@ -426,7 +426,7 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `dev-fixed.md` | Append-only-ish implementation fix and regression history | Record bug fixes and regression tests |
 | `dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
 | `upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
-| `priority-FEATURES.md` | Delivery order, priorities and dependencies | Reprioritize transparently; preserve complete scope |
+| `priority-features.md` | Delivery order, priorities and dependencies | Reprioritize transparently; preserve complete scope |
 | `FEATURES.md` | Concise shipped-feature showcase | Update only for genuinely implemented features |
 | `FEATURES.md` | Detailed feature map/status by product area | Update shipped/planned status with evidence |
 | `docs/ROADMAP.md` | Release sequencing | Update when delivery milestones change |
@@ -435,8 +435,8 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `features-gap.md` | Markdown compatibility gap checklist | Update checklist status and acceptance evidence |
 | `UI_BACKLOG.md` | Export/print/theme UI defect register | Reconcile UI export defects and evidence |
 | `UI_BACKLOG.md` | UI audit/gap register | Update gap status, acceptance criteria and verification |
-| `ui-FEATURES.md` | UI feature backlog | Add/update UI feature requests and implementation status |
-| `diagram-FEATURES.md` | Specialist diagram research, capability map and native diagram editor proposal | Consult for visual diagram scope/architecture |
+| `UI_BACKLOG.md` | UI feature backlog | Add/update UI feature requests and implementation status |
+| `diagram-features.md` | Specialist diagram research, capability map and native diagram editor proposal | Consult for visual diagram scope/architecture |
 | `bugs.md` | Current open reliability/functional bug register | Update only during explicit bug-register/QA reconciliation |
 | `fixed-bugs.md` | Historical fixed bug descriptions and regression scenarios | Preserve history; recheck affected scenarios after related changes |
 | `QA_CONTEXT.md` | Current concise QA handoff and limitations | Refresh after QA/source review |
@@ -445,18 +445,19 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `docs/DOCKER.md` | Docker and Compose deployment instructions | Update when container/Nginx/Compose behavior changes |
 | `docs/README.md` | Documentation navigation index | Update when docs are added, renamed or reorganized |
 
-### File consolidation rules
+### File consolidation rules — current state
 
-The user has discussed reducing duplicate documentation. Consolidation is allowed only when it is lossless:
-- `QA_CONTEXT.md` + `QA_CONTEXT.md` can be brought together only if the current QA disposition and all unique historical audit/evidence sections are retained.
-- `UI_BACKLOG.md`, `UI_BACKLOG.md` and `ui-FEATURES.md` may be grouped into a UI backlog document only if every UIB/UI/UIF identifier, status, acceptance criterion, screenshot/source evidence and history is preserved.
-- `FEATURES.md` and `FEATURES.md` may be consolidated only if both the concise shipped overview and the detailed feature map/status are preserved.
-- `DEV_CONTEXT.md` should remain concise; historical implementation detail belongs in `dev-fixed.md` and `dev-build.md`. Move history verbatim/faithfully before shortening the handoff.
+The following consolidations have been completed:
+- `QA_CONTEXT.md` combines the current QA disposition and test inventory formerly in `qa-context.md` with the detailed historical audits/evidence formerly in `QA-CONTEXT.md`.
+- `UI_BACKLOG.md` combines export/print UI bugs (UIB-001..006), UI gaps (UI-001..024) and UI feature proposals (UIF-001..021) from the former three UI registers.
+- `FEATURES.md` combines the shipped-feature overview and detailed feature map formerly split between root `features.md` and `docs/FEATURES.md`.
+
+The former source files are removed only after the consolidated destinations were created and references migrated. Preserve every stable ID and meaningful requirement when updating the consolidated files.
 - Keep `dev-fixed.md` and `dev-build.md` distinct.
-- Keep `upcoming-features.md` and `priority-FEATURES.md` distinct.
+- Keep `upcoming-features.md` and `priority-features.md` distinct.
 - Keep `bugs.md` and `fixed-bugs.md` distinct.
-- Keep `features-gap.md` and `diagram-FEATURES.md` as specialist checklists/research.
-- Do not delete old paths until links and all unique content are migrated and verified. A compatibility pointer is preferable to a broken link if a file cannot be safely removed.
+- Keep `features-gap.md` and `diagram-features.md` as specialist checklist/research files.
+- Keep `DEV_CONTEXT.md` concise; historical implementation detail belongs in the development logs.
 
 ---
 
@@ -621,7 +622,7 @@ Use competitor research as workflow inspiration, not as an instruction to copy f
 - Anytype — offline-first objects, relations, encryption and peer-to-peer sync.
 - Outline — structured knowledge base, collections, permissions, search and navigation.
 - Specialist diagrams: diagrams.net/draw.io, Excalidraw, tldraw, Miro, FigJam, Lucidchart and related products.
-- Specialist research, reading, assets, forms, automation and publishing references are catalogued in `upcoming-features.md` and `diagram-FEATURES.md`.
+- Specialist research, reading, assets, forms, automation and publishing references are catalogued in `upcoming-features.md` and `diagram-features.md`.
 
 ---
 
