@@ -17,9 +17,9 @@
 
 ## Current summary
 
-- **2 remaining partial findings:** WAVE-031 (native picker/filesystem/accessibility/lifecycle QA gap) and WAVE-039 (IndexedDB pre-commit crash window).
+- **3 remaining findings:** WAVE-031 (native picker/filesystem/accessibility/lifecycle QA gap), WAVE-039 (IndexedDB pre-commit crash window), and WAVE-052 (technical learning-notes template joins lines with literal backslash-n text).
 - `fixed-bugs.md` retains 49 historical source-verified fixes and regression scenarios; this pass re-read the register but did not execute every historical scenario.
-- Current checked-in test definitions: **30 Node tests** and **13 Playwright Chromium E2E scenarios**. The E2E fixture uses OPFS and simulates permission behavior; it does not exercise the native OS picker.
+- Current checked-in test definitions: **30 Node tests** and **23 Playwright Chromium E2E scenarios**. The E2E fixture uses OPFS and simulates permission behavior; it does not exercise the native OS picker.
 - Historical CI evidence in `dev-build.md` verifies an earlier 10-scenario E2E suite. No fresh CI or local execution was performed in this source-only recheck; the current 13-scenario suite is not claimed as passed.
 
 ---
@@ -106,3 +106,39 @@ Keep the write in the input-event path, request strict IndexedDB durability, exp
 - WAVE-039: draft journal writes now request IndexedDB `strict` transaction durability, with a compatibility fallback for browsers that reject the option. A browser regression test verifies the strict option is requested. This reduces the durability window but cannot eliminate the interval before an asynchronous transaction commits; WAVE-039 remains partial rather than falsely marked fixed.
 - WAVE-042 is now closed: per-tab draft isolation passed the two-tab Chromium regression test.
 - Verified source CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) on `b11b46eebc1558de9910d8523cdaa027817b087d` — 30 Node tests, all 9 Chromium E2E tests, typecheck and production build passed. Documentation-only commits followed; their CI is tracked separately.
+
+
+## WAVE-052 — Technical learning-notes template uses a literal backslash-n separator
+
+- Priority: **P2** | Confidence: **High; source-confirmed, runtime reproduction not yet executed**
+- Files: `src/templates.ts`, `tests/e2e/workspace.spec.ts`
+
+### Problem
+
+The `technical-notes` template builds its Markdown content with `.join('\\\\n')` in the TypeScript source (a JavaScript string containing the two literal characters backslash and `n`), rather than joining with an actual newline separator. Selecting this template therefore produces one long line containing visible `\\n` sequences instead of the intended headings, paragraphs, lists, fenced code and table structure.
+
+### Impact
+
+The template is listed as implemented in the Markdown feature-gap audit and compatibility showcase, but its content is not validly separated Markdown. Users selecting it receive a broken starter document.
+
+### Reproduction / recheck scenario
+
+1. Open a workspace and choose **New from template**.
+2. Select **Technical learning notes**.
+3. Inspect the editor content and saved Markdown file.
+4. Confirm the content contains literal backslash-n separators rather than line breaks; switch to Preview and verify headings, lists, code fences and the table do not render as separate blocks.
+
+### Expected behavior
+
+The template content must use real newline characters so each heading, paragraph, list, code fence and table is on its intended line. Add an E2E regression test that selects the template, checks line breaks in the editor, and verifies representative Markdown blocks in Preview.
+
+### Fix direction
+
+Change the template array join separator to an actual newline string (`'\\n'` in TypeScript source) and add the template-selection regression test. Keep the template's intended sections and examples intact.
+
+### Regression coverage
+
+- Selecting the technical learning-notes template produces actual line breaks.
+- Preview shows its heading hierarchy, nested Mermaid fence, TypeScript code fence, troubleshooting table and checklist as separate Markdown blocks.
+- Saved Markdown preserves the same real newlines.
+
