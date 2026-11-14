@@ -81,3 +81,8 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Workflow [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208), commit `679b9eef2b14272356d245553abd218612fd92ce`: `npm ci`, 30 Node tests, TypeScript typecheck and production build passed; Playwright E2E was still running at the time of this log update.
 - An earlier E2E run [43613444479](https://github.com/iamjpsonkar/Wave/actions/runs/43613444479) failed while the inline converter function was not yet present in that commit. That failure is not being hidden; the later corrected source is being checked by the newer workflow.
 - No full TeX engine, complete Mermaid implementation, PlantUML/Graphviz/Vega/D2/AsciiDoc renderer, unrestricted HTML, or arbitrary media embed was added. Raw HTML remains deliberately disabled.
+
+
+### Follow-up conformance coverage
+- Preserved Markdown image alt text/title and link titles through Wave's local asset/link components; remote images remain unrequested and use the missing-asset fallback.
+- Added a Playwright scenario for CommonMark hard breaks, reference links, linked remote-image fallback, escaped table pipes, nested list rendering and unsafe `javascript:` link sanitization.
