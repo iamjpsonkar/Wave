@@ -66,3 +66,5 @@ The app has no server API or analytics. The File System Access API requires a se
 The UI uses a small storage adapter in `src/storage.ts`. Keep this boundary independent of React so a future Tauri adapter can provide the same operations.
 
 **Early MVP:** do not rely on this preview as the only copy of important documents until recovery and backup features are implemented.
+
+The expanded blueprint also covers specialist workflows including typed knowledge graphs, research and PDF annotation, visual/technical diagramming, static documentation publishing, workflow automation, personal productivity, digital asset management, lightweight CRM, and cross-cutting requirements for data integrity, accessibility, security, performance and portability.
