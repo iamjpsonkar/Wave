@@ -68,7 +68,8 @@ export default function EditorEnhancements({ content, onChange, editorRef, previ
 
   useEffect(() => {
     function shortcuts(event: KeyboardEvent) {
-      const target = event.target as HTMLElement | null;\n      if (target !== editorRef.current && !target?.closest('.markdown-block-editor textarea')) return;
+      const target = event.target as HTMLElement | null;
+      if (target !== editorRef.current && !target?.closest('.markdown-block-editor textarea')) return;
       const mod = event.metaKey || event.ctrlKey;
       if (mod && event.key.toLowerCase() === 'f') { event.preventDefault(); setFindOpen(true); requestAnimationFrame(() => findRef.current?.focus()); }
       else if (mod && event.key.toLowerCase() === 'z' && !event.shiftKey) { event.preventDefault(); if (past.current.length) restore('undo'); }
