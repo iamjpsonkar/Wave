@@ -283,3 +283,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added a Playwright E2E scenario covering gallery discovery, template preview/create, source content, color and diagram preview, and Edit/Preview source round-trip. Browser E2E source inventory is now **43 scenarios**; Node test source remains **30 definitions**. These counts do not represent executed tests.
 - Source commits: template `f7a11993e821cf8cac77b34bc2f593217f8979b7`; color marker correction `b1c65d2f0d2893056ae7e75483023eae657bcf74`; E2E `1e7558de59c360532101004695d12b12c1ea1155`.
 - No local tests, typecheck, production build, screenshot review or CI result have been run/confirmed for this batch. Do not claim verification until the latest main-branch workflow completes.
+
+
+## 2026-11-15 — Export rendered Preview as PDF
+
+- Added a Preview-only **Export PDF** action. It invokes the browser print dialog on the rendered Markdown preview and temporarily sets the document title as the suggested PDF filename. The `afterprint` event restores the Wave tab title.
+- Added print styles so exported pages contain the rendered preview only; workspace navigation, editor toolbar, document metadata, backlinks, status bar and controls are hidden. Print styling preserves colors where supported, keeps headings with following content, avoids splitting common blocks and wraps long code lines. Local audio/video controls are omitted from print output.
+- Added Playwright E2E source coverage for button action, title restoration and print-media visibility. E2E source inventory: **44 scenarios**; Node test source remains **30 definitions**. These are source counts, not executed results.
+- Scope: browser print dialog → Save as PDF; this is not a direct PDF download engine. Pagination, headers/footers and background-color inclusion depend on browser print settings.
+- Commits: App `e6800b1725f1471fcd56a403e001ff7fa7302cbb`; print CSS `26dc983d85a531e4a1431624ec7558b5b5dcb2b2`; E2E `8608f04f7c4347d4f59dff4016d45b52db15219b`.
+- No local tests, typecheck, build or screenshot review have been performed for this batch. CI status must be checked before claiming verification.
