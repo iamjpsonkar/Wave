@@ -1643,5 +1643,18 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await editor.press('Enter');
   await expect(editor).toHaveValue('- [ ] First task\n- [ ] Second task\n- [ ] ');
   await editor.press('Enter');
-  await expect(editor).toHaveValue('- [ ] First task\n- [ ] Second task\n');
+  await expect(editor).toHaveValue('- [ ] First task\n- [ ] Second task\n\n');
+
+  await editor.fill('  - Nested item');
+  await editor.press('End');
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('  - Nested item\n  - ');
+
+  await editor.fill('```md\n- Literal code line\n```');
+  await editor.evaluate((node: HTMLTextAreaElement) => {
+    const cursor = node.value.indexOf('Literal code line') + 'Literal code line'.length;
+    node.focus(); node.setSelectionRange(cursor, cursor);
+  });
+  await editor.press('Enter');
+  await expect(editor).toHaveValue('```md\n- Literal code line\n\n```');
 });
