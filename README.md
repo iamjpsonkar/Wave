@@ -19,7 +19,7 @@
 - [x] Create verified local backup snapshots with incomplete-snapshot detection
 - [x] Browse verified backups and restore to a separate workspace folder
 - [x] Move documents to local Trash, restore them without overwriting collisions, or permanently delete them
-- [x] Journal interrupted Trash operations and report incomplete entries
+- [x] Journal interrupted Trash operations and safely reconcile recoverable partial states
 - [x] Recover unsaved drafts from browser-local IndexedDB after reload
 - [x] Detect external edits before overwriting a document and offer reload or save-as-copy
 - [x] Serialize page/asset creation and prevent case-only filename collisions
