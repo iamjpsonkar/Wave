@@ -1,3 +1,5 @@
+import { newestDraft } from './safety';
+
 interface DraftRecord {
   id?: number;
   workspace: FileSystemDirectoryHandle;
@@ -7,6 +9,21 @@ interface DraftRecord {
 }
 const DATABASE='wave-draft-journal';
 const STORE='drafts';
+const localQueues=new Map<string,Promise<unknown>>();
+function lockName(workspace:FileSystemDirectoryHandle,path:string):string{
+  // Same-named workspaces may share a lock unnecessarily; this is safe and
+  // ensures separate tabs cannot race while matching handles with isSameEntry().
+  return 'wave-draft:'+workspace.name+':'+path;
+}
+async function withDraftLock<T>(workspace:FileSystemDirectoryHandle,path:string,operation:()=>Promise<T>):Promise<T>{
+  const name=lockName(workspace,path);
+  const manager=typeof navigator!=='undefined'?(navigator as Navigator & {locks?:LockManager}).locks:undefined;
+  if(manager)return manager.request(name,{mode:'exclusive'},operation);
+  const previous=localQueues.get(name)??Promise.resolve();
+  const current=previous.catch(()=>undefined).then(operation);
+  localQueues.set(name,current);
+  try{return await current;}finally{if(localQueues.get(name)===current)localQueues.delete(name);}
+}
 function openDatabase():Promise<IDBDatabase>{
   return new Promise((resolve,reject)=>{
     const request=indexedDB.open(DATABASE,1);
@@ -22,46 +39,52 @@ async function allDrafts(db:IDBDatabase):Promise<DraftRecord[]>{
     request.onerror=()=>reject(request.error??new Error('Could not read local drafts.'));
   });
 }
-async function findDraft(db:IDBDatabase,workspace:FileSystemDirectoryHandle,path:string):Promise<DraftRecord|undefined>{
-  const records=await allDrafts(db);
+async function findDrafts(db:IDBDatabase,workspace:FileSystemDirectoryHandle,path:string):Promise<DraftRecord[]>{
+  const records=await allDrafts(db),matches:DraftRecord[]=[];
   for(const record of records){
     if(record.path!==path)continue;
-    try{if(await record.workspace.isSameEntry(workspace))return record;}catch{/* stale handles are ignored */}
+    try{if(await record.workspace.isSameEntry(workspace))matches.push(record);}catch{/* stale handles are ignored */}
   }
-  return undefined;
+  return matches;
+}
+function writeTransaction(db:IDBDatabase,operation:(store:IDBObjectStore)=>void):Promise<void>{
+  return new Promise((resolve,reject)=>{
+    const transaction=db.transaction(STORE,'readwrite');
+    operation(transaction.objectStore(STORE));
+    transaction.oncomplete=()=>resolve();
+    transaction.onerror=()=>reject(transaction.error??new Error('Could not update the local draft journal.'));
+    transaction.onabort=()=>reject(transaction.error??new Error('Draft journal update was aborted.'));
+  });
 }
 export async function saveDraft(workspace:FileSystemDirectoryHandle,path:string,content:string):Promise<void>{
   if(!('indexedDB' in window))return;
-  const db=await openDatabase();
-  try{
-    const previous=await findDraft(db,workspace,path);
-    await new Promise<void>((resolve,reject)=>{
-      const transaction=db.transaction(STORE,'readwrite');
-      const record:DraftRecord={...(previous?.id?{id:previous.id}:{}),workspace,path,content,updatedAt:Date.now()};
-      transaction.objectStore(STORE).put(record);
-      transaction.oncomplete=()=>resolve();
-      transaction.onerror=()=>reject(transaction.error??new Error('Could not save a recovery draft.'));
-      transaction.onabort=()=>reject(transaction.error??new Error('Draft journal update was aborted.'));
-    });
-  }finally{db.close();}
+  await withDraftLock(workspace,path,async()=>{
+    const db=await openDatabase();
+    try{
+      const matches=await findDrafts(db,workspace,path);
+      const previous=newestDraft(matches);
+      const updatedAt=Math.max(Date.now(),(previous?.updatedAt??0)+1);
+      const record:DraftRecord={...(previous?.id?{id:previous.id}:{}),workspace,path,content,updatedAt};
+      await writeTransaction(db,store=>{
+        store.put(record);
+        for(const duplicate of matches)if(duplicate.id!==previous?.id&&duplicate.id!==undefined)store.delete(duplicate.id);
+      });
+    }finally{db.close();}
+  });
 }
 export async function getDraft(workspace:FileSystemDirectoryHandle,path:string):Promise<DraftRecord|undefined>{
   if(!('indexedDB' in window))return undefined;
   const db=await openDatabase();
-  try{return await findDraft(db,workspace,path);}finally{db.close();}
+  try{return newestDraft(await findDrafts(db,workspace,path));}finally{db.close();}
 }
 export async function clearDraft(workspace:FileSystemDirectoryHandle,path:string):Promise<void>{
   if(!('indexedDB' in window))return;
-  const db=await openDatabase();
-  try{
-    const previous=await findDraft(db,workspace,path);
-    if(!previous?.id)return;
-    await new Promise<void>((resolve,reject)=>{
-      const transaction=db.transaction(STORE,'readwrite');
-      transaction.objectStore(STORE).delete(previous.id!);
-      transaction.oncomplete=()=>resolve();
-      transaction.onerror=()=>reject(transaction.error??new Error('Could not clear the recovered draft.'));
-      transaction.onabort=()=>reject(transaction.error??new Error('Draft journal cleanup was aborted.'));
-    });
-  }finally{db.close();}
+  await withDraftLock(workspace,path,async()=>{
+    const db=await openDatabase();
+    try{
+      const matches=await findDrafts(db,workspace,path);
+      if(!matches.length)return;
+      await writeTransaction(db,store=>{for(const record of matches)if(record.id!==undefined)store.delete(record.id);});
+    }finally{db.close();}
+  });
 }
