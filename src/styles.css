@@ -589,3 +589,10 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 }
 @media(max-width:720px){.markdown-block-editor{width:calc(100% - 28px)}.markdown-block{padding:8px}.markdown-block textarea{font-size:12px}}
 @media(max-width:380px){.markdown-block-editor{width:calc(100% - 20px)}.block-editor-intro{font-size:10px}}
+
+@media(prefers-color-scheme:light){
+ .app.theme-system .block-editor-intro{color:#788173}
+ .app.theme-system .block-editor-intro strong{color:#53664f}
+ .app.theme-system .markdown-block>label{color:#84907f}
+ .app.theme-system .block-editor-empty{border-color:#dce3d8;color:#778271}
+}
