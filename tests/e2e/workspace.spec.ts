@@ -1535,7 +1535,6 @@ test('Wave Complete Feature Test template is available and previews its feature 
   await page.getByRole('button', { name: 'Edit' }).click();
   await expect(editor).toHaveValue(markdown);
 });
-});
 
 
 test('PDF export uses a readable print palette and preserves Markdown content', async ({ page }) => {
