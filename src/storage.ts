@@ -269,16 +269,20 @@ export async function createBackup(workspace: Workspace): Promise<string> {
   await write(backup,'backup-status.json',JSON.stringify({status:'in-progress',startedAt},null,2));
   try {
     const beforeDocs=await snapshotTree(workspace.documents),beforeAssets=await snapshotTree(workspace.assets);const beforeManifest=await optionalFileSnapshot(workspace.wave,'manifest.json'),beforeSettings=await optionalFileSnapshot(workspace.wave,'settings.json');
-    const docs=await copyFolder(workspace.documents,await backup.getDirectoryHandle('documents',{create:true}));
-    const assets=await copyFolder(workspace.assets,await backup.getDirectoryHandle('assets',{create:true}));
+    const backupDocuments=await backup.getDirectoryHandle('documents',{create:true});
+    const backupAssets=await backup.getDirectoryHandle('assets',{create:true});
+    const docs=await copyFolder(workspace.documents,backupDocuments);
+    const assets=await copyFolder(workspace.assets,backupAssets);
     const afterDocs=await snapshotTree(workspace.documents),afterAssets=await snapshotTree(workspace.assets);
-    if(beforeDocs!==afterDocs||beforeAssets!==afterAssets)throw new Error('Workspace files changed during backup. The snapshot is marked incomplete; retry when editing has stopped.');
+    const copiedDocs=await snapshotTree(backupDocuments),copiedAssets=await snapshotTree(backupAssets);
+    if(beforeDocs!==afterDocs||beforeAssets!==afterAssets||beforeDocs!==copiedDocs||beforeAssets!==copiedAssets)throw new Error('Workspace files changed during backup or the copied snapshot differs from its source. The snapshot is marked incomplete; retry when editing has stopped.');
     for(const filename of ['manifest.json','settings.json']){
       try{const file=await(await workspace.wave.getFileHandle(filename)).getFile();await write(backup,filename,file);}
       catch(error){if(!isNotFound(error))throw error;}
     }
     const afterManifest=await optionalFileSnapshot(workspace.wave,'manifest.json'),afterSettings=await optionalFileSnapshot(workspace.wave,'settings.json');
-    if(beforeManifest!==afterManifest||beforeSettings!==afterSettings)throw new Error('Workspace settings changed during backup. The snapshot is marked incomplete; retry when editing has stopped.');
+    const copiedManifest=await optionalFileSnapshot(backup,'manifest.json'),copiedSettings=await optionalFileSnapshot(backup,'settings.json');
+    if(beforeManifest!==afterManifest||beforeSettings!==afterSettings||beforeManifest!==copiedManifest||beforeSettings!==copiedSettings)throw new Error('Workspace settings changed during backup or the copied settings differ from their source. The snapshot is marked incomplete; retry when editing has stopped.');
     const complete={status:'complete',startedAt,completedAt:new Date().toISOString(),documents:docs.files,assets:assets.files};
     await write(backup,'backup-status.json',JSON.stringify(complete,null,2));
     return name;
