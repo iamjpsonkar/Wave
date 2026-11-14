@@ -200,3 +200,12 @@ Source changes and the regression scenario are committed, but no local typecheck
 - UI-018/UI-019: added dark styling for Edit/Preview segmented controls, Backup, toolbar controls and the sidebar wordmark.
 - UI-020 remains partial: a system-dark Preview regression slice was added, not the complete theme/mode/viewport visual matrix. Other toolbar actions and remaining UI gaps remain open.
 - Verification pending CI; no test pass claimed.
+
+
+## 2026-11-14 — UI-020 theme and responsive regression foundation
+
+- **Gap:** Dark-theme Markdown and workspace surfaces were only partially covered; there was no full Light/Dark/System × Edit/Preview × desktop/mobile regression matrix.
+- **Change:** Added theme-aware styles for callouts, DETAILS disclosures, math/fallbacks, diagram surfaces, syntax/diff tokens, missing-image fallbacks, copy controls and Settings dialog controls. Light mode remains independent of the operating-system dark preference.
+- **Regression:** Added a 12-state Playwright matrix using representative headings, links, inline/fenced code, tables, alerts, disclosures, math, Mermaid and missing-image fallback content. It checks computed colors/surfaces and horizontal overflow at desktop and mobile widths.
+- **Files:** `src/styles.css`, `tests/e2e/workspace.spec.ts`, `ui-gaps.md`, `dev-fixed.md`, `dev-build.md`, `DEV_CONTEXT.md`.
+- **Verification:** CI pending. This is not a full screenshot-diff or WCAG contrast audit; UI-005, UI-014 and remaining UI-018/UI-019 reviews remain open.
