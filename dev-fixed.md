@@ -267,3 +267,12 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Regression follow-up: strengthened the color E2E source to exercise native color-input change events, invalid color tokens remaining literal, and inline-code preservation. Latest test-source commits: `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`. CI remains pending.
 
 - Documentation precision follow-up: `docs/MARKDOWN_SUPPORT.md` now lists the exact color directives and six-digit-hex restriction; `features-gap.md` records the remaining renderer/palette limitations; `ui-features.md` distinguishes accessible native color inputs from the future curated swatch palette. Commits: `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`, `99007028e8f9c98de8baa5d32d55ce97d346d183`, `bd27ca629c7556b3f2fbeac75e3b600b976365b9`.
+
+
+## 2026-11-15 — Color formatting follow-up
+
+- Added quick foreground swatches, a remove-color-formatting action, and block background color selection. Block fills are stored as Markdown quote syntax beginning `> [!COLOR=#RRGGBB]`; the renderer validates six-digit hex and emits a styled blockquote. Inline color directives remain unchanged.
+- Added an E2E regression for applying a quick swatch, removing it, applying a block fill and rendering the filled block.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `ui-gaps.md`, `ui-features.md` and `features-gap.md`. Nested inline color ranges, Blocks-mode selection, non-Wave rendering and user-color contrast review remain open.
+- Source commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`, renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`, styles `7020028201eeee4be404a003b4e2c2abc7925c9a`, E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
+- No local test, typecheck, build or visual review was performed; CI pending.
