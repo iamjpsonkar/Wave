@@ -168,50 +168,116 @@ function convertInlineExtensions(line: string): string {
 }
 
 function MathExpression({ source, display = false }: { source: string; display?: boolean }) {
-  const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ', pi:'π', rho:'ρ', sigma:'σ', phi:'φ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', approx:'≈', infty:'∞', sum:'∑', int:'∫', to:'→', rightarrow:'→', leftarrow:'←', sin:'sin', cos:'cos', tan:'tan', log:'log', ln:'ln', exp:'exp', lim:'lim', cdots:'⋯', ldots:'…' };
-  function groupAt(input:string,start:number):{value:string;end:number} {
-    if(input[start]!=='{')return {value:input[start]??'',end:start+1};
+  const symbols:Record<string,string>={
+    alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',varepsilon:'ϵ',theta:'θ',vartheta:'ϑ',lambda:'λ',mu:'μ',pi:'π',rho:'ρ',sigma:'σ',phi:'φ',varphi:'ϕ',omega:'ω',
+    Gamma:'Γ',Delta:'Δ',Theta:'Θ',Lambda:'Λ',Pi:'Π',Sigma:'Σ',Phi:'Φ',Omega:'Ω',
+    times:'×',cdot:'·',pm:'±',mp:'∓',leq:'≤',le:'≤',geq:'≥',ge:'≥',neq:'≠',approx:'≈',equiv:'≡',infty:'∞',partial:'∂',nabla:'∇',
+    sum:'∑',prod:'∏',int:'∫',iint:'∬',iiint:'∭',oint:'∮',to:'→',rightarrow:'→',leftarrow:'←',leftrightarrow:'↔',Rightarrow:'⇒',Leftarrow:'⇐',
+    cdots:'⋯',ldots:'…',vdots:'⋮',ddots:'⋱',forall:'∀',exists:'∃',in:'∈',notin:'∉',subset:'⊂',subseteq:'⊆',supset:'⊃',supseteq:'⊇',
+    cup:'∪',cap:'∩',land:'∧',lor:'∨',neg:'¬',therefore:'∴',because:'∵',perp:'⊥',parallel:'∥',angle:'∠',degree:'°',
+    times:'×',div:'÷',star:'⋆',circ:'∘',bullet:'•',oplus:'⊕',otimes:'⊗',mapsto:'↦',iff:'⟺',implies:'⟹'
+  };
+  const functions=new Set(['sin','cos','tan','cot','sec','csc','arcsin','arccos','arctan','sinh','cosh','tanh','log','ln','exp','lim','min','max','sup','inf','det','dim','ker','gcd','Pr']);
+  function groupAt(input:string,start:number):{value:string;end:number}{
+    if(input[start]!=='{')return {value:input[start]??'',end:Math.min(input.length,start+1)};
     let depth=1,index=start+1;
     for(;index<input.length&&depth;index++){if(input[index]==='{')depth++;else if(input[index]==='}')depth--;}
     return {value:input.slice(start+1,depth===0?index-1:index),end:index};
   }
-  function parse(input:string):ReactNode[] {
+  function splitTopLevel(input:string,separator:string):string[]{
+    const parts:string[]=[];let depth=0,start=0;
+    for(let i=0;i<input.length;i++){
+      if(input[i]==='{')depth++;
+      else if(input[i]==='}')depth=Math.max(0,depth-1);
+      else if(depth===0&&input.startsWith(separator,i)){parts.push(input.slice(start,i));i+=separator.length-1;start=i+1;}
+    }
+    parts.push(input.slice(start));return parts;
+  }
+  function envNode(name:string,body:string):ReactNode{
+    const rows=splitTopLevel(body,'\\\\').map(row=>row.trim()).filter((row,index,array)=>row.length>0||index<array.length-1);
+    const table=createElement('mtable',null,...rows.map((row,rowIndex)=>{
+      const cells=splitTopLevel(row,'&');
+      return createElement('mtr',{key:'row'+rowIndex},...cells.map((cell,colIndex)=>createElement('mtd',{key:'cell'+rowIndex+'-'+colIndex},createElement('mrow',null,...parse(cell)))));
+    }));
+    if(name==='cases')return createElement('mrow',null,createElement('mo',null,'{'),table);
+    const delimiters:Record<string,[string,string]>={pmatrix:['(',')'],bmatrix:['[',']'],Bmatrix:['{','}'],vmatrix:['|','|'],Vmatrix:['‖','‖'],smallmatrix:['',''],matrix:['',''],array:['',''],aligned:['',''],alignedat:['',''],gathered:['',''],cases:['','']};
+    const [open,close]=delimiters[name]??['',''];
+    return open||close?createElement('mfenced',{open,close},table):table;
+  }
+  function parse(input:string):ReactNode[]{
     const nodes:ReactNode[]=[];let i=0;
     while(i<input.length){
       const ch=input[i];
       if(ch==='\\'){
-        const command=input.slice(i+1).match(/^[A-Za-z]+/)?.[0]??'';
-        if(!command){nodes.push(createElement('mo',{key:'m'+i},'\\\\'));i++;continue;}
+        const rest=input.slice(i+1),command=rest.match(/^[A-Za-z]+/)?.[0]??'';
+        if(!command){const escaped=input[i+1]??'\\';nodes.push(createElement('mo',{key:'esc'+i},escaped));i+=2;continue;}
         i+=command.length+1;
+        if(command==='begin'){
+          const env=groupAt(input,i);i=env.end;
+          if(env.value==='array'){const spec=groupAt(input,i);i=spec.end;}
+          const ending='\\end{'+env.value+'}',close=input.indexOf(ending,i);
+          if(close<0){nodes.push(createElement('mtext',{key:'bad-env'+i},'\\begin{'+env.value+'}'));continue;}
+          nodes.push(envNode(env.value,input.slice(i,close)));i=close+ending.length;continue;
+        }
+        if(command==='end'||command==='limits'||command==='nolimits'||command==='displaystyle'||command==='textstyle'||command==='scriptstyle'||command==='quadskip')continue;
         if(command==='left'||command==='right')continue;
-        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='sqrt'){
+        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='binom'){
+          const a=groupAt(input,i);i=a.end;const b=groupAt(input,i);i=b.end;
+          const frac=createElement('mfrac',{key:'frac'+i,linethickness:command==='binom'?'0':'1'},createElement('mrow',null,...parse(a.value)),createElement('mrow',null,...parse(b.value)));
+          nodes.push(command==='binom'?createElement('mfenced',{key:'binom'+i,open:'(',close:')'},frac):frac);continue;
+        }
+        if(command==='sqrt'){
+          let index:string|undefined;
+          if(input[i]==='['){const close=input.indexOf(']',i);if(close>=0){index=input.slice(i+1,close);i=close+1;}}
+          const radicand=groupAt(input,i);i=radicand.end;
+          nodes.push(index?createElement('mroot',{key:'root'+i},createElement('mrow',null,...parse(radicand.value)),createElement('mrow',null,...parse(index))):createElement('msqrt',{key:'root'+i},...parse(radicand.value)));continue;
+        }
+        if(['overline','bar','underline','hat','widehat','tilde','widetilde','vec','dot','ddot','overrightarrow','overleftarrow'].includes(command)){
           const a=groupAt(input,i);i=a.end;
-          if(command==='sqrt')nodes.push(createElement('msqrt',{key:'r'+i},...parse(a.value)));
-          else{const b=groupAt(input,i);i=b.end;nodes.push(createElement('mfrac',{key:'f'+i},createElement('mrow',null,...parse(a.value)),createElement('mrow',null,...parse(b.value))));}
-        }else if(greek[command])nodes.push(createElement('mi',{key:'g'+i},greek[command]));
-        else if(command==='text'||command==='mathrm'||command==='mathbf'||command==='operatorname'){
-          const a=groupAt(input,i);i=a.end;nodes.push(createElement('mtext',{key:'t'+i},a.value));
-        }else nodes.push(createElement('mi',{key:'u'+i},command));
-        continue;
+          const accent:Record<string,string>={overline:'¯',bar:'¯',underline:'_',hat:'^',widehat:'^',tilde:'~',widetilde:'~',vec:'→',dot:'˙',ddot:'¨',overrightarrow:'→',overleftarrow:'←'};
+          const over=!['underline'].includes(command);
+          nodes.push(over?createElement('mover',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])):createElement('munder',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])));continue;
+        }
+        if(command==='text'||command==='textrm'||command==='textbf'||command==='mathrm'||command==='mathbf'||command==='mathit'||command==='operatorname'){
+          const a=groupAt(input,i);i=a.end;nodes.push(createElement('mtext',{key:'text'+i},a.value));continue;
+        }
+        if(['\,','\\,',';','!','quad','qquad','enspace','thinspace'].includes(command)){
+          const width:Record<string,string>={',':'0.167em',';':'0.278em','!':'-0.167em',quad:'1em',qquad:'2em',enspace:'0.5em',thinspace:'0.167em'};
+          nodes.push(createElement('mspace',{key:'space'+i,width:width[command]??'0.167em'}));continue;
+        }
+        if(command==='\\'){nodes.push(createElement('mspace',{key:'newline'+i,linebreak:'newline'}));continue;}
+        if(symbols[command]){nodes.push(createElement('mo',{key:'sym'+i},symbols[command]));continue;}
+        if(functions.has(command)){nodes.push(createElement('mi',{key:'fn'+i},command));continue;}
+        if(command==='langle'||command==='rangle'){nodes.push(createElement('mo',{key:'angle'+i},command==='langle'?'⟨':'⟩'));continue;}
+        if(command==='lbrace'||command==='rbrace'){nodes.push(createElement('mo',{key:'brace'+i},command==='lbrace'?'{':'}'));continue;}
+        nodes.push(createElement('mi',{key:'unknown'+i},command));continue;
       }
       if(ch==='^'||ch==='_'){
-        const previous=nodes.pop();
-        const a=groupAt(input,i+1);i=a.end;
-        const script=createElement('mrow',null,...parse(a.value));
-        nodes.push(ch==='^'?createElement('msup',{key:'s'+i},previous??createElement('mi',null,''),script):createElement('msub',{key:'s'+i},previous??createElement('mi',null,''),script));
+        const previous=nodes.pop(),arg=groupAt(input,i+1);i=arg.end;
+        const script=createElement('mrow',null,...parse(arg.value));
+        if(previous&&isValidElement(previous)&&previous.type==='msup'&&ch==='_'){
+          const parts=Children.toArray((previous.props as {children?:ReactNode}).children);
+          nodes.push(createElement('msubsup',{key:'both'+i},parts[0],script,parts[1]));
+        }else if(previous&&isValidElement(previous)&&previous.type==='msub'&&ch==='^'){
+          const parts=Children.toArray((previous.props as {children?:ReactNode}).children);
+          nodes.push(createElement('msubsup',{key:'both'+i},parts[0],parts[1],script));
+        }else{
+          nodes.push(ch==='^'?createElement('msup',{key:'sup'+i},previous??createElement('mi',null,''),script):createElement('msub',{key:'sub'+i},previous??createElement('mi',null,''),script));
+        }
         continue;
       }
-      if(ch==='{'){const a=groupAt(input,i);i=a.end;nodes.push(createElement('mrow',{key:'b'+i},...parse(a.value)));continue;}
+      if(ch==='{'){const a=groupAt(input,i);i=a.end;nodes.push(createElement('mrow',{key:'group'+i},...parse(a.value)));continue;}
+      if(ch==='}') {nodes.push(createElement('mo',{key:'close'+i},'}'));i++;continue;}
+      if(ch==='&'){nodes.push(createElement('mo',{key:'amp'+i},'&'));i++;continue;}
       if(/\s/.test(ch)){nodes.push(' ');i++;continue;}
-      if(/[0-9]/.test(ch)){const token=input.slice(i).match(/^\d+(?:\.\d+)?/)?.[0]??ch;nodes.push(createElement('mn',{key:'n'+i},token));i+=token.length;continue;}
-      if(/[A-Za-z]/.test(ch)){nodes.push(createElement('mi',{key:'i'+i},ch));i++;continue;}
-      nodes.push(createElement('mo',{key:'o'+i},ch));i++;
+      if(/[0-9]/.test(ch)){const token=input.slice(i).match(/^\d+(?:\.\d+)?/)?.[0]??ch;nodes.push(createElement('mn',{key:'num'+i},token));i+=token.length;continue;}
+      if(/[A-Za-z]/.test(ch)){nodes.push(createElement('mi',{key:'id'+i},ch));i++;continue;}
+      nodes.push(createElement('mo',{key:'op'+i},ch));i++;
     }
     return nodes;
   }
-  return createElement(display?'div':'span',{className:display?'markdown-math-display':'markdown-math-inline'},
-    createElement('math',{xmlns:'http://www.w3.org/1998/Math/MathML',display:display?'block':'inline'},
-      createElement('mrow',null,...parse(source))));
+  const tree=createElement('math',{xmlns:'http://www.w3.org/1998/Math/MathML',display:display?'block':'inline'},createElement('mrow',null,...parse(source)));
+  return createElement(display?'div':'span',{className:display?'markdown-math-display':'markdown-math-inline'},tree);
 }
 
 function MermaidFallback({source}:{source:string}) {
