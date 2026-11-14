@@ -17,60 +17,22 @@
 
 ## Current summary
 
-- **3 open findings:** WAVE-020, WAVE-031, WAVE-039.
-- **48 source-verified fixes:** tracked in `fixed-bugs.md`.
-- Latest CI for this source revision: [run 43601395895](https://github.com/iamjpsonkar/Wave/actions/runs/43601395895) — success; 14 Node storage tests passed, typecheck and production build passed.
-- Browser E2E, multi-tab, real File System Access API permission/failure, and abrupt process-termination tests have not been run as part of this review.
+- **2 remaining partial findings:** WAVE-031, WAVE-039.
+- **49 source-verified fixes:** tracked in `fixed-bugs.md`.
+- CI now runs Node storage/concurrency tests and Playwright Chromium E2E. Six browser journeys use native OPFS directory handles; real user-picked-folder permission denial/revocation, multi-tab race testing, external-editor fault injection and abrupt process-termination tests remain outstanding.
 
 ---
 
-## WAVE-020 — Backup snapshots can miss same-size, same-timestamp external changes
-
-- Priority: **P1** | Confidence: **High; requires runtime/fault-injection verification**
-- File: `src/storage.ts` — `createBackup()`, `snapshotTree()`
-
-### Problem
-
-Backup creation now compares source-tree metadata before and after copying and marks a snapshot failed if the observed metadata changes. This catches many concurrent edits, but the snapshot is based on metadata such as path, size, and last-modified time rather than a content hash or a workspace-wide operation lock.
-
-A file can be modified externally while retaining the same size and timestamp (or a sync tool can restore those metadata values). Such a change may evade the before/after comparison, allowing a snapshot assembled from inconsistent source versions to be marked complete.
-
-### Reproduction / recheck scenario
-
-1. Start a backup while instrumenting or slowing the copy operation.
-2. Modify a source document or asset during the copy.
-3. Preserve the file's byte length and last-modified timestamp if the environment permits.
-4. Allow the backup to complete.
-5. Compare every backed-up file byte-for-byte with a single consistent source snapshot.
-
-### Expected behavior
-
-A backup must either represent one consistent workspace state or be marked incomplete and excluded from restore. Metadata equality alone must not be treated as proof of content equality under concurrent external modification.
-
-### Fix direction
-
-Use a workspace-level operation protocol for Wave-managed mutations and content hashes (or equivalent immutable/versioned source snapshots) for files copied into a backup. Verify the copied file set and contents before writing the final complete marker.
-
-### Regression coverage
-
-- Concurrent Wave write during backup.
-- External edit with changed size.
-- External edit with same size and restored timestamp.
-- Asset replacement during copy.
-- Interrupted backup and failed-marker exclusion.
-
----
-
-## WAVE-031 — Browser-level regression suite is still missing
+## WAVE-031 — Browser regression coverage still lacks real picker-permission and cross-tab scenarios
 
 - Priority: **P1** | Confidence: **Confirmed**
 - Files: `package.json`, `.github/workflows/ci.yml`, `tests/storage.test.js`
 
 ### Problem
 
-The repository has a Node storage regression suite and CI runs 14 storage tests, TypeScript typecheck, and the production build. However, there is no browser E2E suite exercising the React application with the real File System Access API and browser lifecycle.
+The repository now runs 30 Node storage/concurrency tests plus six Playwright Chromium E2E tests. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments and mobile navigation.
 
-The current tests do not validate UI state transitions, permission prompts/revocation, autosave timing, IndexedDB recovery under page lifecycle events, attachment workflows, mobile navigation, or actual browser filesystem semantics.
+It does not yet exercise the native user-picked-folder permission prompt/revocation flow, multi-tab write races, external editor changes during active operations, all keyboard/accessibility paths, or actual abrupt browser-process termination.
 
 ### Impact
 
@@ -97,7 +59,7 @@ Add Playwright (or an equivalent browser automation framework), provide a contro
 
 ### Regression coverage
 
-At minimum, gate releases on workspace lifecycle, edit/save/navigation, draft recovery, Trash/restore, backup/restore, attachment, and mobile-navigation browser scenarios.
+Keep the six current Chromium scenarios in CI and extend them with real user-picked-folder permission denial/revocation, two-tab concurrency, external filesystem edits, keyboard/accessibility checks and browser lifecycle fault injection.
 
 ---
 
@@ -108,9 +70,9 @@ At minimum, gate releases on workspace lifecycle, edit/save/navigation, draft re
 
 ### Problem
 
-Wave now stores unsaved drafts in IndexedDB after a short debounce and attempts a best-effort save on `pagehide`. This materially improves recovery over relying only on the 600 ms filesystem autosave timer.
+Wave now starts an IndexedDB journal write directly in the editor input handler instead of waiting for the former 120 ms debounce. It also retries a best-effort write on `visibilitychange` to hidden and `pagehide`, and the UI reports when the recovery-draft transaction has committed.
 
-However, IndexedDB persistence is asynchronous. If the browser process or tab is terminated after the user types but before the debounce callback starts or the IndexedDB transaction commits, the latest draft can still be lost. A pagehide callback is not a guaranteed completion point for arbitrary asynchronous work.
+IndexedDB remains asynchronous. If the browser process is terminated after an input event but before the transaction commits, the latest keystroke can still be lost. `pagehide` and `visibilitychange` are best-effort lifecycle signals, not durability guarantees. A Chromium E2E test now verifies recovery after a page reload once the journal commit has completed; it does not simulate an OS-level process kill.
 
 ### Reproduction / recheck scenario
 
@@ -125,13 +87,13 @@ Wave must not claim an edit is safely recoverable until the draft journal transa
 
 ### Fix direction
 
-Consider synchronous-in-the-interaction-path persistence alternatives where feasible, a more explicit pending-draft state, and browser lifecycle tests that terminate/reload at controlled points. Do not rely on pagehide alone as a durability guarantee.
+Keep the write in the input-event path, expose pending/committed recovery status, and add controlled transaction-delay and browser termination tests. Do not claim crash-proof durability: the browser's IndexedDB transaction is still asynchronous.
 
 ### Regression coverage
 
-- Immediate close after typing.
-- Close during the draft debounce.
+- Immediate close after typing (currently best-effort only).
 - Close during an IndexedDB write transaction.
 - Repeated edits where writes complete out of order.
-- Recovery after reload and after simulated browser termination.
+- Recovery after reload after a confirmed journal commit (covered by Playwright).
+- Actual browser-process termination before commit (not yet automated).
 
