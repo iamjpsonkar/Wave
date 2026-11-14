@@ -153,3 +153,33 @@ Important documentation drift observed at the same HEAD:
 3. Reconcile `docs/FEATURES.md` against current source and tests; use `features.md` for the shipped showcase and keep the full `upcoming-features.md` catalogue intact.
 4. Build a feature-by-feature evidence matrix for the full blueprint: implemented + tested, implemented but under-tested, partial, planned, intentionally excluded. Do not delete or drop any planned capability.
 5. Keep WAVE-031 and WAVE-039 open until their stated verification gaps are genuinely closed.
+
+
+## Markdown feature-gap recheck — 2026-11-14 (latest)
+
+**Audit source baseline:** application source at commit a9dc70170bcbac21bdb7634edbcf63567d34342a; documentation updates are on current main after that source baseline. Current branch HEAD before this context update: 29b6d6b45a6315115f946168101cdf8bd806f537.
+
+**Files rechecked:** features-gap.md, docs/MARKDOWN_SUPPORT.md, src/markdown.tsx, src/App.tsx, src/styles.css, src/templates.ts, tests/e2e/workspace.spec.ts, package.json, bugs.md, fixed-bugs.md and CI workflow.
+
+**Current Markdown feature status:**
+- Implemented and covered by browser scenarios: CommonMark/GFM baseline, hard breaks, reference links, safe URL sanitization, escaped table pipes, nested lists, duplicate heading IDs, safe inline mark/underline/sup/sub/kbd, emoji shortcode subset, fenced code copy, line-based diff coloring, NOTE/TIP/IMPORTANT/WARNING/CAUTION alerts, DETAILS disclosure, local MathML examples (quadratic formula/matrices/cases/sums/integrals/limits), constrained Mermaid family renderers, constrained DOT/Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, and local-only audio/video.
+- Partial, not full specification parity: heuristic syntax highlighting, line-prefix diff parsing, custom TeX parser, hand-built Mermaid renderers, hand-built other diagram renderers, limited emoji map, and showcase template completeness.
+- Deliberately excluded: unrestricted raw HTML, arbitrary iframe/media and remote media/image fetch. GitHub mentions and issue/PR references remain inert plain text.
+- Remaining QA gaps: broad conformance fixtures, malformed/oversized-input/resource limits, full accessibility/screen-reader verification, cross-browser coverage, visual regression and preview/source round-trip tests.
+- Technical learning-notes template is present but broken: src/templates.ts joins its content with a JavaScript string literal containing two backslash characters followed by n, rather than a real newline separator. No E2E test selects this template. Recorded as **WAVE-052** in bugs.md; do not mark template done until fixed and covered.
+- The original checklist in features-gap.md has stale statuses; the new “Current verified status override” supersedes those status statements while preserving the original requirements.
+
+**Current automated verification:**
+- Node tests: 30 definitions.
+- Playwright Chromium: 23 scenario definitions.
+- CI run [43616302974](https://github.com/iamjpsonkar/Wave/actions/runs/43616302974) for source HEAD a9dc70170bcbac21bdb7634edbcf63567d34342a: Node tests, typecheck and production build passed; Playwright **20 passed / 3 failed**.
+- The three E2E failures are assertion/selector mismatches that remain CI blockers: wiki-link test expects a wave.invalid href although the preview intentionally renders a button.wiki-link; code-highlighting test's .syntax-keyword locator matches four elements under strict mode; Mermaid test expects polygon/ellipse elements that the renderer does not emit. Update assertions to actual user-visible behavior and rerun all scenarios. Do not infer renderer defects or full correctness solely from these mismatches.
+- No local test execution was performed during this audit.
+
+**Repository changes made during this audit:**
+- features-gap.md: added a current verified status override; documented partial/not-implemented/intentional boundaries, the 23-scenario suite and CI failures.
+- bugs.md: added WAVE-052 for the technical-notes template separator defect; updated current test counts. Existing WAVE-031 and WAVE-039 remain open.
+- fixed-bugs.md: read as the regression baseline; no historical findings were removed or changed.
+- No application source code was changed and no feature was removed.
+
+**Next actions:** fix WAVE-052 with a template-selection/preview E2E test; correct the three CI assertion mismatches; rerun full CI; then continue Markdown accessibility, cross-browser, malformed-input and source-preservation verification. Preserve all original Markdown showcase requirements.
