@@ -60,6 +60,10 @@ export default function EditorEnhancements({ content, onChange, editorRef, previ
     if (preview) {
       const target = Array.from(document.querySelectorAll('.markdown-preview h1,.markdown-preview h2,.markdown-preview h3,.markdown-preview h4,.markdown-preview h5,.markdown-preview h6')).find(node => node.textContent?.trim() === heading.text);
       target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else if (blockMode) {
+      const marker = '#'.repeat(heading.level) + ' ' + heading.text;
+      const target = Array.from(document.querySelectorAll<HTMLTextAreaElement>('.markdown-block-editor textarea')).find(area => area.value.split('\n').some(line => line.trim() === marker));
+      target?.focus(); target?.setSelectionRange(0, target.value.length);
     } else if (editorRef.current) {
       const lines = content.split('\n'), before = lines.slice(0, heading.line).join('\n'), start = before.length + (heading.line ? 1 : 0);
       editorRef.current.focus(); editorRef.current.setSelectionRange(start, start + lines[heading.line].length); editorRef.current.scrollTop = Math.max(0, heading.line * 22 - 80);
