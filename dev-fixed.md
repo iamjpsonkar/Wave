@@ -242,3 +242,14 @@ Source changes and the regression scenario are committed, but no local typecheck
 
  
 - UI-020 regression follow-up: corrected the RGB channel parser used by the 4.5:1 computed body/heading contrast assertions. This repairs the test helper; it is not a claim that the contrast matrix passed. Commit: `ffc3be4ae9026ce76148ce3fbcaa86b4be0e0f73`.
+
+
+## 2026-11-14 — UI-002 block controls and UI-018 focus containment
+
+- src/MarkdownBlockEditor.tsx: added keyboard up/down reorder controls, draggable handles, delete controls and an Add block menu for paragraph, heading, list, quote, callout, fenced code and divider blocks. Reordering retains the original block Markdown and whitespace separators; source editor remains canonical.
+- src/App.tsx: added Tab/Shift+Tab focus containment to template preview and command palette; template preview focuses its close button when opened.
+- src/styles.css: added theme-aware block controls, drag affordance and focus-visible treatment.
+- tests/e2e/workspace.spec.ts: added block keyboard/drag reorder and insertion coverage; extended template preview focus-wrap coverage. E2E source count is **39**, Node source count remains **30**.
+- Commits: 9e4f29390447dcdbd43f80098da522385a270448, 7057ce25861bffce43ee05ce5f8afb305ae1d0e8, 290f926c92caffe64d2ac34f1eea483df015f464; tests 8bb74c69ec4c9adad7d59c0e34e869224742fa42, f292e32e853fce640d44f05f554ee4bce1cbba72, b90369be8ef6ba66ab95f84e5f609b406afd87f7; styles 6bbd015307f55a0e385b6f041d383bdb07e6e87c, 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62.
+- Remaining: slash-triggered block menu, bookmarks/embeds, rich inline block editing, dialog focus restoration and comprehensive visual/accessibility audit.
+- Verification: no local tests/typecheck/build/screenshot review. Combined status and associated workflow-run lookup for latest source commit returned empty arrays. **No pass is claimed.**
