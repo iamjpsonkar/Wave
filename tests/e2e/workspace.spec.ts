@@ -388,3 +388,35 @@ test('Markdown extended preview highlights code, expands heading anchors, emoji 
   await expect(page.locator('.markdown-preview .mermaid-diagram svg')).toHaveCount(2);
   await expect(page.locator('.markdown-preview .mermaid-pie')).toBeVisible();
 });
+
+
+test('Markdown safe inline extensions and disclosure blocks render without raw HTML', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Safe Markdown Extensions');
+  await editor.fill([
+    '# Safe Markdown Extensions',
+    '',
+    '==highlighted== ++underlined++ ^superscript^ ~subscript~ [[kbd:Ctrl+K]]',
+    '',
+    '> [!DETAILS] Implementation notes',
+    '> This section is collapsible and keyboard operable.',
+    '',
+    '$$',
+    '\\frac{1}{\\sqrt{x_1 + \\alpha^2}}',
+    '$$',
+    '',
+    '<script>alert(1)</script>'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview mark')).toHaveText('highlighted');
+  await expect(page.locator('.markdown-preview u')).toHaveText('underlined');
+  await expect(page.locator('.markdown-preview sup')).toHaveText('superscript');
+  await expect(page.locator('.markdown-preview sub')).toHaveText('subscript');
+  await expect(page.locator('.markdown-preview kbd')).toHaveText('Ctrl+K');
+  await expect(page.locator('.markdown-preview details summary')).toHaveText('Implementation notes');
+  await expect(page.locator('.markdown-preview details')).not.toHaveAttribute('open', '');
+  await page.locator('.markdown-preview details summary').click();
+  await expect(page.locator('.markdown-preview details')).toHaveAttribute('open', '');
+  await expect(page.locator('.markdown-preview .markdown-math-display math mfrac')).toBeVisible();
+  await expect(page.locator('.markdown-preview script')).toHaveCount(0);
+});
