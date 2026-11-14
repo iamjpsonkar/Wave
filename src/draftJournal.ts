@@ -6,6 +6,18 @@ interface DraftRecord {
   path: string;
   content: string;
   updatedAt: number;
+  tabId?: string;
+}
+let fallbackSessionId: string | undefined;
+function currentTabId(): string {
+  try {
+    const key = 'wave-draft-session-id';
+    let id = sessionStorage.getItem(key);
+    if (!id) { id = crypto.randomUUID(); sessionStorage.setItem(key, id); }
+    return id;
+  } catch {
+    return fallbackSessionId ??= crypto.randomUUID();
+  }
 }
 const DATABASE='wave-draft-journal';
 const STORE='drafts';
@@ -67,12 +79,18 @@ export async function saveDraft(workspace:FileSystemDirectoryHandle,path:string,
     const db=await openDatabase();
     try{
       const matches=await findDrafts(db,workspace,path);
-      const previous=newestDraft(matches);
+      const tabId=currentTabId();
+      // Keep one recovery record per browser tab. A successful save in one
+      // tab must never erase another tab's unsaved draft for the same page.
+      const ownMatches=matches.filter(record=>record.tabId===tabId);
+      const legacyMatches=ownMatches.length?[]:matches.filter(record=>!record.tabId).slice(0,1);
+      const candidates=ownMatches.length?ownMatches:legacyMatches;
+      const previous=newestDraft(candidates);
       const updatedAt=Math.max(Date.now(),(previous?.updatedAt??0)+1);
-      const record:DraftRecord={...(previous?.id?{id:previous.id}:{}),workspace,path,content,updatedAt};
+      const record:DraftRecord={...(previous?.id?{id:previous.id}:{}),workspace,path,content,updatedAt,tabId};
       await writeTransaction(db,store=>{
         store.put(record);
-        for(const duplicate of matches)if(duplicate.id!==previous?.id&&duplicate.id!==undefined)store.delete(duplicate.id);
+        for(const duplicate of candidates)if(duplicate.id!==previous?.id&&duplicate.id!==undefined)store.delete(duplicate.id);
       });
     }finally{db.close();}
   });
@@ -90,8 +108,10 @@ export async function clearDraft(workspace:FileSystemDirectoryHandle,path:string
     const db=await openDatabase();
     try{
       const matches=await findDrafts(db,workspace,path);
-      if(!matches.length)return;
-      await writeTransaction(db,store=>{for(const record of matches)if(record.id!==undefined)store.delete(record.id);});
+      const tabId=currentTabId();
+      const ownMatches=matches.filter(record=>record.tabId===tabId||!record.tabId);
+      if(!ownMatches.length)return;
+      await writeTransaction(db,store=>{for(const record of ownMatches)if(record.id!==undefined)store.delete(record.id);});
     }finally{db.close();}
   });
 }
