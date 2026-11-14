@@ -569,3 +569,183 @@ Wave should not consider its local-first reliability milestone complete until:
 - Storage and browser regression tests run in CI.
 
 **Audit conclusion:** Wave has a promising local-first foundation, but the highest priority is data safety. Fix navigation flush paths and restore collision first, then introduce serialized revision-aware writes and recovery tests. Rich editor and database work should follow only after these guarantees are in place.
+
+
+---
+
+# 12. Supplemental audit findings — follow-up pass (2026-11-14)
+
+This pass reviewed the current `main` implementation again, focusing on state transitions, asynchronous operations, failure cleanup, and build reproducibility. The findings below are additional to WAVE-001 through WAVE-031 and are not duplicates of those entries.
+
+## WAVE-032 — Workspace switch can autosave the previous document into the new workspace
+
+- Priority: **P0** | Confidence: **High; timing-dependent but follows directly from effect dependencies**
+- Files: `src/App.tsx` — `activateWorkspace()` and the autosave `useEffect`
+
+### Problem
+`activateWorkspace(w)` calls `setWs(w)` immediately, but does not clear `active` or `content` until after it has awaited settings and document/folder enumeration. The autosave effect depends on `ws`, `active`, and `content`. When `ws` changes, React runs the effect with the new workspace handle and the previous workspace's active path and content. It schedules a write after 600 ms.
+
+If initialization of the new workspace takes longer than that delay, the pending effect can call `saveDoc()` using the **new workspace's documents directory** and the **old workspace's active path/content**. This can create or overwrite a same-named document in the destination workspace. This is separate from losing a pending edit while switching workspaces (WAVE-002): it is cross-workspace data contamination.
+
+### Reproduction
+1. Open workspace A and edit a page named `Notes.md`.
+2. Switch to workspace B.
+3. Make B's initialization take longer than 600 ms (for example, use a workspace with many files or throttle filesystem operations).
+4. Inspect B's `.wave/documents/Notes.md` after activation.
+
+### Expected and fix
+Do not publish the new `ws` state while the old `active` and `content` are still live. Flush/resolve the old workspace's pending revision first, cancel its pending debounce, then initialize the destination workspace into local variables. Commit the new workspace, its documents, favorites, and an empty editor state together only after initialization succeeds. The autosave effect should be keyed to a document/workspace identity that cannot mix generations.
+
+### Regression tests
+Switch A to B with a pending edit; delay B initialization beyond 600 ms; use identical and different document paths; assert that B receives no bytes from A and A retains its latest edit.
+
+## WAVE-033 — Failed backup creation leaves a partial directory that looks like a valid backup
+
+- Priority: **P1** | Confidence: **High**
+- File: `src/storage.ts` — `createBackup()`, `copyFolder()`
+
+### Problem
+`createBackup()` creates the timestamped backup directory before copying documents, assets, and metadata. If any later read, write, or permission operation fails, the function rejects but does not remove the incomplete directory or mark it as incomplete. The directory remains under `backups/` with a normal `backup-...` name, which is indistinguishable from a completed snapshot to any future backup browser or recovery tool.
+
+### Impact
+A user may later select a partial snapshot and believe it contains a complete recovery point. A failure while copying assets can leave documents present but attachments missing.
+
+### Fix
+Write a completion manifest only after every copy and validation succeeds. Until then, mark the directory as in-progress; on failure, either clean it up safely or retain it with an explicit failed marker and surface it as unusable. A restore flow must reject snapshots without a valid completion marker and verify expected file counts.
+
+### Regression tests
+Inject failures during document copy, asset copy, and metadata copy. Confirm incomplete snapshots are never listed as restorable backups and can be cleaned up or retried.
+
+## WAVE-034 — Asset collision detection treats every lookup error as “filename is free”
+
+- Priority: **P1** | Confidence: **High**
+- File: `src/storage.ts` — `addAsset()`
+
+### Problem
+The collision loop calls `getFileHandle(candidate)` and catches every exception. It assumes any exception means the candidate does not exist, then proceeds to write that name. The File System Access API uses a not-found error for an absent file, but other failures (for example, permission or I/O errors) should not be interpreted as proof that a name is available.
+
+### Impact
+An unexpected lookup failure can bypass the collision check. Since the subsequent write uses `create: true`, it can open an existing filename and replace its contents rather than choosing a suffixed name.
+
+### Fix
+Treat only the specific not-found condition as an available name. Propagate permission, security, and I/O errors. Prefer an exclusive create/claim strategy or serialize asset-name allocation so concurrent uploads cannot both claim the same candidate.
+
+### Regression tests
+Mock not-found, permission-denied, and generic I/O failures separately. Verify only not-found advances to the write path and that existing asset bytes remain unchanged for all other failures.
+
+## WAVE-035 — Creating a folder with an existing name silently selects the existing directory
+
+- Priority: **P2** | Confidence: **High**
+- File: `src/storage.ts` — `createFolder()`
+
+### Problem
+`createFolder()` calls `getDirectoryHandle(safe, { create: true })` without checking whether the directory already exists. If the user enters a name that is already present in the selected parent, the operation succeeds and returns the existing directory as though a new folder had been created.
+
+### Impact
+The user receives no indication that the name was already in use. A repeated action can silently navigate to an existing folder rather than creating a distinct one, making the folder-creation result ambiguous.
+
+### Fix
+Check for an existing directory and return a clear “folder already exists” result, or generate a unique name with an explicit naming policy. Do not silently treat an existing directory as a newly created folder.
+
+### Regression tests
+Create the same folder twice at the root and inside a nested parent. Verify the second attempt reports a collision or uses a clearly communicated unique name.
+
+## WAVE-036 — Rapid document opens can finish out of order and show the wrong page
+
+- Priority: **P2** | Confidence: **High; timing-dependent**
+- File: `src/App.tsx` — `open(d)`
+
+### Problem
+Each call to `open(d)` awaits `flush()` and then `readDoc()`, with no request token or cancellation check. If a user clicks two pages quickly, the reads can complete in the opposite order from the clicks. The older request can then call `setContent()` and `setActive()` last, replacing the page the user most recently selected.
+
+### Impact
+The editor can display a different document from the user's last selection. This is especially confusing when the user starts typing immediately after selecting a page, and can contribute to editing the wrong document.
+
+### Fix
+Assign each open request a monotonically increasing token. After every awaited operation, ignore results unless the token is still current. Keep the target path and loaded content paired in one state transition.
+
+### Regression tests
+Delay the first document read, open a second document, let the second read finish first, then release the first. The final active path and editor content must belong to the second click.
+
+## WAVE-037 — Concurrent create actions can select the same filename and overwrite one another
+
+- Priority: **P2** | Confidence: **High; race requires overlapping actions**
+- File: `src/App.tsx` — `create()`, `createFromTemplate()`; `src/storage.ts` — `saveDoc()`
+
+### Problem
+The create flows choose a candidate by checking the in-memory `docs` array, then call `saveDoc()`. The candidate check and file creation are not atomic. Two overlapping create actions can both observe that the same path is unused and both write it. `saveDoc()` opens the file with `create: true`, which does not provide exclusive creation.
+
+### Impact
+A rapid double-click or overlapping keyboard/template action can create only one file where the UI implied two pages, with the later write replacing the earlier page's initial content. The same pattern can affect page duplication when the list is stale.
+
+### Fix
+Centralize document creation in the storage layer with exclusive collision handling. Generate the final path at the point of creation and return it to the UI. Serialize create operations per workspace.
+
+### Regression tests
+Trigger two blank-page creates and two identical-template creates concurrently. Assert that both produce distinct files and neither write replaces the other.
+
+## WAVE-038 — CI installs floating dependency versions because the repository has no lockfile
+
+- Priority: **P2** | Confidence: **High**
+- Files: `package.json`, `.github/workflows/ci.yml`; no package lockfile is present on `main`
+
+### Problem
+Dependencies use semver ranges (including caret ranges), the repository does not contain a committed npm lockfile, and CI runs `npm install` rather than `npm ci`. Consequently, different CI runs can resolve different transitive dependency versions even when the application source has not changed.
+
+### Impact
+A dependency release can unexpectedly break a previously green build, introduce behavior changes, or alter the dependency tree without a reviewed source change. Builds are not reliably reproducible.
+
+### Fix
+Commit the appropriate lockfile, use `npm ci` in CI, and update dependencies through reviewed lockfile changes. Consider automated dependency update PRs and a documented Node/npm version policy.
+
+### Regression tests
+Run CI from a clean checkout and verify that installation uses the committed lockfile and produces a stable dependency tree.
+
+## WAVE-039 — Closing or reloading within the autosave debounce window loses the latest edit
+
+- Priority: **P1** | Confidence: **High**
+- File: `src/App.tsx` — autosave `useEffect()`
+
+### Problem
+The editor waits 600 ms after the latest content change before starting `saveDoc()`. There is no page-hide/visibility transition handling or durable draft journal. If the user closes or reloads the tab during that debounce window, the timer is discarded and the latest edit has never been written to the workspace.
+
+### Impact
+A user can type a final sentence and immediately close the tab, losing that edit despite the product presenting autosave as a core workflow. This is particularly risky when users assume the editor is continuously saving.
+
+### Fix
+Show an explicit unsaved state until the write is complete. Add a recoverable local draft journal (for example, IndexedDB) or another durable mechanism that does not rely solely on an unload-time asynchronous filesystem write. A page-hide flush can be best-effort, but must not be the only guarantee because browsers may terminate the page before asynchronous work completes.
+
+### Regression tests
+Edit content and close/reload immediately, at 100 ms, and after the debounce starts. Verify the latest text is either persisted or recoverable after reopening, and that the UI never claims it was saved prematurely.
+
+## WAVE-040 — Folder creation accepts nested paths but returns an incomplete selected path
+
+- Priority: **P2** | Confidence: **High**
+- Files: `src/storage.ts` — `createFolder()`; `src/App.tsx` — `newFolder()`
+
+### Problem
+The prompt accepts a string that may contain slashes. `createFolder()` splits that string into parent segments and a leaf, creates the nested path, but returns only the leaf folder name. `newFolder()` then appends that leaf to the current selection rather than using the full created path.
+
+### Reproduction
+1. At the workspace root, create a folder by entering `Projects/Backend`.
+2. The storage layer creates `Projects/Backend`.
+3. The UI sets `selectedFolder` to `Backend` rather than `Projects/Backend`.
+4. Create a page; it is saved under the wrong path or under a newly created `Backend` folder.
+
+### Expected and fix
+Either reject path separators and treat the prompt as a single folder name, or return the full normalized path from `createFolder()` and use that exact path as the selection.
+
+### Regression tests
+Create a nested path at root and under an already selected folder. Verify the selected path matches the actual directory and subsequent pages are created inside it.
+
+## Supplemental remediation priorities
+
+- [ ] **Immediate data-safety gate:** WAVE-032 — prevent cross-workspace autosave contamination.
+- [ ] WAVE-039 — make recent edits recoverable across tab close/reload.
+- [ ] WAVE-034 — distinguish missing assets from permission/I/O failures.
+- [ ] WAVE-033 — mark or clean up incomplete backup snapshots.
+- [ ] WAVE-036 and WAVE-037 — guard asynchronous navigation and concurrent creation.
+- [ ] WAVE-035 and WAVE-040 — make folder creation collision and path semantics explicit.
+- [ ] WAVE-038 — commit a lockfile and use deterministic CI installation.
+
+**Updated audit count:** 40 numbered findings (WAVE-001 through WAVE-040), plus the 8 cross-cutting risks listed earlier. Findings with timing-dependent behavior should also be covered by automated browser/storage tests before being treated as fully reproduced in production.
