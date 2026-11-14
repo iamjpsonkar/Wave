@@ -142,3 +142,47 @@
 Wave already has a useful Markdown foundation; it does **not** yet have full parity with the supplied showcase. The largest functional gaps are full LaTeX, advanced Mermaid, syntax highlighting, safe HTML-style presentation/collapsible content, emoji shortcodes, GitHub-specific references, other diagram languages and media embeds. Several already-supported core syntax areas also need broader regression and accessibility coverage.
 
 Do not mark the Markdown feature set complete until each applicable gap is either implemented and tested or explicitly accepted as an intentional product boundary. Keep the full user-provided showcase as the acceptance checklist.
+
+
+---
+
+## Recheck snapshot — 2026-11-14
+
+Rechecked the current default-branch source at commit `186e7ec3dd817a42a610e51c6a3c4a3d8b3d8f19`. This is a source review plus CI inspection, **not a completed acceptance run**. The implementation has advanced substantially since the original audit, so the original checklist above should be read with this status addendum.
+
+### Present in source now (still subject to regression verification)
+
+- Safe inline presentation shorthands, emoji shortcode conversion, DETAILS disclosure syntax and deterministic duplicate heading IDs.
+- Lightweight token coloring for a limited language list and line-based diff coloring; neither is a full grammar-based highlighter.
+- A recursive local MathML parser with grouped expressions, fractions, roots, script groups, common operators/functions and selected matrix/cases environments. This remains a TeX subset, not full LaTeX.
+- Local SVG renderers for Mermaid flowchart, sequence, pie, class, ER, state, Gantt, git graph, mindmap, timeline, quadrant, requirement and architecture-beta subsets.
+- Limited local renderers for Graphviz/DOT, PlantUML, D2, Vega/Vega-Lite and AsciiDoc. These are hand-built subsets, not complete compatible engines.
+- Controlled local-workspace audio/video embeds for allowlisted file extensions and MIME checks; remote media is not loaded.
+- A technical learning-notes template has been added alongside the Markdown showcase template.
+- Markdown preprocessing now protects fenced code while handling wiki links and the explicit local-media syntax; GitHub-style @mentions and issue references are intentionally left as inert text, with no GitHub notification/link behavior.
+
+### Still pending or only partially satisfied
+
+1. **Full syntax/highlighter parity:** the language token highlighter is heuristic; it does not parse language grammars, nested lexical states, or all syntax. Diff coloring is line-prefix based and needs edge-case fixtures.
+2. **Full LaTeX compatibility:** the local MathML parser covers useful constructs but not the full TeX grammar, macro system, arbitrary environments, extensible delimiters, broad symbol packages, or all malformed-input cases. The checklist's "complete parser" requirement remains open.
+3. **Full Mermaid compatibility:** the added family renderers parse constrained syntax and use simple layouts. They do not establish compatibility with Mermaid's full grammar, styling, all node/edge forms, layout semantics or accessibility behavior. Keep the source fallback.
+4. **Other renderer compatibility:** DOT, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc support is deliberately narrow and must not be described as full language support. Add parser/security/limit fixtures for each before considering those entries complete.
+5. **HTML policy:** unrestricted raw HTML remains deliberately disabled. Safe Wave shorthands and DETAILS are available, but a general allowlisted HTML-tag parser and HTML-table support are not implemented. This is a product/security boundary, not a bug to bypass.
+6. **Media policy:** only supported local asset files are eligible for the controlled audio/video components. Remote media, iframe embeds and arbitrary HTML media remain disabled.
+7. **Quality coverage:** accessibility checks, visual regression, cross-browser compatibility, broad Markdown fixture coverage, malformed/oversized renderer input tests, and preview/source round-trip checks remain incomplete.
+8. **GitHub references:** mentions and issue/PR references remain intentionally inert plain text. If product behavior changes, define link targets and privacy semantics first.
+
+### CI and regression evidence
+
+- Current browser test source defines **23 Playwright scenarios**; Node test source defines **30 tests**.
+- Workflow [43616005399](https://github.com/iamjpsonkar/Wave/actions/runs/43616005399), commit `186e7ec3dd817a42a610e51c6a3c4a3d8b3d8f19`: `npm ci`, all 30 Node tests, TypeScript typecheck and production build passed. Playwright E2E was still running at recheck time; no complete browser-suite pass is claimed.
+- The preceding completed browser run [43615833361](https://github.com/iamjpsonkar/Wave/actions/runs/43615833361) passed install, Node tests, typecheck and build but failed E2E. Reported failures included a stale wiki-link test expecting an internal `wave.invalid` href even though the rendered control is a button, a strict-mode assertion against multiple syntax-keyword spans, and Mermaid flowchart shape assertions that did not match the renderer's SVG output. The current test source still contains those assertions, so they remain explicit recheck items.
+- Earlier E2E attempts also failed in the new local renderer tests; do not infer success from the later passing typecheck/build steps alone.
+
+### Next acceptance sequence
+
+1. Correct the three known stale/strict E2E assertions against actual rendered behavior and rerun the full browser suite.
+2. Resolve every remaining failure in the local media, DOT/PlantUML/Vega/D2/AsciiDoc and extended Mermaid scenarios; require all 23 scenarios to pass.
+3. Add dedicated malformed-input, limits, accessibility, preview/source round-trip and cross-browser fixtures.
+4. Expand the renderer subsets only where the original showcase acceptance examples still fail; retain explicit fallback/security boundaries.
+5. Update this checklist item-by-item only after the corresponding behavior and regression evidence pass.
