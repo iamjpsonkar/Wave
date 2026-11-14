@@ -103,3 +103,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - No local test execution was possible in this session. The GitHub workflow run for these commits has not yet been retrieved, so install, Node tests, typecheck, build and all 24 E2E scenarios are **unverified**. Do not infer success from the commits or test definitions.
 - The three old E2E assertion blockers have been corrected in source, but a fresh green browser run is required. WAVE-052 remains in `bugs.md` until the new regression scenario passes.
 - This is an initial remediation checkpoint, not completion of `features-gap.md`. Full TeX/Mermaid/other-language compatibility, accessibility, cross-browser, visual, malformed-input/resource-limit and source-round-trip work remain open.
+
+
+## 2026-11-14 — URL and local media security matrix (awaiting CI)
+
+- Added one Playwright E2E scenario covering allowed HTTPS/mailto links, unsafe URL schemes (including mixed-case JavaScript), and local media path traversal/absolute/Windows/remote path rejection.
+- Browser test source count: **25 scenarios**. Node test source remains **30 tests**.
+- Updated the Markdown compatibility guide with the intended URL sanitization and local-asset resolution contract.
+- No local execution or CI run for this commit has been inspected. Treat the new scenario as defined, not passed. No application runtime code changed in this step.
