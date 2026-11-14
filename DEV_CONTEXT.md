@@ -3,7 +3,7 @@
 > Canonical handoff document for AI-assisted development. Read this file before making changes, then inspect the referenced source/docs relevant to the task.
 > Repository: https://github.com/iamjpsonkar/Wave
 > Default branch: `main`
-> Last reviewed: 2026-11-14
+> Last reviewed: 2026-11-15
 > Baseline commit/tree observed: `e53de9e554d4e5ccee32cfbaa72378dc0c6f9f44` (tree SHA at context review; refresh HEAD before every task)
 
 ## 1. Product contract
@@ -462,3 +462,18 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Documentation-reference correction after the UI log update: dev-fixed.md `34a1d666fd1ca924943ea8bffd332ed3ceee873c`; dev-build.md `f052a4a9bb3b4e113b700bb20d9cc809387b4c18`. This context entry is the final documentation update.
 
 - Feature inventory reconciliation: docs/FEATURES.md now consistently records keyboard/drag reorder, handles, deletion and common-block insertion as implemented, with slash menu, bookmarks/embeds and rich inline editing still partial. Commit `0cfb8174e688e31f866ae4d44e2c98cf8cf21393`. This is the final documentation step.
+
+## 33. Inline foreground/background color formatting — 2026-11-15
+
+- Re-read this handoff, current toolbar/Markdown renderer/styles, the E2E suite, UI register and feature backlog before implementing the next editor formatting feature. Existing functionality and UI-001–UI-020 IDs were retained.
+- `src/App.tsx`: added native **Text color** and **Text background color** controls to the Markdown toolbar. When a source selection exists, the picker wraps it in `[[color:#RRGGBB|text]]` or `[[bg:#RRGGBB|text]]`. Pickers are disabled in Preview and optional Blocks mode, where there is no single source selection.
+- `src/markdown.tsx`: added local inline conversion and rendering for the two directives. Only six-digit hexadecimal tokens are accepted; color spans are generated as React elements with a validated color value. Inline-code content is not transformed; malformed color tokens remain literal. Raw HTML and arbitrary style strings remain disabled.
+- `src/styles.css`: added theme-aware color picker controls and a System-light correction.
+- `tests/e2e/workspace.spec.ts`: added one regression for foreground and background application, preview styles, inline-code preservation, invalid-token fallback and returning to Edit. Browser source inventory: **40 scenarios**; Node test source remains **30 tests**. These are definitions, not run results.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `features-gap.md`, `ui-features.md`, `ui-gaps.md`, `dev-fixed.md` and `dev-build.md`. New UI-021 records the inline color controls as implemented in source with CI/visual verification pending. Existing UI IDs and the broader product catalogue remain intact.
+- Source commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07` and System-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, `48af3998748b51779a0abe75ca5853dd80fa03b1`, `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`.
+- Documentation commits: Markdown support `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`; feature gap `99007028e8f9c98de8baa5d32d55ce97d346d183`; UI feature backlog `bd27ca629c7556b3f2fbeac75e3b600b976365b9`; UI gap register `a0974f7144ec7e0c9fb68a641e4493aadf11c825`; dev-fixed `2b85f26668d6d4f22fe62dcf7ea1f3646444d920`; dev-build `e42d1beff37a08cb5ec4c57cbe97ed9401ad4891`.
+- Remaining color scope: curated preset swatches, remove/reset formatting, nested color spans, block-level fills, selection in Blocks mode, non-Wave fallback/rendering and visual/contrast verification.
+- Verification: no local tests, typecheck, production build or screenshot review was run. GitHub Actions run `43627300560` was observed in progress for commit `b435eb383d83f092526fa36fc8fc72064c87998d`; it is not a completed verification result. Recheck the latest main-branch Actions run before claiming success.
+- This handoff update is the final documentation step for this task.
+
