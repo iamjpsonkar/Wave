@@ -275,16 +275,21 @@ function validTrashItem(value:unknown):value is TrashItem{
   return !Number.isNaN(Date.parse(v.deletedAt));
 }
 export async function listTrashDetailed(trash:FileSystemDirectoryHandle):Promise<TrashListing>{
-  const items:TrashItem[]=[],issues:string[]=[];
+  const items:TrashItem[]=[],issues:string[]=[],metadataIds=new Set<string>(),markdownIds=new Set<string>();
   for await(const [name,handle] of trash.entries()){
-    if(handle.kind!=='file'||!name.endsWith('.json'))continue;
+    if(handle.kind!=='file')continue;
+    if(name.endsWith('.md')){markdownIds.add(name.slice(0,-3));continue;}
+    if(!name.endsWith('.json'))continue;
     try{
       const raw=JSON.parse(await(await(handle as FileSystemFileHandle).getFile()).text());
       if(!validTrashItem(raw)||name!==raw.id+'.json')throw new Error('Invalid Trash metadata.');
+      metadataIds.add(raw.id);
       await trash.getFileHandle(raw.id+'.md');
       items.push(raw);
     }catch(error){issues.push(name+': '+(error instanceof Error?error.message:'unreadable metadata'));}
   }
+  for(const id of markdownIds)if(!metadataIds.has(id))issues.push(id+'.md: orphaned Trash content; original page may still exist.');
+  for(const id of metadataIds)if(!markdownIds.has(id))issues.push(id+'.json: missing Trash content.');
   return {items:items.sort((a,b)=>b.deletedAt.localeCompare(a.deletedAt)),issues};
 }
 export async function listTrash(trash: FileSystemDirectoryHandle): Promise<TrashItem[]> {
@@ -295,22 +300,9 @@ export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documen
   const metadata=JSON.parse(await(await(await trash.getFileHandle(id+'.json')).getFile()).text()) as unknown;
   if(!validTrashItem(metadata)||metadata.id!==id)throw new Error('Trash metadata is invalid; the item was not changed.');
   const content=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();
-  const parts=validatePath(metadata.originalPath),filename=parts.pop()!;
-  const parent=await directoryForPath(documents,parts.join('/'),true);
-  const dot=filename.lastIndexOf('.'),stem=dot>0?filename.slice(0,dot):filename,ext=dot>0?filename.slice(dot):'';
-  let target='';
-  for(let n=1;n<10000;n++){
-    const candidate=n===1?filename:stem+'-restored'+(n===2?'':'-'+(n-1))+ext;
-    if(await existsFile(parent,candidate))continue;
-    target=[...parts,candidate].join('/');
-    try{
-      await saveDoc(documents,target,content);
-      const check=await readDoc(documents,target);
-      if(check!==content)throw new Error('Restored page verification failed; the Trash copy was retained.');
-      break;
-    }catch(error){if(error instanceof Error&&error.message==='A page with this name already exists.')continue;throw error;}
-  }
-  if(!target)throw new Error('Could not find a safe restore filename.');
+  const target=await createDoc(documents,metadata.originalPath,content);
+  const check=await readDoc(documents,target);
+  if(check!==content)throw new Error('Restored page verification failed; the Trash copy was retained.');
   await trash.removeEntry(id+'.md');
   await trash.removeEntry(id+'.json');
   return target;
