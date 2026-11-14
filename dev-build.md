@@ -60,7 +60,7 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 ## 2026-11-14 — Markdown preview capability expansion
 
 - Current source adds unique heading IDs, safe inline formatting shorthands, DETAILS disclosure blocks, common emoji shortcodes, lightweight local syntax coloring, recursive MathML for a limited TeX subset, and local Mermaid sequence/pie rendering.
-- Added two Playwright E2E scenarios. Current browser suite source now contains **16 scenarios**; Node test source remains **30 tests**.
+- Added two Playwright E2E scenarios. Current browser suite source now contains **17 scenarios**; Node test source remains **30 tests**.
 - Workflow [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208), commit `679b9eef2b14272356d245553abd218612fd92ce`: npm ci, 30 Node tests, TypeScript typecheck and production build passed. Browser dependency install/E2E were still in progress at last inspection.
 - Earlier workflow [43613444479](https://github.com/iamjpsonkar/Wave/actions/runs/43613444479), commit `3ca2155da1f9eb3a9e6419923f9971d05713b9a4`, passed Node tests/typecheck/build but failed 3 E2E scenarios while the inline preprocessing helper was missing from that intermediate commit. The helper was added afterwards; use the newer run for final browser verification.
 - Do not claim E2E passed until a workflow containing the corrected source and the added scenarios completes successfully.
@@ -71,3 +71,5 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - [43613868330](https://github.com/iamjpsonkar/Wave/actions/runs/43613868330), commit `ec4214d1de13e0f8a8195e5ed9186564db2084a0`: 30 Node tests passed; typecheck caught an incorrectly escaped source newline in the MathML parser. Corrected in `b8c7d550f1b56b66687e7c1b2833386f5f23d179`.
 - [43614011077](https://github.com/iamjpsonkar/Wave/actions/runs/43614011077), commit `4f9a52f275aba0ae70d6add8e89bbeb6e1fcd8d5`: 30 Node tests passed; typecheck caught a duplicate `neq` key in the math command map. Corrected in `1df330599916a9d657e83838b03231bd39296ae5`.
 - The newest full CI run for commit `1df330599916a9d657e83838b03231bd39296ae5` is queued/in progress; do not claim a complete pass until it finishes.
+
+- Added the final Markdown conformance scenario for hard breaks, reference links/images, title/alt retention, escaped table pipes, nested lists and unsafe URL sanitization; browser suite count is now 17.
