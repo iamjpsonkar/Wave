@@ -1362,3 +1362,35 @@ test('nested page breadcrumbs navigate to their parent folder', async ({ page })
   await page.locator('.breadcrumbs').getByRole('button', { name: 'Research' }).click();
   await expect(page.locator('.folder-link.selected')).toContainText('Research');
 });
+
+
+
+test('optional block editing preserves untouched Markdown source and edits one block in place', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Block Editor');
+  const source = [
+    '# Block editor test',
+    '',
+    'Paragraph stays intact.',
+    '',
+    '- First item',
+    '- Second item',
+    '',
+    '> [!NOTE]',
+    '> Important detail',
+    '',
+    '\`\`\`ts',
+    'const value = 1;',
+    '\`\`\`'
+  ].join('\n');
+  await editor.fill(source);
+  await page.getByRole('button', { name: 'Block editing' }).click();
+  const blocks = page.getByRole('region', { name: 'Markdown block editor' });
+  await expect(blocks.getByRole('textbox', { name: 'Edit heading block 1' })).toHaveValue('# Block editor test');
+  await expect(blocks.getByRole('textbox', { name: 'Edit list block 3' })).toContainText('First item');
+  await expect(blocks.getByRole('textbox', { name: 'Edit callout block 4' })).toBeVisible();
+  await expect(blocks.getByRole('textbox', { name: 'Edit code block 5' })).toBeVisible();
+  await blocks.getByRole('textbox', { name: 'Edit paragraph block 2' }).fill('Edited paragraph text.');
+  await page.getByRole('button', { name: 'Block editing' }).click();
+  await expect(page.locator('.editor textarea')).toHaveValue(source.replace('Paragraph stays intact.', 'Edited paragraph text.'));
+});
