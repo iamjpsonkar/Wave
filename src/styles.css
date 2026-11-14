@@ -46,3 +46,26 @@ nav button,.page,.folder-link,.trash-nav{transition:background .16s,color .16s}
 
 .duplicate-page{display:inline-flex;align-items:center;gap:5px;border:0;background:transparent;color:#75816e;font:10px system-ui;margin-left:10px;padding:3px 5px;border-radius:4px}.duplicate-page:hover{background:#eef2eb;color:#4f694d}
 @media(max-width:600px){.duplicate-page,.favorite-page,.delete-page{font-size:0;margin-left:4px}.duplicate-page svg,.favorite-page svg,.delete-page svg{width:14px;height:14px}}
+
+/* Fill the viewport; let workspace content use the available canvas */
+html,body,#root{width:100%;min-width:320px;min-height:100%;margin:0}
+html,body{height:100%}
+#root{min-height:100vh}
+.app{width:100%;height:100vh;height:100dvh;min-height:560px;overflow:hidden}
+.main{width:calc(100% - 255px);min-height:0;min-width:0}
+.editor,.trash-view{width:calc(100% - 80px);max-width:none;margin:34px auto;min-width:0}
+.editor{flex:1;min-height:0}
+.editor textarea,.markdown-preview{min-height:0}
+.trash-view{flex:1;overflow:auto}
+.empty{width:min(100% - 48px,720px);max-width:720px}
+@media(min-width:1500px){
+  .editor,.trash-view{width:calc(100% - 120px)}
+}
+@media(max-width:700px){
+  .main{width:calc(100% - 205px)}
+  .editor,.trash-view{width:calc(100% - 36px);margin:22px auto}
+}
+@media(max-width:520px){
+  .main{width:calc(100% - 72px)}
+  .editor,.trash-view{width:calc(100% - 24px);margin:16px auto}
+}
