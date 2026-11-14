@@ -23,6 +23,10 @@ const settingsQueues = new WeakMap<FileSystemDirectoryHandle, Promise<unknown>>(
 const NOT_FOUND = 'NotFoundError';
 
 const localWorkspaceLocks=new Map<string,Promise<unknown>>();
+const workspaceKeys=new WeakMap<FileSystemDirectoryHandle,string>();
+function workspaceLockKey(handle:FileSystemDirectoryHandle):string{return workspaceKeys.get(handle)??handle.name;}
+function registerWorkspaceHandles(key:string,...handles:FileSystemDirectoryHandle[]):void{for(const handle of handles)workspaceKeys.set(handle,key);}
+function withDirectoryWorkspaceLock<T>(handle:FileSystemDirectoryHandle,operation:()=>Promise<T>):Promise<T>{return withWorkspaceLock('workspace:'+workspaceLockKey(handle),operation);}
 async function withWorkspaceLock<T>(name:string,operation:()=>Promise<T>):Promise<T>{
   const manager=typeof navigator!=='undefined'?(navigator as Navigator & {locks?:LockManager}).locks:undefined;
   if(manager)return manager.request('wave:'+name,{mode:'exclusive'},operation);
@@ -118,7 +122,9 @@ export async function openWorkspace(rootHandle?: FileSystemDirectoryHandle): Pro
   if (!(await existsFile(wave, 'settings.json'))) {
     await write(wave, 'settings.json', JSON.stringify({ format: 'markdown', appearance: 'system', favorites: [] }, null, 2));
   }
-  return { root, wave, documents, assets, backups, trash };
+  const workspace={ root, wave, documents, assets, backups, trash };
+  registerWorkspaceHandles(root.name,root,wave,documents,assets,backups,trash);
+  return workspace;
 }
 export async function listDocs(dir: FileSystemDirectoryHandle): Promise<Doc[]> {
   const result: Doc[] = [];
@@ -172,15 +178,15 @@ export async function readDoc(dir: FileSystemDirectoryHandle, path: string) {
   return (await (await fileForPath(dir, path)).getFile()).text();
 }
 export async function saveDoc(dir: FileSystemDirectoryHandle, path: string, text: string): Promise<void> {
-  await queueWrite(dir, path, async () => {
+  await withDirectoryWorkspaceLock(dir,()=>queueWrite(dir, path, async () => {
     const file = await fileForPath(dir, path, true);
     const writable = await file.createWritable();
     try { await writable.write(text); await writable.close(); }
     catch (error) { try { await writable.abort(); } catch { /* keep original error */ } throw error; }
-  });
+  }));
 }
 export async function saveDocIfUnchanged(dir:FileSystemDirectoryHandle,path:string,text:string,expected:string|null):Promise<void>{
-  await queueWrite(dir,path,async()=>{
+  await withDirectoryWorkspaceLock(dir,()=>queueWrite(dir,path,async()=>{
     let current:string|null=null;
     try{current=await(await(await fileForPath(dir,path)).getFile()).text();}
     catch(error){if(!isNotFound(error))throw error;}
@@ -188,10 +194,10 @@ export async function saveDocIfUnchanged(dir:FileSystemDirectoryHandle,path:stri
     const file=await fileForPath(dir,path,true),writable=await file.createWritable();
     try{await writable.write(text);await writable.close();}
     catch(error){try{await writable.abort();}catch{/* preserve original error */}throw error;}
-  });
+  }));
 }
-export async function touchWorkspaceMetadata(wave:FileSystemDirectoryHandle):Promise<void>{await updateManifest(wave);}
-export async function createDoc(dir: FileSystemDirectoryHandle, requestedPath: string, text: string): Promise<string> {
+export async function touchWorkspaceMetadata(wave:FileSystemDirectoryHandle):Promise<void>{await withDirectoryWorkspaceLock(wave,()=>updateManifest(wave));}
+async function createDocUnlocked(dir: FileSystemDirectoryHandle, requestedPath: string, text: string): Promise<string> {
   const parts = validatePath(requestedPath);
   const filename = parts.pop()!;
   const parent = await directoryForPath(dir, parts.join('/'), true);
@@ -214,6 +220,9 @@ export async function createDoc(dir: FileSystemDirectoryHandle, requestedPath: s
     }
   }
   throw new Error('Could not find an available page name.');
+}
+export async function createDoc(dir:FileSystemDirectoryHandle,requestedPath:string,text:string):Promise<string>{
+  return withDirectoryWorkspaceLock(dir,()=>createDocUnlocked(dir,requestedPath,text));
 }
 async function copyFolder(source: FileSystemDirectoryHandle, destination: FileSystemDirectoryHandle): Promise<{files:number;directories:number}> {
   let files=0,directories=0;
@@ -251,7 +260,7 @@ async function optionalFileSnapshot(dir:FileSystemDirectoryHandle,name:string):P
   catch(error){if(isNotFound(error))return null;throw error;}
 }
 export async function createBackup(workspace: Workspace): Promise<string> {
-  return withWorkspaceLock('backup:'+workspace.root.name,async()=>{
+  return withDirectoryWorkspaceLock(workspace.root,async()=>{
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   const reserved=await createUniqueDirectory(workspace.backups,'backup-'+stamp,'backup-allocation');
   const name=reserved.name;
@@ -295,6 +304,7 @@ export async function listBackups(backups: FileSystemDirectoryHandle): Promise<B
 }
 export async function restoreBackupToNewWorkspace(workspace:Workspace,name:string):Promise<string>{
   if(!/^backup-[a-zA-Z0-9T._-]+$/.test(name))throw new Error('Invalid backup name.');
+  return withDirectoryWorkspaceLock(workspace.root,async()=>{
   const source=await workspace.backups.getDirectoryHandle(name);
   const backupStatus=JSON.parse(await(await(await source.getFileHandle('backup-status.json')).getFile()).text()) as {status?:string;documents?:number;assets?:number};
   if(backupStatus.status!=='complete')throw new Error('This backup is incomplete and cannot be restored.');
@@ -319,9 +329,10 @@ export async function restoreBackupToNewWorkspace(workspace:Workspace,name:strin
     await write(wave,'restore-status.json',JSON.stringify({status:'failed',backup:name,startedAt,failedAt:new Date().toISOString(),message:error instanceof Error?error.message:'Restore failed'},null,2)).catch(()=>undefined);
     throw error;
   }
+  });
 }
 export async function moveDocToTrash(documents: FileSystemDirectoryHandle, trash: FileSystemDirectoryHandle, path: string): Promise<void> {
-  await withWorkspaceLock('trash:'+path,async()=>{
+  await withDirectoryWorkspaceLock(documents,()=>withWorkspaceLock('trash:'+path,async()=>{
     const file=await fileForPath(documents,path);
     const text=await(await file.getFile()).text();
     const id=crypto.randomUUID();
@@ -340,7 +351,7 @@ export async function moveDocToTrash(documents: FileSystemDirectoryHandle, trash
     await parent.removeEntry(name);
     await write(trash,id+'.op.json',JSON.stringify({...operation,state:'source-removed'},null,2));
     await trash.removeEntry(id+'.op.json');
-  });
+  }));
 }
 function validTrashItem(value:unknown):value is TrashItem{
   if(!value||typeof value!=='object')return false;
@@ -391,6 +402,10 @@ async function recoverTrashOperations(trash:FileSystemDirectoryHandle,documents:
   return issues;
 }
 export async function listTrashDetailed(trash:FileSystemDirectoryHandle,documents?:FileSystemDirectoryHandle):Promise<TrashListing>{
+  if(documents)return withDirectoryWorkspaceLock(documents,()=>listTrashDetailedUnlocked(trash,documents));
+  return listTrashDetailedUnlocked(trash,documents);
+}
+async function listTrashDetailedUnlocked(trash:FileSystemDirectoryHandle,documents?:FileSystemDirectoryHandle):Promise<TrashListing>{
   const items:TrashItem[]=[],issues:string[]=documents?await recoverTrashOperations(trash,documents):[],metadataIds=new Set<string>(),markdownIds=new Set<string>();
   for await(const [name,handle] of trash.entries()){
     if(handle.kind!=='file')continue;
@@ -414,7 +429,7 @@ export async function listTrash(trash: FileSystemDirectoryHandle): Promise<Trash
 }
 export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documents: FileSystemDirectoryHandle, id: string): Promise<string> {
   if(!/^[a-f0-9-]{16,64}$/i.test(id))throw new Error('Invalid Trash item.');
-  return withWorkspaceLock('trash-restore:'+id,async()=>{
+  return withDirectoryWorkspaceLock(documents,()=>withWorkspaceLock('trash-restore:'+id,async()=>{
   const metadata=JSON.parse(await(await(await trash.getFileHandle(id+'.json')).getFile()).text()) as unknown;
   if(!validTrashItem(metadata)||metadata.id!==id)throw new Error('Trash metadata is invalid; the item was not changed.');
   let target='';
@@ -428,7 +443,7 @@ export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documen
   }catch{/* no resumable restore marker */}
   if(!target){
     const content=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();
-    target=await createDoc(documents,metadata.originalPath,content);
+    target=await createDocUnlocked(documents,metadata.originalPath,content);
     await write(trash,id+'.op.json',JSON.stringify({id,operation:'restore',state:'destination-verified',target,updatedAt:new Date().toISOString()},null,2));
     const check=await readDoc(documents,target);
     if(check!==content)throw new Error('Restored page verification failed; the Trash copy was retained.');
@@ -437,18 +452,20 @@ export async function restoreTrashItem(trash: FileSystemDirectoryHandle, documen
   await trash.removeEntry(id+'.json').catch(error=>{if(!isNotFound(error))throw error;});
   await trash.removeEntry(id+'.op.json').catch(error=>{if(!isNotFound(error))throw error;});
   return target;
-  });
+  }));
 }
 export async function permanentlyDeleteTrashItem(trash: FileSystemDirectoryHandle, id: string): Promise<void> {
   if(!/^[a-f0-9-]{16,64}$/i.test(id))throw new Error('Invalid Trash item.');
-  try{await trash.removeEntry(id+'.md');}catch(error){if(!isNotFound(error))throw error;}
-  try{await trash.removeEntry(id+'.json');}catch(error){if(!isNotFound(error))throw error;}
+  await withDirectoryWorkspaceLock(trash,async()=>{
+    try{await trash.removeEntry(id+'.md');}catch(error){if(!isNotFound(error))throw error;}
+    try{await trash.removeEntry(id+'.json');}catch(error){if(!isNotFound(error))throw error;}
+  });
 }
 export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Promise<string> {
   const original=file.name.split(/[\\\\/]/).pop()||'attachment';
   const cleaned=original.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'attachment';
   const dot=cleaned.lastIndexOf('.'),stem=dot>0?cleaned.slice(0,dot):cleaned,ext=dot>0?cleaned.slice(dot):'';
-  return queueWrite(dir,'__asset-allocation__',()=>withWorkspaceLock('asset-allocation',async()=>{
+  return withDirectoryWorkspaceLock(dir,()=>queueWrite(dir,'__asset-allocation__',()=>withWorkspaceLock('asset-allocation',async()=>{
     for(let n=1;n<10000;n++){
       const candidate=n===1?cleaned:stem+'-'+n+ext;
       if(await hasCaseInsensitiveEntry(dir,candidate))continue;
@@ -458,9 +475,10 @@ export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Prom
       return candidate;
     }
     throw new Error('Could not find an available attachment filename.');
-  }));
+  })));
 }
 export async function createFolder(dir: FileSystemDirectoryHandle, path: string): Promise<string> {
+  return withDirectoryWorkspaceLock(dir,async()=>{
   const parts=path.split('/');
   if(parts.some(part=>!part.trim()))throw new Error('Enter a valid folder name.');
   const requested=parts.pop()!;
@@ -472,6 +490,7 @@ export async function createFolder(dir: FileSystemDirectoryHandle, path: string)
     await parent.getDirectoryHandle(safe,{create:true});
   });
   return [...parts,safe].join('/');
+  });
 }
 export function slug(title: string) { return (title.toLowerCase().trim().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,70)||'untitled')+'.md'; }
 export async function readWorkspaceSettings(wave: FileSystemDirectoryHandle): Promise<WorkspaceSettings> {
@@ -484,10 +503,12 @@ export async function readWorkspaceSettings(wave: FileSystemDirectoryHandle): Pr
   return parsed as WorkspaceSettings;
 }
 export async function writeWorkspaceSettings(wave: FileSystemDirectoryHandle, settings: WorkspaceSettings): Promise<void> {
+  await withDirectoryWorkspaceLock(wave,async()=>{
   const previous=settingsQueues.get(wave)??Promise.resolve();
   const current=previous.catch(()=>undefined).then(async()=>{await write(wave,'settings.json',JSON.stringify(settings,null,2));await updateManifest(wave);});
   settingsQueues.set(wave,current);
   try{await current;}finally{if(settingsQueues.get(wave)===current)settingsQueues.delete(wave);}
+  });
 }
 export async function backUpAndResetWorkspaceSettings(wave:FileSystemDirectoryHandle):Promise<string>{
   const original=await(await wave.getFileHandle('settings.json')).getFile();
