@@ -1593,3 +1593,11 @@ The draft tests exercise the newest-record selector and queue primitives; they d
 - WAVE-031 browser coverage: the suite now adds simulated File System Access permission denial and two-tab concurrent editing to the existing six journeys. Native picker prompts/revocation and full keyboard/accessibility coverage remain outstanding.
 - WAVE-039 durability: draft write transactions request IndexedDB `strict` durability where supported, with a compatibility fallback. This reduces the persistence window but cannot guarantee recovery if the browser process is killed before the asynchronous transaction commits.
 - Verified source CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) on `b11b46eebc1558de9910d8523cdaa027817b087d` — 30 Node tests and all 9 Chromium E2E tests passed; typecheck and production build passed.
+
+
+## QA recheck note — 2026-11-14
+
+- The full historical register was re-read as the regression baseline. Its 49 source-verified dispositions remain historical/source-level classifications; this pass did not execute all 49 scenarios individually.
+- Current source contains 30 Node test definitions and 13 Playwright Chromium E2E scenarios. The latter include recovery draft provenance, simulated permission denial, same-workspace two-tab editing, Markdown safety/features, command-palette keyboard execution, and wiki-link/backlink navigation.
+- The latest CI evidence recorded in `dev-build.md` covers an earlier 10-scenario E2E suite. Do not treat the three additional current E2E scenarios as CI-verified until a run for their containing commit succeeds.
+- If any historical scenario fails when executed, reopen the original WAVE ID in `bugs.md`; do not create a duplicate.
