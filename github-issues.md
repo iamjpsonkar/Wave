@@ -2,12 +2,12 @@
 
 > Updated: 2026-11-15  
 > Repository: https://github.com/iamjpsonkar/Wave  
-> This index links the active defect/gap issues and the full feature-roadmap issue set. GitHub issue checklists are the day-to-day tracking surface; `upcoming-features.md` remains the canonical product blueprint.
+> This index links the active defect/gap issues and the full feature-roadmap issue set. GitHub issue checklists are the day-to-day tracking surface; `upcoming-FEATURES.md` remains the canonical product blueprint.
 
 ## Summary
 
 - **90 open issues verified:** 10 active bug/gap issues plus 80 roadmap tracking issues.
-- **971 unchecked/in-progress checklist entries** from `upcoming-features.md` are represented in the roadmap issue checklists.
+- **971 unchecked/in-progress checklist entries** from `upcoming-FEATURES.md` are represented in the roadmap issue checklists.
 - Entries are grouped by their existing blueprint subsection, with exact source wording and source line comments retained.
 - Release-sequence, product-coverage and competitor-coverage checklists are retained as their own traceability issues; repeated feature requirements are intentionally not deleted.
 - Issue #90 was an accidental duplicate of #11 and is closed as duplicate. Canonical tracker: #11.
@@ -117,5 +117,5 @@
 - Each roadmap issue contains the exact checklist items from its source subsection. Check individual boxes only after implementation and verification.
 - Close a roadmap issue only when all its checklist items are complete or a documented product-owner decision explicitly changes scope.
 - If an epic is split into child issues, keep the parent open and link the children; do not lose the original checklist.
-- Update `upcoming-features.md`, `features.md`, `docs/FEATURES.md`, `bugs.md`, `fixed-bugs.md`, `ui-gaps.md` and `QA-CONTEXT.md` as appropriate when work is delivered.
+- Update `upcoming-FEATURES.md`, `FEATURES.md`, `FEATURES.md`, `bugs.md`, `fixed-bugs.md`, `UI_BACKLOG.md` and `QA_CONTEXT.md` as appropriate when work is delivered.
 - Existing bug IDs and historical fixed-bug records remain authoritative. Do not create duplicate defect issues when a roadmap issue overlaps; link the canonical issue instead.
