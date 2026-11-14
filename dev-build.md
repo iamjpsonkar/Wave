@@ -224,3 +224,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Source inventory: **37 Playwright scenarios**, **30 Node tests**. This is a source count, not a run result.
 - No local project dependencies/test runner are available through this repository connection. The GitHub connection did not expose a push-triggered Actions run or combined status for these commits. **No tests, typecheck, production build or CI pass is claimed.**
 - UI-002 remains open for a real optional block editor. Full WCAG review, screenshot-diff baselines, focus-return audit, long-content/table/diagram review and Settings/backup failure-state visual QA remain open. Do not close UI gaps before CI and evidence review.
+
+ 
+## 2026-11-14 — UI-002 optional block mode follow-up
+
+- Added an optional source-preserving Markdown block editor for headings, paragraphs, lists, quotes/callouts, fenced code, tables, dividers, image lines and attachment links.
+- Each block edits its original Markdown source slice; the existing source textarea and Preview remain available. Added a regression that edits one paragraph and asserts exact full-source preservation for untouched list/callout/code blocks.
+- Latest source/test commits: block parser `cc6809086922947ae4f32e4eaf47257f93c66073`; E2E `e0d901711430355b06f7c870453484d88099a886`; block-mode history shortcut follow-up `760ec73b51361826be00ee653c441d72bca65e28`.
+- E2E source inventory is now **38 scenarios**; Node test source remains **30 tests**. No execution result is available; no test/typecheck/build/CI pass is claimed.
+- Remaining UI-002 scope: block reordering/drag-drop, handles, slash menu, bookmarks/embeds and rich inline editing. The full UI register remains open for its stated CI/manual QA items.
