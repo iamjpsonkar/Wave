@@ -239,3 +239,6 @@ Source changes and the regression scenario are committed, but no local typecheck
  
 - Follow-up: block grouping now keeps list and quote/callout blocks distinct; heading outline jumps to the corresponding block textarea; block mode uses a distinct Blocks icon and System-light block labels remain readable. Undo/redo shortcuts are enabled while a block textarea is focused.
 - The block-mode E2E now also exercises Undo and Redo before asserting the exact Markdown source. Latest follow-up commits: `03c572edd64fb6924d0bbda706dbf840f44bef26` (outline navigation), `30be50f3afae887386eba1f86faf2d855207c925` (undo/redo regression), `6c9cb3f7b0862fd20253da75a10c263fe215add3` (icon), `41c8adefd98ef00d5ba38867a0e828cd626554a8` (System-light block styling).
+
+ 
+- UI-020 regression follow-up: corrected the RGB channel parser used by the 4.5:1 computed body/heading contrast assertions. This repairs the test helper; it is not a claim that the contrast matrix passed. Commit: `ffc3be4ae9026ce76148ce3fbcaa86b4be0e0f73`.
