@@ -31,6 +31,17 @@ Open [http://localhost:8080](http://localhost:8080). Change the host port withou
 WAVE_PORT=8090 docker compose up --build -d
 ```
 
+
+For a local override file, copy the safe example and edit the host port:
+
+```bash
+cp .env.example .env
+# Edit WAVE_PORT in .env, then:
+docker compose up --build -d
+```
+
+Equivalent npm shortcuts are available after Node dependencies are installed: `npm run docker:build`, `npm run docker:up` and `npm run docker:down`.
+
 Stop the container:
 
 ```bash
