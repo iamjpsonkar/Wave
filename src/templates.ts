@@ -202,7 +202,7 @@ export const pageTemplates: PageTemplate[] = [
       "",
       "Inline background: [[bg:#FFF0A8|highlighted background]]",
       "",
-      " > [!COLOR=#EAF2E8]",
+      "> [!COLOR=#EAF2E8]",
       "> This quote block should have a soft green background.",
       ">",
       "> Block colors use a Wave-specific six-digit HEX extension.",
