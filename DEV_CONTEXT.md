@@ -274,3 +274,14 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Updated `docs/MARKDOWN_SUPPORT.md` with the intended sanitized URL and local single-filename media resolution contract. Updated `features-gap.md`, `dev-fixed.md` and `dev-build.md` with scope and verification status.
 - Test source now defines **25 Playwright scenarios** and **30 Node tests**. No local test execution or CI run for this scenario has been verified; do not report it as passing. This step adds regression coverage and documentation only; it is not a source-code security fix and closes no bug.
 - Next: inspect CI for current `main`; fix any real failures exposed by the new security scenario. Then continue with another core conformance item (preview/source round-trip invariance or accessibility coverage) before moving into the larger renderer-compatibility projects.
+
+
+## 19. Markdown preview/source round-trip regression — 2026-11-14
+
+- Picked the next core conformance item from `features-gap.md`: verify preview transformations never rewrite the original Markdown source.
+- Added a Playwright E2E scenario in `tests/e2e/workspace.spec.ts` with hard breaks, ordinary/wiki links, inline and fenced code, escaped table pipes, fenced math, callouts and raw-HTML text.
+- The scenario checks byte-for-byte equality after Preview → Edit, reads the saved Markdown file and compares exact contents, then reloads/reopens the workspace and checks the editor value again.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. No runtime application code changed.
+- Browser test source now defines **26 Playwright scenarios**; Node test source remains **30 tests**. No local test execution or CI result for this scenario has been verified. Treat it as regression coverage defined, not passed.
+- Latest code/test commit for this item: `cf824115ba035c41ecaf1e8c5923310e69599986`; documentation commits follow in `006ec92`, `9d15249`, `dd3a84d` and this handoff update.
+- Next: inspect current CI for the latest `main` head and repair any actual test failures. Then continue with accessibility checks (including keyboard focus, headings, images, tables, task lists, callouts, math and diagram fallbacks). Keep full language compatibility and malformed/oversized-input testing open.
