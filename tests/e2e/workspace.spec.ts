@@ -1544,7 +1544,7 @@ test('PDF export uses a readable print palette and preserves Markdown content', 
   const source = [
     '# Print palette regression',
     '',
-    'Readable body text and [[color:#365FBA|blue custom text]].',
+    'Readable body text and [[color:#365FBA|blue custom text]], [[color:#26734D|green text]], [[color:#C0392B|red text]] and [[bg:#FFF0A8|highlighted background]].',
     '',
     '| Feature | Status | Priority |',
     '|:--|:--:|--:|',
@@ -1562,6 +1562,9 @@ test('PDF export uses a readable print palette and preserves Markdown content', 
   const preview = page.locator('.markdown-preview');
   await expect(preview).toContainText('Readable body text');
   await expect(preview.locator('.wave-inline-color')).toContainText('blue custom text');
+  await expect(preview.locator('.wave-inline-color')).toContainText('green text');
+  await expect(preview.locator('.wave-inline-color')).toContainText('red text');
+  await expect(preview.locator('.wave-inline-background')).toContainText('highlighted background');
   await expect(preview.locator('tbody tr').first().locator('td').nth(2)).toHaveText('1');
   await expect(preview.locator('.markdown-special-block math')).toBeVisible();
   await expect(preview.locator('details')).toContainText('Disclosure body remains part of the exported document.');
@@ -1582,7 +1585,11 @@ test('PDF export uses a readable print palette and preserves Markdown content', 
   await expect(page.locator('.topbar')).toHaveCSS('visibility', 'hidden');
   await expect(preview).toHaveCSS('background-color', 'rgb(255, 255, 255)');
   await expect(preview.locator('h1')).toHaveCSS('color', 'rgb(34, 34, 34)');
-  await expect(preview.locator('.wave-inline-color')).toHaveCSS('color', 'rgb(54, 95, 186)');
+  await expect(preview.locator('.wave-inline-color').filter({ hasText: 'blue custom text' })).toHaveCSS('color', 'rgb(54, 95, 186)');
+  await expect(preview.locator('.wave-inline-color').filter({ hasText: 'green text' })).toHaveCSS('color', 'rgb(38, 115, 77)');
+  await expect(preview.locator('.wave-inline-color').filter({ hasText: 'red text' })).toHaveCSS('color', 'rgb(192, 57, 43)');
+  await expect(preview.locator('.wave-inline-background')).toHaveCSS('background-color', 'rgb(255, 240, 168)');
+  await expect(preview.locator('th').first()).toHaveCSS('background-color', 'rgb(238, 241, 235)');
   await expect(preview.locator('details > p')).toHaveCSS('display', 'block');
   await expect(preview.locator('tbody tr').first().locator('td').nth(2)).toHaveText('1');
   await page.emulateMedia({ media: 'screen' });
