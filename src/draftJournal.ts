@@ -49,7 +49,12 @@ async function findDrafts(db:IDBDatabase,workspace:FileSystemDirectoryHandle,pat
 }
 function writeTransaction(db:IDBDatabase,operation:(store:IDBObjectStore)=>void):Promise<void>{
   return new Promise((resolve,reject)=>{
-    const transaction=db.transaction(STORE,'readwrite');
+    // Ask the browser to complete the transaction only after its data has
+    // been flushed to stable storage. Older engines may not support the
+    // durability option, so retain the normal transaction as a fallback.
+    let transaction:IDBTransaction;
+    try{transaction=db.transaction(STORE,'readwrite',{durability:'strict'});}
+    catch{transaction=db.transaction(STORE,'readwrite');}
     operation(transaction.objectStore(STORE));
     transaction.oncomplete=()=>resolve();
     transaction.onerror=()=>reject(transaction.error??new Error('Could not update the local draft journal.'));
