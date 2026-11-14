@@ -234,3 +234,34 @@ test('recovery prompt identifies a draft created in another tab and preserves it
   });
   expect(retainedDrafts).toContain('# Cross-tab Recovery\n\nUnsaved change owned by first tab');
 });
+
+test('Markdown preview renders GFM tables, task lists, footnotes and safe alert callouts', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Markdown Compatibility');
+  await editor.fill([
+    '# Markdown Compatibility',
+    '',
+    '| Name | Status |',
+    '| :--- | :---: |',
+    '| Wave | Ready |',
+    '',
+    '- [x] GFM task',
+    '- [ ] Pending task',
+    '',
+    'A footnote reference[^one].',
+    '',
+    '[^one]: Footnote content survives preview.',
+    '',
+    '> [!WARNING]',
+    '> Review this before continuing.',
+    '',
+    '> <img src=x onerror=alert(1)>'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview table')).toBeVisible();
+  await expect(page.locator('.markdown-preview input[type=checkbox]')).toHaveCount(2);
+  await expect(page.locator('.markdown-preview .footnotes')).toContainText('Footnote content survives preview.');
+  await expect(page.locator('.markdown-alert-warning')).toContainText('Review this before continuing.');
+  await expect(page.locator('.markdown-preview img')).toHaveCount(0);
+  await expect(page.locator('.markdown-preview')).not.toContainText('onerror=alert');
+});
