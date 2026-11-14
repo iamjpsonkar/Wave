@@ -5,7 +5,8 @@ import remarkGfm from 'remark-gfm';
 import rehypeSanitize from 'rehype-sanitize';
 import { addAsset, createBackup, createDoc, createFolder, listDocs, listFolders, listTrashDetailed, moveDocToTrash, permanentlyDeleteTrashItem, restoreTrashItem, openWorkspace, readDoc, saveDoc, saveDocIfUnchanged, touchWorkspaceMetadata, searchDocs, slug, readWorkspaceSettings, writeWorkspaceSettings, listBackups, restoreBackupToNewWorkspace, type BackupInfo, type Doc, type TrashItem, type Workspace } from './storage';
 import { ensureWorkspacePermission, getRememberedWorkspace, rememberWorkspace } from './workspaceRegistry';
-import { pageTemplates } from './templates';\nimport { clearDraft, getDraft, saveDraft } from './draftJournal';
+import { pageTemplates } from './templates';
+import { clearDraft, getDraft, saveDraft } from './draftJournal';
 
 function localAssetName(source?:string):string|null{
  if(!source||/^[a-z][a-z0-9+.-]*:/i.test(source)||source.startsWith('//')||source.startsWith('/'))return null;
