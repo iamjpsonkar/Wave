@@ -43,7 +43,7 @@ See [features.md](features.md) for the capabilities currently implemented in Wav
 See [upcoming-features.md](upcoming-features.md) for the full future feature catalogue and product strategy. [docs/FEATURES.md](docs/FEATURES.md) tracks what is shipped versus planned, and [docs/ROADMAP.md](docs/ROADMAP.md) tracks delivery by release.
 
 ## Development
-Requires Node.js 22+ and Chrome or Edge.
+Requires Node.js 22.6+ and Chrome or Edge.
 
 ```bash
 npm install
