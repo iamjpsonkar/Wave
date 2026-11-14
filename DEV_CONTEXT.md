@@ -15,7 +15,7 @@ Non-negotiable principles:
 - Portable content: Markdown documents and ordinary asset files remain inspectable outside Wave.
 - Privacy by default: don't introduce uploads, analytics, remote processing, or third-party services without an explicit product decision and disclosure.
 - Reliability before breadth: integrity, safe failure, recovery, backup/restore, migration, accessibility and export are release gates.
-- Preserve scope: never silently prune agreed features. `upcoming-features.md` is the complete scope catalogue; `priority-FEATURES.md` assigns delivery order, not permission to drop requirements.
+- Preserve scope: never silently prune agreed features. `upcoming-features.md` is the complete scope catalogue; `priority-features.md` assigns delivery order, not permission to drop requirements.
 
 ## 2. Stack and development commands
 
@@ -119,19 +119,20 @@ Preserve all of the following:
 14. New data shapes require schema/version/migration and backup/export/recovery consideration.
 15. Preserve keyboard access, focus behavior, semantic labels, contrast, responsive/mobile behavior and reduced-motion/accessibility.
 
-## 6. Project documents and their separate responsibilities
+## 6. Project documents and their responsibilities
 
 - `upcoming-features.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
-- `priority-FEATURES.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
-- `FEATURES.md`: concise shipped-feature showcase.
-- `FEATURES.md`: detailed shipped/planned feature map.
+- `priority-features.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
+- `FEATURES.md`: combined shipped-feature overview and detailed shipped/planned feature map.
 - `docs/ROADMAP.md`: release sequencing.
 - `docs/ARCHITECTURE.md`: architecture and reliability/security rationale.
 - `bugs.md`: only current reproducible/source-supported bugs and material QA gaps.
 - `fixed-bugs.md`: resolved bug history and regression baseline; recheck on every QA task.
 - `dev-fixed.md`: implementation/fix log (problem, code changes, tests, commit, limitations).
-- `dev-build.md`: build/test/CI history (exact commit, workflow run, per-suite outcome).
-- `DEV_CONTEXT.md` (this file): concise AI handoff; update after every task.
+- `dev-build.md`: build/test/CI and feature implementation history (exact commit, workflow run, per-suite outcome).
+- `UI_BACKLOG.md`: consolidated UIB/UI/UIF export bugs, UI gaps and UI feature proposals.
+- `QA_CONTEXT.md`: current QA disposition, test inventory, limitations and historical QA audit evidence.
+- `DEV_CONTEXT.md` (this file): concise AI handoff; update last after every task. See `wiki.md` for the mandatory per-task Markdown documentation policy.
 
 Don't conflate these trackers. Don't move an issue to fixed until implemented and appropriate regression verification passes. Planned features are not bugs.
 
@@ -171,7 +172,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 6. Keep README/docs/catalogues consistent with actual behavior.
 
 ### At the end of every task
-- Feature work: update `FEATURES.md`, `FEATURES.md`, `priority-FEATURES.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `upcoming-features.md` catalogue.
+- Feature work: update `FEATURES.md`, `FEATURES.md`, `priority-features.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `upcoming-features.md` catalogue.
 - Bug work: current findings only in `bugs.md`; move to `fixed-bugs.md` only after verification; retain IDs and regression scenarios.
 - Code fixes: append problem, changes, files, tests, commit/CI and limitations to `dev-fixed.md`.
 - Build/test/CI: append exact commit and suite-level outcome to `dev-build.md`; distinguish not run, queued, failed and passed.
@@ -392,9 +393,9 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 28. UI feature backlog from spreadsheet-toolbar reference — 2026-11-14
 
-- Created `ui-FEATURES.md` as an additive UI proposal backlog based on the supplied spreadsheet-toolbar screenshot and inspection of current Wave editor source.
+- Created `UI_BACKLOG.md` as an additive UI proposal backlog based on the supplied spreadsheet-toolbar screenshot and inspection of current Wave editor source.
 - Captures Markdown-editor improvements (undo/redo verification, document-local find, responsive toolbar grouping/overflow, heading styles, shortcut hints, safe insertion/table/link workflows, document statistics, zoom/focus mode and contextual formatting state).
-- Separates spreadsheet-only controls (number formats, cell formatting, grid controls, formulas/sort/filter/charts) into a future dedicated sheet UI, aligned with `priority-FEATURES.md` P2.3; these are not proposed for the Markdown editor toolbar.
+- Separates spreadsheet-only controls (number formats, cell formatting, grid controls, formulas/sort/filter/charts) into a future dedicated sheet UI, aligned with `priority-features.md` P2.3; these are not proposed for the Markdown editor toolbar.
 - Includes stable UIF-001–UIF-021 IDs, priorities, current-state notes, acceptance criteria, dependencies, delivery order and relationships to existing planning documents. All are proposals, not shipped features.
 - No application code, existing gap tracker, product catalogue or tests were changed. No test/build/CI result is claimed for this documentation-only task.
 - Backlog commit: `d9211992d04fd3510f93cc546b814c5a067798d5`.
@@ -470,7 +471,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/markdown.tsx`: added local inline conversion and rendering for the two directives. Only six-digit hexadecimal tokens are accepted; color spans are generated as React elements with a validated color value. Inline-code content is not transformed; malformed color tokens remain literal. Raw HTML and arbitrary style strings remain disabled.
 - `src/styles.css`: added theme-aware color picker controls and a System-light correction.
 - `tests/e2e/workspace.spec.ts`: added one regression for foreground and background application, preview styles, inline-code preservation, invalid-token fallback and returning to Edit. Browser source inventory: **40 scenarios**; Node test source remains **30 tests**. These are definitions, not run results.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `ui-FEATURES.md`, `UI_BACKLOG.md`, `dev-fixed.md` and `dev-build.md`. New UI-021 records the inline color controls as implemented in source with CI/visual verification pending. Existing UI IDs and the broader product catalogue remain intact.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `dev-fixed.md` and `dev-build.md`. New UI-021 records the inline color controls as implemented in source with CI/visual verification pending. Existing UI IDs and the broader product catalogue remain intact.
 - Source commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07` and System-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, `48af3998748b51779a0abe75ca5853dd80fa03b1`, `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`.
 - Documentation commits: Markdown support `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`; feature gap `99007028e8f9c98de8baa5d32d55ce97d346d183`; UI feature backlog `bd27ca629c7556b3f2fbeac75e3b600b976365b9`; UI gap register `a0974f7144ec7e0c9fb68a641e4493aadf11c825`; dev-fixed `2b85f26668d6d4f22fe62dcf7ea1f3646444d920`; dev-build `e42d1beff37a08cb5ec4c57cbe97ed9401ad4891`.
 - Remaining color scope: curated preset swatches, remove/reset formatting, nested color spans, block-level fills, selection in Blocks mode, non-Wave fallback/rendering and visual/contrast verification.
@@ -484,7 +485,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/markdown.tsx`: `MarkdownBlockquote` recognizes only the `[!COLOR=#RRGGBB]` marker with a six-digit hex token, strips the marker from rendered content and creates a blockquote with the validated background color. Existing NOTE/TIP/WARNING/DETAILS blockquotes are unchanged.
 - `src/styles.css`: added swatch, clear action and block-fill styling with focus-visible states and theme-aware block borders.
 - `tests/e2e/workspace.spec.ts`: added one regression covering quick swatch insertion, selection-based removal, block-fill source syntax and preview rendering. E2E source inventory is now **41 scenarios**; Node test source remains **30 tests**. These are source counts, not test execution.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `ui-FEATURES.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-021 remains partial/CI pending; nested inline color ranges, Blocks-mode selection, non-Wave reader fallback and contrast/accessibility review remain open.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-021 remains partial/CI pending; nested inline color ranges, Blocks-mode selection, non-Wave reader fallback and contrast/accessibility review remain open.
 - Source commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`; renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`; styles `7020028201eeee4be404a003b4e2c2abc7925c9a`; E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
 - Documentation commits: Markdown support `e71535c61698145ae199a898c9ac6cdf2b910089`; feature inventory `de91a21626ca4fc6bcea07c2e37ee5b8f347e6d2`; UI gap register `8ec018ce51b592282c4e1a0ee91ebe33345b41e8`; UI feature backlog `ece36cd16ecf68c3fd292231bc48034dee6e760a`; renderer feature gap `61213bd311329d75fa2814145847c0f47da6b0a7`; dev-fixed `7a752555c70bb96a17d0ac1bbd7e6187599be7e7`; dev-build `a0aae6b812ecf0a931b77dff41f518b5cad5da89`.
 - Latest observed GitHub Actions run for the documentation commit `a0aae6b812ecf0a931b77dff41f518b5cad5da89` is `43627623167`, queued at the time of inspection. Earlier documentation runs were in progress. No local tests, typecheck, production build or screenshot review were performed; do not claim a pass.
@@ -498,7 +499,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Extended the optional Markdown Blocks editor with an accessible per-block native background color picker. Applying a color wraps the original block source in the safe `> [!COLOR=#RRGGBB]` quote directive; changing a previously colored block updates the marker in place rather than nesting another color wrapper.
 - Updated block classification so Wave color blocks are recognized as callout blocks. Added light/dark theme styling and an E2E source scenario covering first application, changing the color, switching to Preview and checking the rendered block.
 - Fixed a TypeScript error in the existing source-toolbar block-color cursor calculation. CI for the preceding color batch exposed that a concatenated marker expression produced a string cursor argument; the code now computes a single marker string and uses its numeric length.
-- Updated compatibility and feature records: `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `ui-FEATURES.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-001–UI-020 and all previous feature proposals remain preserved; UI-021 is expanded, not replaced.
+- Updated compatibility and feature records: `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-001–UI-020 and all previous feature proposals remain preserved; UI-021 is expanded, not replaced.
 - Source commits: Blocks editor `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`; styles `93bf0eb5dc809e373292570d900066161f6e7be3`; E2E `0cf474ff0d0765f882916c04efbb69e49c95cb85`; toolbar TypeScript fix `efd19504e8d44ab16869f6b82482b00da816d162`.
 - Documentation commits: Markdown support `4e895839c50e6f42d5b1e3830de86d0e1a921066`; feature inventory `6fe3fff45580b238d433ed353f5588ecbc9e80ed`; UI gaps `ea0d90b7e96d6d060bab06a5319297f0bc52e208`; UI feature backlog `a07722b61658e6df1008373323da757f18fc1dd3`; renderer feature gaps `f68a9ac601b7b3aeffdeb6b153c5c29a0446bf19`; dev-fixed `9f85560bfcf7cc921fa46084e8b06d9549c2abc7`; dev-build `dce84d4c2f7dd4d236f8f8676f8676c692bcf730`.
 - Regression source inventory: **42 Playwright E2E scenarios** and **30 Node test definitions**. These are source counts only. The CI run for the preceding docs commit failed at TypeScript because of the cursor expression; Node tests passed 30/30, while build and E2E steps were skipped. The fix is committed; CI run `43627887363` for `efd19504e8d44ab16869f6b82482b00da816d162` was **in progress** at handoff. No pass is claimed yet.
@@ -548,7 +549,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Integrated the sample panel into the active editor work area in `src/App.tsx`, with responsive/light/dark styles in `src/styles.css`. The **Insert into document** action inserts Markdown source at the current textarea selection (replacing selected text) and restores the caret after insertion. If Preview or Blocks mode has no source textarea mounted, it appends the sample to the current document so the current view updates through the normal state/autosave path.
 - Added `handleEditorKeyDown` for Enter in the source textarea. Ordered and unordered list markers continue; ordered numbers increment; nested indentation is retained; task-list markers continue as unchecked `[ ]`; and Enter on an empty list item exits the list. Fenced code is deliberately excluded so Enter retains normal code editing behavior.
 - Added Playwright scenarios for sample selection/preview and selection replacement with inserted Markdown, plus ordered/bullet/task list continuation, empty-item exit, nested indentation and fenced-code Enter behavior.
-- Updated `UI_BACKLOG.md` with additive UI-023 (sample discoverability) and UI-024 (list Enter continuation), preserving all existing IDs. Updated `ui-FEATURES.md`, `FEATURES.md`, `FEATURES.md`, `dev-fixed.md` and `dev-build.md`.
+- Updated `UI_BACKLOG.md` with additive UI-023 (sample discoverability) and UI-024 (list Enter continuation), preserving all existing IDs. Updated `UI_BACKLOG.md`, `FEATURES.md`, `FEATURES.md`, `dev-fixed.md` and `dev-build.md`.
 - Source commits: sample component `65fb14ba86541accb9a36617588dbd80b9c65b99`; App integration `148fc99d14bfbc792e4be0a830938cbf001a791e`, newline/regex correction `40ca59461ae6cab5c2b772f4e11b32d07d55e26f`, event typing `e55a34748dcf02c1ec6ae2c87aa27afadb7aa664`; styles `6ffe152c88fec619cca223871d51086894ebe408`, nav alignment `c1f7265ed48cafe50dc9fab2fb8975c59aa0700b`; E2E `4c616bba1d7c3e37408834b8fdba117918f4e321`, stray suite-closure correction `81261223084692acf14486db9d937cd77238e055`, nested/fenced-code follow-up `757d8edba0925432bf8c5027924074ee8331a1eb`.
 - Documentation commits: UI gaps `4e0fbdfb5b2db775bab0e13e771246909e797cc6`; UI backlog `9ee90e20791c53ca78ca075a36fc87430943279b`; feature showcase `225a700a24ddfef166681c74b2528819465dcbdf`; detailed feature map `d8d4ca732010eb56b1ce54a4d2468ab46922e354`; dev-fixed `950162622719c2117337f5163fd48dcaf1119f5f`, follow-up `cd199d846d5c8069952b40fb657f765c53da5268`; dev-build `10cb85ef32f92c7924c23ebe1b62e2e6ed5a9dfe`, follow-up `746ccb7b1ae7245278c201792087a5ba0d70acc1`.
 - CI run `43633086687` for the suite-closure correction passed `npm test`, TypeScript typecheck and production build; Playwright was still executing at last inspection. The expanded nested/fenced-code test commit `757d8edba0925432bf8c5027924074ee8331a1eb` has run `43633137209`, whose Node tests, typecheck and production build passed and whose E2E step was still in progress at last inspection. No E2E pass or screenshot/manual visual review is claimed. No local test/build was run.
