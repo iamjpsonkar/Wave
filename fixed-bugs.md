@@ -17,7 +17,7 @@
 
 ## Verification summary
 
-**48 findings are source-verified as implemented** and retained below as regression scenarios. This does not mean all scenarios have been executed in a real browser. WAVE-020, WAVE-031, and WAVE-039 remain in `bugs.md`.
+**49 findings are source-verified as implemented** and retained below as regression scenarios. This does not mean all scenarios have been executed in a real browser. WAVE-031 and WAVE-039 remain partial in `bugs.md`.
 
 | ID range | Source-level disposition |
 |---|---|
@@ -935,7 +935,7 @@ This section supersedes the original unchecked remediation lists above. It recor
 | Finding | Current state | Remaining work |
 |---|---|---|
 | WAVE-019 | External edits are detected before overwrite; the user can reload or save a separate copy | Add browser-level multi-tab/external-editor tests and more explicit conflict details |
-| WAVE-020 | Snapshot source metadata is compared before and after backup; inconsistent snapshots are marked failed and excluded | Add workspace-wide operation coordination and stronger content-hash verification |
+| WAVE-020 | **Implemented in the 2026-11-14 recheck:** shared cross-tab workspace operation lock, source and copied-tree SHA-256 comparison, settings-copy verification, and failed-snapshot exclusion | `tests/storage.test.js`: concurrent Wave write waits for backup completion; altered copied bytes are rejected even when the source scan is unchanged |
 | WAVE-031 | Storage tests are in CI | Add browser E2E tests for navigation, permissions, draft recovery, attachments, mobile layout and real File System Access behavior |
 | WAVE-039 | Drafts are persisted to IndexedDB after a short debounce and on pagehide | Browser termination can still occur before an asynchronous draft write completes; test real crash/reload timing and consider a stronger write-through strategy |
 
@@ -1509,3 +1509,33 @@ The draft tests exercise the newest-record selector and queue primitives; they d
 - Recheck: use the reproduction and regression scenarios above as release checks.
 - Evidence boundary: source review at `1f676a2317339b29bdca9952b0288ded25a58616`; browser-specific timing, multi-tab behavior, permission failures, and crash recovery still require their relevant runtime tests.
 - Note: Current source contains the corrective implementation. Re-run the reproduction and regression scenarios below; runtime/browser behavior is not claimed unless covered by CI or an explicit manual test.
+
+---
+
+## Current recheck — 2026-11-14
+
+**Reviewed source:** `74314ab702b05f4c3d123d3f6fc466689d6a103d` plus subsequent browser-test and documentation commits on `main`.
+
+### WAVE-020 — closed
+
+- `openWorkspace()` registers all workspace directory handles under a shared workspace lock key.
+- Initialization and Wave-managed mutations (Markdown writes, page/folder creation, asset writes, settings changes/reset, Trash moves/list-recovery/restores/deletes, backup creation and backup restore) use the same cross-tab Web Lock. Environments without Web Locks use an in-process queue.
+- Backup generation hashes the source documents/assets before copying, hashes them again after copying, and independently hashes the copied backup tree. A copied tree that differs from the pre-copy source is rejected even if the source appears unchanged at the final scan.
+- Manifest/settings content is also compared before, after and in the copied backup.
+- Two regression tests cover a Wave write waiting behind backup verification and a copy that differs from the source snapshot.
+- Limitation: external applications do not participate in Wave's lock. Source-before/source-after and copied-content checks detect observed changes, but cannot coordinate an external writer that changes files in a way the filesystem does not expose during the observation window.
+
+### WAVE-031 — partially closed
+
+- Added `playwright.config.ts` and six Chromium E2E scenarios, run by CI after installing Playwright and Chromium.
+- Tests use native OPFS `FileSystemDirectoryHandle` instances as a deterministic browser filesystem fixture; only the user gesture's folder-picker method is stubbed.
+- Covered: workspace creation/autosave, recovery draft reload, Trash restore, backup restore, root/nested attachments and mobile navigation.
+- Still missing: native user-selected folder permission prompts/revocation, cross-tab race scenarios, external editor interference, comprehensive keyboard/accessibility checks and OS-level browser termination.
+
+### WAVE-039 — improved, still partial
+
+- Removed the 120 ms draft debounce; the editor starts `saveDraft()` directly in the input handler.
+- Added best-effort draft writes when the document becomes hidden and on `pagehide`.
+- UI reports when the recovery-draft transaction commits, separately from the Markdown file autosave.
+- Playwright verifies recovery after reload once the IndexedDB write has completed.
+- IndexedDB is asynchronous; abrupt process termination before commit can still lose the newest edit. No claim of crash-proof recovery is made.
