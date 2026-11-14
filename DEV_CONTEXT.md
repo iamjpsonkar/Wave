@@ -564,3 +564,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - CI adds a dedicated container job that validates Compose configuration and builds the production image. Run 43634056269 successfully built the container and passed Node tests, TypeScript and Vite build, while Playwright installation remained in progress at inspection. Runs 43634100390 and the latest Compose-validation workflow are pending final verification; check them before claiming complete CI.
 - Important implementation commits are catalogued in dev-build.md. No local Docker/Compose run, browser E2E completion or manual visual review was performed in this environment.
 - This is the final developer-context update for the repository restructuring and Docker delivery batch.
+
+
+- CI workflow correction after review: the first attempted Compose-check insertion did not match the workflow text. The final workflow now explicitly runs `docker compose config -q` before `docker build --pull -t wave:ci .`; commit b41adbeb2ea68fd1632975ca1275c01f6e9b87dd. Earlier image-build jobs passed; wait for the run triggered by this final workflow change to verify Compose validation and the final container build. The build log records the correction.
+- This is the final developer-context update after the CI workflow correction.
