@@ -308,7 +308,7 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 | ID | Latest implementation | Remaining acceptance / verification |
 |---|---|---|
 | UI-001 | Settings dialog, preference persistence, focus containment and Escape behavior already exist; system/theme matrix now exercises broader appearance surfaces. | Run Settings-specific visual/accessibility checks and CI; verify preference reset/reopen on latest code. |
-| UI-002 | Added optional source-preserving Markdown block editing for headings, paragraphs, lists, quotes/callouts, code fences, tables, dividers, image and attachment lines. Each block edits its original source slice; untouched text and blank lines are preserved. | **Partial:** drag/drop/reorder, block handles, slash menu, bookmark/embed blocks and richer inline formatting remain. CI and source-round-trip regression pending. |
+| UI-002 | Added optional source-preserving Markdown block editing for headings, paragraphs, lists, quotes/callouts, code fences, tables, dividers, image and attachment lines. Blocks can now be reordered by keyboard controls or drag handle, deleted, and inserted from a common-block menu. | **Partial:** slash-triggered command menu, bookmark/embed blocks and richer inline formatting remain. CI and source-round-trip/reorder regression pending. |
 | UI-003 | Centered configurable writing measure remains in place; responsive matrix now checks 320, 390, 768, 1024 and 1440 CSS-pixel widths. | Long table/code/diagram fixtures and visual review of wide/full-width modes remain. |
 | UI-004 | Every primary formatting toolbar action now has an explicit accessible name and title; Inline code and Code block retain distinct icons and labels. | CI and keyboard/tooltip review remain. |
 | UI-005 | Increased functional metadata/control text sizes; added 4.5:1 body and heading contrast assertions to the theme matrix. | **Partial:** audit all metadata, controls, disabled/error states and Settings surfaces; manual screen-reader/zoom review remains. Automated assertions are not a complete WCAG audit. |
@@ -324,7 +324,7 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 | UI-015 | Save/recovery states are announced through a polite live region; existing recovery-draft and autosave behavior remains unchanged. | User-facing version history/restore points remain a separate unimplemented capability. |
 | UI-016 | Dark/system-dark code, syntax, copy and fallback surfaces are theme-aware. | Contrast and screenshot review on latest CI remain. |
 | UI-017 | Dark/system-dark body and heading colors are explicit; matrix now asserts minimum 4.5:1 body/heading contrast against the resolved workspace surface. | Full semantic text/link/callout contrast audit remains. |
-| UI-018 | Added theme parity for productivity panel, template preview, command palette, templates, backlinks, Trash, search, Settings and controls; System-light overrides prevent dark panels in light OS mode. | Review every popover/dialog/disabled/error state with browser screenshots and CI. |
+| UI-018 | Added theme parity for productivity panel, template preview, command palette, templates, backlinks, Trash, search, Settings and controls; System-light overrides prevent dark panels in light OS mode. Template preview and command palette now contain keyboard focus with Tab/Shift+Tab. | Review every popover/dialog/disabled/error state, focus restoration, and browser screenshots/CI. |
 | UI-019 | Wordmark, folder navigation, selected folder, status and supporting labels receive stronger dark/system-dark contrast. | Full selected/current/focus state review and CI remain. |
 | UI-020 | Matrix expanded to Light/Dark/System × Edit/Preview × 5 widths = **30 states**, including representative Markdown, computed colors, body/heading contrast and page overflow. | CI, screenshot-diff review and tablet/mobile visual inspection remain. |
 
@@ -352,3 +352,13 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 - Added a regression that edits one paragraph block and verifies the exact full Markdown source after returning to source mode, including list, callout and fenced-code blocks.
 - This is a first source-preserving block layer, not full Notion-style block editing. Reordering, drag/drop, block handles, slash menu, bookmark/embed blocks and rich inline formatting remain open.
 - **Status: source and E2E regression committed; CI pending.**
+
+
+### UI implementation follow-up — block controls and dialog focus — 2026-11-14
+
+- UI-002: added keyboard up/down reordering, a draggable block handle, deletion, and a common-block insertion menu (paragraph, heading, list, quote, callout, code fence, divider). Reordering retains source text and inter-block whitespace. Added E2E coverage for keyboard movement, drag-and-drop, insertion and exact source output.
+- UI-018: template preview and command palette now trap keyboard focus; template preview initially focuses its close control. Added Shift+Tab/Tab wrap regression for the template dialog.
+- E2E source inventory is now **39 scenarios**; Node source remains **30 tests**. These are source counts only.
+- UI-002 remains partial: slash-triggered menu, bookmark/embed blocks and rich inline editing remain. UI-018 focus restoration and full dialog/popover visual/accessibility audit remain open.
+- Latest source commits: block editor \x609e4f29390447dcdbd43f80098da522385a270448\x60, drag reorder \x607057ce25861bffce43ee05ce5f8afb305ae1d0e8\x60, App focus containment \x60290f926c92caffe64d2ac34f1eea483df015f464\x60; tests \x608bb74c69ec4c9adad7d59c0e34e869224742fa42\x60, \x60f292e32e853fce640d44f05f554ee4bce1cbba72\x60, \x60b90369be8ef6ba66ab95f84f5e609b406afd87f7\x60; styles \x606bbd015307f55a0e385b6f041d383bdb07e6e87c\x60, \x6093bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62\x60.
+- No test, typecheck, build, screenshot review or CI pass is claimed. Latest checked combined status and workflow results were empty; verification remains pending.
