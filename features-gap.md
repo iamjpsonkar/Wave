@@ -35,8 +35,9 @@
 - [x] Inline, titled, reference-style and automatic URL/email links.
 - [x] Heading links, Wave wiki links/backlinks and reference-style link examples.
 - [x] Local image assets; readable fallback for remote/missing images; image alt/title fallback.
+- [x] Decorative empty-alt images remain hidden from assistive technology; missing informative images expose a named image fallback. Reference-style and linked images preserve alt/title semantics and keyboard-operable links.
 - [x] URL-scheme security matrix includes HTTPS/mailto and unsafe javascript/data/vbscript/file schemes; local media path tests include traversal and remote-path rejection.
-- [~] Expand image accessibility tests for decorative empty alt text, keyboard/screen-reader behavior, broken assets and unusual reference-linked image cases. Remote image fetching remains disabled intentionally.
+- [x] E2E coverage verifies decorative empty alt text, named missing-image fallback, real local images, reference-style linked images and keyboard focus. Remote image fetching remains disabled intentionally.
 
 ## 5. Code blocks
 
@@ -110,7 +111,7 @@
 
 ## 15. Compatibility, quality and test coverage
 
-- [x] Current test sources define 30 Node tests and 28 Playwright Chromium scenarios.
+- [x] Current test sources define 30 Node tests and 29 Playwright Chromium scenarios.
 - [x] Representative fixtures cover GFM tables/tasks/footnotes/alerts, unsafe HTML and URL handling, local media path restrictions, math examples, Mermaid families, other local renderer subsets, template selection, multiline code insertion/copy, accessibility smoke behavior and preview/source round-trip.
 - [~] Current accessibility tests are focused smoke/regression checks, not a full WCAG audit, axe scan or screen-reader certification. The latest diagram-title accessible-name fix awaits CI.
 - [ ] Add a structured compatibility fixture suite for every example in the supplied showcase, with expected preview DOM and security assertions.

@@ -91,3 +91,7 @@ npm run build
 ---
 
 **Wave is early software.** Keep independent backups of important files. Recovery drafts are browser-local, and verified workspace backups should be copied to a separate location.
+
+
+### Accessible Markdown images
+- Informative images retain accessible alt text, decorative empty-alt images remain hidden from assistive technology, and missing informative local images display a named fallback.

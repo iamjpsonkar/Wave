@@ -25,6 +25,12 @@ Fenced Mermaid definitions render locally for constrained subsets of flowchart, 
 
 Raw HTML is not enabled in the Markdown parser. Link URLs are sanitized by the Markdown pipeline; active schemes such as `javascript:`, `data:`, `vbscript:` and `file:` must not become clickable anchors. Ordinary HTTPS and mailto links remain available. This is deliberate: Wave uses a sanitized preview and does not execute scripts, event handlers, embedded frames, remote media, or arbitrary HTML. HTML examples in Markdown documents remain source text or are sanitized by the parser. Equivalent safe inline shorthands are available without enabling raw HTML: `==highlight==`, `++underline++`, `^superscript^`, `~subscript~`, and `[[kbd:Ctrl+K]]`. Use `> [!DETAILS] Summary` followed by quoted body lines for a keyboard-operable disclosure block.
 
+
+
+### Image accessibility and missing assets
+
+Informative images retain their Markdown alt text as their accessible name. If an informative local image cannot be resolved, Wave renders a visible fallback with image semantics and the same accessible name instead of leaving a broken image. An explicitly empty alt string remains decorative: both loaded and missing decorative images are hidden from assistive technology and do not receive a fabricated fallback label. Reference-style images and images wrapped in links retain their title/alt metadata; linked images remain keyboard-focusable through the surrounding link. Remote image fetching remains disabled.
+
 ## Diagram accessibility
 
 Rendered diagrams expose their SVG as a named image, while the surrounding container remains a normal document region. The **View diagram source** disclosure stays outside the image semantics and can be reached and toggled with the keyboard, preserving a readable source alternative for assistive technology.

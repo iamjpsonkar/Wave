@@ -827,7 +827,7 @@ test('Markdown preview exposes accessible semantic structure and keyboard-operab
   await expect(preview.getByRole('checkbox')).toHaveCount(2);
   await expect(preview.getByRole('note', { name: 'NOTE' })).toContainText('Semantic callout content.');
   await expect(preview.getByText('More information')).toBeVisible();
-  await expect(preview.locator('details summary')).toHaveText('More information');
+  await expect(preview.locator('.markdown-details > summary')).toHaveText('More information');
   const copyButton = preview.getByRole('button', { name: 'Copy code block' });
   await expect(copyButton).toBeVisible();
   await copyButton.focus();
@@ -1001,4 +1001,50 @@ test('Markdown Mermaid mindmap, timeline, quadrant, requirement and architecture
   await expect(diagrams.nth(3).locator('rect')).toHaveCount(2);
   await expect(diagrams.nth(4).locator('rect')).toHaveCount(3);
   await expect(diagrams.locator('.diagram-source summary')).toHaveCount(5);
+});
+
+
+test('Markdown images preserve decorative semantics, accessible fallbacks and reference links', async ({ page }) => {
+  await openWorkspace(page);
+  await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const assets = await wave.getDirectoryHandle('assets');
+    const image = await assets.getFileHandle('one-pixel.png', { create: true });
+    const bytes = Uint8Array.from(atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/aKcAAAAASUVORK5CYII='), value => value.charCodeAt(0));
+    const writer = await image.createWritable();
+    await writer.write(new Blob([bytes], { type: 'image/png' }));
+    await writer.close();
+  });
+  const editor = await createPage(page, 'Image Accessibility');
+  await editor.fill([
+    '# Image Accessibility',
+    '',
+    '![Accessible artwork](assets/one-pixel.png "Artwork title")',
+    '',
+    '![](assets/one-pixel.png)',
+    '',
+    '![Missing artwork](assets/missing.png "Missing title")',
+    '',
+    '![](assets/missing-decorative.png)',
+    '',
+    '[![Linked artwork][reference-art]](https://example.com/gallery "Gallery")',
+    '',
+    '[reference-art]: assets/one-pixel.png "Reference title"'
+  ].join('\\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  const artwork = preview.getByRole('img', { name: 'Accessible artwork' });
+  await expect(artwork).toHaveAttribute('alt', 'Accessible artwork');
+  await expect(artwork).toHaveAttribute('title', 'Artwork title');
+  await expect(preview.locator('img[alt=""]')).toHaveCount(1);
+  const missing = preview.getByRole('img', { name: 'Missing artwork' });
+  await expect(missing).toHaveText('Missing artwork');
+  await expect(missing).toHaveAttribute('aria-label', 'Missing artwork');
+  await expect(preview.locator('.missing-asset[aria-hidden="true"][role="presentation"]')).toHaveCount(1);
+  const linkedImage = preview.getByRole('link', { name: 'Linked artwork' });
+  await expect(linkedImage).toHaveAttribute('href', 'https://example.com/gallery');
+  await linkedImage.focus();
+  await expect(linkedImage).toBeFocused();
+  await expect(linkedImage.locator('img')).toHaveAttribute('title', 'Reference title');
 });

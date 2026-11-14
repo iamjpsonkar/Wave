@@ -160,3 +160,11 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Source commit: `268de12338bce554f18e5feef27acbb5e9ea45fe`.
 - The regression scenario expects the title **Checkout sequence** and verifies that the source disclosure can be opened with the keyboard.
 - Verification is pending the E2E result for [run 43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306). Do not classify the accessibility improvement as CI-verified until that run passes.
+
+ 
+## 2026-11-14 — Markdown image accessibility and fallback semantics
+
+- **Issue:** A missing image rendered as an ordinary text span, so screen readers did not receive image semantics. Empty alt text was also replaced with a generic visible fallback, incorrectly turning decorative images into announced content.
+- **Change:** `LocalMarkdownImage` now preserves explicit empty alt text, assigns image semantics and an accessible name to informative missing-image fallbacks, and keeps decorative missing images hidden from the accessibility tree. Loaded images use the Markdown alt text (or title only when alt is omitted).
+- **Regression:** Added Playwright coverage for a real local image, empty-alt decorative image, missing informative/decorative images, reference-style linked image metadata and keyboard focus on the wrapping link. Also narrowed an existing DETAILS summary selector after CI exposed a strict-mode collision with the diagram source disclosure.
+- **Verification:** Source and regression coverage committed; CI is pending. See `features-gap.md` and `dev-build.md` for the current acceptance and CI record.

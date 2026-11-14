@@ -42,7 +42,10 @@ function LocalMarkdownMedia({kind,src,assets}:{kind:'audio'|'video';src:string;a
 }
 function LocalMarkdownImage({src,alt,title,assets}:{src?:string;alt?:string;title?:string;assets:FileSystemDirectoryHandle}) {
  const url=useLocalAssetUrl(assets,src);
- return url?<img src={url} alt={alt||''} title={title}/>:<span className="missing-asset" title={title}>{alt||'Local image unavailable'}</span>;
+ const accessibleAlt=alt===undefined?(title?.trim()||'Local image unavailable'):alt;
+ if(url)return <img src={url} alt={accessibleAlt} title={title}/>;
+ if(accessibleAlt==='')return <span className="missing-asset" title={title} role="presentation" aria-hidden="true"/>;
+ return <span className="missing-asset" title={title} role="img" aria-label={accessibleAlt}>{accessibleAlt}</span>;
 }
 function LocalMarkdownLink({href,title,children,assets}:{href?:string;title?:string;children:ReactNode;assets:FileSystemDirectoryHandle}) {
  const local=Boolean(localAssetName(href));

@@ -167,3 +167,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Corrected in source commit `268de12338bce554f18e5feef27acbb5e9ea45fe` by using the sequence diagram's `title` directive as its SVG accessible name.
 - Verification run [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) is in progress; Node tests, typecheck and production build have passed, while Playwright was still running at the time of this log. Do not mark the accessibility correction fully verified until E2E and the current-main workflow pass.
 - Tracker commits: bugs `5e8e6963c49d3163405ffc267a1504b04bb5a7eb`; fixed bugs `54fb999bc97a784d13dbecdc8ff3981f1684ba02`; features gap `13aecf6eec05fc62710bbe338204f35c5114d558`.
+
+ 
+## 2026-11-14 — Image accessibility implementation and CI repair
+
+- Latest-main CI run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed install, all 30 Node tests, TypeScript typecheck and production build, but Playwright failed **27/28** because the accessibility smoke test used a broad `details summary` selector that matched both the DETAILS block and Mermaid source disclosure. This was a test-selector issue, not an application runtime failure.
+- The selector now targets `.markdown-details > summary`. The same change adds image accessibility behavior and regression coverage: meaningful missing images expose a named image fallback; explicit empty alt text remains decorative; reference-style linked images retain their accessible name/title and keyboard focus.
+- New E2E source count: **29 scenarios**; Node source remains **30 tests**. CI for this commit is pending; no pass is claimed.
