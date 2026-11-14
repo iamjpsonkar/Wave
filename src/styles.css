@@ -612,3 +612,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .app.theme-system .markdown-block-controls button,.app.theme-system .block-insert>button,.app.theme-system .block-insert-menu{background:#202820;border-color:#465344;color:#dce8d6}
 .app.theme-system .block-insert-menu button{background:transparent;color:#dce8d6}
 @media(prefers-color-scheme:light){.app.theme-system .markdown-block-controls button,.app.theme-system .block-insert>button,.app.theme-system .block-insert-menu{background:#fff;border-color:#e1e7dc;color:#53664f}.app.theme-system .block-insert-menu button{background:transparent;color:#53664f}}
+
+.markdown-block.is-dragging{opacity:.55;border-style:dashed}
+.markdown-block-controls .block-drag-handle{cursor:grab;touch-action:none}
+.markdown-block-controls .block-drag-handle:active{cursor:grabbing}
