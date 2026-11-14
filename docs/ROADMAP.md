@@ -30,13 +30,13 @@ Wave is being developed as a user-owned workspace inspired by Notion and Quip. T
 - [ ] Add transactional persistence, integrity checks and restore verification.
 
 - [x] Workspace reopen flow and permission recovery
-- [ ] Backup browser and restore workflow
-- [ ] Atomic writes and interrupted-save recovery
+- [x] Backup browser and restore to a separate workspace folder
+- [x] Revision-ordered writes, external-edit checks and IndexedDB draft recovery\n- [x] Incomplete backup markers and Trash operation journal
 - [ ] Schema migration framework
 - [x] Empty-folder persistence and navigation
 - [ ] Folder rename/delete
 - [ ] Document rename and move
-- [ ] Automated storage-adapter tests
+- [x] Node storage regression tests in CI (browser E2E coverage remains outstanding)
 
 ## Release 0.4 — Writing and block editor
 
