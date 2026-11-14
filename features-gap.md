@@ -145,3 +145,10 @@
 - The diagram-accessibility test initially failed because the sequence renderer exposed a generic accessible name; the sequence SVG now uses its Mermaid `title` as its accessible name (commit `268de12338bce554f18e5feef27acbb5e9ea45fe`). Run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed Node, typecheck and build but exposed a stale strict-mode selector in the accessibility smoke test; that selector is narrowed in the current source. Image accessibility/fallback changes and the selector correction are under CI in run [43620153572](https://github.com/iamjpsonkar/Wave/actions/runs/43620153572).
 - Source presence and a test definition are not proof of a passing test. Keep full TeX/Mermaid/other-renderer compatibility explicitly partial unless compatible engines and broad conformance fixtures are adopted.
 - Security boundaries remain intentional: arbitrary raw HTML, iframe embeds, remote media and remote image fetching stay disabled; local-only controlled media is supported.
+
+
+## Color extension portability and editor follow-up — 2026-11-15
+
+- Wave's foreground/background inline color and block fill directives remain intentionally Wave-specific Markdown extensions. Other Markdown readers may show the directive syntax literally; a portable export/fallback conversion is still a gap.
+- The Blocks editor now offers per-block background color selection by applying or updating `> [!COLOR=#RRGGBB]`. This does not enable raw HTML or arbitrary CSS.
+- Nested inline ranges and accessible-contrast guidance for user-selected colors remain open. Keep these limitations explicit until implemented and tested.
