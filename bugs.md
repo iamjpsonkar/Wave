@@ -791,3 +791,161 @@ This section supersedes the original unchecked remediation lists above. It recor
 The repository now includes a committed npm lockfile and uses `npm ci`. The CI workflow runs `npm test`, `npm run typecheck` and `npm run build`. Latest verified run: [43599727201](https://github.com/iamjpsonkar/Wave/actions/runs/43599727201) — success; 14 tests passed, 0 failed.
 
 Do not begin the next feature milestone until the current CI run is green and the remaining browser-level verification items have been reviewed. No storage reliability claim should be interpreted as a substitute for keeping an independent backup of important data.
+
+
+---
+
+# 14. Independent verification against current main — 2026-11-14
+
+**Verified revision:** `c372653d642742d7ae75333da6d2fa1287a423fa`  
+**Scope:** Current `src/App.tsx`, `src/storage.ts`, `src/draftJournal.ts`, package/CI configuration, and the committed storage test suite.  
+**Method:** Static source review plus inspection of the latest GitHub Actions run. No interactive browser session or real File System Access API fault-injection was performed.
+
+A status of **Implemented** means the original defect's code path has been changed in the current source. It is not a claim that all browser timing, multi-tab, permission, or crash scenarios have been reproduced. **Partial** means a safeguard exists but a meaningful gap remains.
+
+## 14.1 Status of the original 40 findings
+
+| Finding | Current status | Verification notes |
+|---|---|---|
+| WAVE-001 | **Implemented** | `loadTrash()` flushes the active document before clearing editor state. |
+| WAVE-002 | **Implemented** | `activateWorkspace()` flushes the previous workspace before loading and publishing the next one. |
+| WAVE-003 | **Implemented** | Restore now uses collision-safe `createDoc()`; existing pages are not silently replaced. |
+| WAVE-004 | **Implemented** | App-level save queue plus storage-level per-path write queue and compare-before-write guard. |
+| WAVE-005 | **Implemented** | Trash operations have operation markers, verification, and recovery reconciliation. Fault-injection remains outstanding. |
+| WAVE-006 | **Implemented** | `listTrashDetailed()` validates each record and reports bad/orphaned entries without aborting the entire listing. |
+| WAVE-007 | **Implemented** | Destination docs/folders/settings are loaded before `setWs()`; settings failures are surfaced while preserving the original. |
+| WAVE-008 | **Implemented** | Attachment operation captures its originating workspace/path and writes to that document rather than whichever page is currently active. |
+| WAVE-009 | **Implemented** | File input value is cleared immediately after selection, allowing the same file to be selected again. |
+| WAVE-010 | **Implemented** | Local asset detection parses the URL/path shape instead of using a loose `includes('assets/')` test. |
+| WAVE-011 | **Implemented** | Percent decoding is guarded; malformed paths are treated as non-local assets. |
+| WAVE-012 | **Implemented** | Toolbar list/quote prefixes transform every selected line; numbered lists receive sequential numbers. |
+| WAVE-013 | **Implemented** | Folder navigation now renders recursively. |
+| WAVE-014 | **Implemented** | The unsearched page list is scoped to the selected folder; search remains workspace-wide. |
+| WAVE-015 | **Implemented** | Search results include path/snippet context and keyboard result navigation. |
+| WAVE-016 | **Implemented** | Refresh and Trash flows reconcile favorite paths against existing documents. |
+| WAVE-017 | **Implemented** | `listDocs()` reads only a small prefix for title extraction instead of loading every document body; full content is read for actual search/open operations. |
+| WAVE-018 | **Implemented** | Backup browser and restore-to-separate-folder workflow are present. |
+| WAVE-019 | **Partial** | Writes compare the current disk content with the last observed content and expose reload/save-copy conflict handling. There is no continuous filesystem watcher; browser-level multi-tab/external-editor tests remain. |
+| WAVE-020 | **Partial** | Backup snapshots compare path/size/lastModified metadata and settings before/after copying. This is not a content-hash snapshot or workspace-wide lock; same-size/same-timestamp changes and concurrent operations need stronger protection. |
+| WAVE-021 | **Implemented in inspected paths** | Core async UI actions catch and surface errors; storage and browser failure-path testing is still needed. |
+| WAVE-022 | **Implemented** | Save status is tied to the active document revision and completed persistence operation. |
+| WAVE-023 | **Implemented** | Corrupt settings now raise an explicit error; the UI can back up the original before resetting defaults. |
+| WAVE-024 | **Implemented** | Settings writes are serialized; favorite state is kept in a ref and queued. |
+| WAVE-025 | **Implemented** | Mobile navigation uses a drawer/backdrop and restores essential navigation controls. |
+| WAVE-026 | **Implemented** | Short viewport CSS removes the old 560px minimum-height clipping behavior and makes constrained panes scrollable. |
+| WAVE-027 | **Implemented** | Global shortcuts check whether focus is in an input, textarea, select, or contenteditable element. |
+| WAVE-028 | **Implemented as a UX clarification** | Placeholder settings are visibly marked as coming later rather than presented as working controls. Full settings functionality remains planned, not a bug in the current MVP. |
+| WAVE-029 | **Implemented** | Architecture/privacy documentation now accurately discloses the Google Fonts request rather than claiming system-only fonts. |
+| WAVE-030 | **Implemented** | Workspace mutation flows call manifest metadata update; settings writes also update it. |
+| WAVE-031 | **Partial** | Storage regression tests run in CI. There are still no browser E2E tests for real File System Access behavior, navigation timing, permissions, attachments, or crash recovery. |
+| WAVE-032 | **Implemented for the reported activation path** | Workspace activation flushes the old editor and does not publish the new workspace until destination loading completes. A related late-completing-action race is newly recorded as WAVE-041. |
+| WAVE-033 | **Implemented** | Backup directories receive in-progress/complete/failed markers; only complete snapshots are listed and accepted for restore. |
+| WAVE-034 | **Implemented** | Asset allocation checks only actual directory entries and propagates permission/I/O errors; allocation is serialized and verifies the saved size. |
+| WAVE-035 | **Implemented** | Folder creation checks for case-insensitive existing entries and rejects collisions. |
+| WAVE-036 | **Implemented** | Document open uses a monotonically increasing request token and checks it after awaited operations. |
+| WAVE-037 | **Implemented in the storage creation path** | `createDoc()` allocates a unique path under a per-path queue and workspace lock; same-name and case-only concurrent creation has a storage regression test. |
+| WAVE-038 | **Implemented** | A committed `package-lock.json` exists and CI uses `npm ci`. The latest CI run confirms the lockfile install succeeds. |
+| WAVE-039 | **Partial** | An IndexedDB draft journal saves after a short debounce and on `pagehide`. This improves recovery but does not guarantee persistence if the browser/process is terminated before the asynchronous transaction completes. The journal's own concurrent-write behavior also needs a fix (WAVE-042). |
+| WAVE-040 | **Implemented** | `createFolder()` returns the complete normalized path and the UI selects that returned path. |
+
+### Summary
+
+- **36 findings:** implementation changes are present for the original reported defect.
+- **4 findings remain partial:** WAVE-019, WAVE-020, WAVE-031, WAVE-039.
+- “Implemented” is source-level verification, not a statement that every edge case has passed browser testing.
+- The 14 storage tests cover selected storage behaviors; they do not test React component state races or actual browser crash timing.
+
+## 14.2 New findings discovered during the verification pass
+
+## WAVE-041 — A late async page operation can publish stale workspace state after a workspace switch
+
+- Priority: **P1** | Confidence: **High; timing-dependent**
+- File: `src/App.tsx` — `create()`, `createFromTemplate()`, `duplicateCurrent()`, `refresh()`, and attachment completion
+
+### Problem
+Workspace activation now loads the destination before publishing it, which fixes WAVE-032's original autosave-effect ordering. However, other asynchronous UI operations capture a workspace and then perform multiple awaited operations without checking that the captured workspace is still the active workspace before committing React state.
+
+For example, `create()` captures `current = wsRef.current`, awaits flush, creates a document in that workspace, updates metadata and refreshes it, then calls `setActive(path)`, updates `activeRef`, and changes editor content. If the user switches to another workspace while those awaits are in flight, the old operation can complete afterward and publish its old path/content into the new workspace's editor state. The autosave effect is keyed from the currently selected `ws`; if the destination workspace already has a document at the same path, this can overwrite that destination document with the stale operation's content. If it does not, it can cause a save error and leave navigation state inconsistent.
+
+The same stale-publication pattern exists in template creation and duplication. The attachment flow correctly captures its source document for file writes, but its final `refresh(targetWorkspace)` can still publish old workspace docs/folders after the user has switched.
+
+### Reproduction
+1. Open workspace A and trigger New page, New from template, or Duplicate.
+2. Delay the storage operation (or use a workspace/filesystem that makes it slow).
+3. Switch to workspace B before the operation completes.
+4. Let the A operation finish. Inspect the active editor, sidebar list, and any same-path page in B.
+
+### Expected and fix
+Give each workspace activation a generation/token. Every async action that captures a workspace must verify both the generation and `wsRef.current === capturedWorkspace` after awaited work and before changing UI state. Make `refresh(w)` publish docs/folders/favorites only if `w` is still active; do not use the current workspace's favorites to rewrite a different workspace's settings. Consider disabling workspace switching while a mutation is committing, but still keep generation checks as the correctness boundary.
+
+### Regression tests
+Add component/browser tests that pause create/template/duplicate/attachment operations, switch A to B, then release the operation. Assert B's editor and sidebar remain unchanged and no B document is overwritten.
+
+## WAVE-042 — Concurrent draft-journal writes can create duplicate or stale recovery records
+
+- Priority: **P1** | Confidence: **High; concurrent timing-dependent**
+- File: `src/draftJournal.ts` — `saveDraft()`, `findDraft()`, `getDraft()`
+
+### Problem
+`saveDraft()` first reads all records and searches for a matching workspace/path, then starts a separate IndexedDB write transaction. That read-then-write sequence is not atomic and is not serialized. If two saves for the same workspace/path overlap (for example, the 120 ms draft debounce and a `pagehide` save), both can observe no existing record and each call `put()` without an ID. Because the object store uses an auto-increment key, this can create two records for the same document. Concurrent updates to an existing record can also complete out of order.
+
+`getDraft()` returns the first matching record from `getAll()`; it does not select the newest `updatedAt`. A stale record can therefore be recovered instead of the latest draft.
+
+### Impact
+The recovery journal can offer older text even though a newer draft write was attempted. This weakens the safety net intended to cover the autosave debounce/crash window.
+
+### Fix
+Use a stable key for each workspace/path (or a serialized per-key queue) and make lookup/update atomic within a single readwrite transaction. If duplicate legacy records exist, select the greatest `updatedAt` and clean up older duplicates. Ensure a late older save cannot replace a newer revision by carrying a monotonic revision or timestamp check.
+
+### Regression tests
+Run two overlapping saves for the same new draft and for an existing draft, complete them in both possible orders, and verify exactly one record remains and `getDraft()` returns the newest content.
+
+## WAVE-043 — Backup restore can reuse an existing destination folder and overwrite its contents
+
+- Priority: **P1** | Confidence: **High**
+- File: `src/storage.ts` — `restoreBackupToNewWorkspace()`
+
+### Problem
+The restore target name is generated from the workspace name and current timestamp. The code requests the directory with `create:false`, but if that directory already exists, the call succeeds and the existing directory is reused. The restore then copies backup files into its `.wave/documents` and `.wave/assets` directories using writes that create or replace files.
+
+This is not an exclusive destination allocation. A pre-existing folder with the generated name, or two overlapping restore actions that generate the same name, can cause an existing restored/user directory to be reused and its same-path files overwritten.
+
+### Fix
+Allocate a genuinely unused destination name with collision handling protected by a workspace lock. Never use an existing directory as a restore target. Create the restore in a temporary/in-progress folder and publish/rename it only after all files and metadata have been copied and verified.
+
+### Regression tests
+Pre-create a folder matching the generated restore name and attempt restore; verify the existing folder is byte-for-byte unchanged and a new unique destination is chosen. Also run two restore operations concurrently.
+
+## WAVE-044 — Failed backup restore leaves a partial workspace folder without a recovery marker
+
+- Priority: **P2** | Confidence: **High**
+- File: `src/storage.ts` — `restoreBackupToNewWorkspace()`
+
+### Problem
+The restore function creates the destination root folder and `.wave` directory before copying documents, assets, and metadata. If a copy, verification, or metadata write fails, the function throws but does not mark the destination as incomplete or remove it safely. A partial folder remains in the user's selected root and may be mistaken for a usable restored workspace.
+
+### Fix
+Use an explicit restore operation marker/state, validate all copied content, and only mark the target as complete after verification. On failure, either safely roll back the newly created target or leave an unmistakable failed marker and exclude it from workspace discovery/restore completion.
+
+### Regression tests
+Inject failures during document copy, asset copy, and metadata copy. Verify incomplete destinations are never presented as successful restores and can be safely retried or cleaned up.
+
+## 14.3 Current CI evidence
+
+The latest observed GitHub Actions run for the verified revision is:
+
+- Run: [43599964894](https://github.com/iamjpsonkar/Wave/actions/runs/43599964894)
+- Commit: `c372653d642742d7ae75333da6d2fa1287a423fa`
+- Result: **Success**
+- Steps verified: `npm ci`, `npm test`, `npm run typecheck`, and `npm run build`.
+- The committed test file currently contains 14 Node storage regression tests. A successful CI run is not browser E2E coverage.
+
+## 14.4 Updated next actions
+
+1. **P1 — WAVE-041:** Add workspace-generation guards to all asynchronous UI mutations and to `refresh()`.
+2. **P1 — WAVE-042:** Make draft-journal writes atomic/serialized and recover the newest revision only.
+3. **P1 — WAVE-043:** Make backup restore destination allocation exclusive; never reuse an existing folder.
+4. **P2 — WAVE-044:** Mark or roll back incomplete restore destinations.
+5. **P1/P2 — WAVE-019, WAVE-020, WAVE-031, WAVE-039:** Complete browser-level conflict, backup, crash-recovery, and navigation testing.
+
+**Updated audit count:** 44 numbered findings (WAVE-001 through WAVE-044), plus the 8 cross-cutting risks. The original 40-item remediation status is superseded by the verification matrix in this section.
