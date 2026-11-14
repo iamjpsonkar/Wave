@@ -93,3 +93,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Browser suite source contains **23 unique scenarios** (the run executed 20 successfully and 3 failed). Node suite contains **30 tests**.
 - The gap audit is updated in [features-gap.md](./features-gap.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](./docs/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
 - Do not call the Markdown showcase complete. Remaining work includes fixing the three E2E failures, expanding accessibility/conformance/round-trip/browser coverage, and documenting the strict limits of the local TeX/Mermaid/other-format renderers.
+
+
+## 2026-11-14 — Markdown gap remediation CI checkpoint
+
+- Source changes: technical learning-notes template now uses real newline separators; a new template-selection/preview E2E scenario was added; the three known stale/strict Markdown E2E assertions were revised to test rendered user-visible behavior.
+- Browser test source now defines **24 scenarios** (23 existing scenarios plus the new template regression). Node test source remains **30 tests**.
+- Relevant code/test commits: `b8e936b707d9f8c2d78a88991943b7a57c705689`, `65f62060152596d160f66effebcf17a274edc80b`, `f633ccc75c9afb9d3ab7529b489e557d7ae9f8c8`, `5d6b16d18e552c79f11dd6471c47aeab54662f47`.
+- No local test execution was possible in this session. The GitHub workflow run for these commits has not yet been retrieved, so install, Node tests, typecheck, build and all 24 E2E scenarios are **unverified**. Do not infer success from the commits or test definitions.
+- The three old E2E assertion blockers have been corrected in source, but a fresh green browser run is required. WAVE-052 remains in `bugs.md` until the new regression scenario passes.
+- This is an initial remediation checkpoint, not completion of `features-gap.md`. Full TeX/Mermaid/other-language compatibility, accessibility, cross-browser, visual, malformed-input/resource-limit and source-round-trip work remain open.
