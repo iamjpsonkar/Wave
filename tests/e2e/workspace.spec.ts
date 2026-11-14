@@ -1418,6 +1418,9 @@ test('block editor reorders blocks without losing separators and inserts common 
   await expect(blocks.getByRole('textbox', { name: 'Edit list block 2' })).toHaveValue('- List item');
   await expect(blocks.getByRole('textbox', { name: 'Edit paragraph block 3' })).toHaveValue('Paragraph block.');
   await blocks.getByRole('button', { name: 'Move block 3 up' }).click();
+  await blocks.getByRole('button', { name: 'Drag block 2' }).dragTo(blocks.locator('.markdown-block').nth(2));
+  await expect(blocks.getByRole('textbox', { name: 'Edit list block 2' })).toHaveValue('- List item');
+  await blocks.getByRole('button', { name: 'Move block 3 up' }).click();
   await blocks.getByRole('button', { name: 'Add block' }).click();
   await blocks.getByRole('menu', { name: 'Add a Markdown block' }).getByRole('menuitem', { name: 'Heading' }).click();
   await expect(blocks.getByRole('textbox', { name: 'Edit heading block 4' })).toHaveValue('## New heading');
