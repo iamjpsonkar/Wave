@@ -1536,3 +1536,28 @@ test('Wave Complete Feature Test template is available and previews its feature 
   await expect(editor).toHaveValue(markdown);
 });
 });
+
+
+test('Preview exports only the rendered document through the browser PDF print flow', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'PDF Export Regression');
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview).toContainText('Browser regression content');
+  await page.evaluate(() => {
+    (window as any).__wavePrintCalled = false;
+    window.print = () => {
+      (window as any).__wavePrintCalled = true;
+      window.dispatchEvent(new Event('afterprint'));
+    };
+  });
+  const originalTitle = await page.title();
+  await page.getByRole('button', { name: 'Export PDF' }).click();
+  expect(await page.evaluate(() => (window as any).__wavePrintCalled)).toBe(true);
+  await expect(page).toHaveTitle(originalTitle);
+  await page.emulateMedia({ media: 'print' });
+  await expect(page.locator('.sidebar')).toHaveCSS('visibility', 'hidden');
+  await expect(preview).toHaveCSS('visibility', 'visible');
+  await expect(page.locator('.topbar')).toHaveCSS('visibility', 'hidden');
+  await page.emulateMedia({ media: 'screen' });
+});
