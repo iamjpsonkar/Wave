@@ -3,7 +3,7 @@
 > Audit date: 2026-11-14  
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed revision: 5b1949d27a6e14834ce40f9cbde93a4dd7f0485c  
+> Reviewed revision: e55839df395f7bfc4ba6f5dc6c234c993d875ff5  
 > App version: 0.2.0  
 > Review type: Static source-code and documentation review
 
@@ -509,46 +509,46 @@ These belong in the product roadmap. The data-loss, restore-collision, and navig
 
 ## Release gate A — Protect user data
 
-- [ ] WAVE-001 — Flush before opening Trash.
-- [ ] WAVE-002 — Flush before workspace switch.
-- [ ] WAVE-003 — Collision-safe restore with no overwrite.
-- [ ] WAVE-004 — Serialized, revision-aware document writes.
-- [ ] WAVE-005 — Recoverable Trash operation journal.
-- [ ] WAVE-006 — Per-item Trash validation and error isolation.
-- [ ] WAVE-021 — Catch async failures and preserve drafts.
-- [ ] WAVE-022 — Revision-aware save status.
-- [ ] WAVE-031 — Automated storage regression tests.
+- [ ] [x] WAVE-001 — Flush before opening Trash.
+- [ ] [x] WAVE-002 — Flush before workspace switch.
+- [ ] [x] WAVE-003 — Collision-safe restore with no overwrite.
+- [ ] [x] WAVE-004 — Serialized, revision-aware document writes.
+- [ ] [~] WAVE-005 — Trash operation journal and interrupted-operation reporting; automatic reconciliation remains.
+- [ ] [x] WAVE-006 — Per-item Trash validation and error isolation.
+- [ ] [x] WAVE-021 — Catch async failures and preserve drafts.
+- [ ] [x] WAVE-022 — Revision-aware save status.
+- [ ] [~] WAVE-031 — Storage regression tests run in CI; browser E2E tests remain.
 
 ## Release gate B — Make core workflows dependable
 
-- [ ] WAVE-007 — Transactional workspace activation.
-- [ ] WAVE-008 — Bind attachment upload to its originating document.
-- [ ] WAVE-010 — Correct local/external URL classification.
-- [ ] WAVE-011 — Guard malformed URL decoding.
-- [ ] WAVE-017 — Avoid reading all Markdown content on every refresh.
-- [ ] WAVE-018 — Implement backup browser and restore workflow.
-- [ ] WAVE-019 — Detect external modifications/conflicts.
-- [ ] WAVE-023 — Preserve and report corrupt settings.
+- [ ] [x] WAVE-007 — Transactional workspace activation.
+- [ ] [x] WAVE-008 — Bind attachment upload to its originating document.
+- [ ] [x] WAVE-010 — Correct local/external URL classification.
+- [ ] [x] WAVE-011 — Guard malformed URL decoding.
+- [ ] [x] WAVE-017 — Avoid reading all Markdown content on every refresh.
+- [ ] [x] WAVE-018 — Implement backup browser and restore workflow (restore creates a separate workspace folder).
+- [ ] [~] WAVE-019 — Detect and prevent external overwrite; reload/save-as-copy actions are available, browser conflict tests remain.
+- [ ] [x] WAVE-023 — Preserve and report corrupt settings.
 
 ## Release gate C — Improve daily usability
 
-- [ ] WAVE-009 — Reset attachment input.
-- [ ] WAVE-012 — Multi-line toolbar formatting.
-- [ ] WAVE-013 — Recursive folder tree.
-- [ ] WAVE-014 — Clear folder selection semantics.
-- [ ] WAVE-015 — Search snippets and keyboard navigation.
-- [ ] WAVE-016 — Stable favorite references.
-- [ ] WAVE-024 — Serialize settings updates.
-- [ ] WAVE-025 — Mobile navigation.
-- [ ] WAVE-026 — Short viewport layout.
-- [ ] WAVE-027 — Focus-aware keyboard shortcuts.
-- [ ] WAVE-028 — Clarify placeholder controls.
+- [ ] [x] WAVE-009 — Reset attachment input.
+- [ ] [x] WAVE-012 — Multi-line toolbar formatting.
+- [ ] [x] WAVE-013 — Recursive folder tree.
+- [ ] [x] WAVE-014 — Clear folder selection semantics.
+- [ ] [x] WAVE-015 — Search snippets and keyboard navigation.
+- [ ] [x] WAVE-016 — Reconcile stale favorite references after deletion/restore.
+- [ ] [x] WAVE-024 — Serialize settings updates.
+- [ ] [x] WAVE-025 — Mobile navigation.
+- [ ] [x] WAVE-026 — Short viewport layout.
+- [ ] [x] WAVE-027 — Focus-aware keyboard shortcuts.
+- [ ] [x] WAVE-028 — Clarify placeholder controls.
 
 ## Release gate D — Documentation and scale
 
-- [ ] WAVE-020 — Consistent backup snapshots.
-- [ ] WAVE-029 — Align privacy/font documentation.
-- [ ] WAVE-030 — Maintain manifest metadata.
+- [ ] [~] WAVE-020 — Detect source changes during backup and reject inconsistent snapshots; no global lock/hash-based snapshot yet.
+- [ ] [x] WAVE-029 — Align privacy/font documentation.
+- [ ] [x] WAVE-030 — Maintain manifest metadata.
 - [ ] R-01 through R-08 — Verify additional risks.
 
 ---
@@ -740,12 +740,55 @@ Create a nested path at root and under an already selected folder. Verify the se
 
 ## Supplemental remediation priorities
 
-- [ ] **Immediate data-safety gate:** WAVE-032 — prevent cross-workspace autosave contamination.
-- [ ] WAVE-039 — make recent edits recoverable across tab close/reload.
-- [ ] WAVE-034 — distinguish missing assets from permission/I/O failures.
-- [ ] WAVE-033 — mark or clean up incomplete backup snapshots.
-- [ ] WAVE-036 and WAVE-037 — guard asynchronous navigation and concurrent creation.
-- [ ] WAVE-035 and WAVE-040 — make folder creation collision and path semantics explicit.
-- [ ] WAVE-038 — commit a lockfile and use deterministic CI installation.
+- [ ] **Immediate data-safety gate:** [x] WAVE-032 — prevent cross-workspace autosave contamination.
+- [ ] [~] WAVE-039 — IndexedDB draft journal with a 120 ms debounce and pagehide best-effort flush; an abrupt kill inside the debounce window is not an absolute guarantee.
+- [ ] [x] WAVE-034 — distinguish missing assets from permission/I/O failures.
+- [ ] [x] WAVE-033 — mark or clean up incomplete backup snapshots.
+- [ ] [x] WAVE-036 and WAVE-037 — guard asynchronous navigation and concurrent creation.
+- [ ] [x] WAVE-035 and WAVE-040 — make folder creation collision and path semantics explicit.
+- [ ] [x] WAVE-038 — commit a lockfile and use deterministic CI installation.
 
 **Updated audit count:** 40 numbered findings (WAVE-001 through WAVE-040), plus the 8 cross-cutting risks listed earlier. Findings with timing-dependent behavior should also be covered by automated browser/storage tests before being treated as fully reproduced in production.
+
+
+---
+
+# 13. Remediation execution status — 2026-11-14
+
+This section supersedes the original unchecked remediation lists above. It records code-level changes pushed after the audit. A checked item means the implementation change is present; it does **not** imply that every browser-specific scenario has been manually reproduced. CI currently runs storage regression tests, TypeScript typecheck and the production build.
+
+## Implemented in the current remediation pass
+
+- **Navigation and state safety:** Trash navigation and workspace activation flush the current editor first; workspace activation loads destination data before publishing the new workspace; open requests are token-guarded; autosave timers are cancelled by explicit flush.
+- **Write ordering and external edits:** document writes are serialized; save status is revision-aware; external file changes are checked before a write; conflicts preserve the draft and offer Reload latest or Save draft as copy.
+- **Creation and attachment safety:** page creation, duplication, folder creation and asset allocation use collision checks; browser Web Locks are used when available, with an in-process lock fallback; case-only path collisions are avoided; attachment uploads remain bound to the document where they started.
+- **Trash and backup safety:** restore uses unique page creation rather than overwriting; Trash metadata is validated per item; interrupted Trash operations leave a journal marker and are reported; backups have in-progress/complete/failed markers; only completed snapshots are listed; backup creation checks source metadata before and after copying; restore writes into a separate workspace folder.
+- **Recovery:** unsaved editor drafts are stored in a separate IndexedDB journal, recovered with user confirmation, and cleared after a successful save. A pagehide flush is best-effort.
+- **Navigation and usability:** recursive folder navigation, folder-scoped page lists, path/snippet search results, arrow/Enter search navigation, multiline toolbar formatting, mobile drawer navigation and short-viewport layout are implemented.
+- **Error handling and metadata:** settings corruption is surfaced without overwriting the original file; manifest updatedAt is refreshed after workspace mutations; placeholder controls are clearly non-interactive.
+- **Build reproducibility:** package-lock.json is committed and CI uses npm ci.
+- **Regression tests:** Node's built-in test runner covers path/slug behavior, non-overwriting page creation, Trash restore collisions, corrupt Trash isolation, backup completion, external edit detection, folder collisions, permission errors, concurrent allocation and incomplete backup exclusion.
+
+## Partially complete — do not treat as fully closed
+
+| Finding | Current state | Remaining work |
+|---|---|---|
+| WAVE-005 | Trash operations have journal markers, safe ordering and interrupted-operation reporting; restore can resume after destination verification | Add guided/automatic reconciliation for every possible partial state and browser fault-injection coverage |
+| WAVE-019 | External edits are detected before overwrite; the user can reload or save a separate copy | Add browser-level multi-tab/external-editor tests and more explicit conflict details |
+| WAVE-020 | Snapshot source metadata is compared before and after backup; inconsistent snapshots are marked failed and excluded | Add workspace-wide operation coordination and stronger content-hash verification |
+| WAVE-031 | Storage tests are in CI | Add browser E2E tests for navigation, permissions, draft recovery, attachments, mobile layout and real File System Access behavior |
+| WAVE-039 | Drafts are persisted to IndexedDB after a short debounce and on pagehide | Browser termination can still occur before an asynchronous draft write completes; test real crash/reload timing and consider a stronger write-through strategy |
+
+## Additional risks still requiring explicit verification
+
+- R-01/R-02: multi-tab editing and permission revocation need browser-level scenarios.
+- R-03/R-04: large Markdown and large asset collection benchmarks have not been run.
+- R-05/R-06: interrupted backup and concurrent cross-tab uploads have implementation safeguards but need fault-injection/browser verification.
+- R-07: Chrome/Edge are the intended current browsers; Firefox/Safari need a separate adapter and compatibility testing.
+- R-08: case-normalized allocation is implemented; Unicode and platform-specific filesystem behavior still need a compatibility matrix.
+
+## CI and release gate
+
+The repository now includes a committed npm lockfile and uses `npm ci`. The CI workflow runs `npm test`, `npm run typecheck` and `npm run build`.
+
+Do not begin the next feature milestone until the current CI run is green and the remaining browser-level verification items have been reviewed. No storage reliability claim should be interpreted as a substitute for keeping an independent backup of important data.
