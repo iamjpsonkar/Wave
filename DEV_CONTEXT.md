@@ -372,3 +372,5 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `tests/e2e/workspace.spec.ts`: added persistence/application/reopen regression; browser suite source is now 31 scenarios, Node suite remains 30 tests.
 - `ui-gaps.md` now records UI-001/UI-012 as **Implemented — CI pending**; all other IDs and acceptance scope remain open. `docs/FEATURES.md` reflects the partial settings capability.
 - No test pass is claimed until the new main-branch workflow completes. Full contrast/accessibility review and broader diagnostics remain open.
+
+- Follow-up: dialog focus is contained (Shift+Tab/Tab wrap) and Escape dismisses it; preference writes expose saving/saved/failure status. UI-003 is now **Partially implemented — CI pending** due to the centered 860px default and width choices; responsive/wide-code/table verification remains open.
