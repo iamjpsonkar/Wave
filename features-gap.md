@@ -187,3 +187,70 @@ Rechecked the current default-branch source at commit `186e7ec3dd817a42a610e51c6
 3. Add dedicated malformed-input, limits, accessibility, preview/source round-trip and cross-browser fixtures.
 4. Expand the renderer subsets only where the original showcase acceptance examples still fail; retain explicit fallback/security boundaries.
 5. Update this checklist item-by-item only after the corresponding behavior and regression evidence pass.
+
+
+---
+
+## Current verified status override — 2026-11-14
+
+> This section supersedes stale status statements in sections 1–16 above. The original requirements are retained as acceptance scope; do not interpret the old checkboxes as current implementation status. Status below is based on source review and the checked-in 23-scenario Playwright suite. It is not a claim that the latest CI run has passed.
+
+### Implemented and demonstrated by current source/tests
+
+- [x] CommonMark/GFM baseline: headings, paragraphs, emphasis, inline/fenced/indented code, lists, blockquotes, links, images, thematic breaks, tables, task lists, autolinks and footnotes.
+- [x] Hard line breaks, reference links, image alt/title fallback, escaped table pipes, nested list continuation and unsafe javascript: link sanitization have a browser regression scenario.
+- [x] Deterministic duplicate heading IDs, Unicode/punctuation heading normalization, safe inline mark/underline/sup/sub/kbd shorthand, emoji shortcode conversion, and preservation of inline/fenced code literals.
+- [x] GitHub-style NOTE/TIP/IMPORTANT/WARNING/CAUTION callouts and keyboard-operable DETAILS disclosure blocks.
+- [x] Common emoji shortcodes in an explicit small map. Unknown shortcode names remain unchanged.
+- [x] Copyable fenced code blocks; source-preserving copy behavior is asserted for the tested Python fixture.
+- [x] Line-based diff coloring for added, removed, hunk, header and context lines.
+- [x] Local MathML output for the tested quadratic formula, matrices, cases, sums, integrals and limits.
+- [x] Local SVG subset renderers for Mermaid flowchart, sequence, pie, class, ER, state, Gantt, git graph, mindmap, timeline, quadrant, requirement and architecture-beta.
+- [x] Local subset renderers for DOT/Graphviz, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc.
+- [x] Local-only audio/video embeds with extension/MIME checks; remote media paths are rejected by the E2E scenario.
+- [x] Local image assets and readable fallback for remote/missing images; external images are not fetched.
+- [x] Markdown feature showcase and technical learning-notes template entries exist in src/templates.ts.
+
+### Implemented but only partially satisfied
+
+- [~] Syntax highlighting is heuristic token coloring for a fixed language allowlist, not a real grammar-based parser. Multiline/nested lexical states, language completeness and exact token semantics are not guaranteed.
+- [~] Diff highlighting classifies lines by prefix; it is not a complete unified-diff parser.
+- [~] Math is a hand-built TeX subset. It handles the tested examples but does not implement arbitrary macros, custom commands, complete aligned environments, full extensible delimiter behavior or the full TeX grammar.
+- [~] Each Mermaid family is a constrained parser with simple hand-built layout, not the official Mermaid grammar/layout engine. Passing fixtures prove only those examples.
+- [~] DOT, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc are hand-built subsets, not full language/toolchain compatibility.
+- [~] The renderer source is retained in a readable fallback for unsupported diagram syntax. More malformed/oversized-input and layout edge-case testing is still needed.
+- [~] The Markdown showcase template exists, but it does not yet demonstrate every supported renderer family or every showcase requirement.
+- [~] The technical learning-notes template exists, but its current src/templates.ts implementation uses a literal backslash-n join separator rather than real newlines. It is therefore not functionally complete; see WAVE-052 in bugs.md. There is no template-selection E2E test yet.
+- [~] Browser coverage currently defines 23 Playwright scenarios. This is useful regression coverage, not a full CommonMark/GFM conformance suite.
+
+### Not implemented or intentionally excluded
+
+- [ ] Full TeX/LaTeX grammar, macro system, arbitrary environments and broad package/symbol compatibility.
+- [ ] Full Mermaid syntax, complete layout engine, all node/edge/style directives and specification compatibility.
+- [ ] Full Graphviz/DOT, PlantUML, Vega/Vega-Lite, D2 or AsciiDoc implementations.
+- [ ] Grammar-based syntax highlighting and robust unified-diff parsing.
+- [ ] GitHub @mentions and issue/PR references as actionable links. They are intentionally inert plain text; Wave does not emulate GitHub notifications.
+- [ ] General allowlisted raw HTML parsing and HTML-table support. Raw HTML remains disabled; safe Wave-native shorthands and DETAILS are the supported alternative.
+- [ ] Remote audio/video, iframe embeds, arbitrary HTML media and remote image loading. Current media support is restricted to local workspace assets.
+- [ ] Full accessibility audit for all Markdown elements/diagram types, screen-reader verification, keyboard/focus review and diagram long-description behavior.
+- [ ] Cross-browser renderer/preview coverage beyond the current Chromium E2E target.
+- [ ] Visual regression coverage for large diagrams, math overflow, wide tables/code, mobile preview and themes.
+- [ ] Broad malformed-input, adversarial-size/resource-limit and parser-fuzz coverage for every custom renderer.
+- [ ] Dedicated preview/source round-trip tests proving every transformation preserves original Markdown through save/reopen.
+- [ ] An exhaustive fixture suite covering every example in the supplied Markdown Feature Showcase.
+
+### Regression evidence and current CI state
+
+- Current test source defines 23 Playwright Chromium scenarios and 30 Node tests.
+- The suite includes separate scenarios for CommonMark hard breaks/reference links/escaped tables/safe image fallback; inline extensions and duplicate slugs; quadratic formula/matrices/cases/sums/integrals/limits; multiple Mermaid families; local DOT/PlantUML/Vega-Lite/D2/AsciiDoc; local audio/video; and additional Mermaid families.
+- The latest CI run for the inspected branch HEAD a9dc70170bcbac21bdb7634edbcf63567d34342a is [43616302974](https://github.com/iamjpsonkar/Wave/actions/runs/43616302974). At audit time, npm ci, all Node tests, typecheck and production build had passed; Playwright was still running. Do not mark the full browser suite green until the run completes.
+- A previous 23-scenario run [43616005399](https://github.com/iamjpsonkar/Wave/actions/runs/43616005399) completed with 20 passed and 3 failed. Its failures involved wiki-link locator/expectation mismatch, a strict locator matching multiple syntax-token spans, and an SVG-shape expectation mismatch. The current HEAD run must be used for final verification.
+- No local browser execution was performed during this audit. Source presence and a test definition are not equivalent to a passing test on current HEAD.
+
+### Required follow-up
+
+1. Fix WAVE-052 and add template selection/preview regression coverage.
+2. Wait for and inspect CI run 43616302974; fix any remaining failures against actual behavior and rerun.
+3. Add accessibility, cross-browser, visual, malformed-input/resource-limit and preview/source round-trip coverage.
+4. Keep full language compatibility explicitly partial unless an actual compatible parser/renderer and broader conformance fixtures are adopted.
+5. Preserve all original showcase requirements and security boundaries. Do not remove features from the acceptance checklist merely because they are not implemented yet.
