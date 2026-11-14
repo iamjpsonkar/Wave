@@ -492,6 +492,37 @@ function VegaDiagram({source}:{source:string}) {
   rows.forEach((row:any,index:number)=>shapes.push(createElement('text',{key:'x'+index,x:45+index*slot+slot/2,y:255,textAnchor:'middle',fontSize:10,fill:'currentColor'},row.label),createElement('text',{key:'y'+index,x:30,y:y(row.value)+4,textAnchor:'end',fontSize:9,fill:'currentColor'},String(row.value))));
   return <div className="mermaid-diagram" role="img" aria-label={spec.title||'Vega chart'}><svg viewBox={'0 0 '+width+' '+height} width="100%"><line x1="40" y1={plotTop} x2="40" y2={plotBottom} stroke="currentColor"/><line x1="40" y1={plotBottom} x2="620" y2={plotBottom} stroke="currentColor"/>{shapes}</svg><DiagramSource source={source}/></div>;
 }
+function AsciiDocInline({text}:{text:string}) {
+  const tick=String.fromCharCode(96),pattern=new RegExp('(\\*[^*\\n]+\\*|_[^_\\n]+_|'+tick+'[^'+tick+'\\n]+'+tick+'|link:[^\\[]+\\[[^\\]]*\\])','g');
+  const nodes:ReactNode[]=[];let last=0,index=0;
+  for(const match of text.matchAll(pattern)){const at=match.index??0;if(at>last)nodes.push(text.slice(last,at));const token=match[0];
+    if(token.startsWith('*'))nodes.push(createElement('strong',{key:index++},token.slice(1,-1)));
+    else if(token.startsWith('_'))nodes.push(createElement('em',{key:index++},token.slice(1,-1)));
+    else if(token.startsWith(tick))nodes.push(createElement('code',{key:index++},token.slice(1,-1)));
+    else{const link=token.match(/^link:([^\[]+)\[([^\]]*)\]$/);if(link&&/^https?:\/\//i.test(link[1]))nodes.push(createElement('a',{key:index++,href:link[1],target:'_blank',rel:'noreferrer'},link[2]||link[1]));else nodes.push(token);}
+    last=at+token.length;
+  }
+  if(last<text.length)nodes.push(text.slice(last));return createElement('span',null,...nodes);
+}
+function AsciiDocBlock({source}:{source:string}) {
+  const lines=source.split('\n'),nodes:ReactNode[]=[];let paragraph:string[]=[],listItems:string[]=[],listType='ul',code:string[]|null=null,table:string[]|null=null;
+  const flushParagraph=()=>{if(paragraph.length){nodes.push(createElement('p',{key:'p'+nodes.length},createElement(AsciiDocInline,{text:paragraph.join(' ')})));paragraph=[];}};
+  const flushList=()=>{if(listItems.length){nodes.push(createElement(listType,{key:'list'+nodes.length},...listItems.map((item,index)=>createElement('li',{key:index},createElement(AsciiDocInline,{text:item})))));listItems=[];}};
+  for(const line of lines){
+    if(line.trim()==='----'){flushParagraph();flushList();if(code){nodes.push(createElement('pre',{key:'code'+nodes.length},createElement('code',null,code.join('\n'))));code=null;}else code=[];continue;}
+    if(line.trim()==='|==='){flushParagraph();flushList();if(table){nodes.push(createElement('table',{key:'table'+nodes.length},createElement('tbody',null,...table.map((row,index)=>createElement('tr',{key:index},...row.split('|').filter(Boolean).map((cell,i)=>createElement('td',{key:i},cell.trim())))))));table=null;}else table=[];continue;}
+    if(code){code.push(line);continue;}if(table){table.push(line);continue;}
+    const heading=line.match(/^(={1,5})\s+(.+)$/);if(heading){flushParagraph();flushList();nodes.push(createElement('h'+heading[1].length,{key:'h'+nodes.length},createElement(AsciiDocInline,{text:heading[2]})));continue;}
+    const bullet=line.match(/^(\*+|-)\s+(.+)$/),ordered=line.match(/^\.+\s+(.+)$/);
+    if(bullet||ordered){flushParagraph();const type=ordered?'ol':'ul';if(listItems.length&&type!==listType)flushList();listType=type;listItems.push((bullet?.[2]??ordered?.[1]??'').trim());continue;}
+    if(!line.trim()){flushParagraph();flushList();continue;}
+    if(/^:[\w-]+:/.test(line)||/^\[source,/.test(line))continue;
+    paragraph.push(line.trim());
+  }
+  flushParagraph();flushList();if(code)nodes.push(createElement('pre',{key:'code'+nodes.length},code.join('\n')));
+  if(table)nodes.push(createElement('table',{key:'table'+nodes.length},table.join('\n')));
+  return <div className="asciidoc-preview">{nodes}</div>;
+}
 function highlightedCode(source:string, language:string):ReactNode[] {
   const lang=language.toLowerCase();
   const supported=/^(javascript|js|typescript|ts|jsx|tsx|json|css|scss|html|xml|bash|sh|shell|python|py|sql|yaml|yml|diff|text|txt|markdown|md)$/i.test(lang);
