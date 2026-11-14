@@ -439,3 +439,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Block-mode follow-up: `src/EditorEnhancements.tsx` now jumps from the outline into the corresponding block textarea and uses a distinct Blocks icon; `src/MarkdownBlockEditor.tsx` keeps list and quote/callout grouping separate; `src/styles.css` corrects System-light block labels. Undo/Redo keyboard shortcuts work while a block textarea is focused.
 - The block-mode Playwright scenario now verifies Undo and Redo before exact-source round-trip. E2E source remains **38 scenarios**; Node source remains **30 tests**. Follow-up commits: `03c572edd64fb6924d0bbda706dbf840f44bef26`, `30be50f3afae887386eba1f86faf2d855207c925`, `6c9cb3f7b0862fd20253da75a10c263fe215add3`, `41c8adefd98ef00d5ba38867a0e828cd626554a8`.
 - Development logs updated again: `dev-fixed.md` commit `e8a262b50b92c6399e8a7e0f765ce2bfc4a1c3d6`; `dev-build.md` commit `9ec508729ee56d23b63c9a3e7ecbad731b9aea8b`. No current CI result is exposed; all verification remains pending.
+
+ 
+- UI-020 test-helper correction: fixed the CSS RGB numeric-channel matcher used by the computed contrast ratio assertions. This ensures the helper can parse RGB channel values; it does not establish that any contrast assertion or browser test passed. Test commit: `ffc3be4ae9026ce76148ce3fbcaa86b4be0e0f73`. E2E source inventory remains 38.
+- Logs updated: `dev-fixed.md` `bf33131eec965ce0373c5dfd2967b5f6b88420e6`; `dev-build.md` `8871fb213f823b65685688ad1a65521e95424a27`. CI remains unavailable/unverified.
