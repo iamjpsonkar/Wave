@@ -503,3 +503,39 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 @media(prefers-color-scheme:dark){
  .app.theme-system .sidebar-templates>button:hover,.app.theme-system .template-grid>button:hover,.app.theme-system .backlinks-list>button:hover,.app.theme-system .command-option:hover,.app.theme-system .command-option.selected{background:#303c30;color:#f0f5ed}
 }
+
+@media(prefers-color-scheme:light){
+ .app.theme-system .editor-enhancements{color:#50594e}
+ .app.theme-system .editor-utility-bar,.app.theme-system .document-find,.app.theme-system .document-outline{border-color:#e8ece4}
+ .app.theme-system .editor-utility-actions button,.app.theme-system .find-actions button{color:#586354}
+ .app.theme-system .editor-utility-actions button:hover,.app.theme-system .find-actions button:hover:not(:disabled){background:#f0f3ed;border-color:#e0e7dc;color:#293f33}
+ .app.theme-system .utility-count{background:#edf1e9;color:#596b54}
+ .app.theme-system .document-statistics,.app.theme-system .find-actions>span,.app.theme-system .find-fields label{color:#667061}
+ .app.theme-system .find-fields input:not([type=checkbox]){background:#fff;border-color:#dfe5da;color:#30382f}
+ .app.theme-system .find-actions button{background:#fff;border-color:#e0e6dc}
+ .app.theme-system .document-outline button{color:#465343}
+ .app.theme-system .document-outline button:hover{background:#f0f3ed}
+ .app.theme-system .template-search{border-color:#e2e7de;color:#788473}
+ .app.theme-system .template-search input{color:#3c4639}
+ .app.theme-system .template-preview-dialog{background:#fff;border-color:#e2e7de;color:#30382f}
+ .app.theme-system .template-preview-dialog>p{color:#687363}
+ .app.theme-system .template-preview-dialog pre{background:#f7f8f5;border-color:#e7ebe3;color:#3b4438}
+ .app.theme-system .template-preview-dialog>header button{background:#f1f3ee;color:#52614e}
+ .app.theme-system .template-preview-dialog>footer button:not(.primary){background:#fff;border-color:#dfe5da;color:#56634f}
+ .app.theme-system .sidebar-templates,.app.theme-system .command-palette,.app.theme-system .backlinks-list,.app.theme-system .template-grid{background:#fff;border-color:#e8ece4;color:#30382f}
+ .app.theme-system .sidebar-templates>button,.app.theme-system .template-grid>button,.app.theme-system .backlinks-list>button,.app.theme-system .command-option{color:#596354}
+ .app.theme-system .sidebar-templates>button:hover,.app.theme-system .template-grid>button:hover,.app.theme-system .backlinks-list>button:hover,.app.theme-system .command-option:hover,.app.theme-system .command-option.selected{background:#f0f3ed;color:#293f33}
+ .app.theme-system .command-input,.app.theme-system .command-palette footer{border-color:#e8ece4;color:#687363}
+ .app.theme-system .command-input input,.app.theme-system .search input{background:transparent;color:#30382f}
+ .app.theme-system .command-input kbd,.app.theme-system .command-option small,.app.theme-system .backlinks-list small{color:#8c9587}
+ .app.theme-system .trash-item{border-color:#eceee8}
+ .app.theme-system .trash-item strong{color:#41463d}
+ .app.theme-system .trash-item small{color:#9a9d93}
+ .app.theme-system .trash-item button{background:#fff;border-color:#e7e9e2;color:#63715e}
+ .app.theme-system .trash-item button.danger{color:#a45e55}
+ .app.theme-system .folder-link:hover,.app.theme-system .folder-link.selected{background:#f0f2ed;color:#526b52}
+ .app.theme-system .stored strong{color:#5b6858}
+ .app.theme-system .stored small,.app.theme-system .appfoot{color:#a0a298}
+ .app.theme-system .breadcrumbs>button,.app.theme-system .breadcrumbs>span>button{color:#64745f}
+ .app.theme-system .topright small[role=status]{color:#667061}
+}
