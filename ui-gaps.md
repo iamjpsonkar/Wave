@@ -24,11 +24,13 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 ### UI-001 — Settings is visibly unavailable
 
 - Priority: **P1**
-- Status: **Observed + source-confirmed**
-- Evidence: sidebar footer displays “Settings” with “NOT AVAILABLE YET”; `src/App.tsx` renders the settings row as a non-interactive element with an unavailable label.
+- Status: **Implemented — CI pending**
+- Original evidence: the sidebar footer displayed “Settings” with “NOT AVAILABLE YET”; the inert placeholder is now an accessible, keyboard-operable Settings dialog with focus containment and Escape dismissal.
+- Implemented scope: workspace-persisted theme, typography, content width and reduced-motion preferences; local storage/recovery explanation; save status and basic page/folder diagnostics. More advanced editor/privacy/diagnostic controls remain future scope.
+- Regression coverage checks preference persistence in `.wave/settings.json`, application and reload/reopen behavior. Do not mark complete until CI passes.
 - User impact: users cannot configure appearance, typography, editor behavior, privacy or workspace preferences from the product UI.
 - Target: implement a real settings destination with clear sections, persistence and safe defaults. At minimum cover appearance/theme, typography/editor preferences, autosave/recovery status, privacy/local-storage information and workspace diagnostics.
-- Acceptance: Settings opens by mouse and keyboard; each implemented setting persists across reload/reopen; unsupported settings are not presented as active controls; destructive/reset actions explain consequences and preserve recoverable data.
+- Acceptance: Settings opens by mouse and keyboard; focus remains within the dialog and Escape closes it; implemented preferences persist across reload/reopen; reset changes preferences only and preserves documents/recovery data.
 
 ### UI-002 — Editor is a plain-text surface rather than a rich writing experience
 
@@ -42,11 +44,11 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 ### UI-003 — Writing canvas uses the available width without a readable content measure
 
 - Priority: **P1**
-- Status: **Observed**
-- Evidence: screenshot shows the document editing content beginning near the left edge of a very wide main pane, with most of the 2048px viewport unused. There is no visible centered reading column or width control.
+- Status: **Partially implemented — CI pending**
+- Original evidence: the screenshot showed content starting near the left edge of a very wide pane without a centered measure or width control. The editor and preview now share a centered 860px default measure with narrow, wide and full-width preferences. Responsive review and specialized wide-content behavior remain open.
 - User impact: long lines become difficult to scan and the document feels visually sparse on large displays.
 - Target: introduce a comfortable default writing measure (for example, a centered 720–900px content column) with optional wider/full-width modes for tables, code and diagrams.
-- Acceptance: normal text has a readable maximum line length on wide screens; wide content can intentionally expand; small screens retain usable horizontal padding; preview and edit modes share consistent alignment.
+- Acceptance: normal text has a readable maximum line length on wide screens; wide content can intentionally expand; small screens retain usable horizontal padding; preview and edit modes share consistent alignment. Initial centered measure and width choices are implemented; responsive and wide-code/table behavior remain to verify.
 
 ### UI-004 — Toolbar actions are icon-heavy and some actions look indistinguishable
 
@@ -123,11 +125,12 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 ### UI-012 — Settings, appearance and typography controls are not exposed
 
 - Priority: **P1**
-- Status: **Source-confirmed**
-- Evidence: `docs/FEATURES.md` lists settings for appearance, typography, editor behavior and privacy as planned; the screenshot marks Settings unavailable.
+- Status: **Implemented — CI pending**
+- Original evidence: appearance and typography controls were planned and Settings was unavailable. A workspace Settings dialog now exposes working theme, font family/size, line spacing, content width and reduced-motion preferences. Privacy/local-storage and recovery explanations are informational rather than fictitious toggles.
+- Preferences use the existing `.wave/settings.json` store and apply to editor/preview. Contrast and full component coverage still require accessibility review.
 - User impact: the product cannot yet adapt to different reading/writing preferences.
 - Target: after UI-001, add light/dark/system theme, font family/size, line height, content width and reduced-motion preferences. Do not add controls that have no working effect.
-- Acceptance: preferences persist per intended scope; all themes preserve contrast; typography changes apply to editor and preview consistently.
+- Acceptance: preferences persist per workspace; theme and typography changes apply to editor and preview; contrast review across every component remains open.
 
 ### UI-013 — Backup action lacks visible context about backup history and safety
 
