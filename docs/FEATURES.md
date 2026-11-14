@@ -21,7 +21,7 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [~] Nested folders, clickable folder breadcrumbs and favorites implemented; recent pages/history enhancements remain planned
 - [~] Wiki links and backlinks are implemented for Markdown pages; mentions and rich link previews remain planned
 - [ ] Page history, restore points and compare revisions
-- [ ] Import/export: Markdown, HTML, DOCX, PDF and portable workspace archive
+- [~] PDF export of the rendered Preview via the browser print/save-as-PDF dialog is implemented; direct PDF generation, Markdown/HTML/DOCX import/export and portable workspace archive remain planned
 
 ## 2. Databases and structured knowledge
 
