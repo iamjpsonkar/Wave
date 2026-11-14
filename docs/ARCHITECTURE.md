@@ -32,6 +32,7 @@ The browser stores the most recently selected FileSystemDirectoryHandle in Index
 ```
 
 - Markdown is the source of truth for documents.
+- Empty directories under `documents/` are discovered independently of Markdown files, so newly created empty folders remain visible after refresh.
 - Assets are ordinary files. Markdown references them using relative paths into `../assets/` (with additional parent segments for nested documents).
 - `manifest.json` stores workspace identity and schema version.
 - `settings.json` stores workspace preferences.
