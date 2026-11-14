@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  addAsset, createBackup, createDoc, createFolder, listBackups,
-  listTrashDetailed, openWorkspace, readDoc, restoreTrashItem,
+  addAsset, backUpAndResetWorkspaceSettings, createBackup, createDoc, createFolder, listBackups,
+  listTrashDetailed, openWorkspace, readDoc, readWorkspaceSettings, restoreTrashItem,
   saveDoc, saveDocIfUnchanged, slug
 } from '../src/storage.ts';
 
@@ -160,4 +160,15 @@ test('Trash inspection rolls back an incomplete copy when original remains',asyn
   assert.equal(await readDoc(workspace.documents,'Safe.md'),'original safe');
   assert.equal(listing.items.length,0);
   assert.equal(listing.issues.length,0);
+});
+
+test('corrupt settings are preserved before a safe reset',async()=>{
+  const {workspace}=await fixture();
+  const handle=await workspace.wave.getFileHandle('settings.json');
+  const writable=await handle.createWritable();await writable.write('{broken');await writable.close();
+  await assert.rejects(()=>readWorkspaceSettings(workspace.wave),/corrupted/);
+  const backupName=await backUpAndResetWorkspaceSettings(workspace.wave);
+  assert.equal(await(await(await workspace.wave.getFileHandle(backupName)).getFile()).text(),'{broken');
+  const settings=await readWorkspaceSettings(workspace.wave);
+  assert.deepEqual(settings.favorites,[]);
 });
