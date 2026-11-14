@@ -22,6 +22,7 @@
 - [x] Built-in templates for meetings, projects, task lists, weekly plans, research and decisions
 - [x] Favorite pages with persistent workspace settings
 - [x] Favorites navigation for quick access to pinned pages, including compact mobile shortcuts
+- [x] Duplicate an existing page without changing the original
 - [ ] Full Notion/Quip-inspired feature set (see the feature map and roadmap)
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
