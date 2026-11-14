@@ -1,52 +1,11 @@
 import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
-  await page.addInitScript(() => {
-    class TestFileHandle {
-      kind = 'file';
-      name: string;
-      data = '';
-      modified = Date.now();
-      constructor(name: string) { this.name = name; }
-      async getFile() { return new File([this.data], this.name, { lastModified: this.modified }); }
-      async createWritable() {
-        let pending = '';
-        return {
-          write: async (value: string | Blob) => { pending = typeof value === 'string' ? value : await value.text(); },
-          close: async () => { this.data = pending; this.modified = Date.now(); },
-          abort: async () => {}
-        };
-      }
-    }
-    class TestDirectoryHandle {
-      kind = 'directory';
-      name: string;
-      children = new Map<string, TestDirectoryHandle | TestFileHandle>();
-      constructor(name: string) { this.name = name; }
-      async getDirectoryHandle(name: string, options: { create?: boolean } = {}) {
-        const current = this.children.get(name);
-        if (current && current.kind !== 'directory') throw new DOMException('Type mismatch', 'TypeMismatchError');
-        if (!current && !options.create) throw new DOMException('Missing directory', 'NotFoundError');
-        if (!current) this.children.set(name, new TestDirectoryHandle(name));
-        return this.children.get(name) as TestDirectoryHandle;
-      }
-      async getFileHandle(name: string, options: { create?: boolean } = {}) {
-        const current = this.children.get(name);
-        if (current && current.kind !== 'file') throw new DOMException('Type mismatch', 'TypeMismatchError');
-        if (!current && !options.create) throw new DOMException('Missing file', 'NotFoundError');
-        if (!current) this.children.set(name, new TestFileHandle(name));
-        return this.children.get(name) as TestFileHandle;
-      }
-      async removeEntry(name: string) {
-        if (!this.children.has(name)) throw new DOMException('Missing entry', 'NotFoundError');
-        this.children.delete(name);
-      }
-      async *entries() { for (const entry of this.children.entries()) yield entry; }
-      async isSameEntry(other: unknown) { return this === other; }
-      async queryPermission() { return 'granted'; }
-      async requestPermission() { return 'granted'; }
-    }
-    const root = new TestDirectoryHandle('Wave E2E Workspace');
+  await page.addInitScript(async () => {
+    // Use Chromium's real Origin Private File System handles as a deterministic
+    // browser filesystem fixture. Only the picker gesture is stubbed.
+    const opfsRoot = await navigator.storage.getDirectory();
+    const root = await opfsRoot.getDirectoryHandle('wave-e2e-' + crypto.randomUUID(), { create: true });
     Object.defineProperty(window, '__waveTestRoot', { value: root, configurable: true });
     Object.defineProperty(window, 'showDirectoryPicker', { value: async () => root, configurable: true });
   });
