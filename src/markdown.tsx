@@ -55,8 +55,8 @@ export function markdownSource(source: string, docs: WikiDoc[] = []): string {
       const normalizedTarget = target.trim();
       const path = resolveWikiLinkTarget(normalizedTarget, docs);
       const label = (alias || normalizedTarget).trim();
-      const href = path ? '#wave-page=' + encodeURIComponent(path) : '#wave-unresolved=' + encodeURIComponent(normalizedTarget);
-      return '[' + label + '](' + href + ')';
+      const title = path ? 'wave-page:' + encodeURIComponent(path) : 'wave-unresolved:' + encodeURIComponent(normalizedTarget);
+      return '[' + label + '](# \"' + title + '\")';
     });
   });
   return converted.join('\n').replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*/gim, '$1**$2** ');
