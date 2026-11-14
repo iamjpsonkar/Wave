@@ -93,3 +93,9 @@ Source changes and the regression scenario are committed, but no local typecheck
 - DETAILS disclosure summary extraction now handles parser output where the marker and summary are split into separate child nodes.
 - Corrected a malformed MathML parser newline and removed a duplicate math command key detected by CI typecheck.
 - Adjusted the existing wiki-link E2E journey to wait for the asynchronous page-list refresh instead of reading the sidebar immediately.
+
+
+### Final E2E-driven adjustments
+- DETAILS disclosure now derives its summary from the first line after the marker and renders the remaining lines as the disclosure body.
+- The wiki-link regression scenario now resolves the page by its stable workspace-relative path, avoiding dependence on a title label that can be refreshed separately from the page path.
+- The linked-image/reference-link scenario scopes its title assertion to the first matching link because both the text link and linked image correctly share the same reference title.
