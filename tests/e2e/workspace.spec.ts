@@ -1301,6 +1301,6 @@ test('editor productivity tools support find/replace, undo/redo, outline and liv
   await expect(editor).toHaveValue(/Alpha is the first milestone\./)
   await expect(editor).not.toHaveValue(/Gamma/)
   await page.getByRole('button', { name: 'Redo' }).click();
-  await expect(editor).toContainText('Gamma is the first milestone.');
-  await expect(editor).not.toContainText('Alpha');
+  await expect(editor).toHaveValue(/Gamma is the first milestone\\./);
+  await expect(editor).not.toHaveValue(/Alpha/);
 });
