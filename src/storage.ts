@@ -22,6 +22,10 @@ const writeQueues = new WeakMap<FileSystemDirectoryHandle, Map<string, Promise<u
 const settingsQueues = new WeakMap<FileSystemDirectoryHandle, Promise<unknown>>();
 const NOT_FOUND = 'NotFoundError';
 
+function withWorkspaceLock<T>(name:string,operation:()=>Promise<T>):Promise<T>{
+  const manager=typeof navigator!=='undefined'?(navigator as Navigator & {locks?:LockManager}).locks:undefined;
+  return manager?manager.request('wave:'+name,{mode:'exclusive'},operation):operation();
+}
 function isNotFound(error: unknown): boolean {
   return error instanceof DOMException ? error.name === NOT_FOUND : Boolean(error && typeof error === 'object' && 'name' in error && error.name === NOT_FOUND);
 }
@@ -177,10 +181,10 @@ export async function createDoc(dir: FileSystemDirectoryHandle, requestedPath: s
     if (await existsFile(parent,candidate)) continue;
     const path=[...parts,candidate].join('/');
     try {
-      await queueWrite(dir,path,async()=>{
+      await queueWrite(dir,path,()=>withWorkspaceLock('create:'+path,async()=>{
         if (await existsFile(parent,candidate)) throw new Error('A page with this name already exists.');
         await write(parent,candidate,text);
-      });
+      }));
       return path;
     } catch(error) {
       if (error instanceof Error && error.message==='A page with this name already exists.') continue;
@@ -279,18 +283,26 @@ export async function restoreBackupToNewWorkspace(workspace:Workspace,name:strin
   return targetName;
 }
 export async function moveDocToTrash(documents: FileSystemDirectoryHandle, trash: FileSystemDirectoryHandle, path: string): Promise<void> {
-  const file=await fileForPath(documents,path);
-  const text=await(await file.getFile()).text();
-  const id=crypto.randomUUID();
-  const title=text.split('\\n').find(line=>line.trim())?.replace(/^#\\s*/,'').trim()||path.split('/').pop()||'Untitled';
-  const metadata:TrashItem={id,title,originalPath:path,deletedAt:new Date().toISOString()};
-  await write(trash,id+'.md',text);
-  await write(trash,id+'.json',JSON.stringify(metadata,null,2));
-  const verified=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();
-  if(verified!==text)throw new Error('Trash verification failed; original page was kept.');
-  const parts=validatePath(path),name=parts.pop()!;
-  const parent=await directoryForPath(documents,parts.join('/'));
-  await parent.removeEntry(name);
+  await withWorkspaceLock('trash:'+path,async()=>{
+    const file=await fileForPath(documents,path);
+    const text=await(await file.getFile()).text();
+    const id=crypto.randomUUID();
+    const title=text.split('\\n').find(line=>line.trim())?.replace(/^#\\s*/,'').trim()||path.split('/').pop()||'Untitled';
+    const metadata:TrashItem={id,title,originalPath:path,deletedAt:new Date().toISOString()};
+    const operation={id,operation:'trash',state:'copying',originalPath:path,startedAt:new Date().toISOString()};
+    await write(trash,id+'.op.json',JSON.stringify(operation,null,2));
+    await write(trash,id+'.md',text);
+    await write(trash,id+'.op.json',JSON.stringify({...operation,state:'content-copied'},null,2));
+    await write(trash,id+'.json',JSON.stringify(metadata,null,2));
+    const verified=await(await(await trash.getFileHandle(id+'.md')).getFile()).text();
+    if(verified!==text)throw new Error('Trash verification failed; original page was kept.');
+    await write(trash,id+'.op.json',JSON.stringify({...operation,state:'verified'},null,2));
+    const parts=validatePath(path),name=parts.pop()!;
+    const parent=await directoryForPath(documents,parts.join('/'));
+    await parent.removeEntry(name);
+    await write(trash,id+'.op.json',JSON.stringify({...operation,state:'source-removed'},null,2));
+    await trash.removeEntry(id+'.op.json');
+  });
 }
 function validTrashItem(value:unknown):value is TrashItem{
   if(!value||typeof value!=='object')return false;
@@ -305,6 +317,7 @@ export async function listTrashDetailed(trash:FileSystemDirectoryHandle):Promise
   for await(const [name,handle] of trash.entries()){
     if(handle.kind!=='file')continue;
     if(name.endsWith('.md')){markdownIds.add(name.slice(0,-3));continue;}
+    if(name.endsWith('.op.json')){issues.push(name+': incomplete or interrupted Trash operation; inspect before cleanup.');continue;}
     if(!name.endsWith('.json'))continue;
     try{
       const raw=JSON.parse(await(await(handle as FileSystemFileHandle).getFile()).text());
@@ -342,7 +355,7 @@ export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Prom
   const original=file.name.split(/[\\\\/]/).pop()||'attachment';
   const cleaned=original.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'attachment';
   const dot=cleaned.lastIndexOf('.'),stem=dot>0?cleaned.slice(0,dot):cleaned,ext=dot>0?cleaned.slice(dot):'';
-  return queueWrite(dir,'__asset-allocation__',async()=>{
+  return queueWrite(dir,'__asset-allocation__',()=>withWorkspaceLock('asset-allocation',async()=>{
     for(let n=1;n<10000;n++){
       const candidate=n===1?cleaned:stem+'-'+n+ext;
       if(await existsFile(dir,candidate))continue;
@@ -352,7 +365,7 @@ export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Prom
       return candidate;
     }
     throw new Error('Could not find an available attachment filename.');
-  });
+  }));
 }
 export async function createFolder(dir: FileSystemDirectoryHandle, path: string): Promise<string> {
   const parts=path.split('/');
