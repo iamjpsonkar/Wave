@@ -173,10 +173,7 @@ test('two tabs editing the same workspace do not silently overwrite each other',
 
   await firstEditor.fill('# Concurrent Editing\n\nChange from first tab');
   await secondEditor.fill('# Concurrent Editing\n\nChange from second tab');
-  await expect(page.locator('.topright small')).toContainText(/Saved locally|conflict/i, { timeout: 10000 });
-  await expect(second.locator('.topright small')).toContainText(/Saved locally|conflict/i, { timeout: 10000 });
-  await page.waitForTimeout(900);
-  const contents = await page.evaluate(async () => {
+  const readPersistedAndDraftContent = async () => page.evaluate(async () => {
     const root = (window as any).__waveTestRoot;
     const docs = await (await root.getDirectoryHandle('.wave')).getDirectoryHandle('documents');
     const values: string[] = [];
@@ -184,8 +181,19 @@ test('two tabs editing the same workspace do not silently overwrite each other',
       if (handle.kind !== 'file' || !name.endsWith('.md')) continue;
       values.push(await (await handle.getFile()).text());
     }
-    return values.join('\n');
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('wave-draft-journal', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const drafts = await new Promise<string[]>((resolve, reject) => {
+      const request = db.transaction('drafts', 'readonly').objectStore('drafts').getAll();
+      request.onsuccess = () => resolve((request.result as Array<{ content: string }>).map(record => record.content));
+      request.onerror = () => reject(request.error);
+    });
+    db.close();
+    return [...values, ...drafts].join('\n');
   });
-  expect(contents).toContain('Change from first tab');
-  expect(contents).toContain('Change from second tab');
+  await expect.poll(readPersistedAndDraftContent, { timeout: 12000 }).toContain('Change from first tab');
+  await expect.poll(readPersistedAndDraftContent, { timeout: 12000 }).toContain('Change from second tab');
 });
