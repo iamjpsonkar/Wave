@@ -295,6 +295,9 @@ test('wiki links navigate to pages and backlinks are derived from Markdown files
   await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
   await expect(page.getByRole('button', { name: /Linked Page/ })).toBeVisible();
   await page.getByRole('button', { name: 'Preview' }).click();
+  const previewHtml = await page.locator('.markdown-preview').innerHTML();
+  expect(previewHtml).toContain('the linked page');
+  expect(previewHtml).toContain('wave.invalid');
   const link = page.locator('.wiki-link');
   await expect(link).toHaveText('the linked page');
   await link.click();
