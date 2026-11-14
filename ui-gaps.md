@@ -204,3 +204,79 @@ The screenshot is an editor state, not a full product walkthrough. It does not p
 - UI-001 and UI-012: replaced the unavailable Settings footer placeholder with a keyboard-accessible dialog. Added workspace-scoped theme, font family, text size, line spacing, content width and reduced-motion preferences, persisted through the existing settings file. Added explicit local-storage, autosave/recovery and workspace-count information; no cloud or unsupported controls were introduced.
 - Added a Playwright regression for preference persistence, application and workspace reopen. Status remains **Implemented — CI pending** until the full browser suite passes.
 - All other UI gap IDs and acceptance criteria remain unchanged and open. This is the first implementation slice, not completion of the entire UI gap register.
+
+---
+
+## Updated UI review — dark theme and edit/preview screenshots — 2026-11-14
+
+Two additional screenshots were supplied: a dark-theme editor state and a dark-theme Preview state. They show the same workspace/content at a 2048 × 1330 desktop viewport. The review is additive; all prior IDs and acceptance criteria remain preserved.
+
+### Status changes based on current source and screenshots
+
+- **UI-001 — Settings unavailable:** implementation now exists in current source. The sidebar Settings control opens a dialog with keyboard focus handling, close behavior, and workspace preference information. The implementation is recorded in the prior implementation update; its regression was still marked CI-pending at that point. New screenshots do not show the dialog, so visual quality of the settings dialog itself remains unreviewed.
+- **UI-012 — Appearance and typography controls:** current source implements System/Light/Dark appearance, content width, font family, text size, line spacing and reduced-motion preferences, persisted in workspace settings. Treat this as **implemented in source; full visual/accessibility verification pending**, not as a fully QA-closed item.
+- **UI-003 — Writing canvas width:** current CSS constrains editor and preview to a configurable width (comfortable default 860px; narrow 680px; wide 1100px; full width). The new screenshots visually show a centered writing column. Mark the original no-width-constraint gap **implemented in source and visually demonstrated**; retain responsive and long-content regression testing.
+- **UI-005 — Typography/contrast:** still open. The dark screenshots show very small, muted metadata and footer text; dark theme also exposes additional contrast problems below.
+
+### New findings
+
+### UI-016 — Dark-theme Markdown preview code block has a mismatched light surface
+
+- Priority: **P1**
+- Status: **Observed in Preview screenshot; source-level CSS review required**
+- Evidence: the dark workspace Preview screenshot shows a large near-white code block surface against the dark editor canvas. The code text appears very pale, so the content is difficult to read.
+- User impact: code samples become visually glaring and code text is low-contrast in the dark theme.
+- Target: make code block background, foreground, border, inline code and copy control use coherent theme tokens. Preserve syntax-color contrast independently for light and dark themes.
+- Acceptance: representative plain and syntax-highlighted code blocks pass contrast checks in light, dark and system themes; no unintended white panel remains in dark mode; copy control remains visible and keyboard accessible.
+
+### UI-017 — Dark-theme heading/Markdown body contrast is inconsistent
+
+- Priority: **P1**
+- Status: **Observed in Preview screenshot**
+- Evidence: the rendered “Hii” heading appears extremely dark and subdued against the dark canvas, while other interface controls remain bright. This suggests a heading or Markdown color token is not consistently applied in the shown preview.
+- User impact: headings lose hierarchy and can become difficult to read, especially in longer documents.
+- Target: define explicit theme-aware foreground tokens for all Markdown elements: body, headings, links, emphasis, blockquotes, tables, callouts, code and fallback content.
+- Acceptance: H1–H6 and body text remain clearly readable in both themes; nested elements do not inherit inappropriate light-theme colors; automated contrast checks cover representative Markdown fixtures.
+
+### UI-018 — Dark theme mixes dark workspace surfaces with light controls
+
+- Priority: **P2**
+- Status: **Observed**
+- Evidence: dark screenshots show the dark canvas and sidebar alongside bright white Edit/Preview segmented controls, Backup button and code block panel. Some light controls may be intentional emphasis, but their surface treatment is not visually integrated.
+- User impact: inconsistent surfaces make the interface feel partially themed rather than intentionally designed; bright panels draw attention away from writing.
+- Target: define theme-aware surface, raised-surface, border and selected-control tokens. Reserve high-contrast light surfaces for deliberate primary actions only.
+- Acceptance: controls, popovers, dialogs, code blocks, toolbar, inputs and buttons have intentional light/dark states; selected state remains distinguishable without a large unrelated white panel.
+
+### UI-019 — Brand wordmark and selected navigation need stronger dark-theme contrast
+
+- Priority: **P2**
+- Status: **Observed**
+- Evidence: in the dark screenshot, the “wave” wordmark beside the green icon is barely distinguishable from the sidebar background. Muted navigation and helper labels also appear subdued.
+- User impact: brand identity and navigation affordances are harder to recognize in dark mode.
+- Target: add theme-specific brand and navigation color tokens, preserving the quiet aesthetic without sacrificing legibility.
+- Acceptance: wordmark, page titles, selected page, helper labels and navigation icons remain readable in light and dark themes; selected state is not conveyed by background alone.
+
+### UI-020 — Preview-mode typography and code styling need dedicated visual regression coverage
+
+- Priority: **P2**
+- Status: **Needs verification**
+- Evidence: the paired screenshots show Edit and Preview states, but only one short heading and one code block. There is no evidence for tables, links, blockquotes, alerts, diagrams, math, long headings or nested lists in dark mode.
+- User impact: theme regressions may remain hidden until users open real technical documents.
+- Target: add a theme matrix of representative Markdown fixtures and screenshot tests for both Edit and Preview.
+- Acceptance: capture Light/Dark/System × Edit/Preview at desktop and mobile widths; cover headings, paragraphs, links, inline code, fenced code, tables, alerts, blockquotes, diagrams, math and media fallbacks; review diffs rather than relying solely on snapshot pixel equality.
+
+### Updated implementation order
+
+1. Fix **UI-016 and UI-017** first: code block and Markdown foreground contrast are content readability defects.
+2. Resolve **UI-018 and UI-019** with shared theme tokens rather than isolated overrides.
+3. Add **UI-020** visual regression coverage.
+4. Complete UI-005 typography/contrast audit and responsive UI-014 verification.
+5. Recheck UI-001/UI-012 settings dialog appearance, focus management and preference persistence under all themes.
+6. Preserve UI-003's configurable width behavior and test all four width options at narrow and wide viewports.
+
+### Updated evidence limitations
+
+- The new evidence includes a dark-theme Edit screenshot and a dark-theme Preview screenshot at desktop size.
+- No Settings dialog screenshot, mobile/tablet screenshot, light-theme Preview screenshot, accessibility tree, keyboard/focus recording or contrast measurements were supplied.
+- Visual observations identify likely contrast defects; computed WCAG contrast ratios and the precise CSS rule responsible still require browser inspection.
+- No application code was changed by this screenshot review.
