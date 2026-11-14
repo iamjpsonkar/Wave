@@ -362,3 +362,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - The previous image-accessibility CI exposed a second broad DETAILS-summary selector and a linked-image fallback assertion mismatch; both assertions were narrowed to Wave's disclosure/fallback elements in the current commit. The previous CI also showed the new image scenario itself passing on one run. Current combined source CI is [43620567676](https://github.com/iamjpsonkar/Wave/actions/runs/43620567676); at handoff it is running. Do not claim all 30 E2E scenarios pass until CI completes.
 - Implementation commit: `c8ad5066f24333e7777e910378c49b206e65d71a`. The latest source follow-up corrects the budget label to parser steps for accuracy.
 - Open reliability findings remain WAVE-031 and WAVE-039. No bug trackers were changed.
+
+
+## 26. Workspace Settings UI implementation — 2026-11-14
+
+- Picked the first UI gap priority group: UI-001 (Settings unavailable) and UI-012 (appearance/typography controls).
+- `src/App.tsx`: added an accessible Settings dialog, validated preference defaults, workspace-specific preference loading, serialized writes through the existing settings queue, and preference reset that leaves documents/recovery untouched. Dialog explains local storage/recovery and shows current save status plus page/folder counts.
+- `src/styles.css`: added dialog layout, responsive writing measure and typography variables, core dark/system-dark workspace styling, and reduced-motion behavior.
+- `tests/e2e/workspace.spec.ts`: added persistence/application/reopen regression; browser suite source is now 31 scenarios, Node suite remains 30 tests.
+- `ui-gaps.md` now records UI-001/UI-012 as **Implemented — CI pending**; all other IDs and acceptance scope remain open. `docs/FEATURES.md` reflects the partial settings capability.
+- No test pass is claimed until the new main-branch workflow completes. Full contrast/accessibility review and broader diagnostics remain open.
