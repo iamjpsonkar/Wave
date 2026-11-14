@@ -1200,7 +1200,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
     { name: 'dark', system: 'dark', expectedClass: 'theme-dark' },
     { name: 'system', system: 'dark', expectedClass: 'theme-system' }
   ];
-  const states: Array<{ theme: string; viewport: string; mode: string; colors: Record<string, string> }> = [];
+  const states: Array<{ theme: string; viewport: string; mode: string; colors: Record<string, string | number> }> = [];
   for (const theme of themes) {
     await page.emulateMedia({ colorScheme: theme.system as 'light' | 'dark' });
     await page.getByRole('button', { name: 'Settings' }).click();
@@ -1214,7 +1214,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
       for (const mode of ['edit', 'preview']) {
         if (mode === 'preview') await page.getByRole('button', { name: 'Preview' }).click();
         else await page.getByRole('button', { name: 'Edit' }).click();
-        let colors: Record<string, string> = {};
+        let colors: Record<string, string | number> = {};
         if (mode === 'edit') {
           await expect(page.locator('.editor textarea')).toBeVisible();
           await expect(page.locator('.editor textarea')).toHaveValue(/Theme matrix heading/);
@@ -1238,19 +1238,44 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
               const element = node.querySelector(selector);
               return element ? getComputedStyle(element) : null;
             };
+            const rgb = (value: string) => (value.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+            const luminance = (value: string) => {
+              const channels = rgb(value).map(channel => {
+                const normalized = channel / 255;
+                return normalized <= 0.04045 ? normalized / 12.92 : Math.pow((normalized + 0.055) / 1.055, 2.4);
+              });
+              return 0.2126 * channels[0] + 0.7152 * channels[1] + 0.0722 * channels[2];
+            };
+            let surface: HTMLElement | null = node;
+            let background = 'rgb(255, 255, 255)';
+            while (surface) {
+              const candidate = getComputedStyle(surface).backgroundColor;
+              if (candidate !== 'rgba(0, 0, 0, 0)' && !candidate.endsWith(', 0)')) { background = candidate; break; }
+              surface = surface.parentElement;
+            }
+            const contrast = (foreground: string) => {
+              const a = luminance(foreground), b = luminance(background);
+              return (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+            };
+            const foreground = getComputedStyle(node).color;
+            const heading = style('h1')?.color ?? '';
             return {
-              foreground: getComputedStyle(node).color,
-              heading: style('h1')?.color ?? '',
+              foreground,
+              heading,
               codeSurface: style('pre')?.backgroundColor ?? '',
               alertSurface: style('.markdown-alert')?.backgroundColor ?? '',
               detailsSurface: style('.markdown-details')?.backgroundColor ?? '',
-              diagramSurface: style('.mermaid-diagram')?.backgroundColor ?? ''
+              diagramSurface: style('.mermaid-diagram')?.backgroundColor ?? '',
+              bodyContrast: contrast(foreground),
+              headingContrast: contrast(heading)
             };
           });
           for (const [key, value] of Object.entries(colors)) {
             expect(value, \`\${theme.name}/\${viewport.name}/\${key} should have a computed color\`).not.toBe('');
             expect(value).not.toBe('rgba(0, 0, 0, 0)');
           }
+          expect(colors.bodyContrast).toBeGreaterThanOrEqual(4.5);
+          expect(colors.headingContrast).toBeGreaterThanOrEqual(4.5);
         }
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
         expect(overflow).toBe(false);
