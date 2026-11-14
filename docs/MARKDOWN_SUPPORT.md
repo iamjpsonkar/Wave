@@ -1,6 +1,6 @@
 # Markdown support in Wave
 
-This page is the compatibility contract for Wave's local Markdown preview. The editor stores the original Markdown text; preview transformations do not rewrite the user's source file.
+This page is the compatibility contract for Wave's local Markdown preview. The editor stores the original Markdown text; preview transformations do not rewrite the user's source file. The E2E round-trip scenario checks exact source equality after preview/edit toggling, a completed save, and workspace reload, including syntax that is transformed only for rendering.
 
 ## Supported writing syntax
 
