@@ -7,7 +7,7 @@
 > Context reviewed: 2026-11-15  
 > Canonical detailed handoff: [DEV_CONTEXT.md](./DEV_CONTEXT.md)
 > Start here for the complete project/product/agent guide: [wiki.md](./wiki.md)  
-> Product scope source of truth: [upcoming-FEATURES.md](./upcoming-FEATURES.md)
+> Product scope source of truth: [upcoming-features.md](./upcoming-features.md)
 
 ---
 
@@ -20,7 +20,7 @@ Before making any change:
 3. Read [CONTRIBUTING.md](./CONTRIBUTING.md) for repository contribution conventions.
 4. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
 5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [UI backlog](./UI_BACKLOG.md), [UI feature backlog](./ui-FEATURES.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-FEATURES.md), and/or [GitHub issue index](./github-issues.md).
-6. Read [upcoming-FEATURES.md](./upcoming-FEATURES.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
+6. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
 7. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
 
 ### Agent operating contract
@@ -77,7 +77,7 @@ Wave is evolving from a local-first Markdown workspace into a complete workspace
 - Build useful end-to-end workflows, not feature parity for its own sake.
 - Reliability, data integrity, accessibility, recovery, portability and security are release gates, not optional polish.
 
-The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-FEATURES.md](./upcoming-FEATURES.md). The actionable order is in [priority-FEATURES.md](./priority-FEATURES.md).
+The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./upcoming-features.md). The actionable order is in [priority-FEATURES.md](./priority-FEATURES.md).
 
 ---
 
@@ -196,7 +196,7 @@ This section consolidates durable directions repeatedly given by the product own
 ### Preserve the whole product
 
 - Wave has many features and long-term ideas. The user explicitly rejected removing earlier features when new priorities were added.
-- `upcoming-FEATURES.md` is the complete feature catalogue; `priority-FEATURES.md` orders work. Neither should be silently shortened.
+- `upcoming-features.md` is the complete feature catalogue; `priority-FEATURES.md` orders work. Neither should be silently shortened.
 - “Build all priority features” means implement the agreed priority scope in sensible batches, not delete lower-priority features or claim unimplemented work is shipped.
 - When choosing the next task, inspect the latest backlog and current source, then pick the next unfinished, dependency-ready item.
 - Maintain existing behavior, prior features, user decisions and historical context.
@@ -210,7 +210,7 @@ This section consolidates durable directions repeatedly given by the product own
 - `bugs.md` is the current open-bug register; `fixed-bugs.md` is the historical fixed-bug/regression register. They are not general implementation journals.
 - The user explicitly directed development logs to be maintained in `dev-fixed.md` and `dev-build.md`, not to keep editing the legacy bug files for every implementation.
 - Keep `features-gap.md` as the Markdown compatibility checklist; `UI_BACKLOG.md`, `ui-FEATURES.md` and `UI_BACKLOG.md` have separate UI audit/backlog purposes unless a deliberate lossless consolidation is requested.
-- Keep `upcoming-FEATURES.md` (full product scope) distinct from `priority-FEATURES.md` (delivery order).
+- Keep `upcoming-features.md` (full product scope) distinct from `priority-FEATURES.md` (delivery order).
 - Update relevant user-facing docs and trackers for every shipped feature. Update `DEV_CONTEXT.md` last in each implementation batch.
 
 ### UI/product requests recorded
@@ -331,7 +331,7 @@ Only report Docker runtime validation if an actual Docker runtime was available 
 
 ## 8. Product roadmap — complete scope, not just immediate work
 
-The full catalogue in [upcoming-FEATURES.md](./upcoming-FEATURES.md) spans:
+The full catalogue in [upcoming-features.md](./upcoming-features.md) spans:
 
 - A. Writing, pages and block editor; CommonMark/GFM and advanced Markdown.
 - B. Knowledge management, wiki and knowledge graph.
@@ -425,7 +425,7 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `CONTRIBUTING.md` | Contributor workflow and engineering rules | Update when contribution or verification practices change |
 | `dev-fixed.md` | Append-only-ish implementation fix and regression history | Record bug fixes and regression tests |
 | `dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
-| `upcoming-FEATURES.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
+| `upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
 | `priority-FEATURES.md` | Delivery order, priorities and dependencies | Reprioritize transparently; preserve complete scope |
 | `FEATURES.md` | Concise shipped-feature showcase | Update only for genuinely implemented features |
 | `FEATURES.md` | Detailed feature map/status by product area | Update shipped/planned status with evidence |
@@ -453,7 +453,7 @@ The user has discussed reducing duplicate documentation. Consolidation is allowe
 - `FEATURES.md` and `FEATURES.md` may be consolidated only if both the concise shipped overview and the detailed feature map/status are preserved.
 - `DEV_CONTEXT.md` should remain concise; historical implementation detail belongs in `dev-fixed.md` and `dev-build.md`. Move history verbatim/faithfully before shortening the handoff.
 - Keep `dev-fixed.md` and `dev-build.md` distinct.
-- Keep `upcoming-FEATURES.md` and `priority-FEATURES.md` distinct.
+- Keep `upcoming-features.md` and `priority-FEATURES.md` distinct.
 - Keep `bugs.md` and `fixed-bugs.md` distinct.
 - Keep `features-gap.md` and `diagram-FEATURES.md` as specialist checklists/research.
 - Do not delete old paths until links and all unique content are migrated and verified. A compatibility pointer is preferable to a broken link if a file cannot be safely removed.
@@ -621,7 +621,7 @@ Use competitor research as workflow inspiration, not as an instruction to copy f
 - Anytype — offline-first objects, relations, encryption and peer-to-peer sync.
 - Outline — structured knowledge base, collections, permissions, search and navigation.
 - Specialist diagrams: diagrams.net/draw.io, Excalidraw, tldraw, Miro, FigJam, Lucidchart and related products.
-- Specialist research, reading, assets, forms, automation and publishing references are catalogued in `upcoming-FEATURES.md` and `diagram-FEATURES.md`.
+- Specialist research, reading, assets, forms, automation and publishing references are catalogued in `upcoming-features.md` and `diagram-FEATURES.md`.
 
 ---
 
