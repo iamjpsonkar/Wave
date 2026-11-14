@@ -168,6 +168,7 @@ function convertInlineExtensions(line: string): string {
 }
 
 function MathExpression({ source, display = false }: { source: string; display?: boolean }) {
+  const slash=String.fromCharCode(92);
   const symbols:Record<string,string>={
     alpha:'α',beta:'β',gamma:'γ',delta:'δ',epsilon:'ε',varepsilon:'ϵ',theta:'θ',vartheta:'ϑ',lambda:'λ',mu:'μ',pi:'π',rho:'ρ',sigma:'σ',phi:'φ',varphi:'ϕ',omega:'ω',
     Gamma:'Γ',Delta:'Δ',Theta:'Θ',Lambda:'Λ',Pi:'Π',Sigma:'Σ',Phi:'Φ',Omega:'Ω',
@@ -193,33 +194,40 @@ function MathExpression({ source, display = false }: { source: string; display?:
     }
     parts.push(input.slice(start));return parts;
   }
-  function envNode(name:string,body:string):ReactNode{
-    const rows=splitTopLevel(body,'\\\\').map(row=>row.trim()).filter((row,index,array)=>row.length>0||index<array.length-1);
-    const table=createElement('mtable',null,...rows.map((row,rowIndex)=>{
-      const cells=splitTopLevel(row,'&');
-      return createElement('mtr',{key:'row'+rowIndex},...cells.map((cell,colIndex)=>createElement('mtd',{key:'cell'+rowIndex+'-'+colIndex},createElement('mrow',null,...parse(cell)))));
-    }));
-    if(name==='cases')return createElement('mrow',null,createElement('mo',null,'{'),table);
-    const delimiters:Record<string,[string,string]>={pmatrix:['(',')'],bmatrix:['[',']'],Bmatrix:['{','}'],vmatrix:['|','|'],Vmatrix:['‖','‖'],smallmatrix:['',''],matrix:['',''],array:['',''],aligned:['',''],alignedat:['',''],gathered:['',''],cases:['','']};
-    const [open,close]=delimiters[name]??['',''];
-    return open||close?createElement('mfenced',{open,close},table):table;
-  }
   function parse(input:string):ReactNode[]{
     const nodes:ReactNode[]=[];let i=0;
     while(i<input.length){
       const ch=input[i];
-      if(ch==='\\'){
-        const rest=input.slice(i+1),command=rest.match(/^[A-Za-z]+/)?.[0]??'';
-        if(!command){const escaped=input[i+1]??'\\';i+=2;const widths:Record<string,string>={',':'0.167em',':':'0.222em',';':'0.278em','!':'-0.167em',' ':'0.333em'};nodes.push(widths[escaped]?createElement('mspace',{key:'space'+i,width:widths[escaped]}):createElement('mo',{key:'esc'+i},({'{':'{','}':'}','%':'%','
+      if(ch===slash){
+        const rest=input.slice(i+1),match=rest.match(/^[A-Za-z]+/),command=match?.[0]??'';
+        if(!command){
+          const escaped=rest[0]??'';i+=2;
+          const widths:Record<string,string>={',':'0.167em',':':'0.222em',';':'0.278em','!':'-0.167em',' ':'0.333em'};
+          if(widths[escaped])nodes.push(createElement('mspace',{key:'space'+i,width:widths[escaped]}));
+          else nodes.push(createElement('mo',{key:'escape'+i},({'{':'{','}':'}','%':'%','$':'$','#':'#','_':'_','&':'&'} as Record<string,string>)[escaped]??escaped));
+          continue;
+        }
         i+=command.length+1;
         if(command==='begin'){
           const env=groupAt(input,i);i=env.end;
           if(env.value==='array'){const spec=groupAt(input,i);i=spec.end;}
-          const ending='\\end{'+env.value+'}',close=input.indexOf(ending,i);
-          if(close<0){nodes.push(createElement('mtext',{key:'bad-env'+i},'\\begin{'+env.value+'}'));continue;}
-          nodes.push(envNode(env.value,input.slice(i,close)));i=close+ending.length;continue;
+          const ending=slash+'end{'+env.value+'}',close=input.indexOf(ending,i);
+          if(close<0){nodes.push(createElement('mtext',{key:'bad-env'+i},'Unsupported or unclosed '+env.value+' environment'));break;}
+          const body=input.slice(i,close);i=close+ending.length;
+          const rows=splitTopLevel(body,slash+slash).map(row=>row.trim()).filter(Boolean);
+          const table=createElement('mtable',null,...rows.map((row,rowIndex)=>{
+            const cells=splitTopLevel(row,'&');
+            return createElement('mtr',{key:'row'+rowIndex},...cells.map((cell,colIndex)=>createElement('mtd',{key:'cell'+rowIndex+'-'+colIndex},createElement('mrow',null,...parse(cell)))));
+          }));
+          if(env.value==='cases')nodes.push(createElement('mrow',{key:'cases'+i},createElement('mo',null,'{'),table));
+          else{
+            const delimiters:Record<string,[string,string]>={pmatrix:['(',')'],bmatrix:['[',']'],Bmatrix:['{','}'],vmatrix:['|','|'],Vmatrix:['‖','‖']};
+            const [open,closeDelimiter]=delimiters[env.value]??['',''];
+            nodes.push(open||closeDelimiter?createElement('mfenced',{key:'env'+i,open,close:closeDelimiter},table):table);
+          }
+          continue;
         }
-        if(command==='end'||command==='limits'||command==='nolimits'||command==='displaystyle'||command==='textstyle'||command==='scriptstyle'||command==='quadskip')continue;
+        if(['end','limits','nolimits','displaystyle','textstyle','scriptstyle'].includes(command))continue;
         if(command==='left'||command==='right')continue;
         if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='binom'){
           const a=groupAt(input,i);i=a.end;const b=groupAt(input,i);i=b.end;
@@ -235,19 +243,18 @@ function MathExpression({ source, display = false }: { source: string; display?:
         if(['overline','bar','underline','hat','widehat','tilde','widetilde','vec','dot','ddot','overrightarrow','overleftarrow'].includes(command)){
           const a=groupAt(input,i);i=a.end;
           const accent:Record<string,string>={overline:'¯',bar:'¯',underline:'_',hat:'^',widehat:'^',tilde:'~',widetilde:'~',vec:'→',dot:'˙',ddot:'¨',overrightarrow:'→',overleftarrow:'←'};
-          const over=!['underline'].includes(command);
+          const over=command!=='underline';
           nodes.push(over?createElement('mover',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])):createElement('munder',{key:'accent'+i},createElement('mrow',null,...parse(a.value)),createElement('mo',null,accent[command])));continue;
         }
-        if(command==='text'||command==='textrm'||command==='textbf'||command==='mathrm'||command==='mathbf'||command==='mathit'||command==='operatorname'){
+        if(['text','textrm','textbf','mathrm','mathbf','mathit','operatorname'].includes(command)){
           const a=groupAt(input,i);i=a.end;nodes.push(createElement('mtext',{key:'text'+i},a.value));continue;
         }
-        if(['\,','\\,',';','!','quad','qquad','enspace','thinspace'].includes(command)){
-          const width:Record<string,string>={',':'0.167em',';':'0.278em','!':'-0.167em',quad:'1em',qquad:'2em',enspace:'0.5em',thinspace:'0.167em'};
-          nodes.push(createElement('mspace',{key:'space'+i,width:width[command]??'0.167em'}));continue;
+        if(command==='quad'||command==='qquad'||command==='enspace'||command==='thinspace'){
+          const width:Record<string,string>={quad:'1em',qquad:'2em',enspace:'0.5em',thinspace:'0.167em'};
+          nodes.push(createElement('mspace',{key:'space'+i,width:width[command]}));continue;
         }
-        if(command==='\\'){nodes.push(createElement('mspace',{key:'newline'+i,linebreak:'newline'}));continue;}
-        if(symbols[command]){nodes.push(createElement('mo',{key:'sym'+i},symbols[command]));continue;}
-        if(functions.has(command)){nodes.push(createElement('mi',{key:'fn'+i},command));continue;}
+        if(symbols[command]){nodes.push(createElement('mo',{key:'symbol'+i},symbols[command]));continue;}
+        if(functions.has(command)){nodes.push(createElement('mi',{key:'function'+i},command));continue;}
         if(command==='langle'||command==='rangle'){nodes.push(createElement('mo',{key:'angle'+i},command==='langle'?'⟨':'⟩'));continue;}
         if(command==='lbrace'||command==='rbrace'){nodes.push(createElement('mo',{key:'brace'+i},command==='lbrace'?'{':'}'));continue;}
         nodes.push(createElement('mi',{key:'unknown'+i},command));continue;
