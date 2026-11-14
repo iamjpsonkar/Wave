@@ -52,7 +52,7 @@ A future Tauri adapter should implement the same storage operations. The editor 
 
 - No account, analytics SDK or document API is included.
 - No document or asset content is uploaded by the application.
-- Typography uses system fonts; the UI does not request third-party font files.
+- The current stylesheet requests DM Sans, DM Mono and Playfair Display from Google Fonts. This sends a font request to Google when the stylesheet loads; system fallbacks are available, but the fonts are not bundled. A future privacy-hardening change should bundle licensed font files or use system fonts.
 - Markdown is rendered with sanitization. Local images and attachment links are resolved from the selected workspace; remote images are not fetched by the preview.
 - External links open separately with `rel="noreferrer"`.
 - The browser permission model is explicit and can require user re-authorization.
