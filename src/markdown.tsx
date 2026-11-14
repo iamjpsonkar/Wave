@@ -201,8 +201,8 @@ function MathExpression({ source, display = false }: { source: string; display?:
     }
     parts.push(input.slice(start));return parts;
   }
-  const MAX_SOURCE_LENGTH=8192,MAX_NESTING=48,MAX_NODES=2048;
-  let generatedNodes=0,limitReason='';
+  const MAX_SOURCE_LENGTH=8192,MAX_NESTING=48,MAX_PARSE_STEPS=2048;
+  let parseSteps=0,limitReason='';
   function fallback(reason:string) {
     const preview=source.length>512?source.slice(0,512)+'…':source;
     return createElement('div',{className:'markdown-math-fallback',role:'note'},
@@ -221,7 +221,7 @@ function MathExpression({ source, display = false }: { source: string; display?:
     if(depth>MAX_NESTING){limitReason='nesting exceeds the 48-level limit';return [];}
     const nodes:ReactNode[]=[];let i=0;
     while(i<input.length){
-      if(++generatedNodes>MAX_NODES){limitReason='generated structure exceeds the 2048-node limit';break;}
+      if(++parseSteps>MAX_PARSE_STEPS){limitReason='parser work exceeds the 2048-step limit';break;}
       const ch=input[i];
       if(ch===slash){
         const rest=input.slice(i+1),match=rest.match(/^[A-Za-z]+/),command=match?.[0]??'';

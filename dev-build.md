@@ -178,7 +178,7 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 
 ## 2026-11-14 — Math parser input and complexity hardening
 
-- Added explicit math-renderer limits: 8192 source characters, 48 recursive nesting levels and 2048 generated parser nodes; unbalanced braces now return an accessible readable source fallback.
+- Added explicit math-renderer limits: 8192 source characters, 48 recursive nesting levels and 2048 parser steps; unbalanced braces now return an accessible readable source fallback.
 - Added Playwright regression coverage for malformed, deeply nested and oversized expressions.
 - Fixed the remaining broad DETAILS-summary selector in the accessibility smoke test. Latest image-accessibility CI exposed this second occurrence after the first selector had been narrowed; it now targets `.markdown-details`.
 - Current source inventory: 30 Node tests and 30 Playwright Chromium scenarios. The image-accessibility and math-hardening changes are awaiting CI; no passing result is claimed.
