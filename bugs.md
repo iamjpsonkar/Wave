@@ -18,7 +18,7 @@
 ## Current summary
 
 - **2 remaining partial findings:** WAVE-031, WAVE-039. Permission-denial and same-workspace two-tab journeys are now covered in Chromium; draft writes request strict IndexedDB durability where supported.
-- **49 source-verified fixes:** tracked in `fixed-bugs.md`.
+- **50 source-verified fixes:** tracked in `fixed-bugs.md`.
 - CI now runs Node storage/concurrency tests and Playwright Chromium E2E. Six browser journeys use native OPFS directory handles; real user-picked-folder permission denial/revocation, multi-tab race testing, external-editor fault injection and abrupt process-termination tests remain outstanding.
 - Verified code CI: [run 43602384257](https://github.com/iamjpsonkar/Wave/actions/runs/43602384257) — 30 Node tests and 6 Chromium E2E tests passed; typecheck and production build passed.
 
@@ -108,4 +108,5 @@ Keep the write in the input-event path, request strict IndexedDB durability, exp
 - WAVE-039: draft journal writes now request IndexedDB `strict` transaction durability, with a compatibility fallback for browsers that reject the option. A browser regression test verifies the strict option is requested. This reduces the durability window but cannot eliminate the interval before an asynchronous transaction commits; WAVE-039 remains partial rather than falsely marked fixed.
 - The exact CI result for these changes is pending the workflow run triggered by the commits above.
 
-- The two-tab draft-isolation change is included in the current main branch; CI for the latest source and documentation commits is pending.
+- WAVE-042 is now closed: per-tab draft isolation passed the two-tab Chromium regression test.
+- Verified source CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) on `b11b46eebc1558de9910d8523cdaa027817b087d` — 30 Node tests, all 9 Chromium E2E tests, typecheck and production build passed. Documentation-only commits followed; their CI is tracked separately.
