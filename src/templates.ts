@@ -10,7 +10,7 @@ export const pageTemplates: PageTemplate[] = [
   {
     id: 'markdown-showcase',
     name: 'Markdown feature showcase',
-    description: 'Try Markdown, GFM, math, alerts and Mermaid flowcharts',
+    description: 'Try Markdown, GFM, safe inline styles, math, code highlighting and diagrams',
     icon: '✳',
     content: [
       '# Markdown feature showcase',
