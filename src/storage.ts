@@ -49,6 +49,20 @@ export async function listDocs(dir: FileSystemDirectoryHandle): Promise<Doc[]> {
   await walk(dir);
   return result.sort((a, b) => b.updatedAt - a.updatedAt);
 }
+export async function listFolders(dir: FileSystemDirectoryHandle): Promise<string[]> {
+  const result: string[] = [];
+  async function walk(folder: FileSystemDirectoryHandle, prefix = '') {
+    for await (const [name, handle] of folder.entries()) {
+      if (handle.kind !== 'directory') continue;
+      const path = prefix ? prefix + '/' + name : name;
+      result.push(path);
+      await walk(handle as FileSystemDirectoryHandle, path);
+    }
+  }
+  await walk(dir);
+  return result.sort((a, b) => a.split('/').length - b.split('/').length || a.localeCompare(b));
+}
+
 export async function readDoc(dir: FileSystemDirectoryHandle, path: string) { return (await (await fileForPath(dir, path)).getFile()).text(); }
 export async function saveDoc(dir: FileSystemDirectoryHandle, path: string, text: string) {
   const file = await fileForPath(dir, path, true);
