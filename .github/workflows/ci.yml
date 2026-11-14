@@ -13,6 +13,11 @@ jobs:
         with:
           node-version: 22
       - run: npm install
+      - name: Export generated npm lockfile for repository pinning
+        run: |
+          echo WAVE_LOCKFILE_BEGIN
+          cat package-lock.json
+          echo WAVE_LOCKFILE_END
       - run: npm test
       - run: npm run typecheck
       - run: npm run build
