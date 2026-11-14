@@ -121,3 +121,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - No local test execution or CI run for this change has been inspected. Treat the scenario as defined, not passed.
 
 - Follow-up test-fixture correction: the round-trip test's array join now uses an actual newline separator (not a literal backslash-n). Corrected in `031a0e2427a6669312d643e14275a3ebd1ce04db`; fetched source was rechecked to confirm `.join('\n')`.
+
+
+## 2026-11-14 — Multiline code blocks and accessibility tests (awaiting CI)
+
+- Runtime change: `src/App.tsx` adds an accessible **Insert code block** toolbar action that wraps selected multiline text in fenced Markdown, or inserts a selected placeholder when no text is selected.
+- Added two Playwright scenarios: multiline insertion/render/copy fidelity, and accessibility semantics/keyboard-operable disclosure coverage.
+- Browser test source count: **28 scenarios**; Node test source remains **30 tests**.
+- No local test execution or CI run has been inspected. Treat these scenarios as authored, not passed. The accessibility check is a focused smoke test, not full WCAG conformance.
