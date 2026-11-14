@@ -1431,13 +1431,13 @@ test('block editor reorders blocks without losing separators and inserts common 
 test('foreground and background color formatting round-trip through Markdown preview', async ({ page }) => {
   await openWorkspace(page);
   const editor = await createPage(page, 'Color Formatting');
-  await editor.fill('Foreground sample\n\nBackground sample\n\nLiteral code: `[[color:#123456|not colored]]`');
+  await editor.fill('Foreground sample\n\nBackground sample\n\nLiteral code: `[[color:#123456|not colored]]`\n\nInvalid directive: [[color:red|plain text]]');
   await editor.evaluate((node: HTMLTextAreaElement) => {
     const start = node.value.indexOf('Foreground sample');
     node.focus(); node.setSelectionRange(start, start + 'Foreground sample'.length);
   });
   await page.locator('input[aria-label="Text color"]').evaluate((node: HTMLInputElement) => {
-    node.value = '#123456'; node.dispatchEvent(new Event('input', { bubbles: true })); node.dispatchEvent(new Event('change', { bubbles: true }));
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(node, '#123456'); node.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await expect(editor).toHaveValue(/\[\[color:#123456\|Foreground sample\]\]/);
   await editor.evaluate((node: HTMLTextAreaElement) => {
@@ -1445,7 +1445,7 @@ test('foreground and background color formatting round-trip through Markdown pre
     node.focus(); node.setSelectionRange(start, start + 'Background sample'.length);
   });
   await page.locator('input[aria-label="Text background color"]').evaluate((node: HTMLInputElement) => {
-    node.value = '#fff0a8'; node.dispatchEvent(new Event('input', { bubbles: true })); node.dispatchEvent(new Event('change', { bubbles: true }));
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(node, '#fff0a8'); node.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await expect(editor).toHaveValue(/\[\[bg:#FFF0A8\|Background sample\]\]/);
   await page.getByRole('button', { name: 'Preview' }).click();
@@ -1453,6 +1453,7 @@ test('foreground and background color formatting round-trip through Markdown pre
   await expect(preview.locator('span[style*="color: rgb(18, 52, 86)"]')).toContainText('Foreground sample');
   await expect(preview.locator('span[style*="background-color: rgb(255, 240, 168)"]')).toContainText('Background sample');
   await expect(preview.locator('code')).toContainText('[[color:#123456|not colored]]');
+  await expect(preview).toContainText('Invalid directive: [[color:red|plain text]]');
   await page.getByRole('button', { name: 'Edit' }).click();
   await expect(editor).toHaveValue(/Literal code: `\[\[color:#123456\|not colored\]\]`/);
 });
