@@ -290,3 +290,18 @@ Important documentation drift observed at the same HEAD:
 - Official research sources are linked inside `diagram-features.md`.
 - No application source or tests changed. Only `diagram-features.md` was created.
 - Commit: `918015553e2d1b1e2d77ccedd7214bd17b5bb9cc`.
+
+---
+
+## Exported preview UI bug register — 2026-11-15
+
+- Reviewed both user-supplied 10-page PDFs: `Wave Complete Feature Test.pdf` (light export) and `Wave Complete Feature Test 1.pdf` (dark export).
+- Created `ui-bug.md` as a separate export/UI defect register; it does not replace `ui-gaps.md`, `bugs.md` or `fixed-bugs.md`.
+- Recorded UIB-001–UIB-006 with severity, observed evidence, reproduction steps, expected behavior and acceptance criteria.
+- Highest priority: dark export uses pale foreground text on a white PDF page and mixes dark component surfaces with the white page (UIB-001/002).
+- Other observed issues: Wave inline color extensions appear as literal code-like text (UIB-003); standalone summation math remains raw TeX in the PDF (UIB-004); first table row's Priority value 1 is missing (UIB-005).
+- UIB-006 records the collapsed DETAILS content omitted from static PDF as a behavior requiring an explicit export policy, rather than assuming current behavior is definitively wrong.
+- Deliberately did not log the combined alert appearance as a confirmed defect: the source fixture places multiple alert markers inside one contiguous blockquote, which may explain the combined result.
+- Findings are PDF observations; no live-browser reproduction, CSS diagnosis, source fix or test execution was performed.
+- No application source or test files changed. Only `ui-bug.md` and this context handoff changed.
+- Register commit: `89729ac2d7b7a7d9d78879929e1ff0e5a508aa47`.
