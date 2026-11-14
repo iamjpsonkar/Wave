@@ -1342,6 +1342,13 @@ test('template gallery searches and previews before creating a local page', asyn
   const dialog = page.getByRole('dialog', { name: 'Meeting notes template preview' });
   await expect(dialog).toBeVisible();
   await expect(dialog.locator('pre')).toContainText('# Meeting notes');
+  const close = dialog.getByRole('button', { name: 'Close template preview' });
+  const create = dialog.getByRole('button', { name: 'Create from template' });
+  await expect(close).toBeFocused();
+  await close.press('Shift+Tab');
+  await expect(create).toBeFocused();
+  await create.press('Tab');
+  await expect(close).toBeFocused();
   await dialog.getByRole('button', { name: 'Cancel' }).click();
   await expect(dialog).toBeHidden();
 });
