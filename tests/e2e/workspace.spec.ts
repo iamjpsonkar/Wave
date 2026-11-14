@@ -1487,3 +1487,27 @@ test('color presets, reset and block background formatting are available', async
   await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toContainText('Block background text');
   await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toHaveAttribute('style', /background-color:\s*#eaf2e8/i);
 });
+
+
+test('block editor applies and updates a block background without leaving block mode', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Block Color Editing');
+  const editor = page.locator('.editor textarea');
+  await editor.fill('# Colorable heading\\n\\nA paragraph to color.');
+  await page.getByRole('button', { name: 'Block editing' }).click();
+  const blocks = page.getByRole('region', { name: 'Markdown block editor' });
+  await blocks.getByRole('textbox', { name: 'Edit paragraph block 2' }).focus();
+  await blocks.getByLabel('Block background color for block 2').evaluate((node: HTMLInputElement) => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(node, '#eaf2e8');
+    node.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await expect(blocks.getByRole('textbox', { name: 'Edit callout block 2' })).toHaveValue('> [!COLOR=#EAF2E8]\\n> A paragraph to color.');
+  await blocks.getByLabel('Block background color for block 2').evaluate((node: HTMLInputElement) => {
+    Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(node, '#fff0a8');
+    node.dispatchEvent(new Event('change', { bubbles: true }));
+  });
+  await expect(blocks.getByRole('textbox', { name: 'Edit callout block 2' })).toHaveValue('> [!COLOR=#FFF0A8]\\n> A paragraph to color.');
+  await page.getByRole('button', { name: 'Block editing' }).click();
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toContainText('A paragraph to color.');
+});
