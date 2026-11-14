@@ -754,6 +754,61 @@ test('Markdown embeds only local audio and video assets and rejects remote media
 });
 
 
+test('Markdown preview is source-preserving across toggle, save and workspace reopen', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Source Round Trip');
+  const original = [
+    '# Source Round Trip',
+    '',
+    'Two spaces make a hard break  ',
+    'and this is the next line.',
+    '',
+    'A **bold** phrase, a [safe link](https://example.com/docs), and a wiki link [[Missing Page]].',
+    '',
+    '`inline code with *literal* markup`',
+    '',
+    '```typescript',
+    'const answer: number = 42;',
+    '```',
+    '',
+    '| Column A | Column B |',
+    '| --- | --- |',
+    '| escaped \\| pipe | value |',
+    '',
+    '$',
+    '\\frac{1}{\\sqrt{x_1 + \\alpha^2}}',
+    '$',
+    '',
+    '> [!NOTE]',
+    '> Preview must not rewrite this source.',
+    '',
+    '<script>this must remain inert source text</script>',
+    ''
+  ].join('\\n');
+  await editor.fill(original);
+  await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview h1')).toHaveText('Source Round Trip');
+  await expect(page.locator('.markdown-preview table')).toContainText('escaped | pipe');
+  await expect(page.locator('.markdown-preview .math-expression, .markdown-preview math')).toBeVisible();
+  await expect(page.locator('.markdown-preview .wiki-link-unresolved')).toContainText('Missing Page');
+  await page.getByRole('button', { name: 'Edit' }).click();
+  await expect(page.locator('textarea')).toHaveValue(original);
+  const saved = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const docs = await wave.getDirectoryHandle('documents');
+    const file = await docs.getFileHandle('untitled.md');
+    return await (await file.getFile()).text();
+  });
+  expect(saved).toBe(original);
+  await page.reload();
+  await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(page.getByRole('button', { name: /Source Round Trip/ })).toBeVisible();
+  await page.getByRole('button', { name: /Source Round Trip/ }).click();
+  await expect(page.locator('textarea')).toHaveValue(original);
+});
+
 test('Markdown link schemes and local media paths enforce the preview security boundary', async ({ page }) => {
   await openWorkspace(page);
   await page.evaluate(async () => {
