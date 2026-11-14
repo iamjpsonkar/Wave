@@ -66,6 +66,40 @@ test('Trash move and restore preserve the Markdown page', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Trash Round Trip/ })).toBeVisible();
 });
 
+test('attachments are saved locally with correct root and nested Markdown paths', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Root Attachment');
+  await page.locator('input[type="file"]').setInputFiles({ name: 'root.txt', mimeType: 'text/plain', buffer: Buffer.from('root attachment bytes') });
+  await expect(page.locator('textarea')).toHaveValue(/\.\.\/assets\/root\.txt/);
+  await page.once('dialog', dialog => dialog.accept('Projects'));
+  await page.getByRole('button', { name: 'New folder' }).click();
+  await expect(page.getByRole('button', { name: /Projects/ })).toBeVisible();
+  await page.locator('.sidebar nav button').first().click();
+  const editor = page.locator('textarea');
+  await expect(editor).toBeVisible();
+  await editor.fill('# Nested Attachment\n\nNested page content');
+  await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
+  await page.locator('input[type="file"]').setInputFiles({ name: 'nested.txt', mimeType: 'text/plain', buffer: Buffer.from('nested attachment bytes') });
+  await expect(editor).toHaveValue(/\.\.\/\.\.\/assets\/nested\.txt/);
+  const files = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const assets = await (await root.getDirectoryHandle('.wave')).getDirectoryHandle('assets');
+    const names: string[] = [];
+    for await (const [name] of assets.entries()) names.push(name);
+    return names;
+  });
+  expect(files).toEqual(expect.arrayContaining(['root.txt', 'nested.txt']));
+});
+
+test('mobile navigation drawer opens and closes', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await openWorkspace(page);
+  await page.getByRole('button', { name: 'Open navigation' }).click();
+  await expect(page.locator('aside.sidebar')).toHaveClass(/mobile-open/);
+  await page.getByRole('button', { name: 'Close navigation' }).click();
+  await expect(page.locator('aside.sidebar')).not.toHaveClass(/mobile-open/);
+});
+
 test('backup and restore create a separate verified workspace folder', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'Backup Round Trip');
