@@ -308,7 +308,7 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 | ID | Latest implementation | Remaining acceptance / verification |
 |---|---|---|
 | UI-001 | Settings dialog, preference persistence, focus containment and Escape behavior already exist; system/theme matrix now exercises broader appearance surfaces. | Run Settings-specific visual/accessibility checks and CI; verify preference reset/reopen on latest code. |
-| UI-002 | Markdown-safe formatting and insertion workflows remain the source-preserving editing path. | **Open:** a genuine optional block editor with paragraph/list/quote/callout/code/image/file/table blocks, block navigation and source round-trip is not implemented. Do not describe the plain textarea as a rich block editor. |
+| UI-002 | Added optional source-preserving Markdown block editing for headings, paragraphs, lists, quotes/callouts, code fences, tables, dividers, image and attachment lines. Each block edits its original source slice; untouched text and blank lines are preserved. | **Partial:** drag/drop/reorder, block handles, slash menu, bookmark/embed blocks and richer inline formatting remain. CI and source-round-trip regression pending. |
 | UI-003 | Centered configurable writing measure remains in place; responsive matrix now checks 320, 390, 768, 1024 and 1440 CSS-pixel widths. | Long table/code/diagram fixtures and visual review of wide/full-width modes remain. |
 | UI-004 | Every primary formatting toolbar action now has an explicit accessible name and title; Inline code and Code block retain distinct icons and labels. | CI and keyboard/tooltip review remain. |
 | UI-005 | Increased functional metadata/control text sizes; added 4.5:1 body and heading contrast assertions to the theme matrix. | **Partial:** audit all metadata, controls, disabled/error states and Settings surfaces; manual screen-reader/zoom review remains. Automated assertions are not a complete WCAG audit. |
@@ -341,4 +341,13 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 - Node test source inventory: **30 tests** (unchanged).
 - GitHub repository connection did not provide a current push-triggered Actions run or combined status for the latest code commits. No local project dependencies/test runner are available in this repository connection.
 - **No test, typecheck, production build, screenshot review or CI pass is claimed.** Treat all new work as implementation committed / CI pending.
-- UI-002 remains the substantive open product gap. UI-001/003/005/007/008/011/012/013/014/015/018/019 also retain the specific QA or acceptance items stated above. No gap ID is deleted or marked fully complete merely because source code was added.
+- UI-002 is now partially implemented; drag/drop/reorder, block handles, slash menu, bookmark/embed blocks and richer inline formatting remain open. UI-001/003/005/007/008/011/012/013/014/015/018/019 also retain the specific QA or acceptance items stated above. No gap ID is deleted or marked fully complete merely because source code was added.
+
+ 
+### UI-002 follow-up — optional Markdown block mode
+
+- Added a separate **Blocks** mode alongside the original source editor. The mode classifies headings, paragraphs, lists, quotes, callouts, fenced code, tables, dividers, image lines and attachment links into editable block surfaces.
+- Each block editor replaces only its original source slice. Untouched source, blank-line separators and Markdown syntax remain unchanged; the plain source editor and preview remain available.
+- Added a regression that edits one paragraph block and verifies the exact full Markdown source after returning to source mode, including list, callout and fenced-code blocks.
+- This is a first source-preserving block layer, not full Notion-style block editing. Reordering, drag/drop, block handles, slash menu, bookmark/embed blocks and rich inline formatting remain open.
+- **Status: source and E2E regression committed; CI pending.**
