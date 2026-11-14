@@ -55,6 +55,11 @@ async function existsDirectory(dir: FileSystemDirectoryHandle, name: string): Pr
   try { await dir.getDirectoryHandle(name); return true; }
   catch (error) { if (isNotFound(error)) return false; throw error; }
 }
+async function hasCaseInsensitiveEntry(dir:FileSystemDirectoryHandle,name:string):Promise<boolean>{
+  const target=name.normalize('NFC').toLocaleLowerCase('en-US');
+  for await(const [existing] of dir.entries())if(existing.normalize('NFC').toLocaleLowerCase('en-US')===target)return true;
+  return false;
+}
 async function write(dir: FileSystemDirectoryHandle, name: string, data: string | File | Blob) {
   const handle = await dir.getFileHandle(name, { create: true });
   const writable = await handle.createWritable();
@@ -182,7 +187,7 @@ export async function createDoc(dir: FileSystemDirectoryHandle, requestedPath: s
     const path=[...parts,candidate].join('/');
     try {
       await queueWrite(dir,path,()=>withWorkspaceLock('create:'+path,async()=>{
-        if (await existsFile(parent,candidate)) throw new Error('A page with this name already exists.');
+        if (await hasCaseInsensitiveEntry(parent,candidate)) throw new Error('A page with this name already exists.');
         await write(parent,candidate,text);
       }));
       return path;
@@ -387,7 +392,7 @@ export async function createFolder(dir: FileSystemDirectoryHandle, path: string)
   const safe=requested.trim().replace(/[\\/:*?"<>|]/g,'-').replace(/^\\.+|\\.+$/g,'').slice(0,60);
   if(!safe)throw new Error('Enter a valid folder name.');
   const parent=await directoryForPath(dir,parts.join('/'),true);
-  if(await existsDirectory(parent,safe))throw new Error('A folder with that name already exists.');
+  if(await hasCaseInsensitiveEntry(parent,safe))throw new Error('A folder or file with that name already exists.');
   await parent.getDirectoryHandle(safe,{create:true});
   return [...parts,safe].join('/');
 }
