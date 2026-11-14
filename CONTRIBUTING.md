@@ -65,7 +65,7 @@ Do not claim a check passed unless it was actually executed. Report any unrun ch
 
 Keep each document's purpose intact:
 
-- `upcoming-FEATURES.md` is the complete product blueprint; do not prune agreed scope.
+- `upcoming-features.md` is the complete product blueprint; do not prune agreed scope.
 - `priority-FEATURES.md` controls delivery order, not feature retention.
 - `FEATURES.md` and `FEATURES.md` describe shipped capabilities.
 - `docs/ROADMAP.md` tracks delivery phases.
