@@ -192,3 +192,10 @@ html,body{height:100%}
 .markdown-preview .mermaid-fallback{margin:16px 0}
 .markdown-preview .mermaid-fallback p{font-size:12px;color:#777d71;margin:0 0 6px}
 .markdown-preview h1[id],.markdown-preview h2[id],.markdown-preview h3[id],.markdown-preview h4[id],.markdown-preview h5[id],.markdown-preview h6[id]{scroll-margin-top:24px}
+
+.markdown-preview .markdown-details{margin:16px 0;border:1px solid #e4e8df;border-radius:7px;padding:10px 13px;background:#fafbf9}
+.markdown-preview .markdown-details>summary{cursor:pointer;font-weight:600;color:#526b52;outline-offset:3px}
+.markdown-preview .markdown-details[open]>summary{margin-bottom:9px}
+.markdown-preview mark{background:#fff0a8;color:inherit;padding:0 2px;border-radius:2px}
+.markdown-preview u{text-decoration-thickness:1px;text-underline-offset:3px}
+.markdown-preview kbd{display:inline-block;border:1px solid #d9ddd4;border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:#f6f7f4;font:11px ui-monospace,monospace;color:#555d51}
