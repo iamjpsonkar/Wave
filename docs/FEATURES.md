@@ -70,8 +70,9 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] User-selected folder is the source of truth
 - [x] Markdown documents and ordinary local assets
 - [x] Local Trash, backup snapshots and recent folder handle
-- [x] Revision-ordered writes, Trash operation journal, external-edit detection and recoverable local drafts
-- [~] Verified backup browser and restore to a separate workspace folder
+- [x] Revision-stable editor flushes, workspace-generation guards, per-workspace favorite queues, Trash operation journal and serialized restore, external-edit detection and recoverable local drafts
+- [x] Backup content-integrity snapshots and collision-safe restore folders with failed-restore protection
+- [x] Verified backup browser and restore to a separate workspace folder with unique destination allocation and incomplete-restore markers
 - [ ] Restore diff/preview and scheduled local backups
 - [ ] Workspace schema migrations and integrity checker
 - [ ] Encryption-at-rest option for private workspace vaults
