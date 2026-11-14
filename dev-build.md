@@ -267,3 +267,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added one E2E scenario for swatch application, reset, block fill source and preview. E2E source inventory: **41 scenarios**; Node source remains **30 tests**. These are source counts only.
 - Commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`, renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`, styles `7020028201eeee4be404a003b4e2c2abc7925c9a`, E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
 - CI, typecheck, build and screenshot review have not been confirmed. Nested ranges and Blocks-mode selection remain open.
+
+
+## 2026-11-15 — Blocks-mode background color controls
+
+- Added an accessible per-block native color picker to every Markdown block in Blocks mode. Applying a color adds the safe quote marker; changing an existing color block updates its marker in place. The block editor classifies color directives as callouts.
+- Added an E2E source scenario for applying, changing and previewing a block fill. E2E source inventory: **42 scenarios**; Node test source remains **30 tests**. Counts describe source definitions, not execution.
+- Commits: `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`, `93bf0eb5dc809e373292570d900066161f6e7be3`, `0cf474ff0d0765f882916c04efbb69e49c95cb85`.
+- Typecheck, build, browser execution, screenshot review and CI are not yet verified.
