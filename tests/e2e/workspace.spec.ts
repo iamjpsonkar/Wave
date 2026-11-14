@@ -784,7 +784,7 @@ test('Markdown Mermaid mindmap, timeline, quadrant, requirement and architecture
   await page.getByRole('button', { name: 'Preview' }).click();
   const diagrams = page.locator('.markdown-preview .mermaid-diagram');
   await expect(diagrams).toHaveCount(5);
-  await expect(diagrams.nth(0).locator('rect')).toHaveCount(3);
+  await expect(diagrams.nth(0).locator('rect')).toHaveCount(4);
   await expect(diagrams.nth(1).locator('circle')).toHaveCount(3);
   await expect(diagrams.nth(2).locator('circle')).toHaveCount(2);
   await expect(diagrams.nth(3).locator('rect')).toHaveCount(2);
