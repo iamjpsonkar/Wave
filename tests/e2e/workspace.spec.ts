@@ -1553,9 +1553,9 @@ test('PDF export uses a readable print palette and preserves Markdown content', 
     '> [!DETAILS] Expand for more information',
     '> Disclosure body remains part of the exported document.',
     '',
-    '$',
+    '$$',
     '\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}',
-    '$'
+    '$$'
   ].join('\\n');
   await page.locator('textarea').fill(source);
   await page.getByRole('button', { name: 'Preview' }).click();
