@@ -63,7 +63,8 @@ export function markdownSource(source: string, docs: WikiDoc[] = []): string {
       return line;
     }
     if (fence) return line;
-    return line.replace(/(\x60+)([\s\S]*?)\1|\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (match, ticks, _code, target, alias) => {
+    const withMedia=line.replace(/(\x60+)([\s\S]*?)\1|\[\[(audio|video):([^\]]+)\]\]/gi,(match,ticks,_code,kind,path)=>{if(ticks)return match;const clean=String(path).trim();const label=clean.split('/').pop()||String(kind).toUpperCase();return '['+String(kind).toUpperCase()+': '+label+'](https://wave.invalid/media/'+String(kind).toLowerCase()+'/'+encodeURIComponent(clean)+')';});
+    return withMedia.replace(/(\x60+)([\s\S]*?)\1|\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (match, ticks, _code, target, alias) => {
       if (ticks || !target) return match;
       const normalizedTarget = target.trim();
       const path = resolveWikiLinkTarget(normalizedTarget, docs);
