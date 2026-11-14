@@ -949,3 +949,152 @@ The latest observed GitHub Actions run for the verified revision is:
 5. **P1/P2 — WAVE-019, WAVE-020, WAVE-031, WAVE-039:** Complete browser-level conflict, backup, crash-recovery, and navigation testing.
 
 **Updated audit count:** 44 numbered findings (WAVE-001 through WAVE-044), plus the 8 cross-cutting risks. The original 40-item remediation status is superseded by the verification matrix in this section.
+
+
+## 15. Additional independent audit — 2026-11-14
+
+A second source-level pass on the current `main` revision found seven additional issues not covered by WAVE-001 through WAVE-044. These findings are based on the current implementation paths below. Timing-dependent findings still require browser/filesystem fault-injection tests before their full impact can be quantified.
+
+## WAVE-045 — Double-escaped newline and whitespace patterns break document and Trash titles
+
+- Priority: **P2** | Confidence: **High**
+- File: `src/storage.ts` — `listDocs()`, `searchDocs()`, `moveDocToTrash()`
+
+### Problem
+Several string and regular-expression patterns contain an extra backslash:
+- `listDocs()` uses `text.split('\\\\n')`, which splits on the two literal characters backslash+n rather than actual newline characters.
+- Its heading cleanup uses `/^#\\\\s*/`, which does not remove the normal whitespace after a Markdown heading marker.
+- The filename fallback uses `/\\\\.md$/i`, which does not correctly strip a normal `.md` suffix.
+- `moveDocToTrash()` repeats the incorrect newline and heading patterns when deriving the Trash title.
+- `searchDocs()` uses `/\\\\s+/g`, so snippets are not normalized to spaces as intended.
+
+As a result, a normal multi-line Markdown page can be represented in the sidebar by a title containing much or all of its first 4 KB, rather than its first non-empty heading. Trash entries can similarly show document content instead of a concise title. Search snippets can retain line breaks.
+
+### Reproduction
+1. Create a page with a heading followed by several paragraphs.
+2. Refresh the workspace or reopen it.
+3. Inspect the page title in the sidebar and then move the page to Trash.
+4. Search for a phrase spanning a document with multiple lines and inspect the snippet formatting.
+
+### Fix
+Use actual newline splitting (`'\\n'` in TypeScript source) and correctly escaped regexes such as `/^#\\s*/`, `/\\.md$/i`, and `/\\s+/g`. Add tests with multi-line Markdown, headings with spaces/tabs, empty documents, and long documents.
+
+## WAVE-046 — Save-conflict-copy does not remove the original Markdown extension
+
+- Priority: **P2** | Confidence: **High**
+- File: `src/App.tsx` — `saveConflictCopy()`
+
+### Problem
+The filename expression uses `path.replace(/\\\\\\\\.md$/,'')`. The regular expression is double-escaped and does not match a normal filename such as `Notes.md`. The resulting copy name becomes `Notes.md-conflict-copy.md` instead of `Notes-conflict-copy.md`.
+
+This does not overwrite the original document, but produces an inconsistent and confusing filename every time the user chooses the conflict recovery action.
+
+### Reproduction
+1. Open `Notes.md`.
+2. Cause an external-edit conflict.
+3. Choose **Save draft as copy**.
+4. Inspect the created filename.
+
+### Fix
+Use a correctly escaped extension matcher (or a small filename helper shared with duplicate naming). Add a test for root and nested paths, uppercase `.MD`, and filenames containing multiple dots.
+
+## WAVE-047 — A queued favorite update can write another workspace's favorites into the wrong settings file
+
+- Priority: **P1** | Confidence: **High; timing-dependent**
+- File: `src/App.tsx` — `toggleFavorite()`, `activateWorkspace()`
+
+### Problem
+`toggleFavorite()` captures the current workspace in `current`, but its queued callback later reads `favoritesRef.current`. That ref is global to the component and is replaced by `activateWorkspace()` when another workspace becomes active.
+
+If a favorite update for workspace A is queued and the user switches to workspace B before the callback reads the ref, the callback can write B's favorites array into A's `settings.json`. The queue itself is also global rather than partitioned by workspace.
+
+### Reproduction
+1. Open workspace A and toggle a favorite while its settings read/write is delayed.
+2. Switch to workspace B before the queued callback reads `favoritesRef.current`.
+3. Inspect A's `.wave/settings.json`; it may now contain B's favorites.
+
+### Fix
+Capture an immutable favorites snapshot at the moment of the toggle and write that snapshot to the captured workspace. Prefer a per-workspace serialized queue or a workspace-keyed state map. Do not read a global active-workspace ref from a delayed callback. Add a deterministic test that pauses the queued write, switches workspaces, and then releases it.
+
+## WAVE-048 — Editor transitions can discard edits typed while a flush is in progress
+
+- Priority: **P1** | Confidence: **High; timing-dependent**
+- File: `src/App.tsx` — `flush()`, `open()`, `create()`, `createFromTemplate()`, `trashCurrent()`, `activateWorkspace()`
+
+### Problem
+`flush()` captures `contentRef.current` and `revisionRef.current` once, then awaits `persistDocument()`. The editor remains interactive during that await. If the user types again while the filesystem operation is pending, the flush only persists the earlier revision and does not check whether the revision changed before the caller proceeds.
+
+Callers such as `open()`, page creation, Trash, and workspace activation can then replace or clear the editor state. Their React autosave debounce can be cancelled by the navigation/state change, leaving the newer text that was typed during the wait unsaved and discarded.
+
+### Reproduction
+1. Use a workspace/filesystem where a save or metadata operation is slow.
+2. Start opening another page, creating a page, moving the current page to Trash, or switching workspaces.
+3. While the action is waiting for `flush()`, type additional text in the editor.
+4. Allow the operation to finish and inspect the original document.
+
+### Fix
+Make transitions revision-aware. After each awaited flush, verify that the active workspace, path, and editor revision are still the expected values; if the revision changed, persist the latest revision before transitioning or cancel the transition. Alternatively, make the editor explicitly read-only while a transition is committing, while preserving the user's ability to cancel. Add browser tests with controllable delayed writes.
+
+## WAVE-049 — Concurrent backup requests can write into the same timestamp-named snapshot
+
+- Priority: **P1** | Confidence: **High; timing-dependent**
+- File: `src/storage.ts` — `createBackup()`
+
+### Problem
+Backup names are derived from the current timestamp. The code checks whether the directory exists and then creates it, but the check-and-create sequence is not protected by a lock or exclusive allocation. Two backup requests in the same timestamp interval can both observe that the name is unused and then open the same directory with `create: true`.
+
+Both operations can then copy files into the same snapshot and overwrite each other's completion/failure marker. The resulting backup may be inconsistent even though one or both calls report success.
+
+### Reproduction
+1. Trigger two backup operations nearly simultaneously (for example, double-click Backup or call the storage API twice).
+2. Arrange for both calls to start before either creates the destination directory.
+3. Inspect the resulting snapshot and its status marker.
+
+### Fix
+Allocate backup destinations exclusively under a workspace-scoped lock, with collision handling inside the lock. Give each operation a unique ID and ensure only the operation that owns the destination can write its status marker. Add a concurrent-backup test that verifies distinct snapshot names and independently valid contents.
+
+## WAVE-050 — Concurrent restore of the same Trash item can create duplicate pages
+
+- Priority: **P2** | Confidence: **High; timing-dependent**
+- File: `src/storage.ts` — `restoreTrashItem()`
+
+### Problem
+Trash restoration is not serialized by an item-specific lock. Two tabs or two rapid UI actions can both read the same Trash metadata and Markdown content, then each call `createDoc()`. The page-creation allocator correctly avoids overwriting, so the two restore operations can create two different filenames containing identical restored content. Both then attempt to remove the same Trash files and may both report success.
+
+### Reproduction
+1. Open the same workspace in two tabs.
+2. Restore the same Trash item from both tabs at nearly the same time.
+3. Inspect the documents folder for duplicate restored pages.
+
+### Fix
+Serialize restoration by workspace and Trash item ID, and re-check the item/operation marker inside the lock before creating a destination. Keep the operation journal state transitions within that serialized operation. Add a two-call concurrency test asserting exactly one restored page is created.
+
+## WAVE-051 — Attachments in nested pages receive an incorrect relative Markdown path
+
+- Priority: **P2** | Confidence: **High**
+- File: `src/App.tsx` — `attachment()`
+
+### Problem
+The generated asset URL uses:
+`Math.max(1, targetPath.split('/').length - 1)`
+parent-directory segments. For a page stored at `folder/Notes.md`, the generated link is `../assets/file.png`, but the correct relative path from `.wave/documents/folder/` to `.wave/assets/` is `../../assets/file.png`.
+
+Wave's preview can hide this defect because `localAssetName()` extracts the asset filename and looks it up directly in the assets directory without validating the relative path depth. The Markdown file itself therefore contains a broken relative link when opened by another Markdown viewer or tool.
+
+### Reproduction
+1. Create a page inside a nested folder.
+2. Attach an image or file.
+3. Inspect the generated Markdown link and open the Markdown file outside Wave.
+
+### Fix
+Calculate the number of parent segments from the document's directory depth: a root-level document needs one `../`; a document one folder deep needs two, and so on. Add tests for root-level, one-level, and multi-level nested documents, and verify the generated link resolves relative to the Markdown file.
+
+## 15.1 Additional audit conclusions
+
+- **7 new findings:** WAVE-045 through WAVE-051.
+- **New P1 findings:** WAVE-047, WAVE-048, and WAVE-049.
+- **New P2 findings:** WAVE-045, WAVE-046, WAVE-050, and WAVE-051.
+- These findings have not been fixed in this audit pass. They are recorded for implementation and regression testing.
+- The audit was source-level against the current `main` tree. It did not include interactive browser tests, multi-tab execution, or filesystem fault injection.
+
+**Updated audit count:** 51 numbered findings (WAVE-001 through WAVE-051), plus the previously recorded cross-cutting risks.
