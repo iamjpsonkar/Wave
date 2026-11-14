@@ -211,6 +211,15 @@ async function countFiles(dir:FileSystemDirectoryHandle):Promise<number>{
   }
   return count;
 }
+async function snapshotTree(dir:FileSystemDirectoryHandle,prefix=''):Promise<string>{
+  const entries:string[]=[];
+  for await(const [name,handle] of dir.entries()){
+    const path=prefix?prefix+'/'+name:name;
+    if(handle.kind==='directory')entries.push(await snapshotTree(handle as FileSystemDirectoryHandle,path));
+    else{const file=await(handle as FileSystemFileHandle).getFile();entries.push(path+'|'+file.size+'|'+file.lastModified);}
+  }
+  return entries.sort().join('\\n');
+}
 export async function createBackup(workspace: Workspace): Promise<string> {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   let name='backup-'+stamp, suffix=2;
@@ -219,8 +228,11 @@ export async function createBackup(workspace: Workspace): Promise<string> {
   const startedAt=new Date().toISOString();
   await write(backup,'backup-status.json',JSON.stringify({status:'in-progress',startedAt},null,2));
   try {
+    const beforeDocs=await snapshotTree(workspace.documents),beforeAssets=await snapshotTree(workspace.assets);
     const docs=await copyFolder(workspace.documents,await backup.getDirectoryHandle('documents',{create:true}));
     const assets=await copyFolder(workspace.assets,await backup.getDirectoryHandle('assets',{create:true}));
+    const afterDocs=await snapshotTree(workspace.documents),afterAssets=await snapshotTree(workspace.assets);
+    if(beforeDocs!==afterDocs||beforeAssets!==afterAssets)throw new Error('Workspace files changed during backup. The snapshot is marked incomplete; retry when editing has stopped.');
     for(const filename of ['manifest.json','settings.json']){
       try{const file=await(await workspace.wave.getFileHandle(filename)).getFile();await write(backup,filename,file);}
       catch(error){if(!isNotFound(error))throw error;}
@@ -255,8 +267,10 @@ export async function restoreBackupToNewWorkspace(workspace:Workspace,name:strin
   const targetName=workspace.root.name+'-restore-'+new Date().toISOString().replace(/[:.]/g,'-');
   const target=await workspace.root.getDirectoryHandle(targetName,{create:false}).catch(async error=>{if(isNotFound(error))return workspace.root.getDirectoryHandle(targetName,{create:true});throw error;});
   const wave=await target.getDirectoryHandle('.wave',{create:true});
-  await copyFolder(await source.getDirectoryHandle('documents'),await wave.getDirectoryHandle('documents',{create:true}));
-  await copyFolder(await source.getDirectoryHandle('assets'),await wave.getDirectoryHandle('assets',{create:true}));
+  const docsCopied=await copyFolder(await source.getDirectoryHandle('documents'),await wave.getDirectoryHandle('documents',{create:true}));
+  const assetsCopied=await copyFolder(await source.getDirectoryHandle('assets'),await wave.getDirectoryHandle('assets',{create:true}));
+  const expected=JSON.parse(await(await(await source.getFileHandle('backup-status.json')).getFile()).text()) as {documents?:number;assets?:number};
+  if(docsCopied.files!==expected.documents||assetsCopied.files!==expected.assets)throw new Error('Backup contents do not match the completion manifest; restore was stopped.');
   for(const filename of ['manifest.json','settings.json']){
     try{const f=await(await source.getFileHandle(filename)).getFile();await write(wave,filename,f);}
     catch(error){if(!isNotFound(error))throw error;}
