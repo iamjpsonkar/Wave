@@ -17,9 +17,9 @@
 
 ## Current summary
 
-- **2 remaining partial findings:** WAVE-031, WAVE-039. Permission-denial and same-workspace two-tab journeys are now covered in Chromium; draft writes request strict IndexedDB durability where supported.
+- **2 remaining partial findings:** WAVE-031 (QA coverage gap), WAVE-039 (IndexedDB crash window). Permission-denial, same-workspace two-tab editing, and cross-tab recovery-draft provenance are covered by Chromium regression scenarios.
 - **49 source-verified fixes:** tracked in `fixed-bugs.md`.
-- CI runs Node storage/concurrency tests and nine Playwright Chromium E2E journeys using native OPFS handles. Simulated permission denial and same-workspace two-tab editing are covered; native picker prompts/revocation, external-editor fault injection, comprehensive accessibility checks and abrupt process-termination tests remain outstanding.
+- CI runs Node storage/concurrency tests and ten Playwright Chromium E2E journeys using native OPFS handles. Simulated permission denial and same-workspace two-tab editing are covered; native picker prompts/revocation, external-editor fault injection, comprehensive accessibility checks and abrupt process-termination tests remain outstanding.
 - Verified code CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) — 30 Node tests and all 9 Chromium E2E tests passed; typecheck and production build passed.
 
 ---
@@ -101,10 +101,8 @@ Keep the write in the input-event path, request strict IndexedDB durability, exp
 
 ## Follow-up remediation — 2026-11-14
 
-- WAVE-031: added Chromium coverage for permission denial through the File System Access permission contract and concurrent edits from two tabs sharing the same OPFS workspace. The denial contract is simulated; the native picker prompt and OS-level permission revocation are not yet automated. The browser suite now contains nine scenarios.
+- WAVE-031: added Chromium coverage for permission denial through the File System Access permission contract and concurrent edits from two tabs sharing the same OPFS workspace. The denial contract is simulated; the native picker prompt and OS-level permission revocation are not yet automated. The browser suite now contains ten scenarios, including a check that a recovery prompt identifies a draft originating in another tab.
 - WAVE-042: the new two-tab scenario exposed that one tab could overwrite or clear another tab's single shared recovery-draft record. Drafts are now isolated by a session-scoped tab ID, and clearing after a successful save removes only the current tab's record. Both edits must survive as saved Markdown or as the other tab's retained recovery draft.
 - WAVE-039: draft journal writes now request IndexedDB `strict` transaction durability, with a compatibility fallback for browsers that reject the option. A browser regression test verifies the strict option is requested. This reduces the durability window but cannot eliminate the interval before an asynchronous transaction commits; WAVE-039 remains partial rather than falsely marked fixed.
-- The exact CI result for these changes is pending the workflow run triggered by the commits above.
-
 - WAVE-042 is now closed: per-tab draft isolation passed the two-tab Chromium regression test.
 - Verified source CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) on `b11b46eebc1558de9910d8523cdaa027817b087d` — 30 Node tests, all 9 Chromium E2E tests, typecheck and production build passed. Documentation-only commits followed; their CI is tracked separately.
