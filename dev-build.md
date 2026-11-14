@@ -41,3 +41,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - A passing unit suite does not imply browser tests passed.
 - A passing browser suite does not establish native picker, external-editor, accessibility or OS process-termination behavior unless those scenarios are explicitly included.
 - Do not treat an earlier successful run as verification of later commits.
+
+
+## 2026-11-14 — Markdown preview extension changes (awaiting CI)
+
+- Source additions: MathML subset, simple Mermaid flowchart SVG, heading anchors, Markdown showcase template and E2E regression scenario.
+- Current test source count: 30 Node tests and 14 Playwright Chromium scenarios.
+- **Status: not yet verified.** No local install, typecheck, build, Node test run or Playwright run was performed in this task. Earlier CI entries above predate these changes and do not verify them. Record the exact new commit and result after CI completes.
