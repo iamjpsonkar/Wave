@@ -216,3 +216,112 @@ html,body{height:100%}
 /* Theme parity: keep Markdown content and primary workspace controls legible in dark mode. */
 .app.theme-dark .brand{color:#e5e9e1}.app.theme-dark .view-toggle{background:#252d25}.app.theme-dark .view-toggle button{color:#b9c5b4}.app.theme-dark .view-toggle button.selected{background:#3a493a;color:#f0f5ed;box-shadow:0 1px 3px #00000040}.app.theme-dark .backup-button{background:#252d25;border-color:#3a453a;color:#d5dfd1}.app.theme-dark .backup-button:hover{background:#303c30;color:#f0f5ed}.app.theme-dark .toolgroup button{color:#b9c5b4}.app.theme-dark .toolgroup button:hover{background:#303c30;color:#f0f5ed}.app.theme-dark .markdown-preview a{color:#a6d2a8}.app.theme-dark .markdown-preview blockquote{color:#c0cbb9;border-color:#769477}.app.theme-dark .markdown-preview code{background:#252f26;color:#e5e9e1}.app.theme-dark .markdown-preview pre code{background:transparent;color:inherit}.app.theme-dark .markdown-preview th{background:#252d25}.app.theme-dark .markdown-preview th,.app.theme-dark .markdown-preview td{border-color:#3a453a}.app.theme-dark .markdown-preview hr{border-color:#3a453a}
 @media(prefers-color-scheme:dark){.app.theme-system .brand{color:#e5e9e1}.app.theme-system .view-toggle{background:#252d25}.app.theme-system .view-toggle button{color:#b9c5b4}.app.theme-system .view-toggle button.selected{background:#3a493a;color:#f0f5ed;box-shadow:0 1px 3px #00000040}.app.theme-system .backup-button{background:#252d25;border-color:#3a453a;color:#d5dfd1}.app.theme-system .backup-button:hover{background:#303c30;color:#f0f5ed}.app.theme-system .toolgroup button{color:#b9c5b4}.app.theme-system .toolgroup button:hover{background:#303c30;color:#f0f5ed}.app.theme-system .markdown-preview h1,.app.theme-system .markdown-preview h2,.app.theme-system .markdown-preview h3,.app.theme-system .markdown-preview h4,.app.theme-system .markdown-preview h5,.app.theme-system .markdown-preview h6{color:#edf2e9}.app.theme-system .markdown-preview a{color:#a6d2a8}.app.theme-system .markdown-preview blockquote{color:#c0cbb9;border-color:#769477}.app.theme-system .markdown-preview pre,.app.theme-system .markdown-preview blockquote,.app.theme-system .markdown-math-display,.app.theme-system .mermaid-diagram{background:#202820;border-color:#3b463a;color:#dce5d7}.app.theme-system .markdown-preview code{background:#252f26;color:#e5e9e1}.app.theme-system .markdown-preview pre code{background:transparent;color:inherit}.app.theme-system .markdown-preview th{background:#252d25}.app.theme-system .markdown-preview th,.app.theme-system .markdown-preview td{border-color:#3a453a}.app.theme-system .markdown-preview hr{border-color:#3a453a}}
+
+
+/* UI-020: complete theme-aware Markdown surfaces and readable fallbacks. */
+.app.theme-dark .markdown-preview,
+.app.theme-system .markdown-preview { color:#e0e6dc; }
+.app.theme-dark .markdown-preview p,
+.app.theme-dark .markdown-preview li,
+.app.theme-dark .markdown-preview td,
+.app.theme-dark .markdown-preview th,
+.app.theme-dark .markdown-preview figcaption,
+.app.theme-dark .markdown-preview .markdown-details,
+.app.theme-dark .markdown-preview .markdown-alert,
+.app.theme-dark .markdown-preview .markdown-math-display,
+.app.theme-dark .markdown-preview .markdown-math-fallback,
+.app.theme-dark .markdown-preview .mermaid-fallback,
+.app.theme-dark .markdown-preview .missing-asset { color:#dce5d7; }
+.app.theme-dark .markdown-preview .markdown-alert,
+.app.theme-dark .markdown-preview .markdown-details,
+.app.theme-dark .markdown-preview .markdown-math-display,
+.app.theme-dark .markdown-preview .markdown-math-fallback,
+.app.theme-dark .markdown-preview .mermaid-fallback,
+.app.theme-dark .markdown-preview .mermaid-diagram { background:#202820;border-color:#465346; }
+.app.theme-dark .markdown-preview .markdown-alert-label,
+.app.theme-dark .markdown-preview .markdown-details>summary { color:#c4d8bd; }
+.app.theme-dark .markdown-preview .markdown-alert-warning,
+.app.theme-dark .markdown-preview .markdown-alert-caution { background:#30291d;border-color:#6b5735; }
+.app.theme-dark .markdown-preview .markdown-alert-important { background:#292438;border-color:#594d78; }
+.app.theme-dark .markdown-preview .markdown-alert-tip { background:#1e302c;border-color:#426c5e; }
+.app.theme-dark .markdown-preview .markdown-alert-warning .markdown-alert-label,
+.app.theme-dark .markdown-preview .markdown-alert-caution .markdown-alert-label { color:#e6c98e; }
+.app.theme-dark .markdown-preview .markdown-alert-important .markdown-alert-label { color:#c8b8ef; }
+.app.theme-dark .markdown-preview .markdown-alert-tip .markdown-alert-label { color:#a8d8c9; }
+.app.theme-dark .markdown-preview .markdown-math-fallback { background:#30291d;border-color:#80683d;color:#f0dfb8; }
+.app.theme-dark .markdown-preview kbd { background:#2b342b;border-color:#566354;color:#e2e9dd; }
+.app.theme-dark .markdown-preview mark { background:#65531e;color:#fff0b8; }
+.app.theme-dark .markdown-preview .syntax-keyword { color:#d1a6ef; }
+.app.theme-dark .markdown-preview .syntax-string { color:#a6d8a8; }
+.app.theme-dark .markdown-preview .syntax-number { color:#efb18b; }
+.app.theme-dark .markdown-preview .syntax-comment { color:#aab4a4; }
+.app.theme-dark .markdown-preview .syntax-operator { color:#a9c4e8; }
+.app.theme-dark .markdown-preview .syntax-diff-added { color:#a6e0b4;background:rgba(44,150,77,.18); }
+.app.theme-dark .markdown-preview .syntax-diff-removed { color:#f0aaaa;background:rgba(180,55,55,.18); }
+.app.theme-dark .markdown-preview .syntax-diff-hunk { color:#b9cff1;background:rgba(80,120,180,.18); }
+.app.theme-dark .markdown-preview .markdown-copy { background:#293329;border-color:#566354;color:#e0e8dc; }
+.app.theme-dark .markdown-preview .markdown-copy:hover { background:#354335;color:#fff; }
+.app.theme-dark .markdown-preview .wiki-link { color:#a6d2a8; }
+.app.theme-dark .markdown-preview .wiki-link-unresolved { color:#b2b9ae; }
+.app.theme-dark .markdown-preview .footnotes { color:#bdc7b8;border-color:#465346; }
+.app.theme-dark .markdown-preview .mermaid-fallback p { color:#c0cbb9; }
+.app.theme-dark .markdown-preview .missing-asset { background:#293329;border-color:#566354;color:#e0e8dc; }
+.app.theme-dark .settings-dialog>header,
+.app.theme-dark .settings-dialog>footer { border-color:#465346; }
+.app.theme-dark .settings-dialog>header button,
+.app.theme-dark .settings-reset { color:#dce5d7;background:#293329;border-color:#566354; }
+.app.theme-dark .settings-dialog>footer button:focus-visible,
+.app.theme-dark .settings-dialog button:focus-visible,
+.app.theme-dark .settings-dialog select:focus-visible { outline:2px solid #a6d2a8;outline-offset:2px; }
+
+@media(prefers-color-scheme:dark) {
+ .app.theme-system .markdown-preview p,
+ .app.theme-system .markdown-preview li,
+ .app.theme-system .markdown-preview td,
+ .app.theme-system .markdown-preview th,
+ .app.theme-system .markdown-preview figcaption,
+ .app.theme-system .markdown-preview .markdown-details,
+ .app.theme-system .markdown-preview .markdown-alert,
+ .app.theme-system .markdown-preview .markdown-math-display,
+ .app.theme-system .markdown-preview .markdown-math-fallback,
+ .app.theme-system .markdown-preview .mermaid-fallback,
+ .app.theme-system .markdown-preview .missing-asset { color:#dce5d7; }
+ .app.theme-system .markdown-preview .markdown-alert,
+ .app.theme-system .markdown-preview .markdown-details,
+ .app.theme-system .markdown-preview .markdown-math-display,
+ .app.theme-system .markdown-preview .markdown-math-fallback,
+ .app.theme-system .markdown-preview .mermaid-fallback,
+ .app.theme-system .markdown-preview .mermaid-diagram { background:#202820;border-color:#465346; }
+ .app.theme-system .markdown-preview .markdown-alert-label,
+ .app.theme-system .markdown-preview .markdown-details>summary { color:#c4d8bd; }
+ .app.theme-system .markdown-preview .markdown-alert-warning,
+ .app.theme-system .markdown-preview .markdown-alert-caution { background:#30291d;border-color:#6b5735; }
+ .app.theme-system .markdown-preview .markdown-alert-important { background:#292438;border-color:#594d78; }
+ .app.theme-system .markdown-preview .markdown-alert-tip { background:#1e302c;border-color:#426c5e; }
+ .app.theme-system .markdown-preview .markdown-alert-warning .markdown-alert-label,
+ .app.theme-system .markdown-preview .markdown-alert-caution .markdown-alert-label { color:#e6c98e; }
+ .app.theme-system .markdown-preview .markdown-alert-important .markdown-alert-label { color:#c8b8ef; }
+ .app.theme-system .markdown-preview .markdown-alert-tip .markdown-alert-label { color:#a8d8c9; }
+ .app.theme-system .markdown-preview .markdown-math-fallback { background:#30291d;border-color:#80683d;color:#f0dfb8; }
+ .app.theme-system .markdown-preview kbd { background:#2b342b;border-color:#566354;color:#e2e9dd; }
+ .app.theme-system .markdown-preview mark { background:#65531e;color:#fff0b8; }
+ .app.theme-system .markdown-preview .syntax-keyword { color:#d1a6ef; }
+ .app.theme-system .markdown-preview .syntax-string { color:#a6d8a8; }
+ .app.theme-system .markdown-preview .syntax-number { color:#efb18b; }
+ .app.theme-system .markdown-preview .syntax-comment { color:#aab4a4; }
+ .app.theme-system .markdown-preview .syntax-operator { color:#a9c4e8; }
+ .app.theme-system .markdown-preview .syntax-diff-added { color:#a6e0b4;background:rgba(44,150,77,.18); }
+ .app.theme-system .markdown-preview .syntax-diff-removed { color:#f0aaaa;background:rgba(180,55,55,.18); }
+ .app.theme-system .markdown-preview .syntax-diff-hunk { color:#b9cff1;background:rgba(80,120,180,.18); }
+ .app.theme-system .markdown-preview .markdown-copy { background:#293329;border-color:#566354;color:#e0e8dc; }
+ .app.theme-system .markdown-preview .markdown-copy:hover { background:#354335;color:#fff; }
+ .app.theme-system .markdown-preview .wiki-link { color:#a6d2a8; }
+ .app.theme-system .markdown-preview .wiki-link-unresolved { color:#b2b9ae; }
+ .app.theme-system .markdown-preview .footnotes { color:#bdc7b8;border-color:#465346; }
+ .app.theme-system .markdown-preview .mermaid-fallback p { color:#c0cbb9; }
+ .app.theme-system .markdown-preview .missing-asset { background:#293329;border-color:#566354;color:#e0e8dc; }
+ .app.theme-system .settings-dialog>header,
+ .app.theme-system .settings-dialog>footer { border-color:#465346; }
+ .app.theme-system .settings-dialog>header button,
+ .app.theme-system .settings-reset { color:#dce5d7;background:#293329;border-color:#566354; }
+}
