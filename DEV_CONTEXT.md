@@ -374,3 +374,5 @@ This remains historical CI evidence and does not verify later commits. The curre
 - No test pass is claimed until the new main-branch workflow completes. Full contrast/accessibility review and broader diagnostics remain open.
 
 - Follow-up: dialog focus is contained (Shift+Tab/Tab wrap) and Escape dismisses it; preference writes expose saving/saved/failure status. UI-003 is now **Partially implemented — CI pending** due to the centered 860px default and width choices; responsive/wide-code/table verification remains open.
+
+- Final UI-gap wording was reconciled so implemented settings are not still described as wholly unavailable; UI-003 remains partial and all other IDs remain open. E2E now checks Escape dismissal as well as focus wrapping.
