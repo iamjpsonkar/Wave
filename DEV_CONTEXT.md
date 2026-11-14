@@ -316,3 +316,15 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 
 - Additional CI follow-up: run `43618259567` for commit `44d78ebc` reached **27/28 Playwright scenarios**; Node, typecheck and build passed. The sole remaining failure was a strict-mode H2 locator in the Technical Learning Notes test. Corrected by targeting level-2 headings by accessible name in commit `026b0bdee17d05278dbf616afd4b4a323df264cd`. New Actions run `43618423075` is queued: https://github.com/iamjpsonkar/Wave/actions/runs/43618423075. Pipeline green status remains pending.
+
+
+## 22. Markdown diagram accessibility and multiline code — 2026-11-14
+
+- Picked the next accessibility item from the Markdown gap work: diagram source disclosures must remain independently available to keyboard and assistive-technology users.
+- `src/markdown.tsx`: moved accessible image roles/names from the 15 diagram wrapper containers onto their SVG elements. Wrappers now remain normal document containers so the nested **View diagram source** disclosure is not flattened by an image role.
+- `tests/e2e/workspace.spec.ts`: extended the accessibility smoke scenario to assert a named sequence-diagram image, keyboard focus/Enter activation of its source disclosure, and readable diagram source.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`.
+- Multiline code support remains implemented: the Code block toolbar wraps selected multiline text in a fenced block, retains the selection, supports an empty-selection placeholder, and has a preview/copy fidelity E2E scenario.
+- Baseline CI run [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, build and all Playwright scenarios before this patch. The accessibility patch itself is **pending CI**; do not claim it passed until a workflow for the updated source completes.
+- Implementation commit: `052840f834f879e54ac32567aecc3e4c7a0cad13`; regression test commit: `ed34c50b6f21c134d762786f869801785b2452d3`. Latest main before this handoff update: `c2c470d1d2ebc04283eea4646704e20292fea155`.
+- Open reliability findings remain WAVE-031 and WAVE-039 partial; WAVE-042 remains fixed. No bug trackers were changed.
