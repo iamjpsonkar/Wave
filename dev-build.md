@@ -6,19 +6,19 @@
 
 ## Latest development verification
 
-<badge>Pending at last check</badge>
+<badge>Success</badge>
 
 - Commit: `09021ed224f739fd66325bb8f6cc8f1bcca5b142`
 - Change: corrected newline literals in the new cross-tab recovery E2E test.
 - Workflow run: [43604242348](https://github.com/iamjpsonkar/Wave/actions/runs/43604242348)
-- Last observed state: queued.
+- Final result: **success**.
 - The previous run on commit `3fcea5ca05f1bda3894262cc94a9999a6340a0ab` passed install, 30 Node tests, TypeScript typecheck and production build, but failed one of ten Playwright scenarios because the new test expected literal backslash-n text instead of actual newlines.
 
 ## Recent CI history
 
 | Workflow run | Commit | Result | Evidence |
 |---|---|---|---|
-| [43604242348](https://github.com/iamjpsonkar/Wave/actions/runs/43604242348) | `09021ed224f739fd66325bb8f6cc8f1bcca5b142` | Queued at last check | Corrected cross-tab recovery E2E newline expectations; final result pending |
+| [43604242348](https://github.com/iamjpsonkar/Wave/actions/runs/43604242348) | `09021ed224f739fd66325bb8f6cc8f1bcca5b142` | Success | Corrected cross-tab recovery E2E newline expectations; all 10 browser scenarios passed |
 | [43604083783](https://github.com/iamjpsonkar/Wave/actions/runs/43604083783) | `3fcea5ca05f1bda3894262cc94a9999a6340a0ab` | Failed | 30 Node tests, typecheck and production build passed; 9/10 browser tests passed; new test failed on incorrect expected newline escaping |
 | [43604046025](https://github.com/iamjpsonkar/Wave/actions/runs/43604046025) | `ec50e76948ec1c16ea189f8ca9927a6d1fe94749` | Failed | Typecheck caught missing `tabId` in the local recovery-draft TypeScript shape; fixed in a subsequent commit |
 | [43604040043](https://github.com/iamjpsonkar/Wave/actions/runs/43604040043) | `f8812c8b91f9143a718febb7d7b51e19e36542cd` | Failed | Typecheck caught the same recovery-draft TypeScript shape issue; 30 Node tests passed |
@@ -26,13 +26,13 @@
 
 ## Current automated suite
 
-At the last successful baseline run:
+Latest successful run (commit `09021ed224f739fd66325bb8f6cc8f1bcca5b142`):
 - Node storage/concurrency tests: **30 passed**.
-- Playwright Chromium E2E: **9 passed**.
+- Playwright Chromium E2E: **10 passed**.
 - TypeScript typecheck: passed.
 - Production build: passed.
 
-The new cross-tab recovery prompt scenario raises the intended browser suite to **10 scenarios**. Its corrected version must pass the latest workflow before the updated count can be described as green.
+The cross-tab recovery prompt scenario brings the browser suite to **10 scenarios**; all 10 passed in run 43604242348.
 
 ## Verification policy
 
