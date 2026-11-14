@@ -128,7 +128,7 @@ function MathExpression({ source, display = false }: { source: string; display?:
   else {
     const tokens = source.replace(/\\([A-Za-z]+)/g, (_m, command: string) => greek[command] ?? command);
     for (const [index, token] of Array.from(tokens).entries()) {
-      if (/\\s/.test(token)) parts.push(' ');
+      if (/\s/.test(token)) parts.push(' ');
       else parts.push(createElement(/[0-9]/.test(token) ? 'mn' : /[=+*/<>-]/.test(token) ? 'mo' : 'mi', { key:index }, token));
     }
   }
