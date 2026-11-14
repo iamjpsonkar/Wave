@@ -200,3 +200,5 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added two Playwright scenarios: distinct inline/fenced code icon, accessible name, tooltip and insertion behavior; system-dark Markdown Preview heading, fenced/inline code, segmented controls, wordmark and Backup surface colors.
 - Source E2E inventory increases from 31 to 33 scenarios; Node suite remains 30 tests.
 - Full Light/Dark/System × Edit/Preview × desktop/mobile visual regression matrix remains unimplemented. CI verification pending.
+
+- Test review follow-up: toolbar regression selects text before invoking the two wrapping actions, so it verifies actual inline/fenced wrapping rather than an empty-selection placeholder.
