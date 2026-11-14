@@ -303,7 +303,8 @@ test('wiki links navigate to pages and backlinks are derived from Markdown files
   await page.getByRole('button', { name: /New page/ }).first().click();
   const editor = page.locator('textarea');
   await expect(editor).toHaveValue('# Untitled\n\n', { timeout: 8000 });
-  await editor.fill('# Source Page\n\nSee [[untitled|the linked page]].');\n  await expect(editor).toHaveValue('# Source Page\n\nSee [[untitled|the linked page]].');
+  await editor.fill('# Source Page\n\nSee [[untitled|the linked page]].');
+  await expect(editor).toHaveValue('# Source Page\n\nSee [[untitled|the linked page]].');
   await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
   await expect(page.getByRole('button', { name: /Source Page/ })).toBeVisible();
   await page.getByRole('button', { name: 'Preview' }).click();
