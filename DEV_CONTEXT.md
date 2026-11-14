@@ -584,3 +584,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Corrected a malformed inline-code delimiter in the new wiki's instruction for updating `DEV_CONTEXT.md` last. No product/source behavior changed.
 - Wiki correction commit: `aa2de3ad50df17172065717765c0ca50126d479d`. Refresh HEAD before the next task.
+
+
+## 2026-11-15 — Markdown documentation consolidation and enforcement policy
+
+- Consolidated overlapping documentation into [FEATURES.md](./FEATURES.md), [UI_BACKLOG.md](./UI_BACKLOG.md) and [QA_CONTEXT.md](./QA_CONTEXT.md). The former seven duplicate source files were removed only after verifying their meaningful content and stable IDs were present in the destinations.
+- Updated [README.md](./README.md), [CONTRIBUTING.md](./CONTRIBUTING.md), [docs/README.md](./docs/README.md), the product/priority/issue references, and the [Wave Wiki](./wiki.md).
+- The wiki now contains a mandatory **Documentation enforcement after every task** section. Every implementation, fix, refactor, QA or configuration task must review Markdown impact, update the authoritative records that changed, validate links and IDs, avoid unnecessary duplicate files, and update this handoff last.
+- The full product blueprint, priority plan, development logs, open/fixed bug registers, Markdown compatibility checklist and diagram research remain separate.
+- Detailed migration record: [dev-build.md](./dev-build.md), entry dated 2026-11-15.
+- Verification: source/destination content comparison and tracker-ID checks completed before source deletion. No application code changed; no local tests/build or CI run was performed. Refresh `main` and CI before the next implementation task.
