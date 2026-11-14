@@ -15,7 +15,7 @@ Wave is a local-first workspace for notes, documents and ideas. Choose a folder 
 - **Data safety:** autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore to a separate workspace.
 - **Responsive workspace:** full-window editor, mobile navigation and keyboard-oriented workflows.
 
-See the [implemented feature showcase](./FEATURES.md) and [detailed feature map](./FEATURES.md) for the current implementation inventory. The [complete product blueprint](upcoming-features.md) and [priority plan](priority-FEATURES.md) retain the wider agreed scope; planned items are not represented as shipped.
+See the [implemented feature showcase](./FEATURES.md) and [detailed feature map](./FEATURES.md) for the current implementation inventory. The [complete product blueprint](upcoming-features.md) and [priority plan](priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
 
 ## Choose how to run Wave
 
@@ -113,7 +113,7 @@ docker/               Nginx static hosting configuration
 *.md                  Product blueprints and engineering registers
 ```
 
-The root-level feature catalogues and engineering registers are intentionally kept separate because they serve different purposes and preserve project decisions/history. Start with the [documentation index](docs/README.md) to find the right one.
+The consolidated feature, UI and QA registers reduce duplicate files while preserving their meaningful requirements, stable IDs and historical evidence. The complete product blueprint, priority plan, development logs and open/fixed bug registers remain separate because they serve distinct purposes. Start with the [documentation index](docs/README.md) to find the right one.
 
 ## Product direction
 
