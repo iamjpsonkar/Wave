@@ -422,3 +422,15 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `ui-gaps.md` now includes an authoritative 20-ID implementation status table; `dev-fixed.md`, `dev-build.md` and `docs/FEATURES.md` were updated. UI-002 remains open because a genuine optional rich block editor and lossless Markdown round-trip are not delivered. UI-005, UI-018/UI-019 and other named QA items remain partial pending CI/manual review.
 - The repository connection did not expose a current push-triggered Actions run or combined status, and no local dependency install/test runner is available in this GitHub-only path. **Do not claim tests, typecheck, production build, screenshot review or CI passed.** All new source and tests are committed; verification is pending.
 - Open reliability findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed. No bug trackers were changed.
+
+ 
+## 31. UI-002 optional source-preserving block mode — 2026-11-14
+
+- Continued the remaining UI backlog after re-reading this context and the authoritative UI register. Added a separate optional Blocks mode without replacing the Markdown source editor or Preview.
+- `src/MarkdownBlockEditor.tsx`: classifies headings, paragraphs, lists, quotes, callouts, fenced code, tables, dividers, image lines and attachment links. Each block textarea edits only its original source range; unedited Markdown and blank-line separators remain intact.
+- `src/EditorEnhancements.tsx`: added a distinct Blocks icon/control and extended undo/redo shortcuts to block textareas. `src/App.tsx` integrates the mode through the existing recovery-aware handler. `src/styles.css` adds responsive and theme-aware block surfaces, including System-light legibility.
+- E2E regression edits a paragraph block then verifies exact source preservation for the rest of the document, including heading, list, callout and fenced code. E2E source inventory is now **38 scenarios**; Node suite source remains **30 tests**.
+- Implementation/test commits: component `78e2887d069b6471610b23f341d5178a02c3e12b`; App integration `15928f7956e2fae4934e730a4c99e0eee3cf97ea`; CSS `5ff104ba9f1315b13cc5b40f4dad59f47ea4fcbe`; E2E `2c95631c21f27faad50f4f49bb038a4c7bdb1b1d`; source/test follow-ups `cc6809086922947ae4f32e4eaf47257f93c66073`, `e0d901711430355b06f7c870453484d88099a886`, `760ec73b51361826be00ee653c441d72bca65e28`, `6c9cb3f7b0862fd20253da75a10c263fe215add3`, `41c8adefd98ef00d5ba38867a0e828cd626554a8`.
+- UI-002 is now partially implemented, not complete: block reordering/drag-drop, handles, slash menu, bookmarks/embeds and rich inline formatting remain. UI register and development logs record this honestly.
+- `ui-gaps.md`, `dev-fixed.md`, `dev-build.md` and `docs/FEATURES.md` are updated. Latest dev logs: `54e81395ec9fd0f67e1907254c73e58420a5bc6f` and `8ae1d16d15034fd495b110cdf8449ef5fc74554a`.
+- No current GitHub Actions result or combined status was exposed. No test/typecheck/production build/visual audit pass is claimed; CI and manual QA remain pending.
