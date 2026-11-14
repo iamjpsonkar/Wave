@@ -376,3 +376,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Follow-up: dialog focus is contained (Shift+Tab/Tab wrap) and Escape dismisses it; preference writes expose saving/saved/failure status. UI-003 is now **Partially implemented — CI pending** due to the centered 860px default and width choices; responsive/wide-code/table verification remains open.
 
 - Final UI-gap wording was reconciled so implemented settings are not still described as wholly unavailable; UI-003 remains partial and all other IDs remain open. E2E now checks Escape dismissal as well as focus wrapping.
+
+
+## 27. UI toolbar icon distinction and dark-theme parity — 2026-11-14
+
+- Re-read `DEV_CONTEXT.md`, `ui-gaps.md`, current `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, package dependencies and the latest source history before implementation.
+- `src/App.tsx`: replaced duplicate code action icons. Inline code remains `Code2` and is named `Inline code`; fenced code now uses Lucide `FileCode2` and is named `Code block`.
+- `src/styles.css`: added explicit dark and system-dark styles for Markdown heading/body, fenced/inline code, links, blockquotes, tables, dividers, toolbar, Edit/Preview segmented control, Backup and sidebar wordmark.
+- `tests/e2e/workspace.spec.ts`: added 2 Playwright scenarios for unique toolbar icon/label/insertion behavior and system-dark Preview colors. E2E source count 33; Node source count 30.
+- `ui-gaps.md`: reconciled source evidence to current HEAD `4713725f0e09efae0d0b8e6c9da880f5513e18ca`; UI-004 is partially implemented pending regression, UI-016/017 source mitigations await visual regression, UI-018/019 partial, UI-020 partial. UI-001/012 source implementation awaits QA; UI-003 responsive QA remains open. All 20 IDs preserved.
+- No tests or build are claimed to pass until the latest main workflow reports success.
