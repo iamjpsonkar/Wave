@@ -64,7 +64,7 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [ ] Recent history and workspace home
 - [x] Recursive folder tree, folder-scoped page lists and mobile navigation drawer
 - [ ] Customizable sidebar, drag/drop and multiple workspaces
-- [ ] Settings for appearance, typography, editor behavior and privacy
+- [~] Workspace Settings for theme, typography, content width and reduced motion; local storage/recovery information (broader diagnostics and accessibility review remain open)
 - [ ] Notifications center, inbox and reminders
 - [ ] Universal import, export and workspace portability tools
 
