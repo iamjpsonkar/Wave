@@ -124,3 +124,11 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] Selection-based foreground text color and inline background color with custom HEX pickers, curated quick swatches and remove-formatting action; values are restricted to six-digit hexadecimal tokens.
 - [x] Block background fill using a safe Markdown quote directive and the same six-digit HEX restriction, available from the source toolbar and per-block controls in Blocks mode.
 - [~] Nested inline color ranges, portable non-Wave fallback and contrast guidance for arbitrary custom colors remain future work.
+
+ 
+## In-editor feature discovery and list editing
+
+- [x] Searchable right-side Markdown sample library with category filters, live rendered preview and visible source.
+- [x] Insert a sample's Markdown source at the current editor selection; append to the document when Preview/Blocks mode has no source textarea.
+- [x] Enter continues unordered, ordered and task lists; ordered numbering increments, nested indentation and task markers are preserved, and empty items exit the list.
+- [~] Broader keyboard, mobile and screenshot-based visual review of the sample library and complex list edge cases remains pending CI/manual QA.
