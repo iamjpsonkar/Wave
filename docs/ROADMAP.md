@@ -22,7 +22,7 @@ Wave is being developed as a user-owned workspace inspired by Notion and Quip. T
 - [x] Recoverable Trash with restore and permanent deletion
 - [x] CI typecheck and production build
 
-## Release 0.3 — Storage reliability and canonical data foundation
+- [x] Optional Docker image and Compose deployment for static web hosting (no server-side workspace storage).\n\n## Release 0.3 — Storage reliability and canonical data foundation
 
 - [ ] Define the versioned SQLite workspace schema and storage adapter contract.
 - [ ] Add a migration/import path from the current Markdown-folder MVP.
