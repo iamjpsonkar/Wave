@@ -653,7 +653,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
  .markdown-preview{background:#fff!important}
  .markdown-preview h1,.markdown-preview h2,.markdown-preview h3,.markdown-preview h4,.markdown-preview h5,.markdown-preview h6,.markdown-preview p,.markdown-preview li,.markdown-preview td,.markdown-preview th,.markdown-preview summary,.markdown-preview figcaption{color:#222!important}
  .markdown-preview a{color:#244f8f!important}
- .markdown-preview .wave-inline-color{color:inherit!important}
+ .markdown-preview .wave-inline-color{color:var(--wave-print-color)!important}
  .markdown-preview pre,.markdown-preview code{background:#f3f4f1!important;color:#20231f!important}
  .markdown-preview pre code{background:transparent!important}
  .markdown-preview th{background:#eef1eb!important}
