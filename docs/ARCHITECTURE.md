@@ -28,7 +28,8 @@ The browser stores the most recently selected FileSystemDirectoryHandle in Index
     │       └── assets/
     └── trash/
         ├── <id>.md
-        └── <id>.json
+        ├── <id>.json
+        └── <id>.op.json
 ```
 
 - Markdown is the source of truth for documents.
@@ -79,8 +80,9 @@ The current Markdown-based MVP includes the following protections while the long
 - Autosave writes are serialized per document and explicit navigation/save operations cancel pending debounce timers before flushing.
 - A revision-aware UI status avoids reporting a newer edit as saved when only an older revision has completed.
 - Before replacing a document, Wave compares the current on-disk content with the last content it observed. External changes produce a conflict instead of a silent overwrite; the user can reload or save the draft as a separate copy.
-- A separate IndexedDB draft journal keeps unsaved editor text recoverable across reloads. This is a browser-local safety net, not a replacement for workspace backups.
+- A separate IndexedDB draft journal keeps unsaved editor text recoverable across reloads. Reads and writes are serialized with Web Locks where available, duplicate legacy records are reconciled, and the newest record is selected. This is a browser-local safety net, not a replacement for workspace backups.
 - Trash moves write and verify a copy before removing the original, and use operation markers to reconcile interrupted operations when safe and surface ambiguous states. Restore allocates a new unique filename rather than replacing an existing page.
-- Backups use in-progress/complete/failed markers. A snapshot is only listed after successful copying and consistency checks over document, asset and workspace metadata state. Restore creates a separate workspace folder.
-- Page, folder and asset name allocation is serialized, uses cross-tab Web Locks where available, and avoids case-only collisions across common filesystems.
-- Storage regression tests run in CI with Node's built-in test runner. Browser-level fault-injection and E2E tests are still required before treating all edge cases as fully verified.
+- Backups use in-progress/complete/failed markers and unique destination allocation. Source document and asset snapshots include SHA-256 content digests, so same-size/same-timestamp edits are detected during copying. Restore creates a unique separate workspace folder and writes an in-progress/complete/failed restore marker; incomplete restore folders are refused as workspaces.
+- Page, folder, asset, backup and Trash-restore allocation is serialized, uses cross-tab Web Locks where available, and avoids case-only collisions across common filesystems. Restoring the same Trash item concurrently produces only one restored page.
+- Async workspace mutations carry a generation token so late completions cannot publish state into a different active workspace. Editor transitions flush revisions until the text is stable; destructive Trash transitions temporarily lock the editor.
+- Storage and pure concurrency-helper regression tests run in CI with Node's built-in test runner. Browser-level fault-injection, real IndexedDB multi-tab tests and E2E tests are still required before treating all edge cases as fully verified.
