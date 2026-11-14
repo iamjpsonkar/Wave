@@ -19,7 +19,7 @@ export const pageTemplates: PageTemplate[] = [
       '',
       '## Text and headings',
       '',
-      '**Bold**, *italic*, ***bold italic***, ~~strikethrough~~, and '+ "'"+'\x60inline code\x60'+"'"+'.',
+      '**Bold**, *italic*, ***bold italic***, ~~strikethrough~~, and \x60inline code\x60.',
       '',
       '### Lists and task lists',
       '',
@@ -87,7 +87,7 @@ export const pageTemplates: PageTemplate[] = [
       '## Compatibility note',
       '',
       'Wave safely renders Markdown and GFM. Raw HTML, advanced Mermaid diagram types, PlantUML, Graphviz, Vega, D2, and AsciiDoc require additional renderer support; unsupported diagram source is kept readable rather than executed.'
-    ].join('\\n')
+    ].join('\n')
   },
   { id: 'blank', name: 'Blank page', description: 'Start with an empty page', icon: '＋', content: '# Untitled\n\n' },
   { id: 'meeting', name: 'Meeting notes', description: 'Agenda, notes and action items', icon: '◷', content: '# Meeting notes\n\n**Date:** \n**Attendees:** \n**Meeting:** \n\n## Agenda\n- \n\n## Notes\n\n\n## Decisions\n- \n\n## Action items\n- [ ] Task — Owner — Due date\n' },
