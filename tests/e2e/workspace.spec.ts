@@ -321,3 +321,30 @@ test('wiki links navigate to pages and backlinks are derived from Markdown files
   await backlinks.click();
   await expect(page.locator('.backlinks-list')).toContainText('Source Page');
 });
+
+test('Markdown preview renders inline/display math, Mermaid flowcharts and heading anchors', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Markdown Extensions');
+  await editor.fill([
+    '# Markdown Extensions',
+    '',
+    '## A heading with anchors',
+    '',
+    'Inline math $E = mc^2$.',
+    '',
+    '$$',
+    '\\frac{a}{b}',
+    '$$',
+    '',
+    '```mermaid',
+    'flowchart TD',
+    '  A[Write] --> B[Preview]',
+    '  B --> C[Save]',
+    '```'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  await expect(page.locator('.markdown-preview h2#a-heading-with-anchors')).toBeVisible();
+  await expect(page.locator('.markdown-math-inline math')).toBeVisible();
+  await expect(page.locator('.markdown-math-display math')).toBeVisible();
+  await expect(page.locator('.mermaid-diagram svg')).toBeVisible();
+});
