@@ -123,7 +123,7 @@ test('mobile navigation drawer opens and closes', async ({ page }) => {
 test('backup and restore create a separate verified workspace folder', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'Backup Round Trip');
-  await page.getByRole('button', { name: /Backup/ }).click();
+  await page.getByRole('button', { name: 'Backup', exact: true }).click();
   await expect(page.locator('.trash-view')).toContainText('BACKUPS');
   await expect(page.getByRole('button', { name: /Restore to new folder/ })).toBeVisible();
   await page.getByRole('button', { name: /Restore to new folder/ }).click();
