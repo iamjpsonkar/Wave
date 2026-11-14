@@ -22,9 +22,14 @@ const writeQueues = new WeakMap<FileSystemDirectoryHandle, Map<string, Promise<u
 const settingsQueues = new WeakMap<FileSystemDirectoryHandle, Promise<unknown>>();
 const NOT_FOUND = 'NotFoundError';
 
-function withWorkspaceLock<T>(name:string,operation:()=>Promise<T>):Promise<T>{
+const localWorkspaceLocks=new Map<string,Promise<unknown>>();
+async function withWorkspaceLock<T>(name:string,operation:()=>Promise<T>):Promise<T>{
   const manager=typeof navigator!=='undefined'?(navigator as Navigator & {locks?:LockManager}).locks:undefined;
-  return manager?manager.request('wave:'+name,{mode:'exclusive'},operation):operation();
+  if(manager)return manager.request('wave:'+name,{mode:'exclusive'},operation);
+  const previous=localWorkspaceLocks.get(name)??Promise.resolve();
+  const current=previous.catch(()=>undefined).then(operation);
+  localWorkspaceLocks.set(name,current);
+  try{return await current;}finally{if(localWorkspaceLocks.get(name)===current)localWorkspaceLocks.delete(name);}
 }
 function isNotFound(error: unknown): boolean {
   return error instanceof DOMException ? error.name === NOT_FOUND : Boolean(error && typeof error === 'object' && 'name' in error && error.name === NOT_FOUND);
