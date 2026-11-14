@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 type BlockType = 'heading' | 'paragraph' | 'list' | 'quote' | 'callout' | 'code' | 'table' | 'divider' | 'image' | 'attachment';
 type Block = { type: BlockType; start: number; end: number; source: string };
@@ -52,16 +52,58 @@ function parseBlocks(source: string): Block[] {
   return blocks;
 }
 
+const insertions: { label: string; source: string }[] = [
+  { label: 'Paragraph', source: 'Write something…' },
+  { label: 'Heading', source: '## New heading' },
+  { label: 'Bulleted list', source: '- List item' },
+  { label: 'Quote', source: '> Quote' },
+  { label: 'Callout', source: '> [!NOTE]\n> Important note' },
+  { label: 'Code block', source: '\x60\x60\x60text\nCode goes here\n\x60\x60\x60' },
+  { label: 'Divider', source: '---' }
+];
+
 export default function MarkdownBlockEditor({ content, onChange }: { content: string; onChange: (value: string) => void }) {
   const blocks = useMemo(() => parseBlocks(content), [content]);
+  const [insertMenuOpen, setInsertMenuOpen] = useState(false);
   function update(block: Block, value: string) {
     onChange(content.slice(0, block.start) + value + content.slice(block.end));
   }
+  function move(index: number, direction: -1 | 1) {
+    const other = index + direction;
+    if (other < 0 || other >= blocks.length) return;
+    const first = blocks[Math.min(index, other)], second = blocks[Math.max(index, other)];
+    const gap = content.slice(first.end, second.start);
+    const swapped = second.source + gap + first.source;
+    onChange(content.slice(0, first.start) + swapped + content.slice(second.end));
+  }
+  function remove(block: Block) {
+    let start = block.start, end = block.end;
+    if (content.slice(end, end + 2) === '\n\n') end += 2;
+    else if (content.slice(start - 2, start) === '\n\n') start -= 2;
+    else if (content[start - 1] === '\n') start--;
+    onChange(content.slice(0, start) + content.slice(end));
+  }
+  function add(source: string) {
+    const separator = content ? (content.endsWith('\n\n') ? '' : content.endsWith('\n') ? '\n' : '\n\n') : '';
+    onChange(content + separator + source);
+    setInsertMenuOpen(false);
+  }
   return <section className="markdown-block-editor" aria-label="Markdown block editor">
-    <div className="block-editor-intro"><strong>Block editing</strong><span>Each block edits its original Markdown source. Blank lines and untouched blocks are preserved.</span></div>
+    <div className="block-editor-intro"><strong>Block editing</strong><span>Move blocks, add common content, or edit their original Markdown source. Untouched source is preserved.</span></div>
     {blocks.length ? blocks.map((block, index) => <article className={'markdown-block markdown-block-' + block.type} key={block.start + '-' + block.type}>
       <label><span>{block.type}</span><span>Block {index + 1}</span></label>
+      <div className="markdown-block-controls">
+        <button type="button" aria-label={'Move block ' + (index + 1) + ' up'} title="Move up" disabled={index === 0} onClick={() => move(index, -1)}>↑</button>
+        <button type="button" aria-label={'Move block ' + (index + 1) + ' down'} title="Move down" disabled={index === blocks.length - 1} onClick={() => move(index, 1)}>↓</button>
+        <button type="button" aria-label={'Delete block ' + (index + 1)} title="Delete block" onClick={() => remove(block)}>×</button>
+      </div>
       <textarea aria-label={'Edit ' + block.type + ' block ' + (index + 1)} rows={Math.min(12, Math.max(1, block.source.split('\n').length))} spellCheck value={block.source} onChange={event => update(block, event.target.value)}/>
-    </article>) : <div className="block-editor-empty"><p>Your page is empty. Start with a paragraph block.</p><textarea aria-label="New paragraph block" rows={3} value={content} onChange={event => onChange(event.target.value)} placeholder="Write a paragraph…"/></div>}
+    </article>) : <div className="block-editor-empty"><p>Your page is empty. Add a block to begin.</p><textarea aria-label="New paragraph block" rows={3} value={content} onChange={event => onChange(event.target.value)} placeholder="Write a paragraph…"/></div>}
+    <div className="block-insert">
+      <button type="button" aria-expanded={insertMenuOpen} aria-haspopup="menu" onClick={() => setInsertMenuOpen(value => !value)}>＋ Add block</button>
+      {insertMenuOpen && <div className="block-insert-menu" role="menu" aria-label="Add a Markdown block">
+        {insertions.map(item => <button type="button" role="menuitem" key={item.label} onClick={() => add(item.source)}>{item.label}</button>)}
+      </div>}
+    </div>
   </section>;
 }
