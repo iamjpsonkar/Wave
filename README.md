@@ -14,7 +14,7 @@
 - [x] List, create, open and autosave Markdown documents
 - [x] Store images and file attachments locally with collision-safe names
 - [x] Markdown formatting toolbar and sanitized live preview with local asset rendering
-- [x] Nested folders and pages
+- [x] Nested folders and pages, including empty folders
 - [x] Search page titles and document content
 - [x] Create complete local backup snapshots of documents, assets and workspace settings
 - [x] Move documents to local Trash, restore them or permanently delete them
