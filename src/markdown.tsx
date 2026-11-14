@@ -117,17 +117,21 @@ export function markdownHeadingId(node: ReactNode): string {
 
 function MathExpression({ source, display = false }: { source: string; display?: boolean }) {
   const parts: ReactNode[] = [];
-  const fraction = source.match(/^\s*\\frac\\{([^{}]+)\\}\\{([^{}]+)\\}\s*$/);
-  const root = source.match(/^\s*\sqrt\\{([^{}]+)\\}\s*$/);
+  const fraction = source.match(/^\s*\\frac\{([^{}]+)\}\{([^{}]+)\}\s*$/);
+  const root = source.match(/^\s*\\sqrt\{([^{}]+)\}\s*$/);
+  const superscript = source.match(/^(.+?)\^\{?([^{}]+)\}?$/);
+  const subscript = source.match(/^(.+?)_\{?([^{}]+)\}?$/);
   const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', theta:'θ', lambda:'λ', pi:'π', sigma:'σ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', infty:'∞' };
   if (fraction) parts.push(createElement('mfrac', { key:'fraction' }, createElement('mi', null, fraction[1]), createElement('mi', null, fraction[2])));
   else if (root) parts.push(createElement('msqrt', { key:'root' }, createElement('mi', null, root[1])));
+  else if (superscript || subscript) { const match = superscript ?? subscript!; parts.push(createElement(superscript ? 'msup' : 'msub', { key:'script' }, createElement('mi', null, match[1]), createElement('mi', null, match[2].replace(/[{}]/g, '')))); }
   else {
-    const tokens = source.replace(/\\([A-Za-z]+)/g, (_m, command: string) => greek[command] ?? command);
+    const tokens = source.replace(/\\\\([A-Za-z]+)/g, (_m, command: string) => greek[command] ?? command);
     for (const [index, token] of Array.from(tokens).entries()) {
-      if (/\s/.test(token)) parts.push(' ');
+      if (/\\s/.test(token)) parts.push(' ');
       else parts.push(createElement(/[0-9]/.test(token) ? 'mn' : /[=+*/<>-]/.test(token) ? 'mo' : 'mi', { key:index }, token));
     }
+  }
   }
   return createElement(display ? 'div' : 'span', { className: display ? 'markdown-math-display' : 'markdown-math-inline' },
     createElement('math', { xmlns:'http://www.w3.org/1998/Math/MathML', display:display?'block':'inline' }, createElement('mrow', null, ...parts)));
