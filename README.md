@@ -21,7 +21,7 @@
 - [x] Remember the most recently opened workspace handle locally and offer permission-aware reopening
 - [x] Built-in templates for meetings, projects, task lists, weekly plans, research and decisions
 - [x] Favorite pages with persistent workspace settings
-- [x] Favorites navigation for quick access to pinned pages
+- [x] Favorites navigation for quick access to pinned pages, including compact mobile shortcuts
 - [ ] Full Notion/Quip-inspired feature set (see the feature map and roadmap)
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
