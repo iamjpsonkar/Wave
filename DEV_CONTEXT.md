@@ -477,3 +477,17 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Verification: no local tests, typecheck, production build or screenshot review was run. GitHub Actions run `43627300560` was observed in progress for commit `b435eb383d83f092526fa36fc8fc72064c87998d`; it is not a completed verification result. Recheck the latest main-branch Actions run before claiming success.
 - This handoff update is the final documentation step for this task.
 
+## 34. Color formatting expansion — 2026-11-15
+
+- Continued the color feature from section 33 without removing prior controls or Markdown syntax.
+- `src/App.tsx`: added six quick foreground swatches, a remove-color-formatting action for selected inline source, and a block background picker. Block fills wrap the selected source lines in a Markdown blockquote beginning `> [!COLOR=#RRGGBB]`; the blockquote lines remain ordinary Markdown.
+- `src/markdown.tsx`: `MarkdownBlockquote` recognizes only the `[!COLOR=#RRGGBB]` marker with a six-digit hex token, strips the marker from rendered content and creates a blockquote with the validated background color. Existing NOTE/TIP/WARNING/DETAILS blockquotes are unchanged.
+- `src/styles.css`: added swatch, clear action and block-fill styling with focus-visible states and theme-aware block borders.
+- `tests/e2e/workspace.spec.ts`: added one regression covering quick swatch insertion, selection-based removal, block-fill source syntax and preview rendering. E2E source inventory is now **41 scenarios**; Node test source remains **30 tests**. These are source counts, not test execution.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `ui-gaps.md`, `ui-features.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-021 remains partial/CI pending; nested inline color ranges, Blocks-mode selection, non-Wave reader fallback and contrast/accessibility review remain open.
+- Source commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`; renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`; styles `7020028201eeee4be404a003b4e2c2abc7925c9a`; E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
+- Documentation commits: Markdown support `e71535c61698145ae199a898c9ac6cdf2b910089`; feature inventory `de91a21626ca4fc6bcea07c2e37ee5b8f347e6d2`; UI gap register `8ec018ce51b592282c4e1a0ee91ebe33345b41e8`; UI feature backlog `ece36cd16ecf68c3fd292231bc48034dee6e760a`; renderer feature gap `61213bd311329d75fa2814145847c0f47da6b0a7`; dev-fixed `7a752555c70bb96a17d0ac1bbd7e6187599be7e7`; dev-build `a0aae6b812ecf0a931b77dff41f518b5cad5da89`.
+- Latest observed GitHub Actions run for the documentation commit `a0aae6b812ecf0a931b77dff41f518b5cad5da89` is `43627623167`, queued at the time of inspection. Earlier documentation runs were in progress. No local tests, typecheck, production build or screenshot review were performed; do not claim a pass.
+- Remaining next work: implement safe nested inline color spans (or explicitly disallow overlapping ranges in the editor), enable block fill from the optional Blocks editor where selection semantics are defined, add contrast guidance for arbitrary colors and confirm all Actions results.
+- This handoff update is the final documentation step for this batch.
+
