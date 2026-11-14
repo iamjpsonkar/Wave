@@ -1,10 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  addAsset, backUpAndResetWorkspaceSettings, createBackup, createDoc, createFolder, listBackups,
-  listTrashDetailed, openWorkspace, readDoc, readWorkspaceSettings, restoreTrashItem,
+  addAsset, backUpAndResetWorkspaceSettings, createBackup, createDoc, createFolder, createUniqueDirectory, listBackups,
+  listTrashDetailed, openWorkspace, readDoc, readWorkspaceSettings, restoreBackupToNewWorkspace, restoreTrashItem, moveDocToTrash, listDocs, searchDocs,
   saveDoc, saveDocIfUnchanged, slug
 } from '../src/storage.ts';
+import { conflictCopyPath, isWorkspaceGenerationCurrent, newestDraft, relativeAssetPath } from '../src/safety.ts';
 
 class MemoryFileHandle {
   constructor(name, data='') { this.kind='file'; this.name=name; this.data=data; this.lastModified=Date.now(); }
@@ -171,4 +172,105 @@ test('corrupt settings are preserved before a safe reset',async()=>{
   assert.equal(await(await(await workspace.wave.getFileHandle(backupName)).getFile()).text(),'{broken');
   const settings=await readWorkspaceSettings(workspace.wave);
   assert.deepEqual(settings.favorites,[]);
+});
+
+
+test('concurrent backups reserve distinct destination folders',async()=>{
+  const {workspace}=await fixture();
+  await saveDoc(workspace.documents,'A.md','alpha');
+  const [first,second]=await Promise.all([createBackup(workspace),createBackup(workspace)]);
+  assert.notEqual(first,second);
+  assert.equal((await listBackups(workspace.backups)).length,2);
+});
+test('unique directory allocation never reuses an existing file or folder',async()=>{
+  const {root}=await fixture();
+  const first=await createUniqueDirectory(root,'restore-target','test-restore-allocation');
+  const second=await createUniqueDirectory(root,'restore-target','test-restore-allocation');
+  assert.equal(first.name,'restore-target');
+  assert.equal(second.name,'restore-target-2');
+  assert.equal((await root.getDirectoryHandle(first.name)).name,'restore-target');
+});
+test('backup restore skips a pre-existing destination and preserves it',async()=>{
+  const {root,workspace}=await fixture();
+  await saveDoc(workspace.documents,'A.md','alpha');
+  const backupName=await createBackup(workspace);
+  const OriginalDate=globalThis.Date;
+  const fixed='2026-11-14T12:00:00.000Z';
+  globalThis.Date=class extends OriginalDate{
+    constructor(...args){super(...(args.length?args:[fixed]));}
+    static now(){return new OriginalDate(fixed).getTime();}
+  };
+  try{
+    const base='Test Workspace-restore-'+fixed.replace(/[:.]/g,'-');
+    const existing=await root.getDirectoryHandle(base,{create:true});
+    const sentinel=await existing.getFileHandle('keep.txt',{create:true}),writer=await sentinel.createWritable();
+    await writer.write('do not overwrite');await writer.close();
+    const restored=await restoreBackupToNewWorkspace(workspace,backupName);
+    assert.equal(restored,base+'-2');
+    assert.equal(await(await(await existing.getFileHandle('keep.txt')).getFile()).text(),'do not overwrite');
+    const restoredWave=await(await root.getDirectoryHandle(restored)).getDirectoryHandle('.wave');
+    assert.equal(await readDoc(await restoredWave.getDirectoryHandle('documents'),'A.md'),'alpha');
+  }finally{globalThis.Date=OriginalDate;}
+});
+test('failed backup restore is marked and cannot be opened as a workspace',async()=>{
+  const {root,workspace}=await fixture();
+  await saveDoc(workspace.documents,'A.md','alpha');
+  const backupName=await createBackup(workspace);
+  const source=await workspace.backups.getDirectoryHandle(backupName);
+  const sourceDocs=await source.getDirectoryHandle('documents');
+  sourceDocs.entries=async function*(){throw new Error('simulated restore copy failure');};
+  await assert.rejects(()=>restoreBackupToNewWorkspace(workspace,backupName),/simulated restore copy failure/);
+  const targets=[];
+  for await(const [name,handle] of root.entries())if(handle.kind==='directory'&&name.includes('-restore-'))targets.push({name,handle});
+  assert.equal(targets.length,1);
+  const wave=await targets[0].handle.getDirectoryHandle('.wave');
+  const marker=JSON.parse(await(await(await wave.getFileHandle('restore-status.json')).getFile()).text());
+  assert.equal(marker.status,'failed');
+  await assert.rejects(()=>openWorkspace(targets[0].handle),/incomplete backup restore/);
+});
+test('concurrent restore of one Trash item creates only one page',async()=>{
+  const {workspace}=await fixture();
+  await saveDoc(workspace.documents,'Notes.md','restore exactly once');
+  await moveDocToTrash(workspace.documents,workspace.trash,'Notes.md');
+  let id='';
+  for await(const [name,handle] of workspace.trash.entries())if(handle.kind==='file'&&name.endsWith('.json'))id=name.slice(0,-5);
+  assert.ok(id);
+  const results=await Promise.allSettled([
+    restoreTrashItem(workspace.trash,workspace.documents,id),
+    restoreTrashItem(workspace.trash,workspace.documents,id)
+  ]);
+  assert.equal(results.filter(result=>result.status==='fulfilled').length,1);
+  assert.equal((await listDocs(workspace.documents)).length,1);
+  assert.equal(await readDoc(workspace.documents,'Notes.md'),'restore exactly once');
+});
+test('document titles, Trash titles and search snippets parse real newlines',async()=>{
+  const {workspace}=await fixture();
+  await saveDoc(workspace.documents,'actual-name.md','# Human Title\n\nbody text with phrase');
+  const docs=await listDocs(workspace.documents);
+  assert.equal(docs[0].title,'Human Title');
+  const matches=await searchDocs(workspace.documents,'phrase');
+  assert.equal(matches.length,1);
+  assert.ok(!matches[0].snippet.includes('\\n'));
+  await moveDocToTrash(workspace.documents,workspace.trash,'actual-name.md');
+  const trash=await listTrashDetailed(workspace.trash);
+  assert.equal(trash.items[0].title,'Human Title');
+});
+test('conflict-copy path strips only a Markdown extension',()=>{
+  assert.equal(conflictCopyPath('folder/Notes.md'),'folder/Notes-conflict-copy.md');
+  assert.equal(conflictCopyPath('folder/Notes.MD'),'folder/Notes-conflict-copy.md');
+});
+test('workspace generation guards reject stale asynchronous completions',()=>{
+  const workspaceA={name:'A'},workspaceB={name:'B'};
+  assert.equal(isWorkspaceGenerationCurrent(2,2,workspaceA,workspaceA),true);
+  assert.equal(isWorkspaceGenerationCurrent(1,2,workspaceA,workspaceB),false);
+  assert.equal(isWorkspaceGenerationCurrent(2,2,workspaceA,workspaceB),false);
+});
+test('draft journal chooses the newest duplicate recovery record',()=>{
+  const records=[{id:1,updatedAt:100,content:'old'},{id:3,updatedAt:200,content:'new'},{id:2,updatedAt:200,content:'tie'}];
+  assert.equal(newestDraft(records).content,'new');
+});
+test('attachment links resolve from root and nested document folders',()=>{
+  assert.equal(relativeAssetPath('Notes.md','image.png'),'../assets/image.png');
+  assert.equal(relativeAssetPath('Projects/Notes.md','image.png'),'../../assets/image.png');
+  assert.equal(relativeAssetPath('Projects/Backend/Notes.md','image.png'),'../../../assets/image.png');
 });
