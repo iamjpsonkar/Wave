@@ -2,7 +2,7 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Source review: current default-branch file contents fetched during QA recheck on 2026-11-14; exact branch-head commit SHA was not exposed by the file-fetch response.  
+> Source review baseline: application source at `28bb3d34507a0131a946b8652257b17c99a1893e`; documentation reconciliation committed on 2026-11-14.  
 > Review date: 2026-11-14  
 > Scope: only defects or material reliability/QA gaps that remain in the current implementation.
 
@@ -18,7 +18,7 @@
 ## Current summary
 
 - **2 remaining findings:** WAVE-031 (native picker/filesystem/accessibility/lifecycle QA gap) and WAVE-039 (IndexedDB pre-commit crash window).
-- `fixed-bugs.md` retains 49 historical source-verified fixes and regression scenarios; this pass re-read the register but did not execute every historical scenario.
+- `fixed-bugs.md` retains 50 historical source-verified fixes and regression scenarios; this pass re-read the register but did not execute every historical scenario.
 - Current checked-in test definitions: **30 Node tests** and **28 Playwright Chromium E2E scenarios**. The E2E fixture uses OPFS and simulates permission behavior; it does not exercise the native OS picker.
 - Historical CI evidence in `dev-build.md` verifies an earlier 10-scenario E2E suite. CI run [43618423075](https://github.com/iamjpsonkar/Wave/actions/runs/43618423075) passed Node tests, typecheck, production build and all 28 Playwright scenarios on the corrected template/test baseline. The subsequent diagram-accessibility patch still requires its own CI run.
 
