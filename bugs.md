@@ -17,10 +17,10 @@
 
 ## Current summary
 
-- **2 remaining partial findings:** WAVE-031 (QA coverage gap), WAVE-039 (IndexedDB crash window). Permission-denial, same-workspace two-tab editing, and cross-tab recovery-draft provenance are covered by Chromium regression scenarios.
-- **49 source-verified fixes:** tracked in `fixed-bugs.md`.
-- CI runs Node storage/concurrency tests and ten Playwright Chromium E2E journeys using native OPFS handles. Simulated permission denial and same-workspace two-tab editing are covered; native picker prompts/revocation, external-editor fault injection, comprehensive accessibility checks and abrupt process-termination tests remain outstanding.
-- Verified code CI: [run 43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) — 30 Node tests and all 9 Chromium E2E tests passed; typecheck and production build passed.
+- **2 remaining partial findings:** WAVE-031 (native picker/filesystem/accessibility/lifecycle QA gap) and WAVE-039 (IndexedDB pre-commit crash window).
+- `fixed-bugs.md` retains 49 historical source-verified fixes and regression scenarios; this pass re-read the register but did not execute every historical scenario.
+- Current checked-in test definitions: **30 Node tests** and **13 Playwright Chromium E2E scenarios**. The E2E fixture uses OPFS and simulates permission behavior; it does not exercise the native OS picker.
+- Historical CI evidence in `dev-build.md` verifies an earlier 10-scenario E2E suite. No fresh CI or local execution was performed in this source-only recheck; the current 13-scenario suite is not claimed as passed.
 
 ---
 
@@ -50,7 +50,7 @@ Recheck the current Playwright suite and add browser-supported tests for the rem
 
 ### Expected behavior
 
-CI should retain the nine current Chromium journeys and add deterministic coverage for the native picker lifecycle, external filesystem changes, accessibility, and browser-process termination when supported.
+CI should retain all 13 current Chromium journeys and add deterministic coverage for the native picker lifecycle, external filesystem changes, accessibility, and browser-process termination when supported.
 
 ### Fix direction
 
@@ -58,7 +58,7 @@ Extend the existing Playwright suite with permission/picker integration coverage
 
 ### Regression coverage
 
-Keep all nine current Chromium scenarios in CI. Add native picker prompt/revocation, external filesystem edits during active operations, keyboard/accessibility checks, and browser lifecycle fault injection when supported.
+Keep all 13 current Chromium scenarios in CI. Add native picker prompt/revocation, external filesystem edits during active operations, keyboard/accessibility checks, and browser lifecycle fault injection when supported.
 
 ---
 
