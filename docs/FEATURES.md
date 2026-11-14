@@ -6,7 +6,7 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 
 ## 1. Documents and writing
 
-- [x] Markdown pages, nested folders, autosave and preview
+- [x] Markdown pages, nested folders, autosave, preview and page duplication
 - [x] Formatting toolbar, headings, lists, quotes, code and links
 - [x] Local images and file attachments
 - [x] Starter templates: meeting notes, project brief, task list, weekly plan, research notes and decision record
