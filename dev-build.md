@@ -275,3 +275,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added an E2E source scenario for applying, changing and previewing a block fill. E2E source inventory: **42 scenarios**; Node test source remains **30 tests**. Counts describe source definitions, not execution.
 - Commits: `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`, `93bf0eb5dc809e373292570d900066161f6e7be3`, `0cf474ff0d0765f882916c04efbb69e49c95cb85`.
 - Typecheck, build, browser execution, screenshot review and CI are not yet verified.
+
+
+## 2026-11-15 — Wave Complete Feature Test template
+
+- Added a new **Wave Complete Feature Test** entry to the existing template gallery; the original Markdown feature showcase and all existing templates remain unchanged. The template contains practical examples for headings/inline formatting, nested lists, GFM tables/tasks/footnotes, reference and wiki links, alerts/disclosures, foreground/inline/block colors, code/diff blocks, math, Mermaid and local diagram subsets, local image/file/audio/video references, emoji, navigation/search/backlinks, an editor/workspace QA checklist and safe-rendering checks.
+- Added a Playwright E2E scenario covering gallery discovery, template preview/create, source content, color and diagram preview, and Edit/Preview source round-trip. Browser E2E source inventory is now **43 scenarios**; Node test source remains **30 definitions**. These counts do not represent executed tests.
+- Source commits: template `f7a11993e821cf8cac77b34bc2f593217f8979b7`; color marker correction `b1c65d2f0d2893056ae7e75483023eae657bcf74`; E2E `1e7558de59c360532101004695d12b12c1ea1155`.
+- No local tests, typecheck, production build, screenshot review or CI result have been run/confirmed for this batch. Do not claim verification until the latest main-branch workflow completes.
