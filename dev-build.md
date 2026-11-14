@@ -335,3 +335,15 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Documented product constitution, offline/online modes, current stack/source map/workspace layout, reliability invariants, Markdown/editor behavior, UI requests, Docker boundary, QA evidence limits, roadmap coverage, documentation map and recommended improvements.
 - Added direct discovery links from `README.md` and `docs/README.md`.
 - Verification: GitHub repository contents were fetched and reviewed; no local test/build or CI run was performed for this documentation-only change.
+
+
+## 2026-11-15 — Markdown documentation consolidation and per-task enforcement
+
+- Created `QA_CONTEXT.md` by combining the current QA disposition/test inventory from the former `qa-context.md` with substantive audit history/evidence from `QA-CONTEXT.md`.
+- Created `UI_BACKLOG.md` by combining export/print UI bugs (UIB-001..006), UI gaps (UI-001..024) and UI feature proposals (UIF-001..021). Stable identifiers and source-register content were retained.
+- Created root `FEATURES.md` by combining the shipped-feature showcase and detailed feature map formerly split across `features.md` and `docs/FEATURES.md`.
+- Verified that each consolidated target contains the source documents' meaningful content, including the relevant IDs and QA findings, before deleting the seven redundant source files.
+- Removed: `QA-CONTEXT.md`, `qa-context.md`, `ui-bug.md`, `ui-gaps.md`, `ui-features.md`, `features.md`, `docs/FEATURES.md`.
+- Updated the wiki, README, contributor guidance, developer handoff, roadmap/issue references and documentation index. Added a mandatory per-task Markdown review/enforcement section to `wiki.md`: update authoritative docs, preserve IDs/history, avoid duplicate sources, validate links and update `DEV_CONTEXT.md` last.
+- Preserved as separate files: `upcoming-features.md`, `priority-features.md`, `dev-fixed.md`, `dev-build.md`, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `diagram-features.md`, and the architecture/deployment/Markdown/roadmap guides.
+- Verification: fetched and compared source/destination contents before deletion; confirmed UIB-001..006, UI-001..024, UIF-001..021 and WAVE-031/WAVE-039/WAVE-042 are present in the consolidated destinations. Checked navigation and corrected stale links in the consolidated feature guide. No application code changed; no local tests/build or CI run was performed.
