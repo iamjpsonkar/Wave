@@ -466,3 +466,40 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .app.theme-dark .template-preview-dialog>header button,.app.theme-system .template-preview-dialog>header button{background:#293329;color:#dce5d7}
 .app.theme-dark .template-preview-dialog>footer button:not(.primary),.app.theme-system .template-preview-dialog>footer button:not(.primary){background:#293329;border-color:#465344;color:#dce5d7}
 @media(prefers-color-scheme:dark){.app.theme-system .template-preview-dialog{background:#202720;border-color:#3b463a;color:#e5e9e1}.app.theme-system .template-preview-dialog pre{background:#182019;border-color:#465344;color:#e0e8dc}}
+
+/* Dark-theme parity for secondary workspace surfaces and navigation. */
+.app.theme-dark .sidebar-templates,.app.theme-dark .command-palette,.app.theme-dark .backlinks-list,.app.theme-dark .template-grid{background:#202720;border-color:#3b463a;color:#e5e9e1}
+.app.theme-dark .sidebar-templates>button,.app.theme-dark .template-grid>button,.app.theme-dark .backlinks-list>button,.app.theme-dark .command-option{color:#d5dfd1}
+.app.theme-dark .sidebar-templates>button:hover,.app.theme-dark .template-grid>button:hover,.app.theme-dark .backlinks-list>button:hover,.app.theme-dark .command-option:hover,.app.theme-dark .command-option.selected{background:#303c30;color:#f0f5ed}
+.app.theme-dark .command-input,.app.theme-dark .command-palette footer{border-color:#465344;color:#c0cbb9}
+.app.theme-dark .command-input input,.app.theme-dark .search input{background:transparent;color:#e5e9e1}
+.app.theme-dark .command-input kbd,.app.theme-dark .command-option small,.app.theme-dark .backlinks-list small{color:#aebba8}
+.app.theme-dark .trash-item{border-color:#3a453a}
+.app.theme-dark .trash-item strong{color:#e0e8dc}
+.app.theme-dark .trash-item small{color:#b2bdae}
+.app.theme-dark .trash-item button{background:#252d25;border-color:#465344;color:#d5dfd1}
+.app.theme-dark .trash-item button.danger{color:#efaaa0}
+.app.theme-dark .trash-item button:hover{background:#303c30}
+.app.theme-dark .app-error{background:#3a2926;color:#f1c0b8;border-color:#704a42}
+.app.theme-dark .folder-link:hover,.app.theme-dark .folder-link.selected{background:#303c30;color:#d5e2ce}
+.app.theme-dark .section>span button{color:#b9c5b4}
+.app.theme-dark .stored strong{color:#c4d8bd}
+.app.theme-dark .stored small,.app.theme-dark .appfoot{color:#aeb9a8}
+.app.theme-system .sidebar-templates,.app.theme-system .command-palette,.app.theme-system .backlinks-list,.app.theme-system .template-grid{background:#202720;border-color:#3b463a;color:#e5e9e1}
+.app.theme-system .sidebar-templates>button,.app.theme-system .template-grid>button,.app.theme-system .backlinks-list>button,.app.theme-system .command-option{color:#d5dfd1}
+.app.theme-system .sidebar-templates>button:hover,.app.theme-system .template-grid>button:hover,.app.theme-system .backlinks-list>button:hover,.app.theme-system .command-option:hover,.app.theme-system .command-option.selected{background:#303c30;color:#f0f5ed}
+.app.theme-system .command-input,.app.theme-system .command-palette footer{border-color:#465344;color:#c0cbb9}
+.app.theme-system .command-input input,.app.theme-system .search input{background:transparent;color:#e5e9e1}
+.app.theme-system .command-input kbd,.app.theme-system .command-option small,.app.theme-system .backlinks-list small{color:#aebba8}
+.app.theme-system .trash-item{border-color:#3a453a}
+.app.theme-system .trash-item strong{color:#e0e8dc}
+.app.theme-system .trash-item small{color:#b2bdae}
+.app.theme-system .trash-item button{background:#252d25;border-color:#465344;color:#d5dfd1}
+.app.theme-system .trash-item button.danger{color:#efaaa0}
+.app.theme-system .trash-item button:hover{background:#303c30}
+.app.theme-system .folder-link:hover,.app.theme-system .folder-link.selected{background:#303c30;color:#d5e2ce}
+.app.theme-system .stored strong{color:#c4d8bd}
+.app.theme-system .stored small,.app.theme-system .appfoot{color:#aeb9a8}
+@media(prefers-color-scheme:dark){
+ .app.theme-system .sidebar-templates>button:hover,.app.theme-system .template-grid>button:hover,.app.theme-system .backlinks-list>button:hover,.app.theme-system .command-option:hover,.app.theme-system .command-option.selected{background:#303c30;color:#f0f5ed}
+}
