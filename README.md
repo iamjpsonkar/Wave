@@ -17,7 +17,7 @@
 - [x] Nested folders and pages
 - [x] Search page titles and document content
 - [x] Create complete local backup snapshots of documents, assets and workspace settings
-- [ ] Trash, backup restore and revision history
+- [x] Move documents to local Trash, restore them or permanently delete them
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
 
