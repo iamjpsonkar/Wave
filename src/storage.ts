@@ -1,5 +1,5 @@
 export interface Workspace { root: FileSystemDirectoryHandle; wave: FileSystemDirectoryHandle; documents: FileSystemDirectoryHandle; assets: FileSystemDirectoryHandle }
-export interface Doc { id: string; title: string; updatedAt: number }
+export interface Doc { id: string; path: string; title: string; updatedAt: number; content: string }
 export async function openWorkspace(): Promise<Workspace> {
   if (!('showDirectoryPicker' in window)) throw new Error('Folder access requires Chrome or Edge in this preview.');
   const root = await window.showDirectoryPicker({ mode: 'readwrite' });
@@ -18,17 +18,40 @@ async function write(dir: FileSystemDirectoryHandle, name: string, data: string 
   const handle = await dir.getFileHandle(name, { create: true });
   const writable = await handle.createWritable(); await writable.write(data); await writable.close();
 }
+async function directoryForPath(root: FileSystemDirectoryHandle, path: string, create = false) {
+  const parts = path.split('/').filter(Boolean);
+  let current = root;
+  for (const part of parts) current = await current.getDirectoryHandle(part, { create });
+  return current;
+}
+async function fileForPath(root: FileSystemDirectoryHandle, path: string, create = false) {
+  const parts = path.split('/').filter(Boolean);
+  const name = parts.pop();
+  if (!name || name.includes('..')) throw new Error('Invalid document path.');
+  const parent = await directoryForPath(root, parts.join('/'), create);
+  return parent.getFileHandle(name, { create });
+}
 export async function listDocs(dir: FileSystemDirectoryHandle): Promise<Doc[]> {
   const result: Doc[] = [];
-  for await (const [name, handle] of dir.entries()) {
-    if (handle.kind !== 'file' || !name.endsWith('.md')) continue;
-    const file = await (handle as FileSystemFileHandle).getFile(); const text = await file.text();
-    result.push({ id: name, title: text.split('\n').find(x => x.trim())?.replace(/^#\s*/, '').trim() || name.replace(/\.md$/, ''), updatedAt: file.lastModified });
+  async function walk(folder: FileSystemDirectoryHandle, prefix = '') {
+    for await (const [name, handle] of folder.entries()) {
+      const path = prefix ? prefix + '/' + name : name;
+      if (handle.kind === 'directory') await walk(handle as FileSystemDirectoryHandle, path);
+      else if (name.endsWith('.md')) {
+        const file = await (handle as FileSystemFileHandle).getFile();
+        const text = await file.text();
+        result.push({ id: path, path, title: text.split('\n').find(x => x.trim())?.replace(/^#\s*/, '').trim() || name.replace(/\.md$/, ''), updatedAt: file.lastModified, content: text });
+      }
+    }
   }
+  await walk(dir);
   return result.sort((a, b) => b.updatedAt - a.updatedAt);
 }
-export async function readDoc(dir: FileSystemDirectoryHandle, name: string) { return (await (await dir.getFileHandle(name)).getFile()).text(); }
-export async function saveDoc(dir: FileSystemDirectoryHandle, name: string, text: string) { await write(dir, name, text); }
+export async function readDoc(dir: FileSystemDirectoryHandle, path: string) { return (await (await fileForPath(dir, path)).getFile()).text(); }
+export async function saveDoc(dir: FileSystemDirectoryHandle, path: string, text: string) {
+  const file = await fileForPath(dir, path, true);
+  const writable = await file.createWritable(); await writable.write(text); await writable.close();
+}
 export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Promise<string> {
   const original = file.name.split(/[\\/]/).pop() || 'attachment';
   const cleaned = original.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100) || 'attachment';
@@ -42,6 +65,12 @@ export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Prom
   }
   await write(dir, candidate, file);
   return candidate;
+}
+export async function createFolder(dir: FileSystemDirectoryHandle, name: string): Promise<string> {
+  const safe = name.trim().replace(/[\\/:*?"<>|]/g, '-').replace(/^\.+|\.+$/g, '').slice(0, 60);
+  if (!safe) throw new Error('Enter a valid folder name.');
+  await dir.getDirectoryHandle(safe, { create: true });
+  return safe;
 }
 export function slug(title: string) { return (title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) || 'untitled') + '.md'; }
 declare global { interface Window { showDirectoryPicker: (options?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle> } }
