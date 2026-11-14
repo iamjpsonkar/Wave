@@ -60,7 +60,7 @@ async function existsDirectory(dir: FileSystemDirectoryHandle, name: string): Pr
   try { await dir.getDirectoryHandle(name); return true; }
   catch (error) { if (isNotFound(error)) return false; throw error; }
 }
-export async function createUniqueDirectory(dir:FileSystemDirectoryHandle,baseName:string,lockName='directory-allocation'):{name:string;handle:FileSystemDirectoryHandle}{
+export async function createUniqueDirectory(dir:FileSystemDirectoryHandle,baseName:string,lockName='directory-allocation'):Promise<{name:string;handle:FileSystemDirectoryHandle}>{
   return withWorkspaceLock(lockName,async()=>{
     let name=baseName,suffix=2;
     while(await hasCaseInsensitiveEntry(dir,name))name=baseName+'-'+suffix++;
