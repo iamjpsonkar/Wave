@@ -57,7 +57,7 @@ A future Tauri adapter should implement the same storage operations. The editor 
 - Markdown is rendered with sanitization. Local images and attachment links are resolved from the selected workspace; remote images are not fetched by the preview.
 - External links open separately with `rel="noreferrer"`.
 - The browser permission model is explicit and can require user re-authorization.
-- IndexedDB stores only the recent directory handle; workspace documents and assets remain in the selected folder.
+- IndexedDB stores the recent directory handle and temporary unsaved-draft records; saved workspace documents and assets remain in the selected folder.
 
 ## Browser constraints
 
