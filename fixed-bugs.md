@@ -2,7 +2,7 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Source revision reviewed: `1f676a2317339b29bdca9952b0288ded25a58616`  
+> Source revision reviewed: `9fdd7559d1bef165f838585bf73eb73a67b0d526`  
 > Review date: 2026-11-14  
 > Purpose: historical fixes and mandatory rechecking scenarios for future QA passes.
 
@@ -13,11 +13,11 @@
 - A fix is classified as **source-verified**, not automatically as browser/runtime-proven.
 - If a scenario fails again, move the finding back to `bugs.md` with the evidence, affected revision, and failing environment. Keep its original ID.
 - If the implementation changes materially, update the scenario here rather than silently deleting it.
-- The current CI run for this source revision succeeded: [GitHub Actions run 43601395895](https://github.com/iamjpsonkar/Wave/actions/runs/43601395895). CI runs 14 Node storage tests, typecheck, and build; it does not replace browser E2E or real File System Access API testing.
+- The current CI run for this source revision succeeded: [GitHub Actions run 43602646473](https://github.com/iamjpsonkar/Wave/actions/runs/43602646473). It reports 30 Node tests and 6 Chromium E2E tests passing, plus typecheck and production build. Browser E2E uses OPFS fixtures; it does not replace real user-picked-folder permission, cross-tab, or process-termination testing.
 
 ## Verification summary
 
-**49 findings are source-verified as implemented** and retained below as regression scenarios. This does not mean all scenarios have been executed in a real browser. WAVE-031 and WAVE-039 remain partial in `bugs.md`.
+**49 findings are source-verified as implemented** and retained below as regression scenarios. This does not mean all scenarios have been executed in a real browser. WAVE-031 and WAVE-039 remain open in `bugs.md`.
 
 | ID range | Source-level disposition |
 |---|---|
@@ -478,6 +478,42 @@ Record last observed modification time and preferably a content hash. Check the 
 - Recheck: use the reproduction and regression scenarios above as release checks.
 - Evidence boundary: source review at `1f676a2317339b29bdca9952b0288ded25a58616`; browser-specific timing, multi-tab behavior, permission failures, and crash recovery still require their relevant runtime tests.
 - Note: Pre-write disk comparison and conflict recovery (reload or save as copy) are present. A continuous filesystem watcher is not required for the core no-silent-overwrite guarantee. Browser-level multi-tab/external-editor scenarios remain useful regression checks.
+
+---
+
+## WAVE-020 — Backup snapshots can miss same-size, same-timestamp external changes
+
+- Priority: **P1** | Original confidence: **High**
+- Files: `src/storage.ts` — `snapshotTree()`, `createBackup()`
+
+### Original problem
+
+The earlier backup consistency check relied on file metadata such as path, size, and last-modified time. An external edit that preserved file size and timestamp could evade the before/after comparison, allowing a backup assembled from inconsistent source versions to be marked complete.
+
+### Current implementation
+
+The current implementation computes a SHA-256 digest of every file's bytes in `snapshotTree()`. Backup creation compares:
+- The source document and asset trees before and after copying.
+- The copied document and asset trees against the original source snapshots.
+- The workspace manifest/settings before and after copying, and against the copied files.
+
+Backup creation also runs under a workspace-wide lock shared with Wave-managed mutations. Failed or inconsistent snapshots receive a failed status and are excluded by `listBackups()`.
+
+### Regression scenarios
+
+1. Modify a source file during backup while preserving its byte length and last-modified timestamp; verify the backup is rejected if the copied bytes differ.
+2. Modify a file during copying and restore the source content before the final source scan; verify comparison against the copied snapshot still detects the mismatch.
+3. Change an asset during backup and verify the backup is marked failed and omitted from the backup list.
+4. Attempt a Wave-managed document write while backup holds the workspace lock; verify the write waits and the backup contains a consistent pre-write state.
+5. Change `manifest.json` or `settings.json` during the backup window and verify the snapshot is rejected.
+6. Verify only backups with a complete status and matching manifest counts appear as restorable.
+
+### Current verification note
+
+- Status: **Source-verified implementation present**.
+- Automated evidence: Node storage/concurrency tests include copied-file mismatch detection and workspace-wide backup/write serialization.
+- CI at the reviewed source revision: 30 Node tests, 6 Chromium E2E tests, typecheck, and production build passed ([run 43602646473](https://github.com/iamjpsonkar/Wave/actions/runs/43602646473)).
+- Evidence boundary: the test suite does not prove behavior for every external sync tool or OS-level filesystem race; retain the scenarios above for future QA rechecks.
 
 ---
 
