@@ -386,3 +386,22 @@ This is an additive status snapshot. All original UI-001–UI-020 IDs, original 
 - Direct PDF file generation without the browser print dialog remains a future enhancement; browser PDF output and exact pagination vary by browser/printer settings.
 - Commits: App `e6800b1725f1471fcd56a403e001ff7fa7302cbb`; print CSS `26dc983d85a531e4a1431624ec7558b5b5dcb2b2`; E2E `8608f04f7c4347d4f59dff4016d45b52db15219b`.
 - Verification is pending; do not claim CI success until the latest workflow completes.
+ 
+## UI-023 — Discoverable Markdown sample library — 2026-11-15
+
+- **Priority:** P1
+- **Status:** Implemented in source — E2E and visual verification pending
+- **Problem:** Wave exposes many Markdown, formatting, data, code, diagram and media capabilities, but users must already know the syntax or discover each feature through documentation/templates.
+- **Change:** Added a persistent right-side **Sample library** beside the current editor/preview. It includes searchable, categorized examples; selecting an example shows a rendered preview and the exact Markdown source. **Insert into document** places the source at the current editor selection, replacing selected text, or appends it when the editor is in Preview/Blocks mode.
+- **Categories:** Text, Blocks, Lists, Data, Code, Advanced and Media. Examples include headings, emphasis, links, quotes, callouts, DETAILS, dividers, lists/tasks, tables, code/diff, math, Mermaid, Wave colors, wiki links and local media references.
+- **Acceptance:** sample selection updates the preview; insertion adds Markdown rather than rendered HTML; source remains editable and autosave-aware; search/category filtering works; panel is keyboard accessible and responsive; light/dark themes remain readable.
+- **Regression:** added Playwright coverage for selection-based insertion and sample preview. Browser CI and responsive visual review pending.
+
+## UI-024 — Enter does not continue Markdown list items — 2026-11-15
+
+- **Priority:** P1
+- **Status:** Fixed in source — E2E and CI verification pending
+- **Problem:** Pressing Enter at the end of a Markdown list item inserted a plain newline instead of starting the next item.
+- **Change:** The source editor now continues unordered and ordered lists, increments ordered-list numbers, carries task-list checkboxes forward as unchecked, preserves nested indentation, and exits a blank list item when Enter is pressed again. The handler leaves ordinary paragraphs and fenced code behavior to the browser.
+- **Acceptance:** ordered, unordered, nested and task lists continue with the correct marker; empty list items exit cleanly; selection-based editing and source round-trip remain intact; Enter inside fenced code does not trigger list continuation.
+- **Regression:** added Playwright assertions for ordered, unordered and task-list continuation and exiting an empty task item. CI execution pending.
