@@ -265,3 +265,5 @@ Source changes and the regression scenario are committed, but no local typecheck
 
 
 - Regression follow-up: strengthened the color E2E source to exercise native color-input change events, invalid color tokens remaining literal, and inline-code preservation. Latest test-source commits: `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`. CI remains pending.
+
+- Documentation precision follow-up: `docs/MARKDOWN_SUPPORT.md` now lists the exact color directives and six-digit-hex restriction; `features-gap.md` records the remaining renderer/palette limitations; `ui-features.md` distinguishes accessible native color inputs from the future curated swatch palette. Commits: `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`, `99007028e8f9c98de8baa5d32d55ce97d346d183`, `bd27ca629c7556b3f2fbeac75e3b600b976365b9`.
