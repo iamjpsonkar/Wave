@@ -78,7 +78,7 @@ IndexedDB remains asynchronous. If the browser process is terminated after an in
 ### Reproduction / recheck scenario
 
 1. Open a document and type a unique marker.
-2. Close/reload or terminate the browser immediately, then at controlled intervals around the draft debounce and IndexedDB transaction.
+2. Close/reload or terminate the browser immediately, then at controlled intervals after the input handler starts and while the IndexedDB transaction is pending.
 3. Reopen the workspace and inspect whether the marker is either persisted to the Markdown file or available as a recovery draft.
 4. Repeat under CPU/disk pressure and with multiple rapid edits.
 
