@@ -518,3 +518,42 @@ test('Markdown inline syntax, code literal preservation, duplicate slugs, nested
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toBe('def greet(name):\n    return "hello " + name\n');
 });
+
+
+test('Markdown math renders quadratic formula, matrices, cases, sums, integrals and limits', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'LaTeX Math Coverage');
+  await editor.fill([
+    '# LaTeX Math Coverage',
+    '',
+    '$$',
+    'x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}',
+    '$$',
+    '',
+    '$$',
+    '\\begin{bmatrix}a & b\\\\ c & d\\end{bmatrix}',
+    '$$',
+    '',
+    '$$',
+    'f(x)=\\begin{cases}x^2 & x \\geq 0\\\\-x & x < 0\\end{cases}',
+    '$$',
+    '',
+    '$$',
+    '\\sum_{i=1}^{n} i^2 + \\int_0^1 x\\,dx + \\lim_{x\\to 0}\\frac{\\sin x}{x}',
+    '$$',
+    '',
+    '$$',
+    '\\binom{n}{k} \\quad \\sqrt[3]{x} \\quad \\overline{AB}',
+    '$$'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const math = page.locator('.markdown-math-display math');
+  await expect(math).toHaveCount(5);
+  await expect(math.nth(0).locator('mfrac')).toHaveCount(2);
+  await expect(math.nth(1).locator('mfenced mtable mtr')).toHaveCount(2);
+  await expect(math.nth(2).locator('mtable mtr')).toHaveCount(2);
+  await expect(math.nth(3).locator('msubsup')).toHaveCount(1);
+  await expect(math.nth(3).locator('mfrac')).toHaveCount(1);
+  await expect(math.nth(4).locator('mroot')).toHaveCount(1);
+  await expect(math.nth(4).locator('mover')).toHaveCount(1);
+});
