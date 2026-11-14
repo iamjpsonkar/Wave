@@ -1,43 +1,39 @@
-import { Children, cloneElement, isValidElement, type ReactElement, type ReactNode } from 'react';
+import { Children, cloneElement, isValidElement, type ReactNode } from 'react';
 import { Copy } from 'lucide-react';
 
 type MarkdownElementProps = { children?: ReactNode };
 
 const ALERTS = new Set(['NOTE', 'TIP', 'IMPORTANT', 'WARNING', 'CAUTION']);
+function plainText(node: ReactNode): string {
+  if (typeof node === 'string' || typeof node === 'number') return String(node);
+  if (Array.isArray(node)) return node.map(plainText).join('');
+  if (isValidElement(node)) return plainText((node.props as MarkdownElementProps).children);
+  return '';
+}
+function withoutAlertMarker(node: ReactNode): ReactNode {
+  if (typeof node === 'string') return node.replace(/^\s*\[!(?:NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i, '');
+  if (Array.isArray(node)) return node.map(withoutAlertMarker);
+  if (isValidElement(node)) return cloneElement(node, {}, withoutAlertMarker((node.props as MarkdownElementProps).children));
+  return node;
+}
 
 export function MarkdownBlockquote({ children }: MarkdownElementProps) {
-  const blocks = Children.toArray(children);
-  const first = blocks[0];
-  if (isValidElement(first)) {
-    const element = first as ReactElement<MarkdownElementProps>;
-    const paragraph = Children.toArray(element.props.children);
-    const firstText = paragraph[0];
-    if (typeof firstText === 'string') {
-      const match = firstText.match(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i);
-      const kind = match?.[1]?.toUpperCase();
-      if (kind && ALERTS.has(kind)) {
-        const remaining = firstText.slice(match![0].length);
-        const nextParagraph = [remaining, ...paragraph.slice(1)].filter(Boolean);
-        const cleaned = cloneElement(element, {}, nextParagraph);
-        return <aside className={'markdown-alert markdown-alert-' + kind.toLowerCase()} role="note" aria-label={kind}>
-          <strong className="markdown-alert-label">{kind}</strong>
-          {cleaned}
-          {blocks.slice(1)}
-        </aside>;
-      }
-    }
+  const match = plainText(children).match(/^\s*\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\]\s*/i);
+  const kind = match?.[1]?.toUpperCase();
+  if (kind && ALERTS.has(kind)) {
+    return <aside className={'markdown-alert markdown-alert-' + kind.toLowerCase()} role="note" aria-label={kind}>
+      <strong className="markdown-alert-label">{kind}</strong>
+      {withoutAlertMarker(children)}
+    </aside>;
   }
   return <blockquote>{children}</blockquote>;
 }
 
 function codeText(children: ReactNode): string {
-  return Children.toArray(children).map(child => {
-    if (isValidElement(child)) {
-      const props = child.props as MarkdownElementProps;
-      return Children.toArray(props.children).map(value => typeof value === 'string' ? value : '').join('');
-    }
-    return typeof child === 'string' ? child : '';
-  }).join('');
+  if (typeof children === 'string' || typeof children === 'number') return String(children);
+  if (Array.isArray(children)) return children.map(codeText).join('');
+  if (isValidElement(children)) return codeText((children.props as MarkdownElementProps).children);
+  return '';
 }
 
 export function MarkdownPre({ children }: MarkdownElementProps) {
