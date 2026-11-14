@@ -19,6 +19,9 @@ function currentTabId(): string {
     return fallbackSessionId ??= crypto.randomUUID();
   }
 }
+export function isCurrentTabDraft(draft: Pick<DraftRecord,'tabId'>): boolean {
+  return draft.tabId===currentTabId();
+}
 const DATABASE='wave-draft-journal';
 const STORE='drafts';
 const localQueues=new Map<string,Promise<unknown>>();
