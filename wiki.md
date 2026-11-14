@@ -430,7 +430,7 @@ UI-001 through UI-024 cover settings/dialog QA, editor experience, canvas width,
 
 Use the source file for full descriptions, statuses, acceptance criteria and evidence limitations.
 
-### UI feature backlog — `UI_BACKLOG.md`
+### UI feature proposals — `UI_BACKLOG.md`
 
 UIF-001 through UIF-021 cover undo/redo, find, toolbar grouping/discoverability, heading styles, shortcut hints, color/highlight, alignment/indentation, insert menu, table helpers, link editing/preview, document statistics, zoom/focus mode, reading layout, contextual formatting, spreadsheet number formats/cell formatting/grid/formulas, comments/review, toolbar customization and context menu/command palette parity.
 
