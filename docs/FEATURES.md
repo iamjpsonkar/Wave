@@ -89,7 +89,9 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 ## Product boundaries
 
 - Wave will not silently upload workspace content.
-- Collaboration and sync require an explicit transport and opt-in; local editing must work without an account.
-- A self-hosted or peer-to-peer collaboration mode may be explored, but it must be clearly separated from the local-only mode.
+- The personal workspace core must remain usable offline without an account.
+- Full collaboration, sharing and connected integrations may require online mode and an explicit opt-in.
+- Durable workspace content remains user-controlled; coordination services must not become a mandatory readable content store.
+- Peer-to-peer transport and encrypted relay fallback are preferred for collaboration; user-managed Docker deployment is a planned option.
 - Feature parity means comparable workflows, not copying proprietary UI or undocumented behavior.
 - All database, task and collaboration features must have documented portable data formats and recovery paths.
