@@ -275,6 +275,6 @@ test('command palette supports filtering and keyboard execution of workspace act
   await input.fill('new meeting notes');
   await input.press('ArrowDown');
   await input.press('Enter');
-  await expect(page.locator('textarea')).toContainText('# Meeting notes');
+  await expect(page.locator('textarea')).toHaveValue(/# Meeting notes/);
   await expect(dialog).toHaveCount(0);
 });
