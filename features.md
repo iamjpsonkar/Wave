@@ -77,7 +77,7 @@ You can inspect, copy and back up these files yourself. Do not delete the `.wave
 
 ## What's not shipped yet
 
-Wave's bigger ambition includes a rich block editor, internal page links and backlinks, page history, database views, kanban boards, calendar and timeline views, reminders, collaborative editing, comments, Quip-style spreadsheets, imports and exports, plugins and optional encrypted sync. These are **planned capabilities, not current features**. Track their status in the [feature map](docs/FEATURES.md).
+Wave's bigger ambition includes a rich block editor, richer internal references, mentions and link previews, page history, database views, kanban boards, calendar and timeline views, reminders, collaborative editing, comments, Quip-style spreadsheets, imports and exports, plugins and optional encrypted sync. These are **planned capabilities, not current features**. Track their status in the [feature map](docs/FEATURES.md).
 
 ## Run locally
 
