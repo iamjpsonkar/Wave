@@ -1538,12 +1538,33 @@ test('Wave Complete Feature Test template is available and previews its feature 
 });
 
 
-test('Preview exports only the rendered document through the browser PDF print flow', async ({ page }) => {
+test('PDF export uses a readable print palette and preserves Markdown content', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'PDF Export Regression');
+  const source = [
+    '# Print palette regression',
+    '',
+    'Readable body text and [[color:#365FBA|blue custom text]].',
+    '',
+    '| Feature | Status | Priority |',
+    '|:--|:--:|--:|',
+    '| Markdown preview | Ready | 1 |',
+    '',
+    '> [!DETAILS] Expand for more information',
+    '> Disclosure body remains part of the exported document.',
+    '',
+    '$',
+    '\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}',
+    '$'
+  ].join('\\n');
+  await page.locator('textarea').fill(source);
   await page.getByRole('button', { name: 'Preview' }).click();
   const preview = page.locator('.markdown-preview');
-  await expect(preview).toContainText('Browser regression content');
+  await expect(preview).toContainText('Readable body text');
+  await expect(preview.locator('.wave-inline-color')).toContainText('blue custom text');
+  await expect(preview.locator('tbody tr').first().locator('td').nth(2)).toHaveText('1');
+  await expect(preview.locator('.markdown-special-block math')).toBeVisible();
+  await expect(preview.locator('details')).toContainText('Disclosure body remains part of the exported document.');
   await page.evaluate(() => {
     (window as any).__wavePrintCalled = false;
     window.print = () => {
@@ -1559,5 +1580,10 @@ test('Preview exports only the rendered document through the browser PDF print f
   await expect(page.locator('.sidebar')).toHaveCSS('visibility', 'hidden');
   await expect(preview).toHaveCSS('visibility', 'visible');
   await expect(page.locator('.topbar')).toHaveCSS('visibility', 'hidden');
+  await expect(preview).toHaveCSS('background-color', 'rgb(255, 255, 255)');
+  await expect(preview.locator('h1')).toHaveCSS('color', 'rgb(34, 34, 34)');
+  await expect(preview.locator('.wave-inline-color')).toHaveCSS('color', 'rgb(54, 95, 186)');
+  await expect(preview.locator('details > p')).toHaveCSS('display', 'block');
+  await expect(preview.locator('tbody tr').first().locator('td').nth(2)).toHaveText('1');
   await page.emulateMedia({ media: 'screen' });
 });
