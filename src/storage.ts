@@ -66,10 +66,13 @@ export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Prom
   await write(dir, candidate, file);
   return candidate;
 }
-export async function createFolder(dir: FileSystemDirectoryHandle, name: string): Promise<string> {
-  const safe = name.trim().replace(/[\\/:*?"<>|]/g, '-').replace(/^\.+|\.+$/g, '').slice(0, 60);
+export async function createFolder(dir: FileSystemDirectoryHandle, path: string): Promise<string> {
+  const parts = path.split('/').filter(Boolean);
+  const requested = parts.pop() || '';
+  const safe = requested.trim().replace(/[\\/:*?"<>|]/g, '-').replace(/^\.+|\.+$/g, '').slice(0, 60);
   if (!safe) throw new Error('Enter a valid folder name.');
-  await dir.getDirectoryHandle(safe, { create: true });
+  const parent = await directoryForPath(dir, parts.join('/'), true);
+  await parent.getDirectoryHandle(safe, { create: true });
   return safe;
 }
 export function slug(title: string) { return (title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) || 'untitled') + '.md'; }
