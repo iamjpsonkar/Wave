@@ -30,7 +30,7 @@
 
 ## Feature showcase
 
-See [features.md](features.md) for the capabilities currently implemented in Wave. Read [upcoming-features.md](upcoming-features.md) for the comprehensive product blueprint, competitive analysis and planned feature catalogue. The [detailed feature map](docs/FEATURES.md) tracks implementation status, while the [roadmap](docs/ROADMAP.md) summarizes delivery phases.
+See [features.md](features.md) for the capabilities currently implemented in Wave. Read [upcoming-features.md](upcoming-features.md) for the expanded product blueprint, research across 20+ workspace tools, and the complete planned feature catalogue. The [detailed feature map](docs/FEATURES.md) tracks implementation status, while the [roadmap](docs/ROADMAP.md) summarizes delivery phases.
 
 ## Product scope
 
