@@ -129,3 +129,16 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added two Playwright scenarios: multiline insertion/render/copy fidelity, and accessibility semantics/keyboard-operable disclosure coverage.
 - Browser test source count: **28 scenarios**; Node test source remains **30 tests**.
 - No local test execution or CI run has been inspected. Treat these scenarios as authored, not passed. The accessibility check is a focused smoke test, not full WCAG conformance.
+
+
+## 2026-11-14 — CI failure triage and Playwright assertion corrections
+
+- Inspected failed Actions run `43617787871` (`91e9ffb8`). Node tests, TypeScript typecheck and production build all passed; the Playwright step failed.
+- Root causes were test-side assumptions/selectors, not build or runtime errors:
+  - Syntax-highlighting assertion matched four keyword spans instead of selecting the exact Python `def` token.
+  - Template picker assertion matched both the sidebar template and a second button; scoped it to `.sidebar-templates`.
+  - Template source assertions expected literal backslash-n text rather than actual newline characters.
+  - Mermaid ER label assertion matched both the CUSTOMER entity label and its attribute-block source label; narrowed to exact text.
+  - Accessibility smoke test now inspects the actual `thead th` header cells rather than relying on Playwright's columnheader role mapping in this environment.
+- Correction commit: `44d78ebc1ba6734caa75cb52d20bbb1ee1a5e6d8`.
+- New CI run: https://github.com/iamjpsonkar/Wave/actions/runs/43618259567. At log update time it was queued; no passing result is claimed.
