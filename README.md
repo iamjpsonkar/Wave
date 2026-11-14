@@ -43,6 +43,10 @@
 - [ ] Rich block editor with draggable content blocks
 - [ ] Tauri desktop application
 
+## Markdown compatibility
+
+See [Markdown support](docs/MARKDOWN_SUPPORT.md) for the renderer's supported syntax, security boundaries and partial features. Choose the **Markdown feature showcase** template inside Wave to try them.
+
 ## Feature showcase
 
 See [features.md](features.md) for the capabilities currently implemented in Wave. Read [upcoming-features.md](upcoming-features.md) for the expanded product blueprint, research across 20+ workspace tools, and the complete planned feature catalogue. The [detailed feature map](docs/FEATURES.md) tracks implementation status, while the [roadmap](docs/ROADMAP.md) summarizes delivery phases.
