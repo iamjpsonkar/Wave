@@ -29,6 +29,19 @@ export async function listDocs(dir: FileSystemDirectoryHandle): Promise<Doc[]> {
 }
 export async function readDoc(dir: FileSystemDirectoryHandle, name: string) { return (await (await dir.getFileHandle(name)).getFile()).text(); }
 export async function saveDoc(dir: FileSystemDirectoryHandle, name: string, text: string) { await write(dir, name, text); }
-export async function addAsset(dir: FileSystemDirectoryHandle, file: File) { await write(dir, file.name, file); }
+export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Promise<string> {
+  const original = file.name.split(/[\\/]/).pop() || 'attachment';
+  const cleaned = original.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100) || 'attachment';
+  const dot = cleaned.lastIndexOf('.');
+  const stem = dot > 0 ? cleaned.slice(0, dot) : cleaned;
+  const ext = dot > 0 ? cleaned.slice(dot) : '';
+  let candidate = cleaned, index = 2;
+  while (true) {
+    try { await dir.getFileHandle(candidate); candidate = stem + '-' + index++ + ext; }
+    catch { break; }
+  }
+  await write(dir, candidate, file);
+  return candidate;
+}
 export function slug(title: string) { return (title.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 70) || 'untitled') + '.md'; }
 declare global { interface Window { showDirectoryPicker: (options?: { mode?: 'read' | 'readwrite' }) => Promise<FileSystemDirectoryHandle> } }
