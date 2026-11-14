@@ -70,3 +70,17 @@ The current folder workflow depends on the File System Access API. Use a secure 
 - Deletion should be recoverable through Trash before permanent removal.
 - Treat search indexes as derived data; Markdown files remain authoritative.
 - Introduce explicit schema migrations before changing the workspace format.
+
+
+## Current reliability safeguards
+
+The current Markdown-based MVP includes the following protections while the longer-term storage-engine redesign remains planned:
+
+- Autosave writes are serialized per document and explicit navigation/save operations cancel pending debounce timers before flushing.
+- A revision-aware UI status avoids reporting a newer edit as saved when only an older revision has completed.
+- Before replacing a document, Wave compares the current on-disk content with the last content it observed. External changes produce a conflict instead of a silent overwrite; the user can reload or save the draft as a separate copy.
+- A separate IndexedDB draft journal keeps unsaved editor text recoverable across reloads. This is a browser-local safety net, not a replacement for workspace backups.
+- Trash moves write and verify a copy before removing the original, and use operation markers to surface interrupted operations. Restore allocates a new unique filename rather than replacing an existing page.
+- Backups use in-progress/complete/failed markers. A snapshot is only listed after successful copying and consistency checks over document, asset and workspace metadata state. Restore creates a separate workspace folder.
+- Page, folder and asset name allocation is serialized, uses cross-tab Web Locks where available, and avoids case-only collisions across common filesystems.
+- Storage regression tests run in CI with Node's built-in test runner. Browser-level fault-injection and E2E tests are still required before treating all edge cases as fully verified.
