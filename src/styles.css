@@ -199,3 +199,9 @@ html,body{height:100%}
 .markdown-preview mark{background:#fff0a8;color:inherit;padding:0 2px;border-radius:2px}
 .markdown-preview u{text-decoration-thickness:1px;text-underline-offset:3px}
 .markdown-preview kbd{display:inline-block;border:1px solid #d9ddd4;border-bottom-width:2px;border-radius:4px;padding:1px 5px;background:#f6f7f4;font:11px ui-monospace,monospace;color:#555d51}
+
+.markdown-preview .syntax-diff-added{display:block;color:#287a45;background:rgba(44,150,77,.09)}
+.markdown-preview .syntax-diff-removed{display:block;color:#a33d3d;background:rgba(180,55,55,.09)}
+.markdown-preview .syntax-diff-hunk{display:block;color:#536f9d;background:rgba(80,120,180,.08)}
+.markdown-preview .syntax-diff-header{display:block;font-weight:600;color:var(--muted,#777)}
+.markdown-preview .syntax-diff-context{display:block}
