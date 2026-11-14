@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { ChevronDown, ChevronUp, Clock3, FileSearch, ListTree, Redo2, Undo2, X } from 'lucide-react';
 
-type Props = { content: string; onChange: (value: string) => void; editorRef: RefObject<HTMLTextAreaElement>; preview: boolean };
+type Props = { content: string; onChange: (value: string) => void; editorRef: RefObject<HTMLTextAreaElement>; preview: boolean; blockMode: boolean; onBlockModeChange: (value: boolean) => void };
 
-export default function EditorEnhancements({ content, onChange, editorRef, preview }: Props) {
+export default function EditorEnhancements({ content, onChange, editorRef, preview, blockMode, onBlockModeChange }: Props) {
   const past = useRef<string[]>([]), future = useRef<string[]>([]), previous = useRef(content), applyingHistory = useRef(false);
   const [canUndo, setCanUndo] = useState(false), [canRedo, setCanRedo] = useState(false);
   const [findOpen, setFindOpen] = useState(false), [outlineOpen, setOutlineOpen] = useState(false);
@@ -86,6 +86,7 @@ export default function EditorEnhancements({ content, onChange, editorRef, previ
       <button type="button" title="Undo (Ctrl/Cmd+Z)" aria-label="Undo" disabled={!canUndo} onClick={() => restore('undo')}><Undo2 size={15}/> <span>Undo</span></button>
       <button type="button" title="Redo (Ctrl/Cmd+Shift+Z)" aria-label="Redo" disabled={!canRedo} onClick={() => restore('redo')}><Redo2 size={15}/> <span>Redo</span></button>
       <button type="button" title="Find in document (Ctrl/Cmd+F)" aria-label="Find in document" aria-expanded={findOpen} onClick={() => setFindOpen(value => !value)}><FileSearch size={15}/> <span>Find</span></button>
+      <button type="button" title="Block editing" aria-label="Block editing" aria-pressed={blockMode} disabled={preview} onClick={() => onBlockModeChange(!blockMode)}><ListTree size={15}/> <span>{blockMode ? 'Blocks on' : 'Blocks'}</span></button>
       <button type="button" title="Document outline" aria-label="Document outline" aria-expanded={outlineOpen} onClick={() => setOutlineOpen(value => !value)}><ListTree size={15}/> <span>Outline</span><span className="utility-count">{headings.length}</span></button>
     </div><div className="document-statistics" aria-label="Document statistics"><span>{words.toLocaleString()} words</span><span>{characters.toLocaleString()} characters</span><span><Clock3 size={12}/> {minutes} min read</span></div></div>
     {findOpen && <div className="document-find" role="search" aria-label="Find and replace">
