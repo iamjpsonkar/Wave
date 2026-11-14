@@ -7,6 +7,9 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 ## 1. Documents and writing
 
 - [x] Markdown pages, nested folders, autosave, preview and page duplication
+- [x] CommonMark writing syntax and GFM tables, task lists, strikethrough, autolinks and footnotes
+- [x] GitHub-style alert callouts, heading anchors, inline/display MathML for a documented LaTeX subset, and simple Mermaid flowchart previews
+- [~] Full Markdown compatibility: raw HTML remains disabled for safety; advanced Mermaid diagrams and external diagram languages need dedicated renderers
 - [x] Formatting toolbar, headings, lists, quotes, code and links
 - [x] Local images and file attachments
 - [x] Starter templates: meeting notes, project brief, task list, weekly plan, research notes and decision record
