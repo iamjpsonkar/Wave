@@ -101,3 +101,15 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - Peer-to-peer transport and encrypted relay fallback are preferred for collaboration; user-managed Docker deployment is a planned option.
 - Feature parity means comparable workflows, not copying proprietary UI or undocumented behavior.
 - All database, task and collaboration features must have documented portable data formats and recovery paths.
+
+ 
+## Editor productivity and navigation
+
+- [x] In-memory undo/redo controls and keyboard shortcuts for the current page
+- [x] Document-local find, case matching, next/previous, replace and replace-all
+- [x] Heading outline with Edit/Preview jump navigation
+- [x] Live word count, Unicode character count and estimated reading time
+- [x] Workspace/folder breadcrumbs and live save-status announcement
+- [x] Searchable template gallery with preview before page creation
+- [~] Responsive/theme regression coverage across five viewport widths and three appearance modes; CI and manual visual review pending
+- [ ] Optional rich block editor with source-preserving Markdown round-trip
