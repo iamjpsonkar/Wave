@@ -48,3 +48,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Source additions: MathML subset, simple Mermaid flowchart SVG, heading anchors, Markdown showcase template and E2E regression scenario.
 - Current test source count: 30 Node tests and 14 Playwright Chromium scenarios.
 - **Latest attempted run:** [43612461372](https://github.com/iamjpsonkar/Wave/actions/runs/43612461372) on `7c901be191fbceb05c0c7458925ed3088bfe660b` passed `npm ci` and all **30 Node tests**, then failed typecheck because the shared Markdown component props omitted `className`. The type definition was corrected in `035e442a90d7e8cb48b88e4e9df93971a1bcaa24`. Follow-up run [43612488927](https://github.com/iamjpsonkar/Wave/actions/runs/43612488927) passed `npm ci`, all 30 Node tests, typecheck and production build; Playwright browser installation/E2E was still in progress at the latest check. The newer run [43612554015](https://github.com/iamjpsonkar/Wave/actions/runs/43612554015), on the documentation/priority checkpoint commit `983055ca882936345a37abbf8de5b9a90a0ea9fc`, had passed install, Node tests and typecheck; build and E2E were still in progress. Do not mark the feature fully verified until the latest run completes successfully.
+
+
+## 2026-11-14 — Markdown showcase gap audit
+
+- Compared the complete user-provided 20-section Markdown Feature Showcase with the current renderer, preview integration, styles, templates, compatibility guide and E2E test source.
+- Created [features-gap.md](./features-gap.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
+- This was a source/documentation audit. No application code changed and no local test suite was run for this audit. Existing historical CI results do not establish that the Markdown showcase is fully implemented.
