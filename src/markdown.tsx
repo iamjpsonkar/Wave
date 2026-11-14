@@ -18,7 +18,7 @@ function withoutAlertMarker(node: ReactNode): ReactNode {
 }
 
 export function markdownSource(source: string): string {
-  return source.replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \\t]*/gim, '$1**$2** ');
+  return source.replace(/^(\s*>\s*)\[!(NOTE|TIP|IMPORTANT|WARNING|CAUTION)\][ \t]*/gim, '$1**$2** ');
 }
 
 export function MarkdownBlockquote({ children }: MarkdownElementProps) {
