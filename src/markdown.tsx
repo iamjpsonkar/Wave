@@ -258,14 +258,22 @@ function MermaidFlowchart({ source }: { source: string }) {
 }
 
 function highlightedCode(source:string, language:string):ReactNode[] {
-  const supported=/javascript|typescript|jsx|tsx|json|css|html|xml|bash|sh|python|py|sql|yaml|yml|diff|text|txt/i.test(language);
+  const lang=language.toLowerCase();
+  const supported=/^(javascript|js|typescript|ts|jsx|tsx|json|css|scss|html|xml|bash|sh|shell|python|py|sql|yaml|yml|diff|text|txt|markdown|md)$/i.test(lang);
   if(!supported)return [source];
-  const pattern=/(\/\/[^\n]*|#[^\n]*|"(?:\\.|[^"\\])*"|'(?:\\.|[^'\\])*'|`(?:\\.|[^`\\])*`|\b(?:const|let|var|function|return|if|else|for|while|class|new|import|from|export|default|async|await|true|false|null|undefined|def|print|select|from|where|insert|update|delete|create|table|as|and|or|not)\b|\b\d+(?:\.\d+)?\b|[{}()[\];,.]|[=+*/<>!-])/gi;
+  if(lang==='diff'){
+    return source.split(/(\n)/).flatMap((line,index):ReactNode[]=>{
+      if(line==='\n')return ['\n'];
+      const kind=line.startsWith('+++')||line.startsWith('---')?'header':line.startsWith('+')?'added':line.startsWith('-')?'removed':line.startsWith('@@')?'hunk':'context';
+      return [createElement('span',{key:'diff'+index,className:'syntax-diff-'+kind},line)];
+    });
+  }
+  const keywords=/^(const|let|var|function|return|if|else|elif|for|while|class|new|import|from|export|default|async|await|true|false|null|undefined|def|print|pass|with|try|except|finally|raise|yield|lambda|None|True|False|select|where|insert|update|delete|create|table|as|and|or|not|join|left|right|inner|outer|group|by|order|limit|values|into|on|interface|type|extends|implements|public|private|static|void|fn|mut)$/i;
+  const pattern=/(\/\*[\s\S]*?\*\/|\/\/[^\n]*|--[^\n]*|#[^\n]*|\x22(?:\\.|[^\x22\\])*\x22|'(?:\\.|[^'\\])*'|\x60(?:\\.|[^\x60\\])*\x60|\b(?:const|let|var|function|return|if|else|elif|for|while|class|new|import|from|export|default|async|await|true|false|null|undefined|def|print|pass|with|try|except|finally|raise|yield|lambda|None|True|False|select|where|insert|update|delete|create|table|as|and|or|not|join|left|right|inner|outer|group|by|order|limit|values|into|on|interface|type|extends|implements|public|private|static|void|fn|mut)\b|\b\d+(?:\.\d+)?\b|[{}()[\];,.]|[=+*/<>!-])/gi;
   const result:ReactNode[]=[];let last=0,index=0;
-  for(const match of source.matchAll(pattern)){const at=match.index??0;if(at>last)result.push(source.slice(last,at));const token=match[0];let kind='operator';if(/^\/\/|^#/.test(token))kind='comment';else if(/^["'`]/.test(token))kind='string';else if(/^\d/.test(token))kind='number';else if(/^(const|let|var|function|return|if|else|for|while|class|new|import|from|export|default|async|await|true|false|null|undefined|def|print|select|where|insert|update|delete|create|table|as|and|or|not)$/i.test(token))kind='keyword';result.push(createElement('span',{key:'t'+index++,className:'syntax-'+kind},token));last=at+token.length;}
+  for(const match of source.matchAll(pattern)){const at=match.index??0;if(at>last)result.push(source.slice(last,at));const token=match[0];let kind='operator';if(/^\/\*|^\/\/|^--|^#/.test(token))kind='comment';else if(/^[\x22'\x60]/.test(token))kind='string';else if(/^\d/.test(token))kind='number';else if(keywords.test(token))kind='keyword';result.push(createElement('span',{key:'t'+index++,className:'syntax-'+kind},token));last=at+token.length;}
   if(last<source.length)result.push(source.slice(last));return result;
 }
-
 export function MarkdownCode({ children, className }: MarkdownElementProps) {
   const source=plainText(children);
   if (className?.includes('language-mermaid')) {
