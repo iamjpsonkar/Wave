@@ -568,3 +568,12 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - CI workflow correction after review: the first attempted Compose-check insertion did not match the workflow text. The final workflow now explicitly runs `docker compose config -q` before `docker build --pull -t wave:ci .`; commit b41adbeb2ea68fd1632975ca1275c01f6e9b87dd. Earlier image-build jobs passed; wait for the run triggered by this final workflow change to verify Compose validation and the final container build. The build log records the correction.
 - This is the final developer-context update after the CI workflow correction.
+
+
+## 2026-11-15 — Comprehensive project wiki and AI-agent onboarding
+
+- Added [wiki.md](./wiki.md) as the comprehensive product, repository and AI-agent orientation guide. It consolidates durable instructions from the available Wave project conversation context, product constitution, current architecture/source map, storage boundaries, engineering invariants, UI/Markdown decisions, QA limitations, roadmap coverage, documentation ownership, Docker boundaries and recommended improvements.
+- Linked the wiki from [README.md](./README.md) and [docs/README.md](./docs/README.md).
+- Detailed implementation and verification note: [dev-build.md](./dev-build.md).
+- This is a documentation-only change. Repository files were inspected through GitHub; no local tests/build or new CI run was performed.
+- Current baseline before this handoff update: wiki commit `8f1ebafc01c44d36230dd45d9030f16236642105`; README commit `1eaa559f158c46afa1beddbaca797ace9de7ce7c`; docs index commit `5a5bc4dabb1a353c61bfba0658eaf42e6119706c`; build log commit `888d54fac0c980a81332286993794a907758f991`. Refresh the repository HEAD before the next task.
