@@ -728,3 +728,5 @@ button:focus-visible,a:focus-visible,input:focus-visible,textarea:focus-visible,
 .app.theme-dark .snippet-source pre,.app.theme-system .snippet-source pre{color:#d3dfcd}
 .app.theme-dark .snippet-detail-heading>span,.app.theme-system .snippet-detail-heading>span{background:#303d30;color:#c6d5bf}
 @media(prefers-color-scheme:dark){.app.theme-system .snippet-library{background:#202720;border-color:#3b463a;color:#e2e9dd}.app.theme-system .snippet-preview,.app.theme-system .snippet-search{background:#171d18;border-color:#414d40;color:#e2e9dd}.app.theme-system .snippet-search input{color:#e2e9dd}.app.theme-system .snippet-source{background:#171d18;border-color:#414d40}.app.theme-system .snippet-source pre{color:#d3dfcd}}
+
+.snippet-list{margin:0}
