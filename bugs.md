@@ -2,7 +2,7 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Reviewed source revision: `74314ab702b05f4c3d123d3f6fc466689d6a103d`  
+> Reviewed source revision: `9fdd7559d1bef165f838585bf73eb73a67b0d526`  
 > Review date: 2026-11-14  
 > Scope: only defects or material reliability/QA gaps that remain in the current implementation.
 
@@ -17,7 +17,7 @@
 
 ## Current summary
 
-- **2 remaining partial findings:** WAVE-031, WAVE-039.
+- **2 remaining open findings:** WAVE-031, WAVE-039.
 - **49 source-verified fixes:** tracked in `fixed-bugs.md`.
 - CI now runs Node storage/concurrency tests and Playwright Chromium E2E. Six browser journeys use native OPFS directory handles; real user-picked-folder permission denial/revocation, multi-tab race testing, external-editor fault injection and abrupt process-termination tests remain outstanding.
 - Verified code CI: [run 43602384257](https://github.com/iamjpsonkar/Wave/actions/runs/43602384257) — 30 Node tests and 6 Chromium E2E tests passed; typecheck and production build passed.
