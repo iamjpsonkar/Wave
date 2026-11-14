@@ -46,7 +46,7 @@ function convertMathSource(source: string): string {
     if (fence) { output.push(line); continue; }
     if (line.trim().length === 2 && line.trim()[0] === String.fromCharCode(36) && line.trim()[1] === String.fromCharCode(36)) { mathBlock = !mathBlock; output.push(mathBlock ? '```math' : '```'); continue; }
     if (mathBlock) { output.push(line); continue; }
-    output.push(convertEmojiShortcodes(line).replace(/\$([^$\n]+)\$/g, (_match, expression: string) => '`math:' + expression.replace(/`/g, '') + '`'));
+    output.push(convertInlineExtensions(line).replace(/\$([^$\n]+)\$/g, (_match, expression: string) => '`math:' + expression.replace(/`/g, '') + '`'));
   }
   return output.join('\n');
 }
@@ -125,32 +125,64 @@ const EMOJI_SHORTCODES: Record<string, string> = {
   x:'❌',bulb:'💡',eyes:'👀',wave:'👋',coffee:'☕',thinking:'🤔',sunglasses:'😎',pray:'🙏'
 };
 
-function convertEmojiShortcodes(line: string): string {
-  return line.replace(/(`+)([\s\S]*?)\1|:([a-z0-9_+-]+):/gi, (match, ticks, _code, name) => {
-    if (ticks) return match;
-    return EMOJI_SHORTCODES[name] ?? match;
-  });
+function convertInlineExtensions(line: string): string {
+  const tick=String.fromCharCode(96);
+  return line.replace(/(`+)([\s\S]*?)\1|==([^=\n]+)==|\+\+([^+\n]+)\+\+|\^([^^\n]+)\^|(?<!~)~([^~\n]+)~(?!~)|\[\[kbd:([^\]]+)\]\]|:([a-z0-9_+-]+):/gi,
+    (match,ticks,_code,mark,underline,sup,sub,kbd,emoji) => {
+      if(ticks)return match;
+      if(mark)return tick+'wave-mark:'+mark+tick;
+      if(underline)return tick+'wave-underline:'+underline+tick;
+      if(sup)return tick+'wave-sup:'+sup+tick;
+      if(sub)return tick+'wave-sub:'+sub+tick;
+      if(kbd)return tick+'wave-kbd:'+kbd+tick;
+      return EMOJI_SHORTCODES[emoji] ?? match;
+    });
 }
 
 function MathExpression({ source, display = false }: { source: string; display?: boolean }) {
-  const parts: ReactNode[] = [];
-  const fraction = source.match(/^\s*\\frac\{([^{}]+)\}\{([^{}]+)\}\s*$/);
-  const root = source.match(/^\s*\\sqrt\{([^{}]+)\}\s*$/);
-  const superscript = source.match(/^(.+?)\^\{?([^{}]+)\}?$/);
-  const subscript = source.match(/^(.+?)_\{?([^{}]+)\}?$/);
-  const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', theta:'θ', lambda:'λ', pi:'π', sigma:'σ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', infty:'∞' };
-  if (fraction) parts.push(createElement('mfrac', { key:'fraction' }, createElement('mi', null, fraction[1]), createElement('mi', null, fraction[2])));
-  else if (root) parts.push(createElement('msqrt', { key:'root' }, createElement('mi', null, root[1])));
-  else if (superscript || subscript) { const match = superscript ?? subscript!; parts.push(createElement(superscript ? 'msup' : 'msub', { key:'script' }, createElement('mi', null, match[1]), createElement('mi', null, match[2].replace(/[{}]/g, '')))); }
-  else {
-    const tokens = source.replace(/\\([A-Za-z]+)/g, (_m, command: string) => greek[command] ?? command);
-    for (const [index, token] of Array.from(tokens).entries()) {
-      if (/\s/.test(token)) parts.push(' ');
-      else parts.push(createElement(/[0-9]/.test(token) ? 'mn' : /[=+*/<>-]/.test(token) ? 'mo' : 'mi', { key:index }, token));
-    }
+  const greek: Record<string,string> = { alpha:'α', beta:'β', gamma:'γ', delta:'δ', epsilon:'ε', theta:'θ', lambda:'λ', mu:'μ', pi:'π', rho:'ρ', sigma:'σ', phi:'φ', omega:'ω', times:'×', cdot:'·', pm:'±', leq:'≤', geq:'≥', neq:'≠', approx:'≈', infty:'∞', sum:'∑', int:'∫', to:'→', rightarrow:'→', leftarrow:'←' };
+  function groupAt(input:string,start:number):{value:string;end:number} {
+    if(input[start]!=='{')return {value:input[start]??'',end:start+1};
+    let depth=1,index=start+1;
+    for(;index<input.length&&depth;index++){if(input[index]==='{')depth++;else if(input[index]==='}')depth--;}
+    return {value:input.slice(start+1,depth===0?index-1:index),end:index};
   }
-  return createElement(display ? 'div' : 'span', { className: display ? 'markdown-math-display' : 'markdown-math-inline' },
-    createElement('math', { xmlns:'http://www.w3.org/1998/Math/MathML', display:display?'block':'inline' }, createElement('mrow', null, ...parts)));
+  function parse(input:string):ReactNode[] {
+    const nodes:ReactNode[]=[];let i=0;
+    while(i<input.length){
+      const ch=input[i];
+      if(ch==='\\\\'){
+        const command=input.slice(i+1).match(/^[A-Za-z]+/)?.[0]??'';
+        if(!command){nodes.push(createElement('mo',{key:'m'+i},'\\'));i++;continue;}
+        i+=command.length+1;
+        if(command==='frac'||command==='dfrac'||command==='tfrac'||command==='sqrt'){
+          const a=groupAt(input,i);i=a.end;
+          if(command==='sqrt')nodes.push(createElement('msqrt',{key:'r'+i},...parse(a.value)));
+          else{const b=groupAt(input,i);i=b.end;nodes.push(createElement('mfrac',{key:'f'+i},createElement('mrow',null,...parse(a.value)),createElement('mrow',null,...parse(b.value))));}
+        }else if(greek[command])nodes.push(createElement('mi',{key:'g'+i},greek[command]));
+        else if(command==='text'||command==='mathrm'||command==='mathbf'||command==='operatorname'){
+          const a=groupAt(input,i);i=a.end;nodes.push(createElement('mtext',{key:'t'+i},a.value));
+        }else nodes.push(createElement('mi',{key:'u'+i},command));
+        continue;
+      }
+      if(ch==='^'||ch==='_'){
+        const previous=nodes.pop();
+        const a=groupAt(input,i+1);i=a.end;
+        const script=createElement('mrow',null,...parse(a.value));
+        nodes.push(ch==='^'?createElement('msup',{key:'s'+i},previous??createElement('mi',null,''),script):createElement('msub',{key:'s'+i},previous??createElement('mi',null,''),script));
+        continue;
+      }
+      if(ch==='{'){const a=groupAt(input,i);i=a.end;nodes.push(createElement('mrow',{key:'b'+i},...parse(a.value)));continue;}
+      if(/\s/.test(ch)){nodes.push(' ');i++;continue;}
+      if(/[0-9]/.test(ch)){const token=input.slice(i).match(/^\d+(?:\.\d+)?/)?.[0]??ch;nodes.push(createElement('mn',{key:'n'+i},token));i+=token.length;continue;}
+      if(/[A-Za-z]/.test(ch)){const token=input.slice(i).match(/^[A-Za-z]+/)?.[0]??ch;nodes.push(createElement('mi',{key:'i'+i},token));i+=token.length;continue;}
+      nodes.push(createElement('mo',{key:'o'+i},ch));i++;
+    }
+    return nodes;
+  }
+  return createElement(display?'div':'span',{className:display?'markdown-math-display':'markdown-math-inline'},
+    createElement('math',{xmlns:'http://www.w3.org/1998/Math/MathML',display:display?'block':'inline'},
+      createElement('mrow',null,...parse(source))));
 }
 
 function MermaidFallback({source}:{source:string}) {
@@ -215,6 +247,14 @@ export function MarkdownCode({ children, className }: MarkdownElementProps) {
   }
   if (className?.includes('language-math')) return <MathExpression source={source} display/>;
   if (typeof children==='string' && children.startsWith('math:')) return <MathExpression source={children.slice(5)}/>;
+  if(typeof children==='string'&&children.startsWith('wave-')){
+    const split=children.indexOf(':');const kind=children.slice(5,split),value=children.slice(split+1);
+    if(kind==='mark')return <mark>{value}</mark>;
+    if(kind==='underline')return <u>{value}</u>;
+    if(kind==='sup')return <sup>{value}</sup>;
+    if(kind==='sub')return <sub>{value}</sub>;
+    if(kind==='kbd')return <kbd>{value}</kbd>;
+  }
   const language=className?.replace(/^language-/,'')??'';
   return <code className={className}>{className?highlightedCode(source,language):children}</code>;
 }
