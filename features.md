@@ -14,8 +14,9 @@ This page is the showcase of features that are implemented today. For the comple
 - **Draft recovery** — unsaved text is journaled in browser-local IndexedDB, serialized across tabs where Web Locks are available, and the newest recovery record is selected. Clearing browser site data removes this recovery copy.
 - **Formatting toolbar** — headings, bold, italic, strikethrough, lists, quotes, inline code and links.
 - **Live preview** — switch between editing Markdown and a sanitized rendered preview.
+- **Markdown compatibility** — CommonMark writing syntax, GFM tables/task lists/footnotes/strikethrough, alert callouts, heading anchors, a small MathML subset and simple Mermaid flowcharts. See [the compatibility contract](docs/MARKDOWN_SUPPORT.md) for limits.
 - **File attachments** — add images and other files; Wave copies them into your local assets folder and inserts a Markdown reference.
-- **Starter templates** — create a blank page, meeting notes, project brief, task list, weekly plan, research notes or a decision record.
+- **Starter templates** — create a blank page, meeting notes, project brief, task list, weekly plan, research notes, decision records or a Markdown feature showcase.
 
 ### 🗂️ Organize your knowledge
 - **Nested folders** — create folders and organize pages into a hierarchy.
