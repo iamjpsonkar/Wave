@@ -19,7 +19,7 @@ Before making any change:
 2. Read [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the current source baseline, implementation invariants, exact commands, latest known verification and task workflow.
 3. Read [CONTRIBUTING.md](./CONTRIBUTING.md) for repository contribution conventions.
 4. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
-5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [UI backlog](./UI_BACKLOG.md), [UI feature backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
+5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [consolidated UI backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
 6. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
 7. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
 
@@ -477,7 +477,7 @@ The following consolidations have been completed:
 - `UI_BACKLOG.md` combines export/print UI bugs (UIB-001..006), UI gaps (UI-001..024) and UI feature proposals (UIF-001..021) from the former three UI registers.
 - `FEATURES.md` combines the shipped-feature overview and detailed feature map formerly split between root `features.md` and `docs/FEATURES.md`.
 
-The former source files are removed only after the consolidated destinations were created and references migrated. Preserve every stable ID and meaningful requirement when updating the consolidated files.
+The former source files were removed only after the consolidated destinations were created and references migrated. Preserve every stable ID and meaningful requirement when updating the consolidated files.
 - Keep `dev-fixed.md` and `dev-build.md` distinct.
 - Keep `upcoming-features.md` and `priority-features.md` distinct.
 - Keep `bugs.md` and `fixed-bugs.md` distinct.
