@@ -17,7 +17,7 @@
 
 ## Current summary
 
-- **2 remaining open findings:** WAVE-031, WAVE-039.
+- **2 remaining partial findings:** WAVE-031, WAVE-039. Permission-denial and same-workspace two-tab journeys are now covered in Chromium; draft writes request strict IndexedDB durability where supported.
 - **49 source-verified fixes:** tracked in `fixed-bugs.md`.
 - CI now runs Node storage/concurrency tests and Playwright Chromium E2E. Six browser journeys use native OPFS directory handles; real user-picked-folder permission denial/revocation, multi-tab race testing, external-editor fault injection and abrupt process-termination tests remain outstanding.
 - Verified code CI: [run 43602384257](https://github.com/iamjpsonkar/Wave/actions/runs/43602384257) — 30 Node tests and 6 Chromium E2E tests passed; typecheck and production build passed.
@@ -31,9 +31,9 @@
 
 ### Problem
 
-The repository now runs 30 Node storage/concurrency tests plus six Playwright Chromium E2E tests. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments and mobile navigation.
+The repository now runs 30 Node storage/concurrency tests plus nine Playwright Chromium E2E tests. The browser suite uses native Origin Private File System (OPFS) directory handles as a deterministic filesystem fixture and covers workspace creation/autosave, IndexedDB draft recovery after reload, Trash restore, backup restore, root/nested attachments and mobile navigation.
 
-It does not yet exercise the native user-picked-folder permission prompt/revocation flow, multi-tab write races, external editor changes during active operations, all keyboard/accessibility paths, or actual abrupt browser-process termination.
+The browser suite now exercises permission denial through the File System Access permission contract and concurrent editing from two tabs sharing one OPFS workspace. The permission contract is deterministically simulated because Chromium's OPFS fixture does not produce the native user-picked-folder prompt. External editor changes during active operations, comprehensive keyboard/accessibility paths, native picker prompt/revocation, and actual abrupt browser-process termination remain outstanding.
 
 ### Impact
 
@@ -45,9 +45,9 @@ Inspect the test scripts and CI workflow, then verify whether automated browser 
 1. Workspace creation, switching, and reopening.
 2. Autosave, navigation during a delayed save, and conflict recovery.
 3. Trash, restore, backup, and interrupted operations.
-4. Draft recovery across reload/pagehide.
+4. Draft recovery across reload/pagehide and strict IndexedDB transaction durability.
 5. Attachment upload in root and nested pages.
-6. Mobile navigation, keyboard access, and accessibility basics.
+6. Mobile navigation and two-tab concurrent editing.
 7. Permission denial/revocation and unavailable File System Access API behavior.
 
 ### Expected behavior
@@ -60,7 +60,7 @@ Add Playwright (or an equivalent browser automation framework), provide a contro
 
 ### Regression coverage
 
-Keep the six current Chromium scenarios in CI and extend them with real user-picked-folder permission denial/revocation, two-tab concurrency, external filesystem edits, keyboard/accessibility checks and browser lifecycle fault injection.
+Keep the current nine Chromium scenarios in CI. Add native user-picked-folder prompt/revocation, external filesystem edits, keyboard/accessibility checks and browser lifecycle fault injection when a supported browser fixture is available.
 
 ---
 
@@ -88,7 +88,7 @@ Wave must not claim an edit is safely recoverable until the draft journal transa
 
 ### Fix direction
 
-Keep the write in the input-event path, expose pending/committed recovery status, and add controlled transaction-delay and browser termination tests. Do not claim crash-proof durability: the browser's IndexedDB transaction is still asynchronous.
+Keep the write in the input-event path, request strict IndexedDB durability, expose pending/committed recovery status, and add controlled transaction-delay and browser termination tests. Do not claim crash-proof durability: even a strict IndexedDB transaction is asynchronous and cannot protect edits if the process is terminated before commit.
 
 ### Regression coverage
 
@@ -96,5 +96,13 @@ Keep the write in the input-event path, expose pending/committed recovery status
 - Close during an IndexedDB write transaction.
 - Repeated edits where writes complete out of order.
 - Recovery after reload after a confirmed journal commit (covered by Playwright).
+- Strict IndexedDB transaction durability option (covered by Playwright).
 - Actual browser-process termination before commit (not yet automated).
 
+
+
+## Follow-up remediation — 2026-11-14
+
+- WAVE-031: added Chromium coverage for permission denial through the File System Access permission contract and concurrent edits from two tabs sharing the same OPFS workspace. The denial contract is simulated; the native picker prompt and OS-level permission revocation are not yet automated. The browser suite now contains nine scenarios.
+- WAVE-039: draft journal writes now request IndexedDB `strict` transaction durability, with a compatibility fallback for browsers that reject the option. A browser regression test verifies the strict option is requested. This reduces the durability window but cannot eliminate the interval before an asynchronous transaction commits; WAVE-039 remains partial rather than falsely marked fixed.
+- The exact CI result for these changes is pending the workflow run triggered by the commits above.
