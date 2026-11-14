@@ -1238,7 +1238,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
               const element = node.querySelector(selector);
               return element ? getComputedStyle(element) : null;
             };
-            const rgb = (value: string) => (value.match(/[\\d.]+/g) || []).slice(0, 3).map(Number);
+            const rgb = (value: string) => (value.match(/[\d.]+/g) || []).slice(0, 3).map(Number);
             const luminance = (value: string) => {
               const channels = rgb(value).map(channel => {
                 const normalized = channel / 255;
