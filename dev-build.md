@@ -119,3 +119,5 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Fixture covers hard breaks, links/wiki links, inline and fenced code, escaped table pipes, fenced math, callouts and raw-HTML source text.
 - Browser test source count: **26 scenarios**; Node test source remains **30 tests**.
 - No local test execution or CI run for this change has been inspected. Treat the scenario as defined, not passed.
+
+- Follow-up test-fixture correction: the round-trip test's array join now uses an actual newline separator (not a literal backslash-n). Corrected in `031a0e2427a6669312d643e14275a3ebd1ce04db`; fetched source was rechecked to confirm `.join('\n')`.
