@@ -20,3 +20,11 @@ export function enqueueWorkspaceTask<T extends object>(queues:WeakMap<T,Promise<
   void current.finally(()=>{if(queues.get(workspace)===current)queues.delete(workspace);}).catch(()=>undefined);
   return current;
 }
+
+export async function flushUntilStable<T>(read:()=>{value:T;revision:number},persist:(value:T,revision:number)=>Promise<unknown>,isCurrent:()=>boolean=()=>true):Promise<void>{
+  while(isCurrent()){
+    const snapshot=read();
+    await persist(snapshot.value,snapshot.revision);
+    if(!isCurrent()||read().revision===snapshot.revision)return;
+  }
+}
