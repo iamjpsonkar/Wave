@@ -295,3 +295,37 @@ test('workspace task queues serialize each workspace independently',async()=>{
   await Promise.all([first,second]);
   assert.deepEqual(events,['a1-start','b1','a1-end','a2']);
 });
+
+
+test('backup holds the workspace operation lock until the snapshot is verified',async()=>{
+  const {workspace}=await fixture();
+  await saveDoc(workspace.documents,'locked.md','before backup');
+  const file=await workspace.documents.getFileHandle('locked.md');
+  const originalGetFile=file.getFile.bind(file);
+  let calls=0,enteredResolve,releaseResolve;
+  const entered=new Promise(resolve=>{enteredResolve=resolve;});
+  const release=new Promise(resolve=>{releaseResolve=resolve;});
+  file.getFile=async()=>{calls++;if(calls===2){enteredResolve();await release;}return originalGetFile();};
+  const backupPromise=createBackup(workspace);
+  await entered;
+  let saveFinished=false;
+  const savePromise=saveDoc(workspace.documents,'locked.md','after backup').then(()=>{saveFinished=true;});
+  await new Promise(resolve=>setTimeout(resolve,10));
+  assert.equal(saveFinished,false,'workspace write must wait for the backup lock');
+  releaseResolve();
+  const backupName=await backupPromise;
+  await savePromise;
+  const backupDocs=await(await workspace.backups.getDirectoryHandle(backupName)).getDirectoryHandle('documents');
+  assert.equal(await readDoc(backupDocs,'locked.md'),'before backup');
+  assert.equal(await readDoc(workspace.documents,'locked.md'),'after backup');
+});
+test('backup rejects a copied file that differs even if source content is restored before the final scan',async()=>{
+  const {workspace}=await fixture();
+  await saveDoc(workspace.documents,'race.md','stable original');
+  const file=await workspace.documents.getFileHandle('race.md');
+  const originalGetFile=file.getFile.bind(file);
+  let calls=0;
+  file.getFile=async()=>{calls++;if(calls===2)return new File(['temporary same-length edit'],'race.md',{lastModified:1});return originalGetFile();};
+  await assert.rejects(()=>createBackup(workspace),/copied snapshot differs/);
+  assert.deepEqual(await listBackups(workspace.backups),[]);
+});
