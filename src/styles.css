@@ -41,3 +41,5 @@ nav button,.page,.folder-link,.trash-nav{transition:background .16s,color .16s}
   .stored span{display:none}
   .stored{justify-content:center}
 }
+
+@media(max-width:520px){.favorites-list .page{display:flex;justify-content:center;padding:10px 0;font-size:0}.favorites-list .page svg{width:17px;height:17px}.favorites-list{margin:5px 0 12px}.sidebar-templates{position:absolute;left:68px;top:150px;width:210px;z-index:5;box-shadow:0 10px 28px #17251b18}}
