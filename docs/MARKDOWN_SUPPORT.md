@@ -8,7 +8,7 @@ This page is the compatibility contract for Wave's local Markdown preview. The e
 - GFM through `remark-gfm`: tables and column alignment, strikethrough, task lists, autolinks, and footnotes.
 - Wave extensions: internal wiki links and backlinks, GitHub-style NOTE/TIP/IMPORTANT/WARNING/CAUTION callouts, safe DETAILS disclosure blocks, copyable code, lightweight token/diff highlighting, unique heading IDs, inline/display MathML for a constrained TeX subset, safe inline formatting shorthands, a small emoji shortcode map, and local diagram renderers described below.
 - Local image attachments resolve from the workspace assets directory; Markdown image alt text and titles are retained. External images are not fetched by the preview and display a readable missing-asset fallback.
-- Controlled audio/video embeds can reference supported local workspace assets with `[[audio:path/to/file.mp3]]` or `[[video:path/to/file.mp4]]`. Remote media and arbitrary HTML media are not loaded.
+- Controlled audio/video embeds can reference supported local workspace assets with `[[audio:path/to/file.mp3]]` or `[[video:path/to/file.mp4]]`. The resolver accepts only a single filename inside the workspace `assets` directory, checks the media extension and MIME type, and creates a revocable object URL; remote media, absolute paths, traversal paths and arbitrary HTML media are not loaded.
 - Direct Unicode emoji and symbols work as ordinary text.
 
 ## Math
@@ -23,7 +23,7 @@ Fenced Mermaid definitions render locally for constrained subsets of flowchart, 
 
 ## HTML and security
 
-Raw HTML is not enabled in the Markdown parser. This is deliberate: Wave uses a sanitized preview and does not execute scripts, event handlers, embedded frames, remote media, or arbitrary HTML. HTML examples in Markdown documents remain source text or are sanitized by the parser. Equivalent safe inline shorthands are available without enabling raw HTML: `==highlight==`, `++underline++`, `^superscript^`, `~subscript~`, and `[[kbd:Ctrl+K]]`. Use `> [!DETAILS] Summary` followed by quoted body lines for a keyboard-operable disclosure block.
+Raw HTML is not enabled in the Markdown parser. Link URLs are sanitized by the Markdown pipeline; active schemes such as `javascript:`, `data:`, `vbscript:` and `file:` must not become clickable anchors. Ordinary HTTPS and mailto links remain available. This is deliberate: Wave uses a sanitized preview and does not execute scripts, event handlers, embedded frames, remote media, or arbitrary HTML. HTML examples in Markdown documents remain source text or are sanitized by the parser. Equivalent safe inline shorthands are available without enabling raw HTML: `==highlight==`, `++underline++`, `^superscript^`, `~subscript~`, and `[[kbd:Ctrl+K]]`. Use `> [!DETAILS] Summary` followed by quoted body lines for a keyboard-operable disclosure block.
 
 ## Other diagram formats
 
