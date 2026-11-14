@@ -116,3 +116,10 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Added local media path cases for parent traversal, percent-encoded traversal, absolute paths, Windows-style paths and remote URLs. The test creates a local sentinel media file to ensure rejected paths cannot expose it as playable media.
 - Updated `docs/MARKDOWN_SUPPORT.md` to state the URL sanitization and single-filename local-assets contract.
 - This is regression coverage, not a source-code security fix. Browser suite source now defines 25 scenarios. Execution and CI verification are pending; no bug is marked fixed by this change.
+
+
+## 2026-11-14 — Preview/source round-trip regression
+
+- Added an end-to-end source-preservation scenario in `tests/e2e/workspace.spec.ts`.
+- The fixture includes hard breaks, ordinary and wiki links, inline/fenced code, escaped table pipes, fenced MathML input, a callout and raw-HTML text. It checks exact editor-source equality after Preview → Edit, exact saved-file bytes, and exact content after workspace reload/reopen.
+- This is a test-coverage addition, not a runtime code change. The source round-trip invariant is not marked fully verified until the scenario passes in CI.
