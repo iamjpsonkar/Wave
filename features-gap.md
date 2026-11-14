@@ -297,3 +297,11 @@ The first code/test remediation pass has been committed, but is **awaiting CI ve
 - Updated the compatibility guide with the editor action.
 - This is focused semantic/keyboard regression coverage, not a complete WCAG audit, automated axe scan, or screen-reader certification. E2E scenarios are defined but not yet run in CI.
 - Browser test source now defines **28 scenarios**; Node suite source remains **30 tests**.
+
+
+## Accessibility follow-up — 2026-11-14
+
+- Updated local diagram renderers so accessible image semantics are applied to each SVG rather than the wrapper that also contains the **View diagram source** disclosure. This keeps the keyboard-operable source control exposed independently instead of nesting an interactive disclosure inside an image role.
+- Extended the Markdown accessibility E2E scenario with a named sequence-diagram image and keyboard activation of its source disclosure; it checks that the original diagram source remains readable.
+- This is a targeted accessibility correction and smoke test, not a complete WCAG or screen-reader audit. Multiline code-block insertion and exact copy fidelity remain implemented and covered by their existing E2E scenario.
+- CI verification for these commits is pending; do not mark the broader accessibility checklist complete.
