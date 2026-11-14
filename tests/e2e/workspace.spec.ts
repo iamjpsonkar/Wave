@@ -1345,3 +1345,20 @@ test('template gallery searches and previews before creating a local page', asyn
   await dialog.getByRole('button', { name: 'Cancel' }).click();
   await expect(dialog).toBeHidden();
 });
+
+
+
+test('nested page breadcrumbs navigate to their parent folder', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Root page');
+  page.once('dialog', dialog => dialog.accept('Research'));
+  await page.getByTitle('New folder').click();
+  await expect(page.locator('.folder-link', { hasText: 'Research' })).toBeVisible();
+  await page.locator('.sidebar nav').getByRole('button', { name: /New page/ }).click();
+  const editor = page.locator('.editor textarea');
+  await expect(editor).toBeVisible();
+  await editor.fill('# Nested research note\n\nLocal folder context.');
+  await expect(page.locator('.breadcrumbs')).toContainText('Research');
+  await page.locator('.breadcrumbs').getByRole('button', { name: 'Research' }).click();
+  await expect(page.locator('.folder-link.selected')).toContainText('Research');
+});
