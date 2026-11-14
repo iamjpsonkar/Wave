@@ -577,3 +577,9 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Detailed implementation and verification note: [dev-build.md](./dev-build.md).
 - This is a documentation-only change. Repository files were inspected through GitHub; no local tests/build or new CI run was performed.
 - Current baseline before this handoff update: wiki commit `8f1ebafc01c44d36230dd45d9030f16236642105`; README commit `1eaa559f158c46afa1beddbaca797ace9de7ce7c`; docs index commit `5a5bc4dabb1a353c61bfba0658eaf42e6119706c`; build log commit `888d54fac0c980a81332286993794a907758f991`. Refresh the repository HEAD before the next task.
+
+
+### Wiki instruction formatting correction
+
+- Corrected a malformed inline-code delimiter in the new wiki's instruction for updating `DEV_CONTEXT.md` last. No product/source behavior changed.
+- Wiki correction commit: `aa2de3ad50df17172065717765c0ca50126d479d`. Refresh HEAD before the next task.
