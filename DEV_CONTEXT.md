@@ -300,3 +300,16 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Current test source counts: **28 Playwright scenarios**, **30 Node tests**. No local tests or CI run for these commits have been executed/inspected. Do not claim passing. Accessibility coverage is a focused semantic/keyboard smoke test, not a full WCAG audit or screen-reader certification.
 - Main implementation commit: `2553d24d95ed322a21588a1b02a6cb14107b45ec`; E2E coverage commits: `55e51e1f7d8d8b45a38843248456bf14493c2f98`, `d4f3a375888c033645ab1af07463a011b082926d`.
 - Next: inspect CI on current main and repair any actual failures; then expand accessibility coverage (images/alt text, focus visibility, color contrast, diagram source/fallback semantics) and malformed/oversized input tests. Preserve all outstanding feature scope.
+
+
+## 21. CI pipeline failure triage — 2026-11-14
+
+- Inspected failed workflow `43617787871` for commit `91e9ffb8a5a7b73ba6532a0f2e9c54230f280e54`.
+- Node suite, TypeScript typecheck and production build passed. E2E Playwright failed due to strict-mode test locators and a newline fixture mismatch:
+  - keyword selector matched four spans, not just `def`;
+  - template button matched two instances, now scoped to `.sidebar-templates`;
+  - template test expected literal `\\n`, corrected to real newline characters;
+  - ER diagram test matched two CUSTOMER labels, now exact-match;
+  - table header assertion uses `thead th` DOM elements instead of role lookup.
+- Applied corrections in `tests/e2e/workspace.spec.ts`; commit `44d78ebc1ba6734caa75cb52d20bbb1ee1a5e6d8`.
+- Follow-up CI run `43618259567` was queued at handoff: https://github.com/iamjpsonkar/Wave/actions/runs/43618259567. Do not claim pipeline green until that run completes.
