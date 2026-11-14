@@ -16,7 +16,7 @@ This page is the showcase of features that are implemented today. For the comple
 - **Live preview** — switch between editing Markdown and a sanitized rendered preview.
 - **Markdown compatibility** — CommonMark and GFM, wiki links/backlinks, alerts and collapsible DETAILS blocks, unique heading anchors, safe inline formatting shorthands, common emoji shortcodes, lightweight local code coloring, recursive MathML for a documented TeX subset, and local Mermaid family previews (flowchart, sequence, pie, class, ER, state, Gantt, git graph, mindmap, timeline, quadrant, requirement and architecture-beta), plus constrained DOT/PlantUML/Vega/D2/AsciiDoc renderers. Raw HTML stays disabled; advanced diagram and math syntax remain partial. See [the compatibility contract](docs/MARKDOWN_SUPPORT.md).
 - **File attachments** — add images and other files; Wave copies them into your local assets folder and inserts a Markdown reference.
-- **Starter templates** — create a blank page, meeting notes, project brief, task list, weekly plan, research notes, decision records an expanded Markdown feature showcase or technical learning notes.
+- **Starter templates** — create a blank page, meeting notes, project brief, task list, weekly plan, research notes, decision records an expanded Markdown feature showcase, technical learning notes, or the Wave Complete Feature Test template.
 
 ### 🗂️ Organize your knowledge
 - **Nested folders** — create folders and organize pages into a hierarchy.
