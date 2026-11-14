@@ -126,12 +126,11 @@ function MathExpression({ source, display = false }: { source: string; display?:
   else if (root) parts.push(createElement('msqrt', { key:'root' }, createElement('mi', null, root[1])));
   else if (superscript || subscript) { const match = superscript ?? subscript!; parts.push(createElement(superscript ? 'msup' : 'msub', { key:'script' }, createElement('mi', null, match[1]), createElement('mi', null, match[2].replace(/[{}]/g, '')))); }
   else {
-    const tokens = source.replace(/\\\\([A-Za-z]+)/g, (_m, command: string) => greek[command] ?? command);
+    const tokens = source.replace(/\\([A-Za-z]+)/g, (_m, command: string) => greek[command] ?? command);
     for (const [index, token] of Array.from(tokens).entries()) {
       if (/\\s/.test(token)) parts.push(' ');
       else parts.push(createElement(/[0-9]/.test(token) ? 'mn' : /[=+*/<>-]/.test(token) ? 'mo' : 'mi', { key:index }, token));
     }
-  }
   }
   return createElement(display ? 'div' : 'span', { className: display ? 'markdown-math-display' : 'markdown-math-inline' },
     createElement('math', { xmlns:'http://www.w3.org/1998/Math/MathML', display:display?'block':'inline' }, createElement('mrow', null, ...parts)));
