@@ -266,3 +266,14 @@ Important documentation drift observed at the same HEAD:
 - No application source or tests changed. Only `ui-gaps.md` was created.
 - Commit: `118be4b91fc05500af5425ce820a5eab3bed66b0`.
 - Evidence limitation: one desktop edit-state screenshot only; no preview, modal, mobile, tablet, keyboard or screen-reader states were provided.
+
+## Dark-theme UI follow-up — 2026-11-14
+
+- Reviewed the newly supplied dark-theme Edit and Preview screenshots (2048 × 1330) against current `src/App.tsx` and `src/styles.css`.
+- Updated `ui-gaps.md` additively with UI-016 through UI-020: dark code-block contrast, Markdown heading/body contrast, mixed theme surfaces, wordmark/navigation contrast, and missing theme × mode visual regression coverage.
+- Reconciled prior gaps with current source: UI-001 Settings now exists as a keyboard-accessible dialog; UI-012 appearance/typography preferences exist in source but need full visual/accessibility verification; UI-003 configurable content width is implemented (680/860/1100/full) and visually demonstrated as a centered writing column.
+- UI-005 remains open: muted small metadata/helper text remains visible in the dark screenshots.
+- Strongest new issues are the near-white code block with pale text and the very low-contrast rendered heading in dark Preview. These are screenshot observations; exact CSS cause and WCAG ratios still require browser inspection.
+- No application source or test code changed. Only `ui-gaps.md` changed in this review.
+- Commit: `8f8afb6388c879fce522302a46679e63a814bda3`.
+- Evidence limitations: desktop Edit/Preview only; no mobile, settings dialog, keyboard/focus, accessibility tree, or contrast measurement evidence.
