@@ -254,3 +254,6 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Browser E2E source inventory: **40 scenarios** (previously 39); Node test source remains **30 tests**. These are source counts, not execution results.
 - Source commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; Markdown renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; CSS `3464fd936b96bd280db1794f230a378041945a07` and system-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282` and locator follow-up `48af3998748b51779a0abe75ca5853dd80fa03b1`.
 - No local test/typecheck/build runner was executed. No CI result or screenshot review is claimed. Wait for the workflow on the latest main commit before treating the regression as passed.
+
+
+- Color E2E follow-ups now cover native color input change events, invalid hex values remaining literal, and preservation of the inline-code example. Latest test-source commit: `81f819653e5f766670e51b783edacb1fa39c41b5`. The suite count remains **40 E2E scenarios** and **30 Node tests**; execution, typecheck, build and CI are still unverified.
