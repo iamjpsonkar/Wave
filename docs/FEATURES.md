@@ -14,7 +14,7 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] Local images and file attachments
 - [x] Starter templates: meeting notes, project brief, task list, weekly plan, research notes and decision record
 - [x] Built-in page templates for meetings, projects, task lists, weekly plans, research and decision records
-- [~] Optional source-preserving Markdown block mode for headings, paragraphs, lists, quotes/callouts, code, images, attachments, tables and dividers; drag/drop, block handles, slash menu, bookmarks/embeds and rich inline editing remain planned
+- [~] Optional source-preserving Markdown block mode for headings, paragraphs, lists, quotes/callouts, code, images, attachments, tables and dividers; keyboard/drag reorder, handles, deletion and common-block insertion are implemented; slash menu, bookmarks/embeds and rich inline editing remain planned
 - [ ] Drag-and-drop blocks, multi-select, duplicate, turn-into, block handles and slash menu
 - [ ] Inline formatting, text colors, highlights, comments and suggestions
 - [~] Heading outline and in-page navigation implemented; page icons, cover images and richer TOC presentation remain planned
