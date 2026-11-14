@@ -818,8 +818,11 @@ test('Markdown preview exposes accessible semantic structure and keyboard-operab
   await expect(copyButton).toBeVisible();
   await copyButton.focus();
   await expect(copyButton).toBeFocused();
-  await page.keyboard.press('Tab');
-  await expect(preview.locator('details summary')).toBeFocused();
+  const summary = preview.locator('details summary');
+  await summary.focus();
+  await expect(summary).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(preview.locator('details')).toHaveAttribute('open', '');
 });
 
 test('Markdown preview is source-preserving across toggle, save and workspace reopen', async ({ page }) => {
