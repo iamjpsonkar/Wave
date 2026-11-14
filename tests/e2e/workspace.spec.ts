@@ -1253,7 +1253,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
           }
         }
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth);
-        expect(overflow, \`\${theme.name}/\${viewport.name}/\${mode} should not overflow horizontally\`).toBe(false);
+        expect(overflow).toBe(false);
         states.push({ theme: theme.name, viewport: viewport.name, mode, colors });
       }
     }
