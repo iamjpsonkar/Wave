@@ -262,3 +262,6 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Updated `docs/MARKDOWN_SUPPORT.md`, `docs/FEATURES.md`, `features-gap.md`, `ui-features.md` and `ui-gaps.md`. UI-021 is source-implemented; palette presets, clear/reset, nested ranges, block fills and Blocks-mode selection remain future work.
 - Commits: `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`, `4f68b91243e17a2a2642961ec45c01550893aaa4`, `3464fd936b96bd280db1794f230a378041945a07`, `53779f8f9705c1b78195761c794935e7aa1c6230`, `323f49e33ab59f38cb2790628d83630f934d6282`, `48af3998748b51779a0abe75ca5853dd80fa03b1`.
 - Verification: no local test, typecheck, production build or visual run was performed; CI remains pending.
+
+
+- Regression follow-up: strengthened the color E2E source to exercise native color-input change events, invalid color tokens remaining literal, and inline-code preservation. Latest test-source commits: `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`. CI remains pending.
