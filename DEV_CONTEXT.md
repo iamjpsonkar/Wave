@@ -340,3 +340,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Baseline workflow [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, production build and all 28 Playwright scenarios.
 - The diagram accessibility follow-up initially failed because the sequence SVG used a generic accessible name. Fixed in `268de12338bce554f18e5feef27acbb5e9ea45fe`; workflow [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) was still running at this handoff. Verify latest-main CI before claiming the accessibility correction fully passed.
 - Detailed current state: [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [features-gap.md](./features-gap.md), [dev-build.md](./dev-build.md) and [dev-fixed.md](./dev-fixed.md).
+
+
+## 24. Markdown image accessibility and fallback behavior — 2026-11-14
+
+- Picked the next core compatibility/accessibility item from `features-gap.md`: image alt semantics, decorative empty-alt handling, broken-image fallback, and reference-style linked images.
+- `src/App.tsx` / `LocalMarkdownImage`: loaded images preserve explicit Markdown alt text and title; when alt is omitted, the title (or a neutral unavailable label) supplies a fallback name. Missing informative images render a visible `role="img"` fallback with an accessible name. Explicit empty-alt images remain decorative, including when the asset is missing (`role="presentation"`, `aria-hidden="true"`).
+- `tests/e2e/workspace.spec.ts`: added a browser scenario for a local image, decorative image, missing informative/decorative assets, reference-style linked image metadata, and keyboard focus on the wrapping link. Corrected the previous accessibility smoke test's broad DETAILS-summary selector, which CI showed also matched the Mermaid source disclosure.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `features.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. Full WCAG/screen-reader certification remains open.
+- Current source inventory: 30 Node tests and 29 Playwright E2E scenarios. CI run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed install, Node tests, typecheck and build but failed one existing Playwright selector assertion (27/28 passed). That selector and the new image scenario are in commits `211a19dfca41096cc9617c1124cf439a1313a5cc` and `f5dc998b77176af54d46db22e28034f137328470`; CI is pending for the updated source. Do not report the new scenario as passed until the workflow finishes.
+- Open reliability findings remain WAVE-031 and WAVE-039. No bug trackers were changed.
