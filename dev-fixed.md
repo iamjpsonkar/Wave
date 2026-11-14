@@ -99,3 +99,12 @@ Source changes and the regression scenario are committed, but no local typecheck
 - DETAILS disclosure now derives its summary from the first line after the marker and renders the remaining lines as the disclosure body.
 - The wiki-link regression scenario now resolves the page by its stable workspace-relative path, avoiding dependence on a title label that can be refreshed separately from the page path.
 - The linked-image/reference-link scenario scopes its title assertion to the first matching link because both the text link and linked image correctly share the same reference title.
+
+
+## 2026-11-14 — Markdown gap remediation started
+
+- Fixed the technical learning-notes template separator in `src/templates.ts`: the template now joins its retained sections with actual newline characters instead of literal backslash-n text.
+- Added a dedicated Playwright scenario selecting **Technical learning notes**, asserting real editor line breaks, and checking that headings, the TypeScript code fence, troubleshooting table and operational notes render as separate preview content.
+- Corrected three stale/overly strict E2E assertions: wiki links are checked as rendered buttons rather than serialized internal URLs; the syntax-token locator is narrowed; Mermaid flowchart assertions check the intended visible node labels rather than depending on SVG primitive types.
+- Code/test commits: `b8e936b707d9f8c2d78a88991943b7a57c705689`, `65f62060152596d160f66effebcf17a274edc80b`, `f633ccc75c9afb9d3ab7529b489e557d7ae9f8c8`, `5d6b16d18e552c79f11dd6471c47aeab54662f47`.
+- Verification status: **not yet verified**. No local test runner is available through this GitHub-only editing path, and no successful CI run for these commits has been inspected. Keep WAVE-052 in `bugs.md` until the new template E2E test passes in CI. The other remaining feature-gap items are still open.
