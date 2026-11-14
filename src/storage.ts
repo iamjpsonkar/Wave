@@ -1,4 +1,4 @@
-export interface Workspace { root: FileSystemDirectoryHandle; wave: FileSystemDirectoryHandle; documents: FileSystemDirectoryHandle; assets: FileSystemDirectoryHandle }
+export interface Workspace { root: FileSystemDirectoryHandle; wave: FileSystemDirectoryHandle; documents: FileSystemDirectoryHandle; assets: FileSystemDirectoryHandle; backups: FileSystemDirectoryHandle }
 export interface Doc { id: string; path: string; title: string; updatedAt: number; content: string }
 export async function openWorkspace(): Promise<Workspace> {
   if (!('showDirectoryPicker' in window)) throw new Error('Folder access requires Chrome or Edge in this preview.');
@@ -6,13 +6,14 @@ export async function openWorkspace(): Promise<Workspace> {
   const wave = await root.getDirectoryHandle('.wave', { create: true });
   const documents = await wave.getDirectoryHandle('documents', { create: true });
   const assets = await wave.getDirectoryHandle('assets', { create: true });
+  const backups = await wave.getDirectoryHandle('backups', { create: true });
   const now = new Date().toISOString();
   try { await wave.getFileHandle('manifest.json'); }
   catch {
     await write(wave, 'manifest.json', JSON.stringify({ schemaVersion: 1, name: root.name, createdAt: now, updatedAt: now }, null, 2));
     await write(wave, 'settings.json', JSON.stringify({ format: 'markdown', appearance: 'system' }, null, 2));
   }
-  return { root, wave, documents, assets };
+  return { root, wave, documents, assets, backups };
 }
 async function write(dir: FileSystemDirectoryHandle, name: string, data: string | File) {
   const handle = await dir.getFileHandle(name, { create: true });
@@ -52,6 +53,33 @@ export async function saveDoc(dir: FileSystemDirectoryHandle, path: string, text
   const file = await fileForPath(dir, path, true);
   const writable = await file.createWritable(); await writable.write(text); await writable.close();
 }
+
+async function copyFolder(source: FileSystemDirectoryHandle, destination: FileSystemDirectoryHandle) {
+  for await (const [name, handle] of source.entries()) {
+    if (handle.kind === 'directory') {
+      const child = await destination.getDirectoryHandle(name, { create: true });
+      await copyFolder(handle as FileSystemDirectoryHandle, child);
+    } else {
+      const file = await (handle as FileSystemFileHandle).getFile();
+      await write(destination, name, file);
+    }
+  }
+}
+export async function createBackup(workspace: Workspace): Promise<string> {
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const name = 'backup-' + stamp;
+  const backup = await workspace.backups.getDirectoryHandle(name, { create: true });
+  await copyFolder(workspace.documents, await backup.getDirectoryHandle('documents', { create: true }));
+  await copyFolder(workspace.assets, await backup.getDirectoryHandle('assets', { create: true }));
+  for (const filename of ['manifest.json', 'settings.json']) {
+    try {
+      const file = await (await workspace.wave.getFileHandle(filename)).getFile();
+      await write(backup, filename, file);
+    } catch { /* Settings may be absent in an older workspace; documents and assets are still backed up. */ }
+  }
+  return name;
+}
+
 export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Promise<string> {
   const original = file.name.split(/[\\/]/).pop() || 'attachment';
   const cleaned = original.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100) || 'attachment';
