@@ -8,8 +8,8 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 
 - [x] Markdown pages, nested folders, autosave, preview and page duplication
 - [x] CommonMark writing syntax and GFM tables, task lists, strikethrough, autolinks and footnotes
-- [x] GitHub-style alert callouts, heading anchors, inline/display MathML for a documented LaTeX subset, and simple Mermaid flowchart previews
-- [~] Full Markdown compatibility: raw HTML remains disabled for safety; advanced Mermaid diagrams and external diagram languages need dedicated renderers
+- [x] GitHub-style alerts and safe collapsible disclosures, unique heading anchors, safe inline formatting shorthands, emoji shortcodes, lightweight local code highlighting, recursive MathML for a documented TeX subset, and Mermaid flowchart/sequence/pie previews
+- [~] Full Markdown compatibility: raw HTML remains disabled for safety; advanced TeX environments, Mermaid families, full grammar-based highlighting and external diagram languages need dedicated renderers
 - [x] Formatting toolbar, headings, lists, quotes, code and links
 - [x] Local images and file attachments
 - [x] Starter templates: meeting notes, project brief, task list, weekly plan, research notes and decision record
