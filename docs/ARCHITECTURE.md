@@ -4,7 +4,7 @@
 
 Wave is a local-first workspace. The user chooses a directory and Wave creates a `.wave/` folder inside it. Documents, attachments, backups and trash live in that folder. Wave does not require an account and the application has no document-storage backend.
 
-The browser stores the most recently selected FileSystemDirectoryHandle in IndexedDB to offer a reopen shortcut. This is only a handle/permission reference, never a copy of document or asset content. Reopening checks read-write permission and requests it again from an explicit user action when needed. Users can always choose a folder again instead.
+The browser stores the most recently selected FileSystemDirectoryHandle in IndexedDB to offer a reopen shortcut. The registry stores only the handle reference. A separate IndexedDB draft journal can temporarily store unsaved editor text so it can be recovered after a tab closes or reloads; saved document content remains in the workspace folder. Clearing browser site data can remove these unsaved recovery drafts. Reopening checks read-write permission and requests it again from an explicit user action when needed. Users can always choose a folder again instead.
 
 ## Current workspace format
 
