@@ -153,6 +153,18 @@ export async function saveDoc(dir: FileSystemDirectoryHandle, path: string, text
     catch (error) { try { await writable.abort(); } catch { /* keep original error */ } throw error; }
   });
 }
+export async function saveDocIfUnchanged(dir:FileSystemDirectoryHandle,path:string,text:string,expected:string|null):Promise<void>{
+  await queueWrite(dir,path,async()=>{
+    let current:string|null=null;
+    try{current=await(await(await fileForPath(dir,path)).getFile()).text();}
+    catch(error){if(!isNotFound(error))throw error;}
+    if(current!==expected)throw new Error('This document changed outside Wave. Your draft is preserved; reload the latest file or save a separate copy.');
+    const file=await fileForPath(dir,path,true),writable=await file.createWritable();
+    try{await writable.write(text);await writable.close();}
+    catch(error){try{await writable.abort();}catch{/* preserve original error */}throw error;}
+  });
+}
+export async function touchWorkspaceMetadata(wave:FileSystemDirectoryHandle):Promise<void>{await updateManifest(wave);}
 export async function createDoc(dir: FileSystemDirectoryHandle, requestedPath: string, text: string): Promise<string> {
   const parts = validatePath(requestedPath);
   const filename = parts.pop()!;
