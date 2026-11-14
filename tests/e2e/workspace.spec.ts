@@ -557,3 +557,76 @@ test('Markdown math renders quadratic formula, matrices, cases, sums, integrals 
   await expect(math.nth(4).locator('mroot')).toHaveCount(1);
   await expect(math.nth(4).locator('mover')).toHaveCount(1);
 });
+
+
+test('Markdown Mermaid class, ER, state, Gantt, git and extended flowchart diagrams render locally', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Mermaid Diagram Families');
+  await editor.fill([
+    '# Mermaid Diagram Families',
+    '',
+    '```mermaid',
+    'flowchart LR',
+    'A([Start]) -->|continue| B{Decision}',
+    'B -.-> C((Done))',
+    'B ==> D[Finish]',
+    '```',
+    '',
+    '```mermaid',
+    'classDiagram',
+    'class Animal {',
+    '  +String name',
+    '  +eat()',
+    '}',
+    'Animal <|-- Duck',
+    '```',
+    '',
+    '```mermaid',
+    'erDiagram',
+    'CUSTOMER ||--o{ ORDER : places',
+    'CUSTOMER {',
+    '  string name',
+    '}',
+    'ORDER {',
+    '  int id',
+    '}',
+    '```',
+    '',
+    '```mermaid',
+    'stateDiagram-v2',
+    '[*] --> Still',
+    'Still --> Moving : Start',
+    'Moving --> [*]',
+    '```',
+    '',
+    '```mermaid',
+    'gantt',
+    'title Release plan',
+    'dateFormat YYYY-MM-DD',
+    'section Build',
+    'Design :task1, 2026-01-01, 3d',
+    'Implementation :after task1, 5d',
+    '```',
+    '',
+    '```mermaid',
+    'gitGraph',
+    'commit id: "Initial"',
+    'branch develop',
+    'checkout develop',
+    'commit id: "Feature"',
+    'checkout main',
+    'merge develop',
+    '```'
+  ].join('\n'));
+  await page.getByRole('button', { name: 'Preview' }).click();
+  const diagrams = page.locator('.markdown-preview .mermaid-diagram');
+  await expect(diagrams).toHaveCount(6);
+  await expect(diagrams.nth(0).locator('polygon')).toHaveCount(1);
+  await expect(diagrams.nth(0).locator('ellipse')).toHaveCount(1);
+  await expect(diagrams.nth(1).locator('text').filter({ hasText: 'Animal' })).toBeVisible();
+  await expect(diagrams.nth(2).locator('text').filter({ hasText: 'CUSTOMER' })).toBeVisible();
+  await expect(diagrams.nth(3).locator('text').filter({ hasText: 'Moving' })).toBeVisible();
+  await expect(diagrams.nth(4).locator('rect')).toHaveCount(2);
+  await expect(diagrams.nth(5).locator('circle')).toHaveCount(3);
+  await expect(diagrams.locator('.diagram-source summary')).toHaveCount(6);
+});
