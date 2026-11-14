@@ -208,5 +208,5 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/styles.css`: preview styling for math, diagrams and heading levels.
 - `src/templates.ts`: adds the Markdown feature showcase template.
 - `docs/MARKDOWN_SUPPORT.md`: canonical syntax compatibility/security matrix. Raw HTML remains disabled; full LaTeX, advanced Mermaid, PlantUML, Graphviz, Vega, D2, AsciiDoc, syntax highlighting and media embeds are not claimed as supported.
-- E2E test source now contains 14 scenarios, including the new math/flowchart/heading scenario. Existing documented CI result predates these changes; no local tests or fresh CI result have been confirmed.
+- E2E test source now contains 14 scenarios, including the new math/flowchart/heading scenario. Run 43612461372 passed `npm ci` and 30 Node tests but failed typecheck because `MarkdownElementProps` lacked `className`; fixed in commit `035e442a90d7e8cb48b88e4e9df93971a1bcaa24`. CI run 43612488927 was queued at the latest check. Build and E2E have not yet been confirmed.
 - Always read `docs/MARKDOWN_SUPPORT.md` before extending Markdown support; preserve local-only rendering and sanitization boundaries.
