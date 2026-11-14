@@ -139,3 +139,6 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Scoped the Technical Learning Notes template choice to the sidebar template list and corrected assertions to expect actual newline characters.
 - Changed the accessibility table-header assertion to inspect rendered `thead th` elements directly; follow-up CI will determine whether any runtime semantic fix is needed.
 - These changes repair test assumptions; they do not mark Markdown renderer features or accessibility gaps complete.
+
+
+- CI follow-up: after the first selector fixes, Actions run `43618259567` passed Node, typecheck and build and reached **27/28 Playwright scenarios**. The remaining template failure was a strict locator across all H2 headings; changed the test to locate the two expected level-2 headings by accessible name. Commit: `026b0bdee17d05278dbf616afd4b4a323df264cd`. Final CI verification pending.
