@@ -191,3 +191,12 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Follow-up hardening: Settings now contains keyboard focus while open, supports Escape dismissal, and reports preference-save completion/failure. The centered writing measure (860px default with width choices) also partially addresses UI-003; responsive and wide-content review remains open.
 
 - Final register reconciliation: UI-001 and UI-012 now describe remaining scope without stale claims that Settings is wholly unavailable; UI-003 is explicitly partial. The Settings E2E also covers Escape dismissal.
+
+
+## 2026-11-14 — Toolbar code icon distinction and dark-theme parity
+
+- UI-004: changed inline-code and fenced-code controls from duplicate `Code2` icons to `Code2` and `FileCode2`; gave each a unique accessible name and title. Added E2E assertions for icon identity and insertion behavior.
+- UI-016/UI-017: added explicit dark and system-dark Markdown preview colors for headings, fenced/inline code, links, blockquotes, tables and dividers.
+- UI-018/UI-019: added dark styling for Edit/Preview segmented controls, Backup, toolbar controls and the sidebar wordmark.
+- UI-020 remains partial: a system-dark Preview regression slice was added, not the complete theme/mode/viewport visual matrix. Other toolbar actions and remaining UI gaps remain open.
+- Verification pending CI; no test pass claimed.
