@@ -234,6 +234,10 @@ async function snapshotTree(dir:FileSystemDirectoryHandle,prefix=''):Promise<str
   }
   return entries.sort().join('\\n');
 }
+async function optionalFileSnapshot(dir:FileSystemDirectoryHandle,name:string):Promise<string|null>{
+  try{return await(await(await dir.getFileHandle(name)).getFile()).text();}
+  catch(error){if(isNotFound(error))return null;throw error;}
+}
 export async function createBackup(workspace: Workspace): Promise<string> {
   const stamp = new Date().toISOString().replace(/[:.]/g, '-');
   let name='backup-'+stamp, suffix=2;
@@ -242,7 +246,7 @@ export async function createBackup(workspace: Workspace): Promise<string> {
   const startedAt=new Date().toISOString();
   await write(backup,'backup-status.json',JSON.stringify({status:'in-progress',startedAt},null,2));
   try {
-    const beforeDocs=await snapshotTree(workspace.documents),beforeAssets=await snapshotTree(workspace.assets);
+    const beforeDocs=await snapshotTree(workspace.documents),beforeAssets=await snapshotTree(workspace.assets);const beforeManifest=await optionalFileSnapshot(workspace.wave,'manifest.json'),beforeSettings=await optionalFileSnapshot(workspace.wave,'settings.json');
     const docs=await copyFolder(workspace.documents,await backup.getDirectoryHandle('documents',{create:true}));
     const assets=await copyFolder(workspace.assets,await backup.getDirectoryHandle('assets',{create:true}));
     const afterDocs=await snapshotTree(workspace.documents),afterAssets=await snapshotTree(workspace.assets);
@@ -251,7 +255,7 @@ export async function createBackup(workspace: Workspace): Promise<string> {
       try{const file=await(await workspace.wave.getFileHandle(filename)).getFile();await write(backup,filename,file);}
       catch(error){if(!isNotFound(error))throw error;}
     }
-    const complete={status:'complete',startedAt,completedAt:new Date().toISOString(),documents:docs.files,assets:assets.files};
+    const afterManifest=await optionalFileSnapshot(workspace.wave,'manifest.json'),afterSettings=await optionalFileSnapshot(workspace.wave,'settings.json');\n    if(beforeManifest!==afterManifest||beforeSettings!==afterSettings)throw new Error('Workspace settings changed during backup. The snapshot is marked incomplete; retry when editing has stopped.');\n    const complete={status:'complete',startedAt,completedAt:new Date().toISOString(),documents:docs.files,assets:assets.files};
     await write(backup,'backup-status.json',JSON.stringify(complete,null,2));
     return name;
   } catch(error) {
