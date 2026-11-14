@@ -115,7 +115,7 @@ Keep the write in the input-event path, request strict IndexedDB durability, exp
 
 ### Problem
 
-The `technical-notes` template builds its Markdown content with `.join('\\\\n')` in the TypeScript source (a JavaScript string containing the two literal characters backslash and `n`), rather than joining with an actual newline separator. Selecting this template therefore produces one long line containing visible `\\n` sequences instead of the intended headings, paragraphs, lists, fenced code and table structure.
+The `technical-notes` template builds its Markdown content with `.join('\\n')` in the TypeScript source (a JavaScript string containing the two literal backslash characters followed by `n`), rather than joining with an actual newline separator. Selecting this template therefore produces one long line containing visible `\\n` sequences instead of the intended headings, paragraphs, lists, fenced code and table structure.
 
 ### Impact
 
