@@ -31,7 +31,8 @@ Wave is being developed as a user-owned workspace inspired by Notion and Quip. T
 
 - [x] Workspace reopen flow and permission recovery
 - [x] Backup browser and restore to a separate workspace folder
-- [x] Revision-ordered writes, external-edit checks and IndexedDB draft recovery\n- [x] Incomplete backup markers and Trash operation journal
+- [x] Revision-ordered writes, external-edit checks and IndexedDB draft recovery
+- [x] Incomplete backup markers and Trash operation journal
 - [ ] Schema migration framework
 - [x] Empty-folder persistence and navigation
 - [ ] Folder rename/delete
