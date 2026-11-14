@@ -541,8 +541,8 @@ test('Technical learning notes template contains real Markdown newlines and prev
   expect(markdown).toContain('## Introduction\n\nWhat is this technology');
   expect(markdown).toContain('## Open questions\n\n- [ ]');
   await page.getByRole('button', { name: 'Preview' }).click();
-  await expect(page.locator('.markdown-preview h2')).toContainText('Introduction');
-  await expect(page.locator('.markdown-preview h2')).toContainText('Open questions');
+  await expect(page.locator('.markdown-preview').getByRole('heading', { level: 2, name: 'Introduction' })).toBeVisible();
+  await expect(page.locator('.markdown-preview').getByRole('heading', { level: 2, name: 'Open questions' })).toBeVisible();
   await expect(page.locator('.markdown-preview pre code')).toContainText('Add a small, self-contained example');
   await expect(page.locator('.markdown-preview table')).toContainText('Symptom');
   await expect(page.locator('.markdown-preview')).toContainText('Trust boundaries:');
