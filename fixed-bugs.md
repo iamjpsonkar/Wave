@@ -2,7 +2,7 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: main  
-> Source revision reviewed: `9fdd7559d1bef165f838585bf73eb73a67b0d526`  
+> Source revision reviewed: `b11b46eebc1558de9910d8523cdaa027817b087d`  
 > Review date: 2026-11-14  
 > Purpose: historical fixes and mandatory rechecking scenarios for future QA passes.
 
@@ -13,7 +13,7 @@
 - A fix is classified as **source-verified**, not automatically as browser/runtime-proven.
 - If a scenario fails again, move the finding back to `bugs.md` with the evidence, affected revision, and failing environment. Keep its original ID.
 - If the implementation changes materially, update the scenario here rather than silently deleting it.
-- The current CI run for this source revision succeeded: [GitHub Actions run 43602646473](https://github.com/iamjpsonkar/Wave/actions/runs/43602646473). It reports 30 Node tests and 6 Chromium E2E tests passing, plus typecheck and production build. Browser E2E uses OPFS fixtures; it does not replace real user-picked-folder permission, cross-tab, or process-termination testing.
+- The current CI run for the reviewed source revision succeeded: [GitHub Actions run 43603436474](https://github.com/iamjpsonkar/Wave/actions/runs/43603436474). It reports 30 Node tests and 9 Chromium E2E tests passing, plus typecheck and production build. Browser E2E uses OPFS fixtures; simulated permission denial and same-workspace two-tab editing are covered, but native picker prompt/revocation and process-termination testing are not.
 
 ## Verification summary
 
