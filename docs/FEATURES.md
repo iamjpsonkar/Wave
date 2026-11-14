@@ -132,3 +132,12 @@ Legend: [x] shipped · [~] in progress · [ ] planned · [—] intentionally dif
 - [x] Insert a sample's Markdown source at the current editor selection; append to the document when Preview/Blocks mode has no source textarea.
 - [x] Enter continues unordered, ordered and task lists; ordered numbering increments, nested indentation and task markers are preserved, and empty items exit the list.
 - [~] Broader keyboard, mobile and screenshot-based visual review of the sample library and complex list edge cases remains pending CI/manual QA.
+
+
+## Deployment and operations
+
+- [x] Multi-stage Docker image for production static hosting.
+- [x] Docker Compose service with configurable host port, health check and restart policy.
+- [x] Unprivileged Nginx runtime, read-only container root, dropped capabilities and no-new-privileges.
+- [x] SPA fallback, hashed-asset cache policy and browser security headers.
+- [ ] Server-side workspace storage, accounts, collaboration API and shared data services — explicitly not provided by the static container.
