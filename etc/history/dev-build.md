@@ -1061,3 +1061,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Run [43726878501](https://github.com/iamjpsonkar/Wave/actions/runs/43726878501), OSV job [132851185917](https://github.com/iamjpsonkar/Wave/actions/runs/43726878501/job/132851185917): explicit baseline and proposed SHAs both verified successfully and both scanner containers returned exit code 0, but their `--output-file` reports were not persisted to the host workspace. The subsequent required-report check correctly failed closed.
 - Replaced the non-persisting Docker action invocation with the pinned OSV-Scanner CLI installed on the runner, so JSON reports are created in the checked-out workspace and can be consumed by the reporter step. Retained explicit base/head checkout and SHA verification; updated reporter arguments to the upstream documented flags.
 - Exact-head CI is pending. No scan result or CI pass is claimed yet.
+
+
+### 2026-11-15 — Verify official OSV binary digest
+
+- Replaced the invalid guessed install-script URL with the official OSV-Scanner v2.2.1 Linux amd64 release binary.
+- Embedded and verify the SHA-256 digest published in GitHub release metadata (`59e3bbd49f964265efc495b7ff896bff3c725b14c9fcce2e82088e053af98e7b`) before execution. Scanner JSON output is written directly to the runner workspace; base/head SHA checks and fail-closed report checks remain enforced.
+- Exact-head CI pending.

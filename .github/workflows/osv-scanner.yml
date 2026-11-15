@@ -28,13 +28,15 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
-      - name: Install OSV-Scanner CLI
-        if: github.event_name == 'pull_request' || github.event_name != 'pull_request'
+      - name: Install and verify pinned OSV-Scanner CLI
         shell: bash
         run: |
-          curl -fsSL https://raw.githubusercontent.com/google/osv-scanner/v2.2.1/install.sh | sh -s -- -b "$RUNNER_TEMP/osv"
-          echo "$RUNNER_TEMP/osv" >> "$GITHUB_PATH"
-          osv-scanner --version
+          set -euo pipefail
+          curl --fail --silent --show-error --location "https://github.com/google/osv-scanner/releases/download/v2.2.1/osv-scanner_linux_amd64" -o "$RUNNER_TEMP/osv-scanner"
+          printf '%s  %s\n' '59e3bbd49f964265efc495b7ff896bff3c725b14c9fcce2e82088e053af98e7b' "$RUNNER_TEMP/osv-scanner" | sha256sum --check --status
+          chmod +x "$RUNNER_TEMP/osv-scanner"
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/osv-scanner" --version
       - name: Check out target branch baseline commit
         if: github.event_name == 'pull_request'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6

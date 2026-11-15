@@ -787,3 +787,8 @@ Implemented both findings from QA comment [6896404719](https://github.com/iamjps
 ### 2026-11-15 — OSV JSON report persistence correction
 
 The OSV workflow correctly checked out and verified both base and proposed SHAs, but Docker-action report files were not visible to host steps, causing the report-existence guard to fail. Replaced scanner calls with pinned OSV-Scanner CLI host execution writing JSON directly into the workspace, retained the SHA guards, and aligned reporter flags to upstream v2.7.1 usage. Exact-head CI pending.
+
+
+### 2026-11-15 — OSV scanner installation integrity
+
+Pinned the official OSV-Scanner v2.2.1 Linux amd64 release binary and verified it against its GitHub-published SHA-256 before execution. This replaces the earlier invalid installer URL. Exact-head CI pending.
