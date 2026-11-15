@@ -1,5 +1,7 @@
 # Wave Wiki — Complete Product, Repository and AI-Agent Context
 
+> **Agent entry point:** Read [AGENTS.md](./AGENTS.md) first. It is the concise, single-file operating contract; this wiki is the deeper reference.
+
 > **Purpose:** This is the main orientation document for any developer or AI agent working on Wave. Read it before planning or editing code. It explains the product, current architecture, user decisions, project-wide working instructions, implementation history, quality gates, documentation map, roadmap and known limitations.
 >
 > Repository: https://github.com/iamjpsonkar/Wave  
