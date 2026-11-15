@@ -4,7 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
-const IGNORED_DIRECTORIES = new Set([".git", "node_modules", "dist", "coverage", "test-results", "playwright-report"]);
+const IGNORED_DIRECTORIES = new Set([".git", "node_modules", "dist", "coverage", "test-results", "playwright-report", "history"]);
 
 async function walkMarkdown(root, directory = root) {
   const entries = await readdir(directory, { withFileTypes: true });
