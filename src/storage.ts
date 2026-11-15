@@ -518,10 +518,21 @@ export function validateAttachmentFile(file: File): void {
 }
 
 export async function validateAttachmentContent(file: File): Promise<void> {
-  const candidates=ACTIVE_ATTACHMENT_SIGNATURES.filter(item=>item.mime===file.type);
-  if(!candidates.length||!file.size)return;
+  // Signature checks are defense-in-depth for commonly abused active/container
+  // formats. Do not require a full decoder for every benign image/document:
+  // MIME metadata remains advisory and supported signatures reject only content
+  // that affirmatively identifies as a different active format.
+  if(!file.size)return;
   const bytes=new Uint8Array(await file.slice(0,512).arrayBuffer());
-  if(!candidates.some(item=>item.matches(bytes))) {
+  const text=new TextDecoder().decode(bytes).replace(/^\\uFEFF/,'').trimStart();
+  const svgLike=/^(?:<\\?xml[\\s\\S]*?)?<svg\\b/i.test(text);
+  const htmlLike=/^(?:<!doctype\\s+html|<html\\b|<script\\b|<iframe\\b)/i.test(text);
+  if(svgLike||htmlLike) {
+    throw new Error('The attachment content contains active SVG or HTML content.');
+  }
+  const signatures=ACTIVE_ATTACHMENT_SIGNATURES.filter(item=>item.mime!== 'image/svg+xml' && item.mime!=='text/html');
+  const matched=signatures.filter(item=>item.matches(bytes));
+  if(matched.length && !matched.some(item=>item.mime===file.type)) {
     throw new Error('The attachment content does not match its declared file type.');
   }
 }
