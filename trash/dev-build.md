@@ -443,3 +443,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Reused existing [#3](https://github.com/iamjpsonkar/Wave/issues/3) for keyboard/focus, screen-reader and contrast audit; linked that scope to parent #1 rather than creating a duplicate.
 - Parent #1 remains open. The latest previously verified PR CI recorded on main is run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), 48/48 Playwright plus all other workflow jobs passing.
 - This reconciliation does not run tests.
+
+## 2026-11-15 — Main synchronization verification and future workflow documentation
+
+- The product owner manually synchronized `main` into `manager` and then force-pushed the feature branch. PR [#107](https://github.com/iamjpsonkar/Wave/pull/107) was closed unmerged and is abandoned for main synchronization.
+- Verified GitHub refs after the operation: `main` = `c421f7bcf40ec430eda90fe0a57e98464762e68f`; `manager` = `6747efdf0204c1cded75fd03475a75d0cbdef60b`.
+- GitHub commit metadata shows the manager tip is a merge commit with parents `d87f3e63872dc0f281b29dd37679297e62369660` and the current main SHA. GitHub compare reports `main...manager` as ahead by 2, behind by 0. This confirms the current main history is included in manager; the branch retains two manager-only commits.
+- The compare reports only two files changed relative to main: added `etc/howtodev.md` and `etc/howtoqa.md`. No other file differences were reported by the compare endpoint. The remote tree and commit metadata were inspected; no local checkout or test execution was performed for this verification.
+- Added a mandatory main-to-feature sync procedure to `etc/howtodev.md` and linked the policy from `WIKI.md`. It covers clean-tree checks, fetch, fast-forward-only main update, feature-branch merge, careful conflict resolution, ancestry/diff/test/CI verification, normal push and exceptional force-with-lease safeguards.
+- Verification is repository-metadata/source inspection only. No tests, build, local Git status, or CI run was executed for the manual merge. Check CI on the current manager head before relying on runtime behavior.
