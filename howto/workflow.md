@@ -86,3 +86,24 @@ Avoid meetings without a decision, owner or useful outcome. Track decisions and 
 ## 8. Escalation
 
 Escalate immediately when a change risks data loss, privacy breach, security exposure, unrecoverable migration, release-blocking regression or violation of product principles. Pause affected rollout until an authorized decision and mitigation are recorded.
+
+
+## 9. Required work-item and PR fields
+
+A work item should state the problem, user impact, scope, non-goals, acceptance criteria, dependencies, affected data, risks and owner. For a defect, include deterministic reproduction steps and observed versus expected behavior.
+
+A pull request should include:
+- Linked issue and target base branch.
+- Summary and rationale.
+- Acceptance-criteria checklist.
+- Files/modules and cross-team impact.
+- Data migration, privacy, security and accessibility implications.
+- Exact commands run and outcomes.
+- CI run/commit link where available.
+- Manual checks, limitations and follow-up items.
+
+## 10. Change sizing and dependency management
+
+Prefer vertical slices that deliver a complete, testable user outcome. Keep refactors separate from behavior changes where practical. If a change requires a migration or staged rollout, make the dependency explicit and do not merge a consumer before its prerequisite contract is available.
+
+When blocked, record the blocker, owner, decision needed and next review point in the issue. Do not silently change acceptance criteria to fit the implementation.
