@@ -4,7 +4,7 @@
 > Repository: https://github.com/iamjpsonkar/Wave
 > Default branch: `main`
 > Last reviewed: 2026-11-15
-> Latest audited baseline: `d831bf04ac458a888206de4d492830f55958b022` (refresh HEAD before every task)
+> Latest reviewed branch baseline: `561fef34390d6805b30956a1723bbcb0a0edcdad` on `WAVE-0001` (refresh `main` and branch HEAD before every task)
 
 ## 1. Product contract
 
@@ -141,7 +141,7 @@ Don't conflate these trackers. Don't move an issue to fixed until implemented an
 ## 7. Open bug snapshot — refreshed 2026-11-14
 
 The reviewed `bugs.md` reported two partial findings:
-- **WAVE-031 (P1):** remains partial. Current tests simulate permission denial and exercise two-tab editing, but native picker/revocation, external filesystem races during active operations, comprehensive accessibility, and abrupt process termination remain uncovered.
+- **WAVE-031 (P1):** remains open/partial. Branch `WAVE-0001` adds deterministic E2E coverage for prompt-state permission reauthorization and external-edit conflict preservation. Native picker/OS revocation, external-process races during read/save/backup/restore, comprehensive keyboard/screen-reader accessibility and abrupt process termination remain unverified. See `QA_CONTEXT.md` manual plan and `trash/bugs.md`.
 - **WAVE-039 (P1):** remains partial. IndexedDB strict durability and `pagehide`/`visibilitychange` best-effort writes reduce but cannot eliminate the asynchronous pre-commit crash window.
 
 WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `QA_CONTEXT.md`; current bug register is `bugs.md`.
@@ -154,7 +154,7 @@ The checked-in `dev-build.md` reports workflow run [43604242348](https://github.
 - TypeScript typecheck passed.
 - Production build passed.
 
-This remains historical CI evidence and does not verify later commits. The current checked-in test sources define 30 Node tests and 13 Playwright Chromium scenarios; the documented successful CI run covers an earlier 10-scenario browser suite. The 2026-11-14 QA recheck was source-only: no local build/tests or new CI run were performed. Refresh the default-branch HEAD and CI before relying on test status.
+This remains historical CI evidence and does not verify later commits. The current checked-in test sources on `WAVE-0001` define 30 Node tests and 48 Playwright Chromium scenarios; the documented successful CI run covers an earlier 10-scenario browser suite. The 2026-11-14 QA recheck was source-only: no local build/tests or new CI run were performed. WAVE-0001 adds two browser test definitions; PR CI is pending and must be checked before reporting any pass. Refresh the default-branch HEAD and CI before relying on test status.
 
 ## 9. Required workflow for every future task
 
@@ -605,3 +605,16 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Existing open defect, UI, Markdown, export and roadmap tickets were checked before creation; do not open duplicates for the same scope.
 - Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [trash/github-issues.md](./trash/github-issues.md).
 - No source code changed and no tests/build/CI execution is claimed for this audit.
+
+
+## 36. WAVE-0001 — native filesystem and permission QA follow-up — 2026-11-15
+
+- Issue: [#1 — Complete native filesystem, permission and lifecycle verification](https://github.com/iamjpsonkar/Wave/issues/1), internal defect ID WAVE-031.
+- Branch: `WAVE-0001`, created from the refreshed `main` branch.
+- `tests/e2e/workspace.spec.ts`: expanded the OPFS permission fixture to count permission requests; added prompt-state reauthorization and external-file-edit conflict preservation scenarios. Browser test source count is now 48; Node source count remains 30.
+- `trash/bugs.md`: updated WAVE-031 test inventory and recorded branch follow-up. The issue remains open.
+- `QA_CONTEXT.md`: added real-browser native picker/permission, external filesystem, keyboard/focus/screen-reader, and process-termination manual checklists.
+- `trash/dev-fixed.md` and `trash/dev-build.md`: recorded implementation scope and CI-pending status.
+- `WIKI.md`: documented the product-owner-approved issue branch → commit/push → PR → issue-comment workflow. Do not merge PRs or close issues; product owner reviews them.
+- Verification: source and test definitions inspected; no local test/typecheck/build or native/manual browser verification was performed. PR CI is pending. The OPFS tests simulate permission behavior and are not evidence of native OS picker/revocation behavior.
+- Remaining acceptance criteria: real native picker and permission revocation/reauthorization results; external writer races across read/save/backup/restore; comprehensive keyboard/focus/screen-reader/contrast review; actual process-termination fault test. Keep #1 open until these criteria are evidenced.
