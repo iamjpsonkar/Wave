@@ -820,3 +820,11 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Added privacy-safe structured debug diagnostics to `draftJournal.ts`: lock wait/acquire/release, save plan, read result, clear plan and clear completion. Events include operation/stage and bounded counts only; no document content, path or tab ID. Removed direct recovery `console.info` output.
 - Threaded operation IDs through document-open journal reads/clears and persistence journal cleanup. The cross-tab E2E test enables `?waveDebug=1` in both tabs, captures both tabs' logs, and fixes the undefined failure-handler variable.
 - Node tests passed in the prior run; full E2E verification must pass on the final exact PR head before merge. The nested-breadcrumb timeout was separately observed as flaky and must be monitored in the next full run.
+
+## PR #115 final diagnostics review follow-up — 2026-11-15
+
+- Branch: `WAVE-0111`; PR: [#115](https://github.com/iamjpsonkar/Wave/pull/115).
+- Completed the outstanding operation-correlation work from review [5910312606](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910312606). `flush(operationId)` now forwards its ID to `persistDocument`; parent IDs are threaded through create/template, duplicate, Trash move and refresh, backup create, workspace activation, document open and reload, including nested copy synchronization.
+- Replaced the prior weak debug-gating E2E check with assertions that default-mode opens emit no recovery debug trace, `?waveDebug=1` emits structured debug events, and all events from one open share a single operation ID.
+- Updated `tests/unit/README.md` and `etc/history/dev-build.md` with the implementation and pending verification status.
+- Latest implementation commit before this handoff update: see branch `WAVE-0111` HEAD. The exact-head CI for this follow-up is not yet verified. Do not merge until it passes and review is satisfied.
