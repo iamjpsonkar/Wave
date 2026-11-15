@@ -1156,3 +1156,11 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Exact-head run `43738426652` passed the functional gate: **42 Node tests**, typecheck, production build and **50/50 Playwright scenarios**; container, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy passed.
 - ESLint found one error in the new checker (a redundant initial assignment) and an unused import. Both were removed. The run therefore remains failed overall until fresh exact-head CI confirms lint and the full matrix.
 
+### Exact-head verification — 2026-11-15
+
+- Source commit `c136c19924593601420478eb55fc00c5d59bd3ec`; GitHub Actions [run 43738815009](https://github.com/iamjpsonkar/Wave/actions/runs/43738815009) completed successfully.
+- Functional gate: **42/42 Node tests** (including the three Markdown-link tests), TypeScript typecheck, production build and **50/50 Playwright Chromium scenarios** passed.
+- Container/Compose validation and image build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy filesystem/image scans passed.
+- GitHub Pages deployment was skipped as expected for a pull request.
+- Local tests/build were not run; this evidence is from GitHub Actions. The subsequent handoff-only documentation commit requires its own exact-head CI before merge.
+
