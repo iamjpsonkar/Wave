@@ -4,7 +4,7 @@ Thank you for helping improve Wave. The project is local-first, user-owned and r
 
 ## Before changing code
 
-1. Read [DEV_CONTEXT.md](DEV_CONTEXT.md) for the current source map, invariants and handoff.
+1. Read [DEV_CONTEXT.md](../DEV_CONTEXT.md) for the current source map, invariants and handoff.
 2. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and the relevant feature, roadmap or Markdown compatibility documentation.
 3. Inspect the current implementation and tests on the target branch. Do not rely on old commit notes as proof that current code behaves the same way.
 4. Keep changes focused and preserve existing product scope and engineering history.
