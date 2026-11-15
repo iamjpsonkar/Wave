@@ -20,7 +20,7 @@
 
 ## Current test inventory (source, not execution)
 
-- `tests/storage.test.js`: **30** Node test definitions.
+- `tests/storage.test.js`: **29** Node test definitions on branch `WAVE-0100` (30 before duplicate consolidation).
 - `tests/e2e/workspace.spec.ts`: **13** Playwright Chromium test definitions.
 - E2E fixture: Origin Private File System (OPFS) directory handles; `showDirectoryPicker` is replaced with a fixture and permission query/request behavior is simulated.
 - Current E2E coverage includes workspace creation/autosave, reload recovery, Trash round trip, root/nested attachments, mobile navigation, backup/restore, strict IndexedDB durability request, simulated permission denial, same-workspace two-tab edits, cross-tab recovery provenance, Markdown sanitization/GFM, command palette keyboard execution, and wiki links/backlinks.
@@ -407,3 +407,12 @@ Important documentation drift observed at the same HEAD:
 - Created [#100 — remove duplicate storage regression scenarios](https://github.com/iamjpsonkar/Wave/issues/100). `tests/storage.test.js` repeats the backup-lock interleaving scenario at lines 300–321 and 334–355, and repeats the copied-file mutation scenario at lines 322–333 and 356 onward. The issue requires preserving distinct locking and integrity guarantees while removing redundant tests.
 - Updated `trash/github-issues.md` to include both issues and the verified open-issue count.
 - This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
+
+
+## 2026-11-15 — WAVE-0100 duplicate backup test consolidation
+
+- Issue #100 removes two duplicate test definitions from `tests/storage.test.js`; the source inventory is now 29 unique Node test names.
+- Retained one workspace-wide lock/backup interleaving test and one copied-snapshot mutation test.
+- Added distinct source-mutation-during-copy coverage, asserting the external source edit remains and the failed backup is not listed.
+- Strengthened the valid backup completion test to read and compare the actual snapshot document contents.
+- All 29 names are unique by source inspection. Test execution is pending PR CI; no pass is claimed.
