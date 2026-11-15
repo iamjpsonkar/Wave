@@ -762,3 +762,17 @@ The cross-tab recovery browser test validates the persisted IndexedDB record fro
 
 ### Cross-tab recovery: diagnosis and completion plan
 CI run #918 showed the source tab successfully committed the expected IndexedDB draft with its own session ID and a matching workspace handle. The failure was in the new diagnostic assertion: its expected Markdown used over-escaped newline sequences, unlike the actual content. The expectation has been corrected. Completion requires proving the second tab reads the same record, the recovery decision labels it as another tab, declining leaves the source record intact, and the full CI gate passes. If the next check fails, isolate the exact boundary (cross-tab IndexedDB visibility, handle matching, draft selection, or `open()` logic) before changing production code.
+
+## Main-to-feature synchronization and conflict-resolution policy
+
+The canonical step-by-step procedure is [etc/howtodev.md — Main-to-feature branch synchronization](./etc/howtodev.md#main-to-feature-branch-synchronization-required-workflow). Every developer/agent must follow it rather than improvising a branch update.
+
+Key rules:
+- Fetch remote refs first; refresh local `main` with `git pull --ff-only origin main`.
+- Switch to the explicitly assigned feature branch and merge `origin/main` into that branch. Never merge the feature branch into `main` during a sync task.
+- Resolve conflicts by understanding and preserving both sides' intent. Do not blindly choose ours/theirs, remove tests/features, or use force-push to bypass conflicts.
+- Verify that `origin/main` is an ancestor of the feature HEAD, inspect the merge graph and diff, run `./test.sh`, and check CI for the exact pushed SHA.
+- Push normally. Force-push is exceptional and requires explicit owner approval; if approved, use `--force-with-lease` after inspecting the remote head, never blind `--force`.
+- Report source and feature SHAs, merge commit, conflict resolutions, test/CI evidence and limitations. Update development/QA logs and `DEV_CONTEXT.md` last.
+
+A historical main-sync PR (#107) was closed unmerged when the owner chose to perform the synchronization manually. Do not reopen or reuse that PR as the normal sync mechanism.
