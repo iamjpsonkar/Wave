@@ -4,8 +4,8 @@ Thank you for helping improve Wave. The project is local-first, user-owned and r
 
 ## Before changing code
 
-1. Read [DEV_CONTEXT.md](DEV_CONTEXT.md) for the current source map, invariants and handoff.
-2. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and the relevant feature, roadmap or Markdown compatibility documentation.
+1. Read [DEV_CONTEXT.md](../../DEV_CONTEXT.md) for the current source map, invariants and handoff.
+2. Read [architecture guide](./ARCHITECTURE.md) and the relevant feature, roadmap or Markdown compatibility documentation.
 3. Inspect the current implementation and tests on the target branch. Do not rely on old commit notes as proof that current code behaves the same way.
 4. Keep changes focused and preserve existing product scope and engineering history.
 
@@ -73,7 +73,7 @@ Keep each document's purpose intact:
 - `DEV_CONTEXT.md` is the canonical developer handoff and must be updated at the end of each implementation batch.
 - Existing UI gap IDs and engineering history are append-only unless the product owner explicitly requests otherwise.
 
-See [the documentation index](docs/README.md) for the full map.
+See [the documentation index](../../docs/README.md) for the full map.
 
 ## License and contributions
 
