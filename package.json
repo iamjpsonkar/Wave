@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build --config config/vite.config.ts",
     "preview": "vite preview --config config/vite.config.ts",
     "typecheck": "tsc -b --pretty",
-    "test": "node --experimental-strip-types --test tests/*.test.js",
+    "test": "node --experimental-strip-types --test tests/unit",
     "test:e2e": "playwright test --config config/playwright.config.ts",
     "docker:build": "docker build -t wave:local .",
     "docker:up": "docker compose up --build -d",
