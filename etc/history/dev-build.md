@@ -523,3 +523,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Playwright fixture now creates a unique OPFS directory per browser context. Multi-tab tests use the app's recent-workspace handle instead of a fixed global directory.
 - Documented why the present storage/safety split matches the current Node-test inventory and why no standalone integration directory exists without a distinct application/storage seam.
 - GitHub API-only edits: no local checkout/test run. Fresh CI on the exact final SHA is required; review's full UI failure-injection coverage is not yet proven by local execution.
+
+
+## WAVE-0111 second review follow-up (2026-11-15)
+
+- Second review [5910232936](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910111707) identified recovery trace gating, incomplete operation correlation and unsafe free-form exception text.
+- Removed direct `console.info('[Wave recovery]')` tracing. Recovery stages now use structured `debug` events and share the same operation ID as document-open failure reporting. Default verbosity suppresses those events; `?waveDebug=1` enables them.
+- Diagnostic errors retain the standard error class and a bounded cause chain, but free-form exception messages are replaced with the fixed string `Details omitted for privacy.` This intentionally avoids heuristic text redaction that could miss document-derived prose. Raw stack traces are not stored.
+- Stable operation IDs now span workspace open/reopen and activation, document open, autosave persistence, Trash restore/delete, and backup create/restore. Existing diagnostics use strict string vocabularies and duplicate propagation is suppressed.
+- Unit coverage now checks ordinary unprefixed private prose is omitted. Playwright coverage checks no recovery trace noise by default, debug visibility when enabled, and autosave error privacy/correlation.
+- Full canonical CI must run against the exact latest head after these changes; no local execution is claimed.
