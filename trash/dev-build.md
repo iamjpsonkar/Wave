@@ -4,6 +4,14 @@
 > Updated: 2026-11-14  
 > Purpose: track build, typecheck, unit-test, browser-test and CI outcomes for development commits.
 
+## 2026-11-15 — WAVE-0100 unique backup regression coverage (CI pending)
+
+- Branch: `WAVE-0100`, issue #100.
+- Consolidated two duplicate backup test pairs in `tests/storage.test.js`: one duplicate lock interleaving and one duplicate copied-snapshot mutation.
+- Kept distinct guarantees: workspace-wide write lock, copied snapshot integrity, source mutation during copy, failed-backup exclusion, and successful snapshot content equality.
+- Added one source-mutation test; removed two duplicate definitions. Node test inventory: **29 unique definitions** (source inspection).
+- No production code changed. No local tests/typecheck/build were run; record CI results by exact workflow/commit after PR creation.
+
 ## Latest development verification
 
 <badge>Success</badge>
@@ -347,13 +355,3 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Updated the wiki, README, contributor guidance, developer handoff, roadmap/issue references and documentation index. Added a mandatory per-task Markdown review/enforcement section to `wiki.md`: update authoritative docs, preserve IDs/history, avoid duplicate sources, validate links and update `DEV_CONTEXT.md` last.
 - Preserved as separate files: `upcoming-features.md`, `priority-features.md`, `dev-fixed.md`, `dev-build.md`, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `diagram-features.md`, and the architecture/deployment/Markdown/roadmap guides.
 - Verification: fetched and compared source/destination contents before deletion; confirmed UIB-001..006, UI-001..024, UIF-001..021 and WAVE-031/WAVE-039/WAVE-042 are present in the consolidated destinations. Checked navigation and corrected stale links in the consolidated feature guide. No application code changed; no local tests/build or CI run was performed.
-
-
-## 2026-11-15 — WAVE-0100 unique backup regression coverage (CI pending)
-
-- Branch: `WAVE-0100`, issue #100.
-- Consolidated two duplicate backup test pairs in `tests/storage.test.js`: one duplicate lock interleaving and one duplicate copied-snapshot mutation.
-- Kept distinct guarantees: workspace-wide write lock, copied snapshot integrity, source mutation during copy, failed-backup exclusion, and successful snapshot content equality.
-- Added one source-mutation test; removed two duplicate definitions. Node test inventory: **29 unique definitions** (source inspection).
-- No production code changed. No local tests/typecheck/build were run; record CI results by exact workflow/commit after PR creation.
-
