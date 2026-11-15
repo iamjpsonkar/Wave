@@ -601,3 +601,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Exact PR #121 workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) showed the new audit command executing successfully through npm but failing its inventory freshness comparison. The container job passed; later build/E2E steps were skipped due to the audit failure.
 - The committed inventory's 221 records were already structurally identical to the package-lock entries. The failure came from JSON serialization differences in property ordering and omitted/optional fields, not a dependency license change.
 - Updated the checker to compare normalized semantic fields, sort package records by install path and license-count keys, and ignore non-content baseline metadata. Re-run CI on the new exact head before claiming the fix.
+
+## 2026-11-15 — Issue #118 exact-head CI passed
+
+- After correcting the inventory snapshot comparator, exact-head PR [#121](https://github.com/iamjpsonkar/Wave/pull/121) workflow [43711329699](https://github.com/iamjpsonkar/Wave/actions/runs/43711329699) passed on `d6a1f49feddfec6bcee930807d779e2390e1c977`.
+- The license audit passed and confirmed the checked-in 221-package inventory matches the lockfile. Node tests, typecheck, production build and Playwright E2E all passed through `./test.sh`; container Compose validation and image build also passed.
+- The first run [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) failed at the new metadata guard due to JSON serialization/order differences; normalized semantic comparison fixed that issue and was verified by the successful exact-head run.
+- Remaining acceptance work is legal-source validation, not CI: inspect actual package LICENSE/NOTICE files as part of release review, verify caniuse-lite's attribution text, and capture/pin font assets/notices if self-hosting or bundling is chosen. The metadata scanner remains a triage control, not a legal compatibility opinion.
