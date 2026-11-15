@@ -13,9 +13,9 @@
 
 Wave is a local-first workspace. A user chooses a local folder; Wave creates and manages a portable `.wave/` workspace inside it. Documents are Markdown files and attachments are ordinary files that users own and can inspect outside Wave.
 
-Current product capabilities include Markdown writing and preview, folders and navigation, templates, favorites, wiki links/backlinks, search, local attachments, autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore. Consult the current [README](./README.md) and [FEATURES](./FEATURES.md) for the verified shipped scope.
+Current product capabilities include Markdown writing and preview, folders and navigation, templates, favorites, wiki links/backlinks, search, local attachments, autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore. Consult the current [README](./README.md) and [FEATURES](./trash/FEATURES.md) for the verified shipped scope.
 
-The broader agreed product scope is maintained in [upcoming-features.md](./upcoming-features.md); [priority-features.md](./priority-features.md) controls sequencing, not whether a feature may be forgotten. Do not silently remove, narrow, or mark an agreed feature as cancelled.
+The broader agreed product scope is maintained in [upcoming-features.md](./trash/upcoming-features.md); [priority-features.md](./trash/priority-features.md) controls sequencing, not whether a feature may be forgotten. Do not silently remove, narrow, or mark an agreed feature as cancelled.
 
 ## 2. Why Wave has strict rules
 
@@ -188,8 +188,8 @@ This is the only file an agent should need as its initial instruction. Read supp
 - [QA_CONTEXT.md](./QA_CONTEXT.md) — QA disposition, test inventory and known limitations.
 - [howto/README.md](./howto/README.md) — contributor and organizational handbook index.
 - [howto/organization.md](./howto/organization.md), [teams.md](./howto/teams.md), [ownership.md](./howto/ownership.md), [workflow.md](./howto/workflow.md), [engineering-rules.md](./howto/engineering-rules.md) — team governance and engineering rules.
-- [upcoming-features.md](./upcoming-features.md) and [priority-features.md](./priority-features.md) — full scope and delivery priority.
-- [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), and relevant UI/Markdown gap trackers — current defects and coverage gaps.
+- [upcoming-features.md](./trash/upcoming-features.md) and [priority-features.md](./trash/priority-features.md) — full scope and delivery priority.
+- [bugs.md](./trash/bugs.md), [fixed-bugs.md](./trash/fixed-bugs.md), and relevant UI/Markdown gap trackers — current defects and coverage gaps.
 - [GitHub Issues](https://github.com/iamjpsonkar/Wave/issues), PRs and current Actions runs — live work and verification evidence.
 
 If a supporting document conflicts with current source or a newer explicit user decision, investigate and reconcile it; do not silently guess. Security and data-protection constraints remain mandatory.
