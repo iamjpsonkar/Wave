@@ -238,7 +238,6 @@ test('two tabs editing the same workspace do not silently overwrite each other',
   await expect.poll(readPersistedAndDraftContent, { timeout: 12000 }).toContain('Change from second tab');
 });
 test('recovery prompt identifies a draft created in another tab and preserves its record when declined', async ({ page, context }) => {
-  await page.clock.install();
   await openWorkspace(page);
   const firstEditor = await createPage(page, 'Cross-tab Recovery');
   // Freeze only the source tab's autosave timer after setup. Its recovery
