@@ -52,8 +52,10 @@ Runtime: `index.html` → `src/main.tsx` → `src/App.tsx`.
 - `src/markdown.tsx`: Markdown preprocessing, wiki-link extraction/resolution, alert blockquotes and code-block copy.
 - `src/templates.ts`: built-in page templates.
 - `src/styles.css`: application styling and responsive behavior.
-- `tests/storage.test.js`: Node storage/concurrency/safety regression tests.
-- `tests/e2e/workspace.spec.ts`: Playwright Chromium journeys.
+- `tests/unit/storage/` and `tests/unit/safety/`: focused Node unit-test suites.
+- `tests/helpers/storage-fixtures.js`: shared in-memory filesystem fixtures.
+- `tests/e2e/workspace/`, `tests/e2e/markdown/`, `tests/e2e/editor/` and `tests/e2e/ui/`: focused Playwright scenario suites.
+- `tests/e2e/fixtures/workspace.ts`: shared OPFS browser fixture and page helpers.
 - `config/vite.config.ts`: Vite configuration.
 - `config/playwright.config.ts`: Playwright configuration and Vite test server.
 - `config/tsconfig.app.json`: application TypeScript project configuration; root `tsconfig.json` references it.
