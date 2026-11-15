@@ -123,13 +123,16 @@ export default function App() {
   const match=line.match(/^(\s*)([-+*]|\d+[.)])\s+(.*)$/);if(!match||match[1].length>=4)return;
   const offset=cursor-lineStart,markerLength=match[1].length+match[2].length+1;if(offset<markerLength)return;
   const itemBefore=line.slice(markerLength,offset),itemAfter=line.slice(offset);
+  const task=match[3].match(/^\[([ xX])\]\s+/);
+  const emptyBefore=task?itemBefore.replace(/^\[([ xX])\]\s+/,''):itemBefore;
+  const emptyAfter=itemAfter;
   event.preventDefault();
-  if(!itemBefore.trim()&&!itemAfter.trim()){
+  if(!emptyBefore.trim()&&!emptyAfter.trim()){
    const next=content.slice(0,lineStart)+(lineEnd<content.length?content.slice(lineEnd):'\n');
    setEditorContent(next);requestAnimationFrame(()=>{el.focus();el.setSelectionRange(lineStart,lineStart);});return;
   }
   const ordered=match[2].match(/^(\d+)([.)])$/),nextMarker=ordered?String(Number(ordered[1])+1)+ordered[2]:match[2];
-  const task=match[3].match(/^\[([ xX])\]\s+/),prefix=match[1]+nextMarker+' '+(task?'[ ] ':'');
+  const prefix=match[1]+nextMarker+' '+(task?'[ ] ':'');
   const addition='\n'+prefix,next=content.slice(0,cursor)+addition+content.slice(cursor),nextCursor=cursor+addition.length;
   setEditorContent(next);requestAnimationFrame(()=>{el.focus();el.setSelectionRange(nextCursor,nextCursor);});
  }
