@@ -45,6 +45,8 @@ Primary trust boundaries:
 - GitHub workflows use read-only defaults, pinned actions, explicit timeouts/concurrency and no secrets for fork PR scanners. Sonar is gated on owner-provided configuration.
 - npm, OSV, Gitleaks, CodeQL and Trivy are configured as independent automated checks.
 
+- Attachment validation does not write user-provided filenames, declared MIME types, file sizes or content prefixes to the browser console; regression coverage guards against reintroducing these logs.
+
 ## Known limitations and unimplemented product capabilities
 
 These are intentionally not represented as shipped:
