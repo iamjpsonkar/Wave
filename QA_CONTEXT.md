@@ -21,7 +21,7 @@
 ## Current test inventory (source, not execution)
 
 - **76 preserved test definitions** are organized across 11 focused spec files.
-- Node unit tests: 30 definitions under `tests/unit/storage/` (25? split by domain) and `tests/unit/safety/` (5).
+- Node unit tests: 25 definitions under `tests/unit/storage/` and 5 under `tests/unit/safety/`.
 - Playwright Chromium E2E: 46 definitions under `tests/e2e/workspace/`, `tests/e2e/markdown/`, `tests/e2e/editor/` and `tests/e2e/ui/`.
 - Shared Node fixture: `tests/helpers/storage-fixtures.js`; shared browser fixture and page helpers: `tests/e2e/fixtures/workspace.ts`.
 - E2E fixture: Origin Private File System (OPFS) directory handles; `showDirectoryPicker` is replaced with a fixture and permission query/request behavior is simulated.
