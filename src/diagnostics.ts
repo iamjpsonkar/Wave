@@ -5,6 +5,8 @@ export interface DiagnosticSink { write(event: DiagnosticEvent): void }
 
 const SENSITIVE_KEY = /(content|markdown|document|token|secret|password|credential|path|filename|asset|email|user)/i;
 const sinks = new Set<DiagnosticSink>();
+const MAX_DIAGNOSTIC_EVENTS = 200;
+const diagnosticHistory: DiagnosticEvent[] = [];
 let configuredLevel: DiagnosticLevel = 'warn';
 const levels: Record<DiagnosticLevel, number> = { error: 0, warn: 1, info: 2, debug: 3 };
 function safeFields(fields: DiagnosticFields): DiagnosticFields {
@@ -22,9 +24,13 @@ export function createOperationId(): string { return globalThis.crypto?.randomUU
 export function reportDiagnostic(level: DiagnosticLevel, event: string, fields: DiagnosticFields = {}, operationId = createOperationId()): void {
   if (levels[level] > levels[configuredLevel]) return;
   const record: DiagnosticEvent = { level, event: event.slice(0, 120), timestamp: new Date().toISOString(), operationId, fields: safeFields(fields) };
+  diagnosticHistory.push(record);
+  if (diagnosticHistory.length > MAX_DIAGNOSTIC_EVENTS) diagnosticHistory.splice(0, diagnosticHistory.length - MAX_DIAGNOSTIC_EVENTS);
   for (const sink of sinks) { try { sink.write(record); } catch { /* Diagnostic sinks must never disrupt application work. */ } }
   if (level === 'error') console.error('[Wave]', record);
   else if (level === 'warn') console.warn('[Wave]', record);
   else if (configuredLevel === 'debug') console.info('[Wave]', record);
 }
-export function resetDiagnosticsForTests(): void { sinks.clear(); configuredLevel = 'warn'; }
+export function getDiagnosticHistory(): DiagnosticEvent[] { return diagnosticHistory.map(event => ({ ...event, fields: { ...event.fields } })); }
+export function clearDiagnosticHistory(): void { diagnosticHistory.length = 0; }
+export function resetDiagnosticsForTests(): void { sinks.clear(); diagnosticHistory.length = 0; configuredLevel = 'warn'; }
