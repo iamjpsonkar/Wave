@@ -532,6 +532,10 @@ export async function validateAttachmentContent(file: File): Promise<void> {
   }
   const signatures=ACTIVE_ATTACHMENT_SIGNATURES.filter(item=>item.mime!== 'image/svg+xml' && item.mime!=='text/html');
   const matched=signatures.filter(item=>item.matches(bytes));
+  const containerSignatures=matched.filter(item=>item.mime==='application/zip'||item.mime==='application/gzip');
+  if(containerSignatures.length && !containerSignatures.some(item=>item.mime===file.type)) {
+    throw new Error('The attachment content does not match its declared file type.');
+  }
   if(matched.length && !matched.some(item=>item.mime===file.type)) {
     throw new Error('The attachment content does not match its declared file type.');
   }
