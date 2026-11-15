@@ -867,3 +867,13 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Candidate versions: Vite 8.3.8/plugin-react 6.3.0; React/React DOM 19.3.1 and matching React type packages 19.3.0; TypeScript 6.0.3; react-markdown 10.1.0; lucide-react 1.72.0. TypeScript 7 is deferred under issue #140 because stable typescript-eslint 8.72.2 does not support its peer range yet.
 - License inventory: 161 package entries (MIT 142, Apache-2.0 2, ISC 3, MPL-2.0 12, BSD-3-Clause 1, 0BSD 1). Third-party notices document MPL-2.0 source/notice obligations; this is not legal certification.
 - No local tests/build were run; all verification above is from exact-head CI. DEV_CONTEXT is the final handoff record for this implementation batch.
+
+## 2026-11-15 — Backup regression audit follow-up (#137)
+
+- Branch: `WAVE-0137-backup-test-audit`, based on `main` at `222ce3bf818fde45a15f853f87c4cc368242f663`.
+- Current-layout audit found duplicate backup-lock and copied-snapshot tests in `tests/unit/safety/concurrency.test.js`. Removed the redundant definitions, retained one canonical test for each invariant, and added external source-mutation-during-copy coverage.
+- Strengthened the successful backup test to compare the actual snapshot document content in `tests/unit/storage/trash-backup.test.js`.
+- No production code changed. Detailed source findings and verification limits are recorded in `etc/history/dev-build.md`.
+- Verification: source-level edit/review only through GitHub. No local Node tests, typecheck, build, Playwright, or Docker run was executed. Exact-head PR CI is pending; do not infer success from the earlier PR #139 run.
+- Next: inspect the exact PR CI result, then reconcile issue #137 and continue the separate documentation-link and dependency-license audits.
+
