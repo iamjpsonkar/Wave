@@ -673,3 +673,10 @@ This remains historical CI evidence and does not verify later commits. The curre
 - The repeatable issues were invalid color directive text being transformed as a wiki link and an E2E style assertion comparing CSS hex text against Chromium's normalized RGB output. Flaky cases involved a frozen second-tab clock during cross-tab recovery and typing before list-editor caret restoration.
 - Follow-up patch: preserve malformed `color:`/`bg:` directives literally; assert computed RGB background color; remove the unnecessary second-tab fake clock and explicitly verify the recovery prompt; wait for list editor focus/caret restoration before subsequent typing.
 - Fresh CI is required. No local tests were run. This handoff is the final documentation action for this remediation pass.
+
+
+## Latest cross-tab recovery test correction — 2026-11-15
+
+- CI `43688050754`: 47/48 E2E passed; 30 Node tests, typecheck, production build and container build passed. The only failure was the recovery prompt assertion: the source tab autosaved its content after 600ms, before the second tab attempted recovery.
+- Updated the E2E setup to freeze only the source page's clock after workspace setup and before editing. The immediate IndexedDB recovery journal write can complete while the delayed Markdown autosave stays pending. The second page is intentionally left on real time.
+- Fresh CI is required. No local browser test is claimed. This is the final documentation update for this pass.
