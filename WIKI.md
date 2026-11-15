@@ -56,13 +56,13 @@ Before making any change:
 
 1. Identify the behavior, decision, status or architecture that changed.
 2. Update the existing authoritative Markdown source(s), not every file indiscriminately:
-   - Shipped behavior → `FEATURES.md`, relevant user guide and/or `docs/MARKDOWN_SUPPORT.md`.
-   - Product scope or a new idea → `upcoming-features.md`; delivery ordering/dependencies → `trash/priority-features.md`.
+   - Shipped behavior → `FEATURES.md`, relevant user guide and/or `trash/docs/MARKDOWN_SUPPORT.md`.
+   - Product scope or a new idea → `trash/upcoming-features.md`; delivery ordering/dependencies → `trash/priority-features.md`.
    - UI defects/gaps/proposals → `trash/UI_BACKLOG.md`, preserving UIB/UI/UIF IDs.
    - Open/fixed defect status → `trash/bugs.md` / `trash/fixed-bugs.md` only when a genuine QA register change is required.
    - QA evidence and limitations → `QA_CONTEXT.md`.
    - Fix/regression history → `trash/dev-fixed.md`; features/build/CI/deployment history → `trash/dev-build.md`.
-   - Architecture/deployment/contributor guidance → relevant file under `docs/` or `CONTRIBUTING.md`.
+   - Architecture/deployment/contributor guidance → relevant file under `docs/` or `trash/CONTRIBUTING.md`.
 3. Update cross-links and navigation indexes (`README.md`, `docs/README.md`, `WIKI.md`) when the file map, onboarding or durable project rules change.
 4. Update `DEV_CONTEXT.md` **last** with the current baseline, changed areas, verification state and links to the detailed records.
 5. If no existing Markdown needs a content change, record in the appropriate development log why documentation was not applicable. Never create filler edits.
@@ -228,7 +228,7 @@ This section consolidates durable directions repeatedly given by the product own
 ### Preserve the whole product
 
 - Wave has many features and long-term ideas. The user explicitly rejected removing earlier features when new priorities were added.
-- `upcoming-features.md` is the complete feature catalogue; `trash/priority-features.md` orders work. Neither should be silently shortened.
+- `trash/upcoming-features.md` is the complete feature catalogue; `trash/priority-features.md` orders work. Neither should be silently shortened.
 - “Build all priority features” means implement the agreed priority scope in sensible batches, not delete lower-priority features or claim unimplemented work is shipped.
 - When choosing the next task, inspect the latest backlog and current source, then pick the next unfinished, dependency-ready item.
 - Maintain existing behavior, prior features, user decisions and historical context.
@@ -242,7 +242,7 @@ This section consolidates durable directions repeatedly given by the product own
 - `trash/bugs.md` is the current open-bug register; `trash/fixed-bugs.md` is the historical fixed-bug/regression register. They are not general implementation journals.
 - The user explicitly directed development logs to be maintained in `trash/dev-fixed.md` and `trash/dev-build.md`, not to keep editing the legacy bug files for every implementation.
 - Keep `trash/features-gap.md` as the Markdown compatibility checklist. UI bugs, UI gaps and UI feature proposals now share `trash/UI_BACKLOG.md` with separate sections.
-- Keep `upcoming-features.md` (full product scope) distinct from `trash/priority-features.md` (delivery order).
+- Keep `trash/upcoming-features.md` (full product scope) distinct from `trash/priority-features.md` (delivery order).
 - Update relevant user-facing docs and trackers for every shipped feature. Update `DEV_CONTEXT.md` last in each implementation batch.
 
 ### UI/product requests recorded
@@ -453,23 +453,23 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `WIKI.md` | This comprehensive product/repository/agent orientation | Read first; update when durable cross-project decisions or repository structure materially change |
 | `DEV_CONTEXT.md` | Canonical concise developer handoff and current implementation baseline | Read before every coding task; update last after each implementation batch |
 | `README.md` | Public project overview, setup and deployment | Update when onboarding, capabilities or run/deploy workflow changes |
-| `CONTRIBUTING.md` | Contributor workflow and engineering rules | Update when contribution or verification practices change |
+| `trash/CONTRIBUTING.md` | Contributor workflow and engineering rules | Update when contribution or verification practices change |
 | `trash/dev-fixed.md` | Append-only-ish implementation fix and regression history | Record bug fixes and regression tests |
 | `trash/dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
-| `upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
+| `trash/upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
 | `trash/priority-features.md` | Delivery order, priorities and dependencies | Reprioritize transparently; preserve complete scope |
 | `FEATURES.md` | Combined shipped-feature overview and detailed feature map | Update shipped/planned status with evidence |
 | `docs/ROADMAP.md` | Release sequencing | Update when delivery milestones change |
-| `docs/ARCHITECTURE.md` | Current architecture, boundaries, privacy and reliability | Update when architecture changes |
-| `docs/MARKDOWN_SUPPORT.md` | User-facing Markdown syntax/support guide | Update when parser, renderer or export behavior changes |
+| `trash/docs/ARCHITECTURE.md` | Current architecture, boundaries, privacy and reliability | Update when architecture changes |
+| `trash/docs/MARKDOWN_SUPPORT.md` | User-facing Markdown syntax/support guide | Update when parser, renderer or export behavior changes |
 | `trash/features-gap.md` | Markdown compatibility gap checklist | Update checklist status and acceptance evidence |
 | `trash/UI_BACKLOG.md` | Consolidated UIB/UI/UIF bug, gap and feature register | Preserve IDs, statuses, criteria, evidence and history |
-| `diagram-features.md` | Specialist diagram research, capability map and native diagram editor proposal | Consult for visual diagram scope/architecture |
+| `trash/diagram-features.md` | Specialist diagram research, capability map and native diagram editor proposal | Consult for visual diagram scope/architecture |
 | `trash/bugs.md` | Current open reliability/functional bug register | Update only during explicit bug-register/QA reconciliation |
 | `trash/fixed-bugs.md` | Historical fixed bug descriptions and regression scenarios | Preserve history; recheck affected scenarios after related changes |
 | `QA_CONTEXT.md` | Consolidated current QA disposition, test inventory and historical audit/evidence trail | Refresh current status while preserving useful historical findings |
-| `github-issues.md` | Index of GitHub defect/gap and roadmap issues | Refresh after issue creation/closure/reconciliation |
-| `docs/DOCKER.md` | Docker and Compose deployment instructions | Update when container/Nginx/Compose behavior changes |
+| `trash/github-issues.md` | Index of GitHub defect/gap and roadmap issues | Refresh after issue creation/closure/reconciliation |
+| `trash/docs/DOCKER.md` | Docker and Compose deployment instructions | Update when container/Nginx/Compose behavior changes |
 | `docs/README.md` | Documentation navigation index | Update when docs are added, renamed or reorganized |
 
 ### File consolidation rules — current state
@@ -481,9 +481,9 @@ The following consolidations have been completed:
 
 The former source files were removed only after the consolidated destinations were created and references migrated. Preserve every stable ID and meaningful requirement when updating the consolidated files.
 - Keep `trash/dev-fixed.md` and `trash/dev-build.md` distinct.
-- Keep `upcoming-features.md` and `trash/priority-features.md` distinct.
+- Keep `trash/upcoming-features.md` and `trash/priority-features.md` distinct.
 - Keep `trash/bugs.md` and `trash/fixed-bugs.md` distinct.
-- Keep `trash/features-gap.md` and `diagram-features.md` as specialist checklist/research files.
+- Keep `trash/features-gap.md` and `trash/diagram-features.md` as specialist checklist/research files.
 - Keep `DEV_CONTEXT.md` concise; historical implementation detail belongs in the development logs.
 
 ---
@@ -649,14 +649,14 @@ Use competitor research as workflow inspiration, not as an instruction to copy f
 - Anytype — offline-first objects, relations, encryption and peer-to-peer sync.
 - Outline — structured knowledge base, collections, permissions, search and navigation.
 - Specialist diagrams: diagrams.net/draw.io, Excalidraw, tldraw, Miro, FigJam, Lucidchart and related products.
-- Specialist research, reading, assets, forms, automation and publishing references are catalogued in `upcoming-features.md` and `diagram-features.md`.
+- Specialist research, reading, assets, forms, automation and publishing references are catalogued in `trash/upcoming-features.md` and `trash/diagram-features.md`.
 
 ---
 
 ## 17. Final agent checklist
 
 Before coding:
-- [ ] Read `WIKI.md`, `DEV_CONTEXT.md` and `CONTRIBUTING.md`.
+- [ ] Read `WIKI.md`, `DEV_CONTEXT.md` and `trash/CONTRIBUTING.md`.
 - [ ] Refresh current `main` baseline and relevant CI status.
 - [ ] Inspect source and tests, not just documentation.
 - [ ] Identify existing feature/bug/UI/roadmap IDs.
