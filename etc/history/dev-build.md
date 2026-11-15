@@ -587,3 +587,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added ongoing maintenance requirements to `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md`: verify exact upstream license/NOTICE files, inventory new assets, preserve attribution and escalate ambiguous terms. CI's check is metadata screening only, not a legal compatibility opinion.
 - Open follow-up items: inspect each package's actual LICENSE/NOTICE files before release redistribution; verify the exact attribution string and distribution conditions for caniuse-lite; pin or self-host Google Fonts with OFL text/author records if deterministic/offline assets are required. No license terms have been changed and no package/asset has been replaced.
 - Branch `WAVE-0118`. This work was performed through the GitHub API; no local execution or CI result is claimed yet. Exact-head CI and script runtime verification remain pending.
+
+## 2026-11-15 — Issue #118 audit maintenance refinement
+
+- Committed the exact dependency snapshot at `etc/legal/dependency-license-inventory.json`: 221 lockfile packages with each resolved version, declared license, npm source URL, integrity digest and dev-only marker. Snapshot was structurally reconciled against the current lockfile; all 221 records matched.
+- Strengthened `scripts/check-dependency-licenses.mjs` to compare that committed snapshot with current package-lock metadata, fail on stale inventory, missing declarations or unrecognized license identifiers, and provide an explicit reviewed refresh command (`npm run license:audit:update`). This is a lockfile metadata guard, not a per-package legal review.
+- Added package-specific attention to `baseline-browser-mapping@2.11.37` and `typescript@5.7.3` (Apache-2.0), and documented the package-level CC-BY-4.0 item and attribution follow-up for caniuse-lite.
+- The exact inventory refresh removes volatile lockfile blob SHA from the content comparison so regenerating the same package metadata does not create a false stale-inventory failure.
+- Verification remains GitHub source/metadata inspection only. Script runtime, full CI and individual tarball LICENSE/NOTICE review are not yet verified.
