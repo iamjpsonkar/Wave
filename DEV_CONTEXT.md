@@ -748,3 +748,9 @@ The initial Trivy attempt found a HIGH Dockerfile non-root configuration issue a
 - Run [43724070652](https://github.com/iamjpsonkar/Wave/actions/runs/43724070652) on exact head `d4fd5b1d258c44e4a946daeb50343532cc2594bf` failed only the attachment validation unit test (38/39 passed). Container build passed.
 - The prior patch did not fix the failing SVG spoof path: `validateAttachmentContent` filtered SVG/HTML from signature matching and relied on a separate text-prefix check, while a test also called `addAsset` for a case where `validateAttachmentFile` already rejected the file before content validation. This made the assertions ambiguous and the content signature branch incompletely covered.
 - Unified known active/container signature classification (SVG, HTML, ZIP, gzip, WASM), require declared MIME match for those signatures, and changed the regression to call `validateAttachmentContent` directly for that specific layer. New CI on the resulting branch head remains the required verification.
+
+
+### 2026-11-15 — Attachment test diagnostics
+
+- Run [43724391529](https://github.com/iamjpsonkar/Wave/actions/runs/43724391529), job [132843050515](https://github.com/iamjpsonkar/Wave/actions/runs/43724391529/job/132843050515) failed at line 68 because a renamed SVG payload is specifically rejected as active SVG/HTML while the assertion expected generic MIME mismatch. Updated test expectation and added per-case START/PASS/FAIL output plus safe signature metadata logs.
+- `./test.sh` was not run locally: GitHub clone was blocked by DNS/network resolution failure. Do not record local success; verify on new exact PR head.
