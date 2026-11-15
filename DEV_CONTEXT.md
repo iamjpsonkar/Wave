@@ -645,3 +645,10 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Fixed two verification issues: Settings E2E attempted to interact with Preview behind an open modal; Lucide FileCode2 SVG renders class `lucide-file-code2`, not `lucide-file-code-2`.
 - Changed files: `src/App.tsx`, `src/MarkdownBlockEditor.tsx`, `tests/e2e/workspace.spec.ts`; QA and archive notes updated. Fresh workflow must be checked against the resulting latest head.
 - No local commands or test runs were available through this GitHub-only task. Do not claim the fixes pass until CI completes. Native picker/OS permission changes, external-process read/save/backup/restore races, complete accessibility review and controlled process-termination testing remain open; do not merge PR #101 or close issue #1.
+
+## 40. WAVE-0001 verification handoff — latest code commit and pending CI
+
+- Remediation source commits: `763008201aa6f8112345f6343bb480fbfbd85372`, `43830417f3be88556a4db952789416cc46211916`, `9c1e653e38e3478e7eb9a1e1f0249775f044d768`.
+- Documentation commits followed source changes: QA `487c834d65e0dd1cdb1b187bb6db5a4a2bc37679`, WIKI `19f6ccb0ee492fe3b57ff505cc6e03e996dc5b70`, dev build `75b12146d47c10070c828b6f26afc710ea21b5e4`, dev fixed `af89ee50c770571a258f524e05ade5531545d969`, bug register updated separately.
+- This section is written last as the developer handoff. Check GitHub Actions for the newest commit on `WAVE-0001`; earlier run 43684569184 predates the latest corrections and remains a 42-pass / 6-fail failure, not a pass.
+- The PR is intentionally unmerged; issue #1 remains open. No local test, typecheck or build was executed in this session.
