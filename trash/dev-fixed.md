@@ -360,3 +360,9 @@ Strengthen deterministic browser coverage for the WAVE-031 reliability/QA gap wi
 - Repeated dialog-only failures showed that prior timer changes did not establish the underlying cause.
 - Added direct journal assertions in both browser tabs before clicking the page in the second tab.
 - No claim of a production fix is made until CI demonstrates the record is shared and the recovery prompt is correctly shown.
+
+
+## Cross-tab recovery diagnostic assertion correction
+- CI #918 established the source journal write and source workspace-handle match were successful.
+- Fixed the test's over-escaped newline expectations; this was a test defect and not a production recovery fix.
+- Further verification remains required for second-tab visibility and the complete recovery prompt/decline flow.
