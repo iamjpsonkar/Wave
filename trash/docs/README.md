@@ -1,10 +1,10 @@
 # Wave documentation
 
-> For the complete product vision, repository architecture, owner instructions, development rules and AI-agent onboarding, start with the [Wave Wiki](../wiki.md).
+> For the complete product vision, repository architecture, owner instructions, development rules and AI-agent onboarding, start with the [Wave Wiki](../../WIKI.md).
 
 ## Understand and use Wave
 
-- [Project overview and quick start](../README.md)
+- [Project overview and quick start](../../README.md)
 - [Implemented feature overview and detailed feature map](../FEATURES.md)
 - [Markdown syntax and compatibility](MARKDOWN_SUPPORT.md)
 - [Docker deployment](DOCKER.md)
@@ -21,8 +21,8 @@
 ## Development and quality
 
 - [Contributor guide](../CONTRIBUTING.md)
-- [Developer context / AI handoff](../DEV_CONTEXT.md)
-- [Consolidated QA context and audit history](../QA_CONTEXT.md)
+- [Developer context / AI handoff](../../DEV_CONTEXT.md)
+- [Consolidated QA context and audit history](../../QA_CONTEXT.md)
 - [Consolidated UI bugs, gaps and feature backlog](../UI_BACKLOG.md)
 - [Current open bugs](../bugs.md)
 - [Fixed bugs and regression scenarios](../fixed-bugs.md)
@@ -41,4 +41,4 @@
 
 ## Documentation maintenance
 
-Every implementation/QA task must review and update the authoritative Markdown files that describe the changed behavior. See the [wiki's documentation enforcement policy](../wiki.md#documentation-enforcement-after-every-task). Avoid duplicate sources of truth; consolidate meaningful content before removing obsolete Markdown files.
+Every implementation/QA task must review and update the authoritative Markdown files that describe the changed behavior. See the [wiki's documentation enforcement policy](../../WIKI.md#documentation-enforcement-after-every-task). Avoid duplicate sources of truth; consolidate meaningful content before removing obsolete Markdown files.
