@@ -692,3 +692,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ### Current CI investigation — cross-tab recovery
 The repeated recovery-dialog failure is being isolated with direct browser-side IndexedDB checks. The E2E test now verifies the source tab's saved draft text/session/workspace handle and confirms the second tab sees the same record with a different session ID before invoking `open()`. Existing dialog-source and declined-record-retention assertions are preserved. Treat this as diagnostic hardening, not a confirmed production fix, until CI proves the complete flow passes.
+
+
+### Cross-tab recovery — plan and current evidence
+CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was correctly persisted: exact content, source session ID, and workspace-handle identity all matched. The new diagnostic test itself failed because its expected Markdown newline escapes were double-escaped. Corrected those expectations in commit `418e1e5`. Next CI must verify second-tab visibility and the recovery prompt/decline flow. If it fails, inspect the first failing boundary (IndexedDB visibility, handle identity, newest-draft selection, or `open()` decision) and fix that boundary without weakening assertions. Require the full `test.sh` CI gate and container job to pass before declaring completion.
