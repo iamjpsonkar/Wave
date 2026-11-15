@@ -193,7 +193,9 @@ test('two tabs editing the same workspace do not silently overwrite each other',
 });
 
 test('recovery prompt identifies a draft created in another tab and preserves its record when declined', async ({ page, context }) => {
-  await openWorkspace(page);
+  await page.goto('/?waveDebug=1');
+  await page.getByRole('button', { name: /Choose a workspace/ }).click();
+  await expect(page.getByText('YOUR WORKSPACE IS READY')).toBeVisible();
   const firstEditor = await createPage(page, 'Cross-tab Recovery');
   // Freeze only the source tab's autosave timer after setup. Its recovery
   // journal writes are immediate, but the 600ms Markdown save must not
@@ -230,7 +232,7 @@ test('recovery prompt identifies a draft created in another tab and preserves it
   const second = await context.newPage();
   const sharedFixtureId = await page.evaluate(() => (window as any).__waveTestFixtureId as string);
   await installWorkspaceFixture(second, sharedFixtureId);
-  await second.goto('/');
+  await second.goto('/?waveDebug=1');
   await second.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(second.getByRole('button', { name: /Cross-tab Recovery/ })).toBeVisible();
   const secondJournal = await second.evaluate(async () => {
@@ -301,7 +303,8 @@ test('recovery prompt identifies a draft created in another tab and preserves it
       record.tabId === sourceJournal.tabId
     );
   }, { timeout: 5000, message: 'Declining cross-tab recovery must preserve the source tab journal record' }).toBe(true);
-  expect(secondRecoveryLogs).toEqual([]);
+  expect(secondRecoveryLogs.some(line => line.includes('draft-journal:read-result'))).toBe(true);
+  expect(secondRecoveryLogs.some(line => line.includes('recovery:stage'))).toBe(true);
 });
 
 test('command palette supports filtering and keyboard execution of workspace actions', async ({ page }) => {
