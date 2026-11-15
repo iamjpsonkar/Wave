@@ -41,7 +41,7 @@ test('createFolder returns full nested path and rejects duplicate names',async()
 test('asset lookup permission errors are not treated as free filenames',async()=>{
   const denied=new MemoryDirectoryHandle('assets');
   denied.getFileHandle=async()=>{throw new DOMException('Denied','NotAllowedError');};
-  await assert.rejects(()=>addAsset(denied,new File(['data'],'diagram.png',{type:'image/png'})),/Denied/);
+  await assert.rejects(()=>addAsset(denied,new File([new Uint8Array([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a])],'diagram.png',{type:'image/png'})),/Denied/);
 });
 
 test('concurrent same-name asset uploads receive distinct filenames',async()=>{
