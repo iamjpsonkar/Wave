@@ -1,13 +1,14 @@
 import { expect } from '@playwright/test';
 
-export async function installWorkspaceFixture(page: import('@playwright/test').Page) {
-  await page.addInitScript(async () => {
+export async function installWorkspaceFixture(page: import('@playwright/test').Page, sharedFixtureId?: string) {
+  const fixtureId = sharedFixtureId ?? 'wave-e2e-' + crypto.randomUUID();
+  await page.addInitScript(async (fixtureId: string) => {
     // Each browser context receives an isolated OPFS workspace. Multi-tab
     // scenarios reopen the same workspace through the recent-workspace handle.
-    const fixtureId = 'wave-e2e-' + crypto.randomUUID();
     const opfsRoot = await navigator.storage.getDirectory();
     const root = await opfsRoot.getDirectoryHandle(fixtureId, { create: true });
     Object.defineProperty(window, '__waveTestRoot', { value: root, configurable: true });
+    Object.defineProperty(window, '__waveTestFixtureId', { value: fixtureId, configurable: true });
     Object.defineProperty(window, 'showDirectoryPicker', { value: async () => root, configurable: true });
     const permissionPrototype = Object.getPrototypeOf(root);
     Object.defineProperty(permissionPrototype, 'queryPermission', {
@@ -31,7 +32,7 @@ export async function installWorkspaceFixture(page: import('@playwright/test').P
         return originalTransaction.call(this, storeNames, mode, options);
       }
     });
-  });
+  }, fixtureId);
 }
 
 export async function openWorkspace(page: import('@playwright/test').Page) {
