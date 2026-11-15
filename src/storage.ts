@@ -317,13 +317,25 @@ export async function restoreBackupToNewWorkspace(workspace:Workspace,name:strin
   const startedAt=new Date().toISOString();
   await write(wave,'restore-status.json',JSON.stringify({status:'in-progress',backup:name,startedAt},null,2));
   try{
-    const docsCopied=await copyFolder(await source.getDirectoryHandle('documents'),await wave.getDirectoryHandle('documents',{create:true}));
-    const assetsCopied=await copyFolder(await source.getDirectoryHandle('assets'),await wave.getDirectoryHandle('assets',{create:true}));
+    const sourceDocuments=await source.getDirectoryHandle('documents');
+    const sourceAssets=await source.getDirectoryHandle('assets');
+    const beforeDocs=await snapshotTree(sourceDocuments),beforeAssets=await snapshotTree(sourceAssets);
+    const beforeManifest=await optionalFileSnapshot(source,'manifest.json'),beforeSettings=await optionalFileSnapshot(source,'settings.json');
+    const targetDocuments=await wave.getDirectoryHandle('documents',{create:true});
+    const targetAssets=await wave.getDirectoryHandle('assets',{create:true});
+    const docsCopied=await copyFolder(sourceDocuments,targetDocuments);
+    const assetsCopied=await copyFolder(sourceAssets,targetAssets);
     if(docsCopied.files!==backupStatus.documents||assetsCopied.files!==backupStatus.assets)throw new Error('Backup contents do not match the completion manifest; restore was stopped.');
+    const afterDocs=await snapshotTree(sourceDocuments),afterAssets=await snapshotTree(sourceAssets);
+    const copiedDocs=await snapshotTree(targetDocuments),copiedAssets=await snapshotTree(targetAssets);
+    if(beforeDocs!==afterDocs||beforeAssets!==afterAssets||beforeDocs!==copiedDocs||beforeAssets!==copiedAssets)throw new Error('Backup files changed during restore or the restored snapshot differs from its source. The destination is marked incomplete; retry from an unchanged backup.');
     for(const filename of ['manifest.json','settings.json']){
       try{const f=await(await source.getFileHandle(filename)).getFile();await write(wave,filename,f);}
       catch(error){if(!isNotFound(error))throw error;}
     }
+    const afterManifest=await optionalFileSnapshot(source,'manifest.json'),afterSettings=await optionalFileSnapshot(source,'settings.json');
+    const copiedManifest=await optionalFileSnapshot(wave,'manifest.json'),copiedSettings=await optionalFileSnapshot(wave,'settings.json');
+    if(beforeManifest!==afterManifest||beforeSettings!==afterSettings||beforeManifest!==copiedManifest||beforeSettings!==copiedSettings)throw new Error('Backup metadata changed during restore or the restored metadata differs from its source. The destination is marked incomplete; retry from an unchanged backup.');
     await write(wave,'restore-source.json',JSON.stringify({backup:name,restoredAt:new Date().toISOString()},null,2));
     await write(wave,'restore-status.json',JSON.stringify({status:'complete',backup:name,startedAt,completedAt:new Date().toISOString()},null,2));
     return targetName;
