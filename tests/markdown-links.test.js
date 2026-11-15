@@ -49,7 +49,6 @@ function localMarkdownTargets(source) {
     } catch {
       decoded = pathname;
     }
-    const target = path.resolve(path.dirname(match.input === undefined ? root : root), decoded);
     targets.push(decoded);
   }
   return targets;
