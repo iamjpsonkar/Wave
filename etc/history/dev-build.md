@@ -1179,3 +1179,9 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Container/Compose validation and image build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy filesystem/image scans passed.
 - GitHub Pages deployment was skipped as expected for a pull request.
 - Local tests/build were not run; this evidence is from GitHub Actions. The subsequent handoff-only documentation commit requires its own exact-head CI before merge.
+
+### Current-main port verification correction — 2026-11-15
+
+- After PR #141 merged, the Markdown audit was recreated on fresh main. The first exact-head run `43739976737` correctly caught six stale Markdown-support/coverage links retained in the merged developer handoff.
+- Corrected those references in `DEV_CONTEXT.md` while preserving the PR #141 handoff and history. Fresh exact-head CI is required before merge.
+
