@@ -130,8 +130,8 @@ The OPFS fixture is not equivalent to a real user-picked folder. Permission deni
 ## Active bug register and fixed-bug baseline
 
 Canonical registers:
-- Open findings: [bugs.md](./bugs.md)
-- Fixed findings and mandatory regression scenarios: [fixed-bugs.md](./fixed-bugs.md)
+- Open findings: [bugs.md](./trash/bugs.md)
+- Fixed findings and mandatory regression scenarios: [fixed-bugs.md](./trash/fixed-bugs.md)
 
 At the last inspection:
 - `bugs.md` listed **WAVE-031** and **WAVE-039** as open.
