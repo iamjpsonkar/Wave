@@ -17,7 +17,7 @@ Wave is a local-first workspace for notes, documents and ideas. Choose a folder 
 - **Data safety:** autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore to a separate workspace.
 - **Responsive workspace:** full-window editor, mobile navigation and keyboard-oriented workflows.
 
-See [FEATURES.md](./FEATURES.md) for the combined shipped-feature overview and detailed feature map. The [complete product blueprint](./trash/upcoming-features.md) and [priority plan](./trash/priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
+See [FEATURES.md](./trash/FEATURES.md) for the combined shipped-feature overview and detailed feature map. The [complete product blueprint](./trash/upcoming-features.md) and [priority plan](./trash/priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
 
 ## Choose how to run Wave
 
@@ -60,7 +60,7 @@ Open [http://localhost:8080](http://localhost:8080). To choose another host port
 docker compose down
 ```
 
-The container builds the frontend and serves static files through an unprivileged Nginx process. It uses a read-only root filesystem, drops Linux capabilities and exposes an HTTP health check. See the [Docker deployment guide](docs/DOCKER.md) for standalone Docker, HTTPS/reverse-proxy and troubleshooting instructions.
+The container builds the frontend and serves static files through an unprivileged Nginx process. It uses a read-only root filesystem, drops Linux capabilities and exposes an HTTP health check. See the [Docker deployment guide](trash/docs/DOCKER.md) for standalone Docker, HTTPS/reverse-proxy and troubleshooting instructions.
 
 **Important:** Docker currently hosts the browser application only. It does not add a backend, database, user accounts, shared server-side workspace or collaboration service. When a user opens Wave, the browser still accesses a folder on that user's own device through the File System Access API. For remote access, serve the site over HTTPS; browser filesystem access and supported-browser requirements still apply.
 
