@@ -877,3 +877,8 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Verification: source-level edit/review only through GitHub. No local Node tests, typecheck, build, Playwright, or Docker run was executed. Exact-head PR CI is pending; do not infer success from the earlier PR #139 run.
 - Next: inspect the exact PR CI result, then reconcile issue #137 and continue the separate documentation-link and dependency-license audits.
 
+### PR #141 verification update — 2026-11-15
+
+- Exact-head CI for `c1e6eeff71bb57d03d294e343aae0c85a0c35e41` passed: 38 Node tests, TypeScript typecheck, production build, 50/50 Playwright scenarios, container build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy. See [workflow 43737101051](https://github.com/iamjpsonkar/Wave/actions/runs/43737101051) and `etc/history/dev-build.md`.
+- The branch was then updated with this verification record. Require a fresh exact-head CI run for the documentation commit before merge. PR #141 remains open; issue #137 remains open for the other maintenance audits.
+
