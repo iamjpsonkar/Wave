@@ -23,11 +23,26 @@ jobs:
       contents: read
       security-events: write
     steps:
-      - name: Check out complete history for PR baseline comparison
+      - name: Check out scheduled/default-branch source
+        if: github.event_name != 'pull_request'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
-          fetch-depth: 0
           persist-credentials: false
+      - name: Check out target branch baseline commit
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify target branch baseline commit
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          actual=$(git rev-parse HEAD)
+          echo "OSV baseline expected: ${{ github.event.pull_request.base.sha }}"
+          echo "OSV baseline actual:   $actual"
+          test "$actual" = "${{ github.event.pull_request.base.sha }}"
       - name: Scan target branch baseline
         if: github.event_name == 'pull_request'
         id: scan-old
@@ -40,9 +55,21 @@ jobs:
             --include-git-root
             -r
             ./
-      - name: Check out proposed pull-request commit
+      - name: Check out proposed pull-request head commit
         if: github.event_name == 'pull_request'
-        run: git checkout -f "$GITHUB_SHA"
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Verify proposed pull-request head commit
+        if: github.event_name == 'pull_request'
+        shell: bash
+        run: |
+          actual=$(git rev-parse HEAD)
+          echo "OSV proposed expected: ${{ github.event.pull_request.head.sha }}"
+          echo "OSV proposed actual:   $actual"
+          test "$actual" = "${{ github.event.pull_request.head.sha }}"
       - name: Scan proposed pull-request commit
         if: github.event_name == 'pull_request'
         id: scan-new

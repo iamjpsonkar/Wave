@@ -777,3 +777,8 @@ The latest functional CI job [132847238237](https://github.com/iamjpsonkar/Wave/
 ### 2026-11-15 — Attachment signature policy regression correction
 
 CI run [43726027375](https://github.com/iamjpsonkar/Wave/actions/runs/43726027375) exposed compatibility regressions from requiring signatures for every image MIME: existing generic attachment fixtures deliberately contain opaque payloads. Signature-required enforcement is now limited to PDF/ZIP/gzip/WASM; recognized image signatures still reject MIME mismatches. The PNG signature test now isolates content recognition from fake-filesystem persistence. Exact-head CI pending.
+
+
+### 2026-11-15 — PR #122 QA re-review corrections
+
+Implemented both findings from QA comment [6896404719](https://github.com/iamjpsonkar/Wave/pull/122#issuecomment-6896404719): OSV now scans explicitly verified base/head commit SHAs; active SVG/HTML marker detection scans the complete attachment payload and has padded bypass regressions. Updated `docs/SECURITY_OPERATIONS.md` to state the remaining limits of this defense-in-depth check. Exact-head CI pending.

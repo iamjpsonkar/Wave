@@ -1045,3 +1045,12 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Narrowed mandatory signature presence to the supported document/container formats explicitly covered by this check (PDF, ZIP, gzip and WASM). Image signature mismatch detection remains active when a known signature is present, but metadata-only legacy image fixtures remain compatible.
 - Changed the PNG regression to directly verify signature recognition in `validateAttachmentContent`, keeping it independent from the fake storage writer's size-verification contract.
 - New exact-head CI is pending; no success is claimed yet.
+
+
+### 2026-11-15 — QA re-review findings: OSV ref correctness and padded active content
+
+- Addressed QA comment [6896404719](https://github.com/iamjpsonkar/Wave/pull/122#issuecomment-6896404719).
+- OSV pull-request baseline now checks out `github.event.pull_request.base.sha`, verifies `git rev-parse HEAD`, and scans that exact commit. The proposed scan separately checks out and verifies `github.event.pull_request.head.sha`. Both expected and actual SHAs are logged; scheduled/default-branch scans retain a separate checkout path.
+- Attachment SVG/HTML marker checks now inspect the complete bounded file payload rather than the first 512 bytes. Added padded SVG and HTML regression cases with markup beyond the old prefix boundary.
+- Security operations documentation explicitly scopes the guarantee: signature/pattern defense-in-depth, not complete parsing, malware scanning, or polyglot detection.
+- Exact-head CI and scan-result verification are pending. No CI success is claimed until the new head finishes.

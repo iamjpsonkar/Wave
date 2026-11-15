@@ -58,3 +58,8 @@ Gitleaks findings must never be copied into logs, PR comments, issue bodies or a
 ## License and legal review
 
 Automated license inventory/audit is metadata triage, not a legal opinion. Exact package tarball LICENSE/NOTICE contents, source asset attributions, Apache NOTICE obligations and CC-BY attribution in final release artifacts remain subject to manual owner/legal review. Do not mark the legal portion of issue #120 complete from a green scanner.
+
+
+## Attachment content validation boundary
+
+Wave rejects blocked extensions/MIME types, enforces the attachment size limit, and performs bounded signature checks for selected known formats. Text-based SVG/HTML markers are checked across the complete attachment payload (up to the 25 MiB attachment limit), including padded content. This is not a full parser, malware scanner, polyglot detector or guarantee that every active format is recognized. Do not describe it as comprehensive active-content detection; continue to treat attachments as untrusted data and preserve the local-only storage boundary.

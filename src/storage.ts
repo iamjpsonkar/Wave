@@ -523,11 +523,13 @@ export async function validateAttachmentContent(file: File): Promise<void> {
   // MIME metadata remains advisory and supported signatures reject only content
   // that affirmatively identifies as a different active format.
   if(!file.size)return;
-  const bytes=new Uint8Array(await file.slice(0,512).arrayBuffer());
+  // Text-based active formats can be padded or prefixed with comments. Inspect
+  // the complete bounded attachment, not only a short prefix.
+  const bytes=new Uint8Array(await file.arrayBuffer());
   const text=new TextDecoder().decode(bytes).replace(/^\uFEFF/,'').trimStart();
   console.debug('[attachment-validation] inspect', { name: file.name, declaredMime: file.type, size: file.size, prefixHex: Array.from(bytes.slice(0, 16), byte => byte.toString(16).padStart(2, '0')).join(' ') });
-  const svgLike=/^(?:<\?xml[\s\S]*?)?<svg\b/i.test(text);
-  const htmlLike=/^(?:<!doctype\s+html|<html\b|<script\b|<iframe\b)/i.test(text);
+  const svgLike=/<svg\b/i.test(text);
+  const htmlLike=/(?:<!doctype\s+html|<html\b|<script\b|<iframe\b)/i.test(text);
   if(svgLike||htmlLike) {
     console.warn('[attachment-validation] rejected active text signature', { name: file.name, declaredMime: file.type, svgLike, htmlLike });
     throw new Error('The attachment content contains active SVG or HTML content.');

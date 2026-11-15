@@ -77,6 +77,10 @@ test('attachment validation rejects active content, metadata mismatches, spoofed
   await expectReject('SVG payload declared as PNG',()=>addAsset(workspace.assets,spoofedSvg),/active SVG or HTML content/);
   const renamedSvg = new File(['<svg onload="alert(1)"></svg>'],'renamed.png',{type:'image/png'});
   await expectReject('content-only SVG validation',()=>validateAttachmentContent(renamedSvg),/active SVG or HTML content/);
+  const paddedSvg=new File([' '.repeat(1024)+'<svg onload="alert(1)"></svg>'],'padded.txt',{type:'text/plain'});
+  await expectReject('padded SVG payload beyond initial prefix',()=>validateAttachmentContent(paddedSvg),/active SVG or HTML content/);
+  const paddedHtml=new File(['<!-- '+('x'.repeat(1024))+' --><!doctype html><html><script>alert(1)</script></html>'],'padded.txt',{type:'text/plain'});
+  await expectReject('padded HTML payload beyond initial prefix',()=>validateAttachmentContent(paddedHtml),/active SVG or HTML content/);
   await expectReject('invalid PDF signature',()=>addAsset(workspace.assets,new File(['not pdf'],'document.pdf',{type:'application/pdf'})),/content does not match/);
   await expectAccept('valid PDF signature',()=>addAsset(workspace.assets,new File(['%PDF-1.7\nvalid fixture'],'valid.pdf',{type:'application/pdf'})));
   const zipBytes=new Uint8Array([0x50,0x4b,0x03,0x04,0,0,0,0]);
