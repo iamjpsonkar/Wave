@@ -510,4 +510,14 @@ test('recovery traces are quiet by default and visible only with explicit debug 
   await page.getByRole('button', { name: /Quiet Diagnostics/ }).click();
   expect(normalLogs.some(line => line.includes('[Wave recovery]'))).toBe(false);
   expect(normalLogs.some(line => line.includes('recovery:stage'))).toBe(false);
+
+  const debugPage = await page.context().newPage();
+  await installWorkspaceFixture(debugPage);
+  const debugLogs: string[] = [];
+  debugPage.on('console', message => debugLogs.push(message.text()));
+  await debugPage.goto('/?waveDebug=1');
+  await debugPage.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(debugPage.getByRole('button', { name: /Quiet Diagnostics/ })).toBeVisible();
+  await debugPage.getByRole('button', { name: /Quiet Diagnostics/ }).click();
+  await expect.poll(() => debugLogs.some(line => line.includes('recovery:stage'))).toBe(true);
 });
