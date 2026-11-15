@@ -138,4 +138,4 @@ The MIT license was selected to permit broad reuse, forks, modification and redi
 
 ## Project documentation
 
-The canonical product, engineering, quality and implementation-history references are indexed in [etc/README.md](./etc/README.md). Contributor and team procedures are in [howto/README.md](./howto/README.md). Planned capabilities are not shipped claims; consult current source and verification evidence.
+The canonical product, engineering, quality and implementation-history references are indexed in [etc/README.md](./etc/README.md). Contributor and team procedures are in [howto/README.md](./howto/README.md) and the [contributor guide](./etc/engineering/CONTRIBUTING.md). Planned capabilities are not shipped claims; consult current source and verification evidence.
