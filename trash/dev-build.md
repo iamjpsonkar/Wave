@@ -374,3 +374,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Rechecked latest completed workflow [43683760674](https://github.com/iamjpsonkar/Wave/actions/runs/43683760674): Playwright 39 passed / 9 failed; Node tests, typecheck, production build and container job passed.
 - Remaining categories: settings dialog Escape handling; icon class expectation; strict locators for code/diagram/template/color spans; color-toolbar event/state application; block-callout classification.
 - Follow-up changes pushed: allow Escape to close settings, align icon expectation with rendered Lucide class, scope template search and narrow code/diagram/color selectors, route color edits through controlled content change, and correct block-color callout classifier. Verify current PR head's next CI run before marking complete.
+
+
+## 2026-11-15 — WAVE-0001 consolidated CI remediation
+
+- Rechecked latest head run [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184): Playwright 42 passed / 6 failed; container passed. Node tests, typecheck and production build passed.
+- Fixed stale editor content usage in inline/background color actions by reading `contentRef.current`; route mutations through `handleEditorChange` to update recovery journal and visible state.
+- Fixed block background updates to replace the source range from the current block editor render, not rely on outdated offsets or bypass the draft update path.
+- Fixed Settings test modal ordering and Lucide file-code SVG class assertion.
+- Fresh CI required. No local test/build is claimed. WAVE-031 manual/native checks remain open.
