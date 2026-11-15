@@ -507,26 +507,27 @@ test('autosave write failures are visible and create a sanitized diagnostic even
   });
 });
 
-test('recovery traces are quiet by default and debug traces share one operation ID', async ({ page }) => {
-  await openWorkspace(page);
-  await createPage(page, 'Quiet Diagnostics');
-
+test('recovery traces are quiet by default and debug traces share one operation ID', async ({ page, context }) => {
   const normalLogs: string[] = [];
   page.on('console', message => normalLogs.push(message.text()));
+  await openWorkspace(page);
+  await createPage(page, 'Quiet Diagnostics');
   await page.getByRole('button', { name: /Quiet Diagnostics/ }).click();
-  expect(normalLogs.some(line => line.includes('[Wave recovery]'))).toBe(false);
-  expect(normalLogs.some(line => line.includes('recovery:stage'))).toBe(false);
+  expect(normalLogs.some(line => line.includes('[Wave]'))).toBe(false);
 
-  const debugPage = await page.context().newPage();
+  const debugPage = await context.newPage();
   const sharedFixtureId = await page.evaluate(() => (window as any).__waveTestFixtureId as string);
   await installWorkspaceFixture(debugPage, sharedFixtureId);
 
   const debugEvents: Array<{ event: string; operationId: string; level: string }> = [];
   debugPage.on('console', message => {
-    if (!message.text().includes('recovery:stage')) return;
+    if (!message.text().includes('[Wave]')) return;
     const args = message.args();
     void args[1]?.jsonValue().then(record => {
-      debugEvents.push(record as { event: string; operationId: string; level: string });
+      const typed = record as { event?: string; operationId?: string; level?: string };
+      if (typed.event === 'recovery:stage' && typed.operationId && typed.level) {
+        debugEvents.push(typed as { event: string; operationId: string; level: string });
+      }
     });
   });
 
