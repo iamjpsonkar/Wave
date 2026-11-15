@@ -146,7 +146,9 @@ Check `package.json`, lockfile, Vite config and CI workflow for exact current ve
 | `src/styles.css` | App styling, themes, responsive behavior and print/export styling |
 | `tests/storage.test.js` | Node storage, concurrency and safety regression tests |
 | `tests/e2e/workspace.spec.ts` | Playwright Chromium user journeys |
-| `playwright.config.ts` | Playwright configuration and Vite test server |
+| `config/vite.config.ts` | Vite configuration |
+| `config/playwright.config.ts` | Playwright configuration and Vite test server |
+| `config/tsconfig.app.json` | Application TypeScript project configuration |
 | `.github/workflows/ci.yml` | CI quality gates, including container build/validation |
 | `Dockerfile`, `compose.yaml`, `docker/nginx.conf` | Static frontend container and Nginx runtime |
 
