@@ -25,13 +25,9 @@ function sanitizeErrorValue(value: unknown, depth = 0): DiagnosticError | undefi
   const error = value instanceof Error ? value : undefined;
   const rawName = error?.name || (typeof value === 'object' ? 'Error' : 'NonErrorThrown');
   const name = /^[A-Za-z][A-Za-z0-9]{0,39}$/.test(rawName) ? rawName : 'Error';
-  const message = (error?.message ?? '')
-    .replace(/(?:[A-Za-z]:\\|\\\\|\/)[^\s"'<>]+/g, '[path]')
-    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, '[email]')
-    .replace(/(?:bearer\s+|token[=: ]+)[A-Za-z0-9._~+/-]{8,}/gi, '[secret]')
-    .replace(/https?:\/\/[^\s"'<>]+/gi, '[url]')
-    .replace(/#[^\s]{24,}/g, '[content]').slice(0, 180) || 'No error message provided.';
-  const result: DiagnosticError = { name, message };
+  // Exception prose is untrusted and may contain document text. Keep only the
+  // standard error class; do not attempt heuristic redaction of arbitrary prose.
+  const result: DiagnosticError = { name, message: 'Details omitted for privacy.' };
   if (error && 'cause' in error) {
     const cause = sanitizeErrorValue((error as Error & { cause?: unknown }).cause, depth + 1);
     if (cause) result.cause = cause;
