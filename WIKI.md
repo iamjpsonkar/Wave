@@ -17,13 +17,14 @@
 
 Before making any change:
 
-1. Read this `WIKI.md` in full enough to understand the relevant section.
-2. Read [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the current source baseline, implementation invariants, exact commands, latest known verification and task workflow.
+1. Read [AGENTS.md](./AGENTS.md) first. It is the single-entry operating contract and defines what Wave is, why its constraints matter, and how work must be delivered.
+2. Read this `WIKI.md` as the detailed product and repository reference, focusing on the sections relevant to the task.
+3. Read [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the current source baseline, implementation invariants, exact commands, latest known verification and task workflow.
 3. Read [CONTRIBUTING.md](./CONTRIBUTING.md) for repository contribution conventions.
 4. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
 5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [consolidated UI backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
 6. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
-7. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
+7. Check the latest commit and CI runs for the actual target branch before claiming anything is current or verified. The user may explicitly target a non-default branch.
 
 ### Agent operating contract
 
@@ -694,3 +695,14 @@ The `howto/` directory is the canonical home for operational guides and team gov
 - `howto/hiring-roadmap.md` — staged staffing plan.
 
 The former `etc/` directory has been retired after both existing guides were copied to their new canonical paths and the old files were removed. Update links to point to `howto/`; do not recreate `etc/` as a parallel documentation home.
+
+
+---
+
+## AI-agent handbook alignment — 2026-11-15
+
+- Root `AGENTS.md` is the single first-read operating contract; this wiki is the deeper reference, not a competing first-read instruction.
+- The operational handbook lives in `howto/`; use its index to select detailed contributor, QA and governance procedures.
+- Repository file paths and historical tracker locations must be verified on the active target branch before linking or editing. Historical references are not proof that a path currently exists.
+- Current source, tests, package scripts, GitHub configuration and exact-commit CI evidence determine implementation/verification facts. Historical summaries remain useful context but must be labelled as historical.
+- This alignment changes navigation and reading order only; it does not supersede feature scope, stable issue IDs or historical evidence.
