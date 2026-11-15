@@ -500,3 +500,16 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Fixed the diagnostics test's invalid TypeScript-only import/type annotations in a `.js` file. Replaced test scripts that targeted now-removed directories with explicit valid suite paths; `npm test` remains the canonical command consumed by `test.sh` and CI.
 - Updated `tests/unit/README.md` to describe the actual layout and explicitly defer storage scenario splitting until an inventory-backed move can be verified. This is a corrective stabilization, not completion of #111's full architecture target.
 - GitHub Actions was observed queued/in progress for earlier intermediate heads; it does not verify the final head after this repair. No local test, typecheck, build or browser execution was available in this GitHub-only session. Check the newest PR workflow against the final documented SHA before claiming a pass.
+
+
+## WAVE-0111 — feature-based test architecture and diagnostics — 2026-11-15
+
+- PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111`.
+- Reorganized all 30 original Node scenarios into `tests/unit/storage/workspace.test.js` (6), `tests/unit/storage/trash-backup.test.js` (13), and `tests/unit/safety/concurrency.test.js` (11). Shared in-memory filesystem fixtures now live in `tests/helpers/storage-fixtures.js`.
+- Reorganized all 48 original Playwright scenarios into workspace (18), Markdown (21), and editor (9) suites under `tests/e2e/`; shared workspace setup helpers live in `tests/e2e/fixtures/workspace.ts`.
+- Performed a source-inventory name reconciliation against the branch base: Node tests 30 → 30 (no missing, extra or duplicate names); E2E tests 48 → 48 (no missing, extra or duplicate names). This confirms scenario-name preservation, not assertion equivalence or runtime success by itself.
+- Updated Node discovery and focused scripts, retained `./test.sh` as the canonical full gate, and configured Playwright HTML reporting plus failure trace/screenshot/video. CI uploads `test-results/` and `playwright-report/` for 14 days.
+- Added typed diagnostics with level control, operation IDs, redaction, sink isolation and a bounded 200-event in-memory history. Root render/uncaught runtime failures and critical workspace operations report structured events. Settings exposes a sanitized report preview/copy/clear flow; `?waveDebug=1` opts into info/debug console output. No remote telemetry or persistent diagnostic store was added.
+- CI issue found and corrected during implementation: Node 22 treats a directory path passed directly to `node --test` as a file, so discovery now uses shell-expanded `tests/unit/**/*.test.js` globs and focused one-level globs.
+- Verification is pending for the latest head after the discovery correction and final diagnostics/docs updates. Earlier CI on intermediate commits failed for the invalid directory invocation and must not be counted as final verification. No local checkout/test execution was available in this GitHub-only session.
+- Review current Actions run for the exact final PR SHA before marking the PR ready. Do not close #111 or merge without full Node, typecheck, production build, Playwright and container success.
