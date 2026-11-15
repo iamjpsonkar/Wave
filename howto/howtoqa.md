@@ -7,8 +7,6 @@
 > Product/default integration branch: `main`
 >
 > Read [QA_CONTEXT.md](../QA_CONTEXT.md), [DEV_CONTEXT.md](../DEV_CONTEXT.md), [README.md](../README.md), and [WIKI.md](../WIKI.md) before starting. Refresh branch, source, issue, and CI state; the dates and counts in handoff documents are snapshots, not live status.
->
-> **Project-owner rule: QA is strictly read-only.** Do not edit, create, delete, rename, format or commit repository files during QA—including QA_CONTEXT.md, bugs.md, fixed-bugs.md or test files. Create GitHub issues for actionable findings after checking for duplicates, and report PR findings as review comments. Developers implement fixes. Do not approve or merge PRs unless separately authorized.
 
 ## 1. QA mission
 
@@ -97,7 +95,7 @@ Verify:
 - Diagram, math, code, and media extensions respect their documented supported subsets and safety limits.
 - Unsupported syntax is handled predictably and does not corrupt the source document.
 
-Use [Markdown support contract](../etc/engineering/MARKDOWN_SUPPORT.md) as the compatibility contract. Do not report partial parser support as full language compliance.
+Use [docs/MARKDOWN_SUPPORT.md](../trash/docs/MARKDOWN_SUPPORT.md) as the compatibility contract. Do not report partial parser support as full language compliance.
 
 ### E. Accessibility and UX
 
@@ -218,16 +216,18 @@ Refresh this list from the current `bugs.md`, `fixed-bugs.md`, and `QA_CONTEXT.m
 
 Do not close these findings based only on source inspection, simulated permissions, or a successful reload after a committed draft.
 
-## 9. Read-only QA reporting and issue workflow
+## 9. Keep QA documentation accurate
 
-QA must not update Markdown records or any other repository file. After inspecting the exact branch/commit and evidence:
+After every QA task:
 
-1. Search existing GitHub issues and PR discussions for the same finding.
-2. Create a GitHub issue only when an actionable finding has no existing canonical issue. Include deterministic reproduction, expected versus actual behavior, affected commit/environment, evidence, severity, acceptance criteria and related PRs/issues.
-3. For an active PR, place actionable review findings in PR review comments anchored to the relevant diff where possible. Review the complete diff and affected source/tests before commenting.
-4. Separate confirmed defects, potential risks, missing verification and non-blocking suggestions. Never present an inference as a reproduced defect.
-5. Record test definitions separately from tests actually executed. Cite exact CI run and head SHA; a historical pass does not verify a newer commit.
-6. Developers update code and documentation after fixes. QA rechecks the new revision read-only.
+1. Update `bugs.md` only when the current finding status or evidence changes.
+2. Update `fixed-bugs.md` only when a fix and its regression evidence are established.
+3. Update `QA_CONTEXT.md` with the branch, inspected commit, files reviewed, test inventory, exact test/CI outcomes, limitations, and next actions.
+4. Update `github-issues.md` when GitHub issues are created, closed, or materially reconciled.
+5. Update `DEV_CONTEXT.md` when the implementation baseline or developer handoff changes.
+6. Preserve historical audit notes and stable IDs; append a dated addendum rather than erasing useful history.
+
+Do not claim a fresh pass if only an old CI run is available. Include the exact workflow URL and commit SHA.
 
 ## 10. QA completion checklist
 

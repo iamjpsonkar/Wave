@@ -67,7 +67,7 @@ Key boundaries:
 - `tests/e2e/workspace.spec.ts`: Playwright browser journeys.
 - `.github/workflows/ci.yml`: continuous integration.
 
-Read [docs/ARCHITECTURE.md](../etc/engineering/ARCHITECTURE.md) and [docs/MARKDOWN_SUPPORT.md](../etc/engineering/MARKDOWN_SUPPORT.md) when your change touches those areas. Check the current source and `package.json` before relying on this map or on remembered commands.
+Read [docs/ARCHITECTURE.md](../trash/docs/ARCHITECTURE.md) and [docs/MARKDOWN_SUPPORT.md](../trash/docs/MARKDOWN_SUPPORT.md) when your change touches those areas. Check the current source and `package.json` before relying on this map or on remembered commands.
 
 ## 4. Engineering principles
 
@@ -125,12 +125,12 @@ Update only the canonical documents relevant to the change:
 
 | Change | Documentation to consider |
 |---|---|
-| User-visible capability | `etc/product/FEATURES.md`, `etc/product/ROADMAP.md`, and the relevant feature catalogue |
-| Architecture or data contract | `etc/engineering/ARCHITECTURE.md`, `DEV_CONTEXT.md` |
-| Markdown syntax or rendering | `etc/engineering/MARKDOWN_SUPPORT.md`, `etc/product/markdown-coverage.md` |
-| Confirmed bug fix | `etc/quality/bugs.md`, `etc/quality/fixed-bugs.md`, `etc/history/dev-fixed.md` |
+| User-visible capability | `FEATURES.md`, `docs/ROADMAP.md`, and the relevant feature catalogue |
+| Architecture or data contract | `docs/ARCHITECTURE.md`, `DEV_CONTEXT.md` |
+| Markdown syntax or rendering | `docs/MARKDOWN_SUPPORT.md`, Markdown gap tracker |
+| Confirmed bug fix | `bugs.md`, `fixed-bugs.md`, `dev-fixed.md` |
 | Build, test, or CI change | `dev-build.md` |
-| New or moved documentation | `etc/README.md` and affected links |
+| New or moved documentation | `docs/README.md` and affected links |
 | QA disposition or test inventory | `QA_CONTEXT.md` |
 
 Important distinctions:

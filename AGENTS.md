@@ -158,13 +158,12 @@ A test file existing is not evidence of a pass. A historical green CI run does n
 
 ## 7. How to maintain documentation and project memory
 
-Documentation is part of every task. After each implementation, bug fix, refactor, dependency/configuration change or user-visible behavior change:
+Documentation is part of every task. After each implementation, bug fix, refactor, QA audit, dependency/configuration change or user-visible behavior change:
 
 - Update the relevant feature catalogue/status map and feature specification.
 - Update `bugs.md` for current open findings and `fixed-bugs.md` only when a fix and regression evidence are established.
 - Keep `etc/history/dev-fixed.md` for fix history and `etc/history/dev-build.md` for feature/build/CI implementation history, following the current repository's conventions.
-- QA is strictly read-only: do not edit `QA_CONTEXT.md`, trackers, source, tests, or any other repository file during QA. Report actionable findings through GitHub issues and PR review comments instead.
-- Update `DEV_CONTEXT.md` for implementation handoff changes.
+- Update `QA_CONTEXT.md` after QA work and `DEV_CONTEXT.md` for implementation handoff changes.
 - Update roadmap/priority records only when their facts or status change. Never prune the full feature scope to make progress look better.
 - Update relevant user docs, architecture docs and `howto/` procedures.
 - Check links, paths, case, duplicate sources of truth and stale statements.
@@ -250,13 +249,11 @@ Choose the smallest protocol that fully satisfies the request; do not apply a fe
 - Use tests and diff review to demonstrate equivalence.
 - Avoid bundling feature scope or unrelated formatting.
 
-### QA or audit — strictly read-only
-- Capture branch, exact commit, environment and review scope.
-- Read source, tests, docs, configuration, Git history, issues, PR diffs and CI evidence; do not edit, create, delete, rename, format or commit any repository file.
-- Search existing GitHub issues before creating an issue for each actionable defect, regression, missing test, security concern or material improvement. Include reproduction, expected/actual behavior, evidence, severity and acceptance criteria.
-- For PR reviews, inspect the complete diff and affected source/tests; report actionable findings as PR review comments. Never change the PR code.
-- Report verified defects separately from risks and suggestions. State exact commit/test/CI evidence and checks not run.
-- QA does not approve or merge PRs unless the user separately gives explicit authorization. Developers own fixes; QA observes, verifies and reports.
+### QA or audit
+- Capture branch, commit, environment and exact scope.
+- Separate observed facts, reproduction, source inference and historical claims.
+- Do not modify application behavior unless the user also requested a fix.
+- Update QA records with evidence and residual risk.
 
 ### Documentation or governance
 - Identify the canonical owner of each fact before editing.

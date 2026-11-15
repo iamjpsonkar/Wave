@@ -15,7 +15,7 @@ Ownership identifies the first responsible team for maintenance and review. It d
 | `src/templates.ts` | Feature Engineering | Product Experience, QA |
 | `tests/**` | Quality Engineering | Owning implementation team |
 | `.github/workflows/**`, `config/**`, `docker/**` | DevOps | Engineering Director, QA |
-| `etc/**`, root context docs, `howto/**` | Product & Documentation | Relevant technical owner |
+| `docs/**`, root product docs, `howto/**` | Product & Documentation | Relevant technical owner |
 
 This is a proposed logical ownership map, not a claim that GitHub CODEOWNERS or GitHub Teams have already been configured.
 

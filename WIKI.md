@@ -7,7 +7,7 @@
 > Context reviewed: 2026-11-15  
 > Canonical detailed handoff: [DEV_CONTEXT.md](./DEV_CONTEXT.md)
 > Start here for the complete project/product/agent guide: [WIKI.md](./WIKI.md)  
-> Product scope source of truth: [upcoming-features.md](./etc/product/upcoming-features.md)
+> Product scope source of truth: [upcoming-features.md](./upcoming-features.md)
 
 ---
 
@@ -17,10 +17,10 @@ Before making any change:
 
 1. Read this `WIKI.md` in full enough to understand the relevant section.
 2. Read [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the current source baseline, implementation invariants, exact commands, latest known verification and task workflow.
-3. Read [CONTRIBUTING.md](./etc/engineering/CONTRIBUTING.md) for repository contribution conventions.
+3. Read [CONTRIBUTING.md](./CONTRIBUTING.md) for repository contribution conventions.
 4. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
-5. Read the relevant tracker(s): [bugs.md](./etc/quality/bugs.md), [fixed-bugs.md](./etc/quality/fixed-bugs.md), [consolidated UI backlog](./etc/product/UI_BACKLOG.md), [Markdown gap checklist](./etc/product/markdown-coverage.md), [priority plan](./etc/product/priority-features.md), and/or [GitHub issue index](./etc/quality/github-issues.md).
-6. Read [upcoming-features.md](./etc/product/upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
+5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [consolidated UI backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
+6. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
 7. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
 
 ### Agent operating contract
@@ -37,8 +37,8 @@ Before making any change:
 - Keep changes scoped, readable, typed and consistent with existing architecture. Avoid unnecessary dependencies and premature abstractions.
 - Update the relevant development log(s): `etc/history/dev-fixed.md` for fixes and regressions; `etc/history/dev-build.md` for features, build/CI and implementation batches. Keep both histories useful and append/update rather than erasing prior entries.
 - **Update `DEV_CONTEXT.md` as the final documentation action of an implementation batch.** It is the concise, current developer handoff and should point to the detailed logs and trackers.
-- **Documentation is part of task completion, not optional cleanup.** After every implementation, bug-fix, refactor, dependency/configuration change or user-visible behavior change, review the Markdown documentation affected by that work before reporting completion. QA is strictly read-only and must not edit repository files; report findings through GitHub issues and PR review comments. Update the relevant feature/status map, bug/UI/QA register, roadmap/priority tracker, user guide, development log and handoff as applicable. If no Markdown file needs a content change, record that conclusion in the appropriate development log; do not make meaningless edits just to touch a file.
-- **Use the smallest authoritative set of Markdown files.** Before creating a new `.md`, search for an existing file with the same responsibility. Prefer updating an existing source of truth. Create a new file only when it has a distinct durable audience/purpose and add it to `etc/README.md` and this wiki's file map.
+- **Documentation is part of task completion, not optional cleanup.** After every implementation, bug-fix, refactor, QA audit, dependency/configuration change or user-visible behavior change, review the Markdown documentation affected by that work before reporting completion. Update the relevant feature/status map, bug/UI/QA register, roadmap/priority tracker, user guide, development log and handoff as applicable. If no Markdown file needs a content change, record that conclusion in the appropriate development log; do not make meaningless edits just to touch a file.
+- **Use the smallest authoritative set of Markdown files.** Before creating a new `.md`, search for an existing file with the same responsibility. Prefer updating an existing source of truth. Create a new file only when it has a distinct durable audience/purpose and add it to `docs/README.md` and this wiki's file map.
 - **No orphan Markdown files.** Every maintained `.md` must have a clear owner, purpose, navigation link (where appropriate), and update rule. Avoid duplicate status tables and competing copies of the same requirements.
 - **Consolidation and deletion are allowed.** Before deleting an `.md`, migrate its meaningful current guidance, unique requirements, IDs, statuses, acceptance criteria, decisions, evidence and useful history into an existing or new authoritative `.md`. Check inbound links and update them, verify the destination contains the material, then delete the old file. Preserve Git history; do not retain empty pointer files unless a compatibility requirement justifies them.
 - **After each task, perform a Markdown hygiene pass:** check changed-file references, links/case-sensitive paths, stale claims, duplicated/conflicting status, feature IDs and tracker cross-links; update navigation indexes. Never delete meaningful history or product scope merely to reduce file count.
@@ -50,20 +50,20 @@ Before making any change:
 
 ## Documentation enforcement after every task
 
-**A task is not complete until its Markdown impact has been reviewed.** This applies to features, bug fixes, refactors, dependency/configuration changes, CI/deployment changes and user-visible behavior changes. QA audits inspect documentation but never edit repository files.
+**A task is not complete until its Markdown impact has been reviewed.** This applies to features, bug fixes, refactors, QA audits, dependency/configuration changes, CI/deployment changes and user-visible behavior changes.
 
 ### Required end-of-task documentation pass
 
 1. Identify the behavior, decision, status or architecture that changed.
 2. Update the existing authoritative Markdown source(s), not every file indiscriminately:
-   - Shipped behavior → `etc/product/FEATURES.md`, relevant user guide and/or `etc/engineering/MARKDOWN_SUPPORT.md`.
-   - Product scope or a new idea → `etc/product/upcoming-features.md`; delivery ordering/dependencies → `etc/product/priority-features.md`.
+   - Shipped behavior → `FEATURES.md`, relevant user guide and/or `docs/MARKDOWN_SUPPORT.md`.
+   - Product scope or a new idea → `upcoming-features.md`; delivery ordering/dependencies → `etc/product/priority-features.md`.
    - UI defects/gaps/proposals → `etc/product/UI_BACKLOG.md`, preserving UIB/UI/UIF IDs.
    - Open/fixed defect status → `etc/quality/bugs.md` / `etc/quality/fixed-bugs.md` only when a genuine QA register change is required.
-   - QA evidence and limitations are reported in GitHub issues/PR review comments. Do not edit `QA_CONTEXT.md` or any repository file during QA.
+   - QA evidence and limitations → `QA_CONTEXT.md`.
    - Fix/regression history → `etc/history/dev-fixed.md`; features/build/CI/deployment history → `etc/history/dev-build.md`.
-   - Architecture/deployment/contributor guidance → relevant file under `etc/engineering/`.
-3. Update cross-links and navigation indexes (`README.md`, `etc/README.md`, `WIKI.md`) when the file map, onboarding or durable project rules change.
+   - Architecture/deployment/contributor guidance → relevant file under `docs/` or `CONTRIBUTING.md`.
+3. Update cross-links and navigation indexes (`README.md`, `docs/README.md`, `WIKI.md`) when the file map, onboarding or durable project rules change.
 4. Update `DEV_CONTEXT.md` **last** with the current baseline, changed areas, verification state and links to the detailed records.
 5. If no existing Markdown needs a content change, record in the appropriate development log why documentation was not applicable. Never create filler edits.
 
@@ -71,7 +71,6 @@ Before making any change:
 
 - One authoritative location per type of information; link to it rather than copy/paste competing status tables.
 - Keep current status separate from dated history. Label historical counts, CI results and implementation snapshots with their commit/date.
-- QA is strictly read-only: no repository file edits or commits. Search for duplicate issues before creating a finding; review complete PR diffs and report actionable findings as PR review comments. Developers own fixes.
 - Preserve stable IDs, acceptance criteria, meaningful owner decisions, rationale and evidence. Do not mark work shipped/fixed without verification.
 - Use relative, case-correct links and verify every renamed/moved/deleted path.
 - New Markdown files require a unique purpose, an owner/update rule and a navigation link. Search for an existing destination first.
@@ -108,7 +107,7 @@ Wave is evolving from a local-first Markdown workspace into a complete workspace
 - Build useful end-to-end workflows, not feature parity for its own sake.
 - Reliability, data integrity, accessibility, recovery, portability and security are release gates, not optional polish.
 
-The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./etc/product/upcoming-features.md). The actionable order is in [priority-features.md](./etc/product/priority-features.md).
+The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./upcoming-features.md). The actionable order is in [priority-features.md](./priority-features.md).
 
 ---
 
@@ -218,7 +217,7 @@ This list is an orientation snapshot, not proof that every path is currently reg
 15. Preserve keyboard access, focus behavior, semantic labels, contrast, responsive/mobile behavior and reduced-motion/accessibility.
 16. Never conflate Docker static hosting with server-side workspace storage, collaboration, sync or an API.
 
-For architecture details see [docs/ARCHITECTURE.md](./etc/engineering/ARCHITECTURE.md).
+For architecture details see [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
 
 ---
 
@@ -229,7 +228,7 @@ This section consolidates durable directions repeatedly given by the product own
 ### Preserve the whole product
 
 - Wave has many features and long-term ideas. The user explicitly rejected removing earlier features when new priorities were added.
-- `etc/product/upcoming-features.md` is the complete feature catalogue; `etc/product/priority-features.md` orders work. Neither should be silently shortened.
+- `upcoming-features.md` is the complete feature catalogue; `etc/product/priority-features.md` orders work. Neither should be silently shortened.
 - “Build all priority features” means implement the agreed priority scope in sensible batches, not delete lower-priority features or claim unimplemented work is shipped.
 - When choosing the next task, inspect the latest backlog and current source, then pick the next unfinished, dependency-ready item.
 - Maintain existing behavior, prior features, user decisions and historical context.
@@ -243,7 +242,7 @@ This section consolidates durable directions repeatedly given by the product own
 - `etc/quality/bugs.md` is the current open-bug register; `etc/quality/fixed-bugs.md` is the historical fixed-bug/regression register. They are not general implementation journals.
 - The user explicitly directed development logs to be maintained in `etc/history/dev-fixed.md` and `etc/history/dev-build.md`, not to keep editing the legacy bug files for every implementation.
 - Keep `etc/product/markdown-coverage.md` as the Markdown compatibility checklist. UI bugs, UI gaps and UI feature proposals now share `etc/product/UI_BACKLOG.md` with separate sections.
-- Keep `etc/product/upcoming-features.md` (full product scope) distinct from `etc/product/priority-features.md` (delivery order).
+- Keep `upcoming-features.md` (full product scope) distinct from `etc/product/priority-features.md` (delivery order).
 - Update relevant user-facing docs and trackers for every shipped feature. Update `DEV_CONTEXT.md` last in each implementation batch.
 
 ### UI/product requests recorded
@@ -270,9 +269,9 @@ This section consolidates durable directions repeatedly given by the product own
 ## 6. Markdown/editor subsystem
 
 Markdown is a core Wave capability and a major compatibility promise. Consult:
-- [Markdown support guide](./etc/engineering/MARKDOWN_SUPPORT.md)
-- [Markdown feature-gap checklist](./etc/product/markdown-coverage.md)
-- [Consolidated UI backlog — bugs, gaps and feature proposals](./etc/product/UI_BACKLOG.md)
+- [Markdown support guide](./docs/MARKDOWN_SUPPORT.md)
+- [Markdown feature-gap checklist](./features-gap.md)
+- [Consolidated UI backlog — bugs, gaps and feature proposals](./UI_BACKLOG.md)
 
 Key areas to preserve and test:
 - CommonMark inline formatting, paragraphs, headings, anchors, links, images, escaping and literal characters.
@@ -363,7 +362,7 @@ Only report Docker runtime validation if an actual Docker runtime was available 
 
 ## 8. Product roadmap — complete scope, not just immediate work
 
-The full catalogue in [upcoming-features.md](./etc/product/upcoming-features.md) spans:
+The full catalogue in [upcoming-features.md](./upcoming-features.md) spans:
 
 - A. Writing, pages and block editor; CommonMark/GFM and advanced Markdown.
 - B. Knowledge management, wiki and knowledge graph.
@@ -393,7 +392,7 @@ The full catalogue in [upcoming-features.md](./etc/product/upcoming-features.md)
 - Z. Explicitly opt-in AI knowledge operations.
 - AA. Administration, observability and supportability.
 
-Specialist visual diagram capabilities and architecture are covered in [diagram-features.md](./etc/product/diagram-features.md). Do not treat the existing Mermaid renderer as equivalent to a native diagrams.net-style canvas editor.
+Specialist visual diagram capabilities and architecture are covered in [diagram-features.md](./diagram-features.md). Do not treat the existing Mermaid renderer as equivalent to a native diagrams.net-style canvas editor.
 
 ### Priority model
 
@@ -410,7 +409,7 @@ Dependencies matter. For example:
 - Public publishing requires access control, safe rendering, revocation and export semantics.
 - Plugins require a permission/capability model and sandboxing.
 
-[priority-features.md](./etc/product/priority-features.md) is the practical execution sequence. [github-issues.md](./etc/quality/github-issues.md) indexes the roadmap issues and defect/gap issues. GitHub issue counts and checklists are snapshots; re-fetch before reporting current status.
+[priority-features.md](./priority-features.md) is the practical execution sequence. [github-issues.md](./github-issues.md) indexes the roadmap issues and defect/gap issues. GitHub issue counts and checklists are snapshots; re-fetch before reporting current status.
 
 ---
 
@@ -457,32 +456,32 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `CONTRIBUTING.md` | Contributor workflow and engineering rules | Update when contribution or verification practices change |
 | `etc/history/dev-fixed.md` | Append-only-ish implementation fix and regression history | Record bug fixes and regression tests |
 | `etc/history/dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
-| `etc/product/upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
+| `upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
 | `etc/product/priority-features.md` | Delivery order, priorities and dependencies | Reprioritize transparently; preserve complete scope |
 | `FEATURES.md` | Combined shipped-feature overview and detailed feature map | Update shipped/planned status with evidence |
-| `etc/engineering/ROADMAP.md` | Release sequencing | Update when delivery milestones change |
-| `etc/engineering/ARCHITECTURE.md` | Current architecture, boundaries, privacy and reliability | Update when architecture changes |
-| `etc/engineering/MARKDOWN_SUPPORT.md` | User-facing Markdown syntax/support guide | Update when parser, renderer or export behavior changes |
+| `docs/ROADMAP.md` | Release sequencing | Update when delivery milestones change |
+| `docs/ARCHITECTURE.md` | Current architecture, boundaries, privacy and reliability | Update when architecture changes |
+| `docs/MARKDOWN_SUPPORT.md` | User-facing Markdown syntax/support guide | Update when parser, renderer or export behavior changes |
 | `etc/product/markdown-coverage.md` | Markdown compatibility gap checklist | Update checklist status and acceptance evidence |
 | `etc/product/UI_BACKLOG.md` | Consolidated UIB/UI/UIF bug, gap and feature register | Preserve IDs, statuses, criteria, evidence and history |
 | `diagram-features.md` | Specialist diagram research, capability map and native diagram editor proposal | Consult for visual diagram scope/architecture |
 | `etc/quality/bugs.md` | Current open reliability/functional bug register | Update only during explicit bug-register/QA reconciliation |
 | `etc/quality/fixed-bugs.md` | Historical fixed bug descriptions and regression scenarios | Preserve history; recheck affected scenarios after related changes |
 | `QA_CONTEXT.md` | Consolidated current QA disposition, test inventory and historical audit/evidence trail | Refresh current status while preserving useful historical findings |
-| `etc/quality/github-issues.md` | Index of GitHub defect/gap and roadmap issues | Refresh after issue creation/closure/reconciliation |
-| `etc/engineering/DOCKER.md` | Docker and Compose deployment instructions | Update when container/Nginx/Compose behavior changes |
-| `etc/engineering/README.md` | Documentation navigation index | Update when docs are added, renamed or reorganized |
+| `github-issues.md` | Index of GitHub defect/gap and roadmap issues | Refresh after issue creation/closure/reconciliation |
+| `docs/DOCKER.md` | Docker and Compose deployment instructions | Update when container/Nginx/Compose behavior changes |
+| `docs/README.md` | Documentation navigation index | Update when docs are added, renamed or reorganized |
 
 ### File consolidation rules — current state
 
 The following consolidations have been completed:
 - `QA_CONTEXT.md` combines the current QA disposition and test inventory formerly in `qa-context.md` with the detailed historical audits/evidence formerly in `QA-CONTEXT.md`.
 - `etc/product/UI_BACKLOG.md` combines export/print UI bugs (UIB-001..006), UI gaps (UI-001..024) and UI feature proposals (UIF-001..021) from the former three UI registers.
-- `FEATURES.md` combines the shipped-feature overview and detailed feature map formerly split between root `features.md` and `etc/engineering/FEATURES.md`.
+- `FEATURES.md` combines the shipped-feature overview and detailed feature map formerly split between root `features.md` and `docs/FEATURES.md`.
 
 The former source files were removed only after the consolidated destinations were created and references migrated. Preserve every stable ID and meaningful requirement when updating the consolidated files.
 - Keep `etc/history/dev-fixed.md` and `etc/history/dev-build.md` distinct.
-- Keep `etc/product/upcoming-features.md` and `etc/product/priority-features.md` distinct.
+- Keep `upcoming-features.md` and `etc/product/priority-features.md` distinct.
 - Keep `etc/quality/bugs.md` and `etc/quality/fixed-bugs.md` distinct.
 - Keep `etc/product/markdown-coverage.md` and `diagram-features.md` as specialist checklist/research files.
 - Keep `DEV_CONTEXT.md` concise; historical implementation detail belongs in the development logs.
@@ -515,7 +514,7 @@ Important boundary:
 - It does not add an API, database, server-side workspace, user accounts, remote document storage, shared workspace, collaboration or sync.
 - Browser File System Access API selects a directory on the end user's own device. A remote browser cannot use it to select a folder on the Docker host.
 - File System Access requires a supported browser and secure context (HTTPS for remote access; localhost is treated as secure by browsers).
-- Read [docs/DOCKER.md](./etc/engineering/DOCKER.md) before changing deployment files.
+- Read [docs/DOCKER.md](./docs/DOCKER.md) before changing deployment files.
 
 ---
 
@@ -650,7 +649,7 @@ Use competitor research as workflow inspiration, not as an instruction to copy f
 - Anytype — offline-first objects, relations, encryption and peer-to-peer sync.
 - Outline — structured knowledge base, collections, permissions, search and navigation.
 - Specialist diagrams: diagrams.net/draw.io, Excalidraw, tldraw, Miro, FigJam, Lucidchart and related products.
-- Specialist research, reading, assets, forms, automation and publishing references are catalogued in `etc/product/upcoming-features.md` and `diagram-features.md`.
+- Specialist research, reading, assets, forms, automation and publishing references are catalogued in `upcoming-features.md` and `diagram-features.md`.
 
 ---
 

@@ -465,3 +465,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Acceptance criteria explicitly preserve all existing assertions and guarantees, maintain complete discovery through `test.sh` and CI, support focused runs, and avoid test-order coupling.
 - Coordinated scope with [#100](https://github.com/iamjpsonkar/Wave/issues/100): duplicate cleanup must retain distinct coverage; #111 is the broader organizational restructuring.
 - This was issue creation and documentation only. No test files, application code or test commands were changed/run.
+
+
+## 2026-11-15 — Complete Markdown inventory and navigation audit
+
+- Audited all **33 Markdown files** present on the manager branch against the repository tree. Checked relative Markdown links using exact, case-sensitive repository paths; the final pass found **zero broken relative Markdown links**.
+- Repaired migrated documentation references in the README, wiki, developer handoff, contributor guide, product feature/priority catalogues, open-bug register, development history and team/ownership guides. Kept the full product catalogue and historical implementation records intact.
+- Reconciled the QA operating contract across `AGENTS.md`, `WIKI.md`, `howto/howtoqa.md`, `howto/engineering-rules.md` and the legacy QA entry point: QA is read-only in the repository; actionable findings go to GitHub issues and PR review comments; developers own fixes; QA does not approve or merge without explicit authorization.
+- Source inventory checked against current test files and `package.json`: 30 Node test definitions in `tests/storage.test.js` and 48 Playwright Chromium test definitions in `tests/e2e/workspace.spec.ts`. These are definitions, not a claim that tests were run in this documentation-only task.
+- Verification scope: GitHub repository tree and Markdown content inspection only. No local test, typecheck, production build, browser run or CI result is claimed.

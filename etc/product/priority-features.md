@@ -25,7 +25,7 @@ A priority does not mean that lower-priority features are optional or cancelled.
 
 ### P0.1 — Reliability and data safety
 
-- [ ] Finish the remaining browser-level verification recorded in [../quality/bugs.md](../quality/bugs.md), including multi-tab editing, browser permission revocation, backup fault-injection and real-browser recovery flows.
+- [ ] Finish the remaining browser-level verification recorded in [bugs.md](bugs.md), including multi-tab editing, browser permission revocation, backup fault-injection and real-browser recovery flows.
 - [ ] Add browser end-to-end tests for first run, workspace reopen, editor save/recovery, Trash, backups and permission errors.
 - [ ] Test large Markdown documents, large assets and large workspaces; define measurable performance budgets.
 - [ ] Verify cross-tab document editing and uploads, conflict handling and external file modifications.
@@ -52,7 +52,7 @@ The Markdown feature specification is maintained in [upcoming-features.md, A4](u
 **Delivery order:** CommonMark → GFM → math/Mermaid → sanitized HTML/extensions. Round-trip correctness and source preservation apply throughout.
 
 
-**Implementation checkpoint — 2026-11-14:** Wave now has the first renderer slice in source: existing CommonMark/GFM support, task lists/tables/strikethrough/autolinks/footnotes, alert callouts, heading anchors, a limited MathML/LaTeX subset, and simple Mermaid flowchart rendering. The **Markdown feature showcase** template and [renderer compatibility matrix](../engineering/MARKDOWN_SUPPORT.md) are available. This does not close P0.2: sanitized raw HTML/collapsible content, full LaTeX, advanced Mermaid, optional diagram renderers, syntax highlighting, full source-preserving import/export and broader compatibility fixtures remain planned. Do not mark P0.2 complete until its full exit gate is met.
+**Implementation checkpoint — 2026-11-14:** Wave now has the first renderer slice in source: existing CommonMark/GFM support, task lists/tables/strikethrough/autolinks/footnotes, alert callouts, heading anchors, a limited MathML/LaTeX subset, and simple Mermaid flowchart rendering. The **Markdown feature showcase** template and [renderer compatibility matrix](docs/MARKDOWN_SUPPORT.md) are available. This does not close P0.2: sanitized raw HTML/collapsible content, full LaTeX, advanced Mermaid, optional diagram renderers, syntax highlighting, full source-preserving import/export and broader compatibility fixtures remain planned. Do not mark P0.2 complete until its full exit gate is met.
 
 **Exit gate:** users can author/import, edit, reopen and export supported Markdown without losing structure or silently discarding unsupported constructs.
 
@@ -276,5 +276,5 @@ A feature can be marked shipped only when:
 - [Complete product blueprint and feature catalogue](upcoming-features.md)
 - [Current shipped features](FEATURES.md)
 - [Detailed implementation status](FEATURES.md)
-- [Delivery roadmap](./ROADMAP.md)
-- [Bug and reliability tracker](../quality/bugs.md)
+- [Delivery roadmap](docs/ROADMAP.md)
+- [Bug and reliability tracker](bugs.md)

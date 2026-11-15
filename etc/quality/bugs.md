@@ -92,4 +92,4 @@ The residual pre-commit loss window is an inherent asynchronous durability limit
 - The reauthorization test proves the application calls `requestPermission()` from the Reopen button gesture and activates the workspace when the simulated permission request is granted.
 - The external-edit test changes the OPFS-backed Markdown file outside Wave after it is loaded, then confirms the editor surfaces the save conflict and the external bytes remain intact.
 - Current test source inventory: 30 Node definitions and 48 Playwright scenarios. These are definitions, not executed results.
-- Manual native-platform checklist is recorded in [QA_CONTEXT.md](../../QA_CONTEXT.md). Native picker/OS permission revocation and screen-reader audit are not simulated by these tests.
+- Manual native-platform checklist is recorded in [QA_CONTEXT.md](../QA_CONTEXT.md). Native picker/OS permission revocation and screen-reader audit are not simulated by these tests.
