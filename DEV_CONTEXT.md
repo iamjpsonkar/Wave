@@ -912,3 +912,13 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - The first CI run on the post-#141 branch found six stale relative paths in the preserved developer handoff. These have been corrected to the current root-relative `etc/product/` and `etc/engineering/` paths.
 - The failure and correction are recorded in `etc/history/dev-build.md`. Exact-head CI is pending for this final handoff update; do not merge until it passes.
 
+
+
+## Security tracker follow-up — 2026-11-15
+
+- Active consolidated security/privacy tracker: [GitHub issue #120](https://github.com/iamjpsonkar/Wave/issues/120). Do not close it until the remaining acceptance criteria are met or the product owner explicitly approves a documented scope change.
+- PR #122 delivered the initial repository security automation baseline; #123 and #124 were closed with evidence. These do not complete the full #120 scope.
+- Current source-backed security documentation: [threat model](docs/SECURITY_THREAT_MODEL.md), [security operations](docs/SECURITY_OPERATIONS.md), and [third-party notices](THIRD_PARTY_NOTICES.md). The current application has no vault encryption, sync, team permissions, plugin runtime or server-side sharing; do not represent these as implemented.
+- Follow-up documentation correction on branch `WAVE-0120-license-docs`: Google Fonts references in `THIRD_PARTY_NOTICES.md` are now explicitly historical because the current stylesheet uses system fonts; the current dependency tarball-review count is 161, not the stale 181 figure. The exact package tarballs and applicable NOTICE files still require manual owner/legal review.
+- This batch is documentation-only and source-reviewed. No local tests or CI results are claimed; require exact-head CI before merging.
+- Implementation history: [etc/history/dev-build.md](etc/history/dev-build.md), 2026-11-15 entry.
