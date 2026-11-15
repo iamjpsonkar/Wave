@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { addDiagnosticSink, configureDiagnostics, createOperationId, reportDiagnostic, resetDiagnosticsForTests } from '../../../src/diagnostics.ts';
+import { addDiagnosticSink, clearDiagnosticHistory, configureDiagnostics, createOperationId, getDiagnosticHistory, reportDiagnostic, resetDiagnosticsForTests } from '../../../src/diagnostics.ts';
 
 test.afterEach(() => resetDiagnosticsForTests());
 
@@ -39,4 +39,16 @@ test('diagnostic levels suppress messages below configured verbosity', () => {
 test('diagnostic sink failures never replace application control flow', () => {
   addDiagnosticSink({ write: () => { throw new Error('sink failure'); } });
   assert.doesNotThrow(() => reportDiagnostic('error', 'storage:write-failed'));
+});
+
+test('diagnostic history is bounded, copyable and explicitly clearable', () => {
+  configureDiagnostics('debug');
+  for (let index = 0; index < 250; index += 1) reportDiagnostic('debug', 'test:event', { sequence: index });
+  const report = getDiagnosticHistory();
+  assert.equal(report.length, 200);
+  assert.equal(report[0].fields.sequence, 50);
+  report[0].fields.sequence = -1;
+  assert.equal(getDiagnosticHistory()[0].fields.sequence, 50);
+  clearDiagnosticHistory();
+  assert.equal(getDiagnosticHistory().length, 0);
 });
