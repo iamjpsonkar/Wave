@@ -1124,3 +1124,13 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - The full PR #139 workflow reached the code-quality job after the functional suite passed. ESLint tooling installation failed because pinned stable `typescript-eslint@8.72.2` declares peer `typescript >=4.8.4 <6.1.0` and rejects TypeScript 7.0.2.
 - Did not bypass peer validation or install a canary. Changed the candidate compiler to stable TypeScript 6.0.3, which is inside the supported peer range and is the TypeScript transition release before the native TypeScript 7 compiler. Updated the lock entry using the exact package metadata and integrity from npm-generated TypeScript 6.0.3 lockfiles; removed the TypeScript 7 platform packages.
 - TypeScript 7 is deferred until the stable typescript-eslint toolchain explicitly supports it. The current PR must re-run npm ci, license audit, typecheck, build, all 50 E2E tests and the full CI matrix on the new head.
+
+### Coordinated dependency upgrade — full CI success — 2026-11-15
+
+- Final candidate commit: `61831fa21435cb718e2c2d4a7858f7e6ec89f6cf` on `WAVE-0137-npm-upgrades`.
+- Workflow [43734814515](https://github.com/iamjpsonkar/Wave/actions/runs/43734814515) completed successfully.
+- Functional build: `npm ci`, license audit, 39 Node tests, TypeScript 6.0.3 typecheck, production build and **50/50 Playwright Chromium scenarios** passed.
+- Downstream jobs: container configuration/image build, npm audit, Code Quality/ESLint, CodeQL, OSV-Scanner, OpenGrep, Gitleaks and Trivy filesystem/image scans all passed. GitHub Pages deploy was correctly skipped for the PR event.
+- Candidate set: Vite 8.3.8 + plugin-react 6.3.0; React/React DOM 19.3.1 + matching type packages 19.3.0; TypeScript 6.0.3; react-markdown 10.1.0; lucide-react 1.72.0. TypeScript 7 is deferred in issue #140 until stable typescript-eslint supports it.
+- Candidate license inventory: 161 entries (MIT 142, Apache-2.0 2, ISC 3, MPL-2.0 12, BSD-3-Clause 1, 0BSD 1). MPL-2.0 Lightning CSS notices and source-availability obligations are documented in `THIRD_PARTY_NOTICES.md`; no legal certification is claimed.
+- No local build/test was run; all reported verification is from the exact-head GitHub Actions workflow above.

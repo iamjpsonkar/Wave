@@ -23,7 +23,7 @@ The committed exact-version inventory is [`etc/legal/dependency-license-inventor
 
 - `baseline-browser-mapping@2.11.37` — Apache-2.0 in the historical 221-entry baseline; it is removed from the proposed lockfile after the React plugin toolchain change. Reassess if reintroduced.
 - `typescript@6.0.3` — Apache-2.0 in the proposed lockfile. Preserve the upstream license and applicable NOTICE material if the compiler is redistributed; it is a development tool and is not part of the application runtime bundle.
-- `caniuse-lite@1.0.30001826` — `CC-BY-4.0`, from the `browserslist/caniuse-lite` project and npm registry package. This was the only dependency outside the MIT/ISC/Apache-2.0/BSD-3-Clause set in the historical lock snapshot; it is absent from the proposed lockfile. Attribution 4.0 requires appropriate credit, a license link and indication of changes where applicable. The package's upstream LICENSE file is the authoritative legal text. This is a historical pre-upgrade entry and is not present in the proposed 181-package lockfile. See [upstream repository](https://github.com/browserslist/caniuse-lite) and [upstream LICENSE](https://github.com/browserslist/caniuse-lite/blob/main/LICENSE).
+- `caniuse-lite@1.0.30001826` — `CC-BY-4.0`, from the `browserslist/caniuse-lite` project and npm registry package. This was the only dependency outside the MIT/ISC/Apache-2.0/BSD-3-Clause set in the historical lock snapshot; it is absent from the proposed lockfile. Attribution 4.0 requires appropriate credit, a license link and indication of changes where applicable. The package's upstream LICENSE file is the authoritative legal text. This is a historical pre-upgrade entry and is not present in the proposed 161-package lockfile. See [upstream repository](https://github.com/browserslist/caniuse-lite) and [upstream LICENSE](https://github.com/browserslist/caniuse-lite/blob/main/LICENSE).
 - `lucide-react@1.72.0` — declared `ISC` in the lockfile. The Lucide project's React package documentation identifies the ISC license; the upstream project license file is authoritative. See [Lucide React](https://github.com/lucide-icons/lucide/tree/main/packages/lucide-react) and [Lucide license](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
 - Apache-2.0 entries in the lockfile must be distributed with required upstream license and NOTICE text, when applicable. Review the exact installed package files before creating a release artifact; the lockfile expression alone does not prove whether an upstream NOTICE file applies.
 
@@ -64,7 +64,7 @@ The npm lockfile metadata check is passing, but it is not a substitute for inspe
 
 ### Audit disposition (do not overstate)
 
-The repository/lockfile metadata inventory is complete for the proposed snapshot (181 entries); it is not a package-file-content audit. Public source records above corroborate license identifiers and the caniuse attribution instruction, but the exact npm tarballs were not unpacked in this review environment. In particular, exact package-level NOTICE inclusion for the Apache-2.0 dependencies and complete license-file inspection for all 161 packages in the proposed lockfile remain release-review work. Do not report this issue as legally certified or all acceptance items complete until the actual locked tarballs and any applicable distribution artifact are inspected and required notices are reproduced.
+The repository/lockfile metadata inventory is complete for the proposed snapshot (161 entries); it is not a package-file-content audit. Public source records above corroborate license identifiers and the caniuse attribution instruction, but the exact npm tarballs were not unpacked in this review environment. In particular, exact package-level NOTICE inclusion for the Apache-2.0 dependencies and complete license-file inspection for all 161 packages in the proposed lockfile remain release-review work. Do not report this issue as legally certified or all acceptance items complete until the actual locked tarballs and any applicable distribution artifact are inspected and required notices are reproduced.
 
 Runtime Google Fonts remain remotely requested and unpinned; no font binaries are checked in. Pinning or self-hosting them is a separate product/distribution decision, not silently performed by this audit.
 
@@ -82,16 +82,16 @@ Runtime Google Fonts remain remotely requested and unpinned; no font binaries ar
 - The historical CC-BY-4.0 entry is absent from the proposed lockfile. If caniuse-lite is reintroduced, restore its attribution and verify the actual contents included in the final distribution.
 - Apache-2.0 packages require package-specific NOTICE inspection and correct reproduction where applicable.
 - Google Fonts runtime family names are recorded, but exact font-file revisions are not pinned by the application. Consider pinning/self-hosting the exact files and bundling their OFL notices for deterministic/offline builds; this is a product decision and is not done by this audit.
-- No custom license, missing license metadata or conflicting SPDX expression was found in the historical 221-entry baseline snapshot; the proposed 181-entry snapshot is summarized below. Re-run the checker after every dependency update and investigate all new/unknown results.
+- No custom license, missing license metadata or conflicting SPDX expression was found in the historical 221-entry baseline snapshot; the proposed 161-entry snapshot is summarized below. Re-run the checker after every dependency update and investigate all new/unknown results.
 
 ## Current dependency upgrade audit — 2026-11-15
 
-The coordinated candidate dependency set updates React and React DOM together with both React type packages; Vite 8 with `@vitejs/plugin-react` 6; React Markdown, Lucide React and TypeScript. The generated candidate inventory contains **181 resolved package entries**:
+The coordinated candidate dependency set updates React and React DOM together with both React type packages; Vite 8 with `@vitejs/plugin-react` 6; React Markdown, Lucide React and TypeScript. The generated candidate inventory contains **161 resolved package entries**:
 
 | Declared license | Entries |
 |---|---:|
 | MIT | 142 |
-| Apache-2.0 | 22 |
+| Apache-2.0 | 2 |
 | ISC | 3 |
 | MPL-2.0 | 12 |
 | BSD-3-Clause | 1 |
@@ -100,7 +100,7 @@ The coordinated candidate dependency set updates React and React DOM together wi
 All 161 entries have non-empty license metadata and the checker allowlist includes each observed SPDX identifier. This is a metadata review only; it does not constitute legal certification or package-tarball inspection.
 
 - `lightningcss@1.33.0` and its 11 platform packages declare MPL-2.0 and enter through the Vite 8 toolchain. MPL-2.0 is a file-level copyleft license. Sections 3.1–3.4 address source-form distribution, executable-form source availability and preservation of notices. See the [versioned Lightning CSS package](https://www.npmjs.com/package/lightningcss/v/1.33.0), [upstream source](https://github.com/parcel-bundler/lightningcss/tree/v1.33.0) and [official MPL-2.0 text](https://www.mozilla.org/en-US/MPL/2.0/). Before shipping an artifact containing this code, verify whether/how the toolchain package is included and provide the corresponding source and license notices through a reasonable distribution mechanism.
-- `typescript@7.0.2` and its 20 `@typescript/typescript-*` platform packages declare Apache-2.0. Preserve the upstream license and applicable NOTICE material if redistributed. See the [versioned TypeScript package](https://www.npmjs.com/package/typescript/v/7.0.2).
+- `typescript@6.0.3` declares Apache-2.0. Preserve the upstream license and applicable NOTICE material if redistributed. See the [versioned TypeScript package](https://www.npmjs.com/package/typescript/v/6.0.3). The TypeScript 7 compiler and platform packages are deferred until stable typescript-eslint support is available.
 - `detect-libc@2.1.2` declares Apache-2.0; retain applicable upstream notices if redistributed.
 - `lucide-react@1.72.0` declares ISC. Keep the current Lucide attribution and re-check the exact package notice before release.
 - The historical `caniuse-lite@1.0.30001826` CC-BY-4.0 entry and `baseline-browser-mapping@2.11.37` entry are absent from the proposed lockfile; their historical audit records above are retained for traceability, not represented as current dependencies.
