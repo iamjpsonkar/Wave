@@ -4,7 +4,7 @@
 
 | Workflow | Trigger | Blocking policy | Output |
 |---|---|---|---|
-| CI | PR and main push | Existing unit/typecheck/build/Playwright/container gate | Playwright diagnostics |
+| CI | PR and main push | Functional build/browser tests are the mandatory first gate; container build and all security/quality workflows start only after it succeeds | Playwright diagnostics |
 | Dependency security | PR, main push, weekly, manual | npm audit HIGH/CRITICAL | Sanitized npm audit JSON artifact |
 | OSV-Scanner | PR, main push, weekly, manual | New PR vulnerabilities and full-scan findings fail | SARIF/code scanning and short-retention reports |
 | Secret scanning | PR, main push, weekly, manual | Gitleaks findings fail | Gitleaks summary; no matched-secret artifact/comments |
@@ -12,7 +12,7 @@
 | Trivy | PR, main push, weekly, manual | HIGH/CRITICAL filesystem/image findings fail | SARIF and 14-day artifact |
 | OpenGrep | PR, main push, weekly, manual | Fails on findings from maintained Wave rules; strict parser/config errors also fail | SARIF artifact (14 days) |
 
-All third-party actions and reusable workflows are pinned to verified full commit SHAs. Scanner workflows are additive; they do not replace ./test.sh, the production build or container validation.
+All third-party actions and reusable workflows are pinned to verified full commit SHAs. For pull requests and main-branch pushes, CI / Functional build and browser tests runs first. Container build, ESLint, CodeQL, Trivy, npm audit, OSV-Scanner, OpenGrep and Gitleaks are reusable workflows/jobs gated by needs: build; they are skipped automatically when the functional gate fails. Each scanner retains its independent weekly schedule and manual workflow_dispatch entry point. Scanner workflows are additive; they do not replace ./test.sh, the production build or container validation.
 
 ## Owner-side GitHub settings (manual)
 

@@ -1,9 +1,6 @@
 name: OpenGrep security analysis
 on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
+  workflow_call:
   schedule:
     - cron: "37 4 * * 1"
   workflow_dispatch:

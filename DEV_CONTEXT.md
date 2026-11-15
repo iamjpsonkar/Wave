@@ -759,3 +759,13 @@ The initial Trivy attempt found a HIGH Dockerfile non-root configuration issue a
 ### 2026-11-15 — Attachment signature detection follow-up
 
 The latest CI failure was caused by incorrectly double-escaped regex literals in the attachment SVG/HTML detectors. The tests were correctly expecting active SVG rejection; the implementation fell through to the generic MIME/signature mismatch. The regexes were corrected without weakening tests. CI validation for commit `9c25904e2e8609de1720db7a5fbc417033fb60fb` is pending. Local `./test.sh` remains unexecuted due unavailable repository checkout/network in this environment.
+
+
+## 2026-11-15 — Functional-first CI orchestration (PR #122 / issue #120)
+
+- Branch: WAVE-0120.
+- Changed PR/main-push automation to a single orchestrated CI workflow: CI / Functional build and browser tests is the first and mandatory gate.
+- Container build plus code quality, CodeQL, Trivy, npm audit, OSV-Scanner, OpenGrep and Gitleaks run only after build succeeds. A failing functional gate causes downstream jobs to be skipped rather than consuming runner time.
+- Converted those seven quality/security workflows into reusable workflows invoked by CI. Their weekly schedules and manual dispatch triggers remain available as standalone executions.
+- Retained workflow security controls, action SHA pins, scan behavior, SARIF/report artifacts, timeouts and least-privilege job permissions.
+- Validation status: source review only; local ./test.sh, YAML parser, security-policy script and Docker checks not run here. Await exact-head CI to validate GitHub reusable-workflow syntax and the new job dependency graph.

@@ -7,7 +7,10 @@ on:
     branches: [main]
 
 permissions:
+  actions: read
   contents: read
+  pull-requests: read
+  security-events: write
 
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -56,6 +59,7 @@ jobs:
 
   container:
     name: Container configuration and image build
+    needs: build
     runs-on: ubuntu-24.04
     timeout-minutes: 25
     permissions:
@@ -69,3 +73,58 @@ jobs:
         run: docker build --pull -t wave:ci .
       - name: Validate production Nginx configuration
         run: docker run --rm --entrypoint nginx wave:ci -t
+
+  code-quality:
+    name: Code quality
+    needs: build
+    permissions:
+      contents: read
+    uses: ./.github/workflows/code-quality.yml
+
+  codeql:
+    name: CodeQL
+    needs: build
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: ./.github/workflows/codeql.yml
+
+  container-security:
+    name: Filesystem and container security
+    needs: build
+    permissions:
+      contents: read
+      security-events: write
+    uses: ./.github/workflows/container-security.yml
+
+  dependency-security:
+    name: Dependency security
+    needs: build
+    permissions:
+      contents: read
+    uses: ./.github/workflows/dependency-security.yml
+
+  opengrep:
+    name: OpenGrep security analysis
+    needs: build
+    permissions:
+      contents: read
+    uses: ./.github/workflows/opengrep.yml
+
+  osv-scanner:
+    name: OSV vulnerability scan
+    needs: build
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    uses: ./.github/workflows/osv-scanner.yml
+
+  secret-scan:
+    name: Secret scanning
+    needs: build
+    permissions:
+      contents: read
+      pull-requests: read
+    uses: ./.github/workflows/secret-scan.yml

@@ -1,9 +1,6 @@
 name: Dependency security
 on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
+  workflow_call:
   schedule:
     - cron: "17 2 * * 1"
   workflow_dispatch:

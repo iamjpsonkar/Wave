@@ -1021,3 +1021,13 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Corrected the regex literals for SVG/XML, HTML, and BOM detection. The existing test expectations remain strict; no assertion was weakened.
 - Debug logs from the failed run confirmed the 29-byte `<svg...` prefix and exposed the failed detection path. Logs report only filename, MIME, size, and hex prefix—not file contents.
 - Validation status: awaiting CI for commit `9c25904e2e8609de1720db7a5fbc417033fb60fb`. Local `./test.sh` has not been run in this environment because repository checkout access is unavailable; do not treat CI as locally executed.
+
+
+## 2026-11-15 — CI functional-first orchestration
+
+- Reworked .github/workflows/ci.yml into the single PR/main-push orchestrator. The Functional build and browser tests job is the mandatory first gate.
+- The production container build and reusable workflows for ESLint, CodeQL, Trivy, npm audit, OSV-Scanner, OpenGrep and Gitleaks all declare needs: build. GitHub skips these downstream jobs when the functional gate fails and starts them after it succeeds.
+- Converted the seven scanner/quality workflow files to reusable workflow_call workflows while preserving their weekly schedules and manual workflow_dispatch triggers. Scheduled and manually dispatched scans therefore remain independently runnable.
+- Kept least-privilege job permissions, full-SHA action pins, existing scanner policies, artifacts, timeouts and per-workflow concurrency. Caller permissions are limited to the union required by the invoked workflows; each job grants only its own required scopes.
+- Updated docs/SECURITY_OPERATIONS.md to document the execution order and skip behavior.
+- Verification: source/configuration review only. Local ./test.sh, YAML parsing, workflow-security script and Docker validation were not run in this environment. The CI functional gate itself validates workflow YAML and the repository security policy; exact-head Actions results are required before calling this change verified.
