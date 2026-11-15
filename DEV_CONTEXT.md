@@ -939,3 +939,15 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Added a Playwright regression for malformed internal page and media routes and verifies surrounding preview content remains rendered.
 - Updated `docs/SECURITY_THREAT_MODEL.md` and the WIKI security checklist with the boundary and regression coverage.
 - No local tests, typecheck, build, Playwright, or Docker checks were run in this GitHub-only edit. Exact-head CI is required before merge.
+
+
+## Current implementation handoff — 2026-11-16
+
+### Issue #120 — attachment metadata console-log privacy
+
+- Branch: `WAVE-0120-remove-attachment-console-leaks`, based on main merge commit `a15c7fcfeffe99d26dcdb17bbabe3d4a5f60a8c5`.
+- Source audit found `validateAttachmentContent` logging user-supplied attachment names, declared MIME types, byte sizes and a hexadecimal content prefix; rejected active SVG/HTML also logged the filename and MIME metadata.
+- Removed both runtime console statements without changing validation decisions or user-facing errors.
+- Added `tests/unit/storage/workspace.test.js` coverage asserting validation emits no `console.debug` or `console.warn` output for rejected SVG and accepted text attachments.
+- Updated `docs/SECURITY_THREAT_MODEL.md`, `docs/SECURITY_OPERATIONS.md`, `WIKI.md` and `etc/history/dev-build.md`.
+- This is a focused privacy hardening increment, not completion of issue #120. No local tests, typecheck, build, Playwright or Docker checks were run. Exact-head CI is required before merge.
