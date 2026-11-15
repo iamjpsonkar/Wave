@@ -968,3 +968,13 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Gitleaks passed with the narrow historical commit-ID allowlist in .gitleaks.toml.
 - ESLint passed with 0 errors and 161 warning-level unused-variable/import findings. These remain a visible cleanup baseline, not a claim of warning-free lint.
 - All eight workflows passed on pre-consolidation head f645cfacf539645aff6d3b5bc0bbf86b5478ef31, including 50 Playwright tests. A one-commit consolidation follows; rerun all workflows on the final squashed commit.
+
+
+## 2026-11-15 — PR #122 QA comment 6895740917 remediation
+
+- Investigated exact Main CI run [43722300849](https://github.com/iamjpsonkar/Wave/actions/runs/43722300849), job [132836778794](https://github.com/iamjpsonkar/Wave/actions/runs/43722300849/job/132836778794). The first Playwright attempt timed out in `attachments are saved locally with correct root and nested Markdown paths` while filling the nested page editor immediately after folder navigation. The same test passed on Playwright retry in 3.2 seconds. This was a flake, not an intentional timeout. Updated the scenario to wait for the editor to be enabled and show the expected page content before editing, and gave the fill a bounded diagnostic timeout.
+- Updated CI's checkout/setup-node/upload-artifact actions to verified full SHAs for Node-24-compatible v7.0.1/v7.1.0/v7.0.2 releases. Other workflows already use v6/v7 action families and did not emit the warning.
+- Replaced deprecated OSV `--output=` CLI arguments with `--output-file=`.
+- Added attachment metadata extension/MIME mismatch rejection and byte-signature verification for supported image/document/archive formats before saving. Added regressions for mismatched metadata, spoofed PNG/PDF declarations, active SVG bytes under a benign extension, and valid PNG/text files. This is format integrity defense-in-depth, not malware scanning; generic/unknown formats remain subject to extension/MIME deny-list screening.
+- Owner-side Dependabot alerts/security updates, secret scanning/push protection, private vulnerability reporting, and exact package tarball LICENSE/NOTICE/legal review remain manual repository-owner/release tasks; workflows cannot enable them.
+- All changes above are source updates only at this point. Run local `./test.sh`, YAML/policy validation, and verify all workflow results on the new exact PR head before claiming completion.
