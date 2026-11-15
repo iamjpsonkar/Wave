@@ -12,6 +12,7 @@ Primary trust boundaries:
 3. Markdown and attachment rendering: document content, links, image/media references, code blocks and filenames are untrusted input.
 4. Build and release supply chain: npm packages, GitHub Actions, scanner images, Docker base images and generated artifacts can be compromised or vulnerable.
 5. External navigation: users may choose to follow external links. Wave must not fetch remote document content or silently upload workspace content.
+6. Reserved `https://wave.invalid/` preview routes are application-internal only; malformed percent-encoded page/media targets must render as inert unresolved content rather than throw during React rendering.
 
 ## Assets and security objectives
 
