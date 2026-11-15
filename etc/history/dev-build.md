@@ -595,3 +595,9 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added package-specific attention to `baseline-browser-mapping@2.11.37` and `typescript@5.7.3` (Apache-2.0), and documented the package-level CC-BY-4.0 item and attribution follow-up for caniuse-lite.
 - The exact inventory refresh removes volatile lockfile blob SHA from the content comparison so regenerating the same package metadata does not create a false stale-inventory failure.
 - Verification remains GitHub source/metadata inspection only. Script runtime, full CI and individual tarball LICENSE/NOTICE review are not yet verified.
+
+## 2026-11-15 — Issue #118 CI follow-up: inventory comparison normalization
+
+- Exact PR #121 workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) showed the new audit command executing successfully through npm but failing its inventory freshness comparison. The container job passed; later build/E2E steps were skipped due to the audit failure.
+- The committed inventory's 221 records were already structurally identical to the package-lock entries. The failure came from JSON serialization differences in property ordering and omitted/optional fields, not a dependency license change.
+- Updated the checker to compare normalized semantic fields, sort package records by install path and license-count keys, and ignore non-content baseline metadata. Re-run CI on the new exact head before claiming the fix.
