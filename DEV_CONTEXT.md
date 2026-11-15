@@ -872,3 +872,12 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - The first PR #121 workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) ran `npm ci` successfully and then failed at `npm run license:audit`; the container job passed, while remaining build/browser steps were skipped. Log showed all 221 package counts as expected but the snapshot comparator considered inventory stale.
 - Independently compared all 221 snapshot package records with package-lock entries; exact names, versions, license IDs, registry sources, integrity digests and dev-only flags matched. Root cause was JSON serialization/property ordering and optional-field comparison.
 - Checker now compares normalized semantic fields and stable sorting. This correction is committed on `WAVE-0118`; the new exact-head workflow result is still required. Do not report CI green until it finishes.
+
+
+### Issue #118 exact-head CI final result — 2026-11-15
+
+- PR [#121](https://github.com/iamjpsonkar/Wave/pull/121) exact-head workflow [43711329699](https://github.com/iamjpsonkar/Wave/actions/runs/43711329699) completed successfully on source head `d6a1f49feddfec6bcee930807d779e2390e1c977`.
+- Passed jobs: build and container. The build job passed `npm ci`, the dependency-license inventory audit, Playwright runner setup, Chromium install, and the full `./test.sh --skip-install --skip-playwright-install --skip-browser-install` gate (Node tests, typecheck, production build, E2E); the container job passed Compose config validation and image build.
+- The first workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) failed only at inventory freshness comparison. The checker now normalizes record fields and sorts packages before comparison; the corrected exact-head CI passed.
+- PR description was updated with the exact-head green run. PR #121 remains open and mergeable pending owner review. Issue #118 was reopened because it had been auto/consolidation-closed as duplicate of #120 while this delivery remains under review; a status comment records the reason.
+- Remaining legal source-review gaps: package tarball LICENSE/NOTICE files were not individually compared, Apache NOTICE requirements and caniuse-lite attribution need release-artifact inspection, and the unpinned runtime Google Fonts files require capture/notice work only if the project chooses to self-host or bundle them. Do not imply these legal checks are complete from green CI.
