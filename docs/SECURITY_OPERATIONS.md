@@ -66,3 +66,6 @@ Wave rejects blocked extensions/MIME types, enforces the attachment size limit, 
 
 
 OSV PR scanning explicitly checks out and verifies the target commit and proposed head commit. Its OSV-Scanner CLI pinned to v2.2.1, verified against the official release asset SHA-256, and invoked using its supported `--output` flag runs on the runner with JSON output files written to the workspace; the reporter compares old/new reports and fails on newly introduced vulnerabilities. A successful CLI exit or missing report is never treated as an empty/clean comparison.
+
+
+The OSV PR workflow stores base and proposed JSON reports under `${RUNNER_TEMP}/osv-reports`, outside the Git checkout. This prevents checkout cleanup from deleting the baseline report when switching from the base SHA to the PR head. Stable paths are used for report verification, comparison and artifact retention.

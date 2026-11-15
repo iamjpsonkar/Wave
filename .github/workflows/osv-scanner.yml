@@ -37,6 +37,13 @@ jobs:
           chmod +x "$RUNNER_TEMP/osv-scanner"
           echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
           "$RUNNER_TEMP/osv-scanner" --version
+      - name: Prepare OSV report directory
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/osv-reports"
+          echo "OSV reports will be stored outside the checkout at $RUNNER_TEMP/osv-reports"
+
       - name: Check out target branch baseline commit
         if: github.event_name == 'pull_request'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -58,9 +65,9 @@ jobs:
         shell: bash
         run: |
           set +e
-          osv-scanner --format=json --output=old-results.json --include-git-root -r ./
+          osv-scanner --format=json --output="$RUNNER_TEMP/osv-reports/old-results.json" --include-git-root -r ./
           status=$?
-          if [[ ! -s old-results.json ]]; then echo "::error::OSV baseline scan failed without writing old-results.json"; exit 1; fi
+          if [[ ! -s "$RUNNER_TEMP/osv-reports/old-results.json" ]]; then echo "::error::OSV baseline scan failed without writing its report"; exit 1; fi
           if [[ "$status" -ne 0 ]]; then echo "OSV baseline reported findings (exit $status); comparison will determine whether they are new."; fi
           exit 0
       - name: Check out proposed pull-request head commit
@@ -84,9 +91,9 @@ jobs:
         shell: bash
         run: |
           set +e
-          osv-scanner --format=json --output=new-results.json --include-git-root -r ./
+          osv-scanner --format=json --output="$RUNNER_TEMP/osv-reports/new-results.json" --include-git-root -r ./
           status=$?
-          if [[ ! -s new-results.json ]]; then echo "::error::OSV proposed-source scan failed without writing new-results.json"; exit 1; fi
+          if [[ ! -s "$RUNNER_TEMP/osv-reports/new-results.json" ]]; then echo "::error::OSV proposed-source scan failed without writing its report"; exit 1; fi
           if [[ "$status" -ne 0 ]]; then echo "OSV proposed-source scan reported findings (exit $status); comparison will determine whether they are new."; fi
           exit 0
       - name: Scan default branch or scheduled source
@@ -95,9 +102,9 @@ jobs:
         shell: bash
         run: |
           set +e
-          osv-scanner --format=json --output=full-results.json --include-git-root -r ./
+          osv-scanner --format=json --output="$RUNNER_TEMP/osv-reports/full-results.json" --include-git-root -r ./
           status=$?
-          if [[ ! -s full-results.json ]]; then echo "::error::OSV full scan failed without writing full-results.json"; exit 1; fi
+          if [[ ! -s "$RUNNER_TEMP/osv-reports/full-results.json" ]]; then echo "::error::OSV full scan failed without writing its report"; exit 1; fi
           if [[ "$status" -ne 0 ]]; then echo "OSV full scan reported findings (exit $status)."; fi
           exit 0
       - name: Verify scanner completed and wrote its report
@@ -105,10 +112,10 @@ jobs:
         shell: bash
         run: |
           if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
-            test -s old-results.json || { echo "::error::OSV baseline scan did not produce a report."; exit 1; }
-            test -s new-results.json || { echo "::error::OSV PR scan did not produce a report."; exit 1; }
+            test -s "$RUNNER_TEMP/osv-reports/old-results.json" || { echo "::error::OSV baseline scan did not produce a report."; exit 1; }
+            test -s "$RUNNER_TEMP/osv-reports/new-results.json" || { echo "::error::OSV PR scan did not produce a report."; exit 1; }
           else
-            test -s full-results.json || { echo "::error::OSV full scan did not produce a report."; exit 1; }
+            test -s "$RUNNER_TEMP/osv-reports/full-results.json" || { echo "::error::OSV full scan did not produce a report."; exit 1; }
           fi
       - name: Compare PR findings and create SARIF
         if: github.event_name == 'pull_request'
@@ -116,8 +123,8 @@ jobs:
         with:
           scan-args: |-
             --output=osv-results.sarif
-            --old=old-results.json
-            --new=new-results.json
+            --old="$RUNNER_TEMP/osv-reports/old-results.json"
+            --new="$RUNNER_TEMP/osv-reports/new-results.json"
             --gh-annotations=true
             --fail-on-vuln=true
       - name: Report full-scan findings and create SARIF
@@ -126,7 +133,7 @@ jobs:
         with:
           scan-args: |-
             --output=osv-results.sarif
-            --new=full-results.json
+            --new="$RUNNER_TEMP/osv-reports/full-results.json"
             --fail-on-vuln=true
       - name: Upload OSV SARIF to code scanning
         if: always() && hashFiles('osv-results.sarif') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
@@ -141,9 +148,9 @@ jobs:
         with:
           name: osv-scanner-reports
           path: |
-            old-results.json
-            new-results.json
-            full-results.json
+            ${{ runner.temp }}/osv-reports/old-results.json
+            ${{ runner.temp }}/osv-reports/new-results.json
+            ${{ runner.temp }}/osv-reports/full-results.json
             osv-results.sarif
           if-no-files-found: ignore
           retention-days: 14
