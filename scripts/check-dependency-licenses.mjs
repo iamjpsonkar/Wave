@@ -59,7 +59,6 @@ function inventoryFromLock(lock, lockBlobSha) {
   return {
     generatedFrom: 'package-lock.json',
     baselineMainCommit: '7e895f26b05288dc8edfebcf03e14efe954950f5',
-    lockfileBlobSha,
     root: {
       name: lock.name || root.name || null,
       version: lock.version || root.version || null,
