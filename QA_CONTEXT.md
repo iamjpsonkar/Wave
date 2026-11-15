@@ -414,3 +414,8 @@ Important documentation drift observed at the same HEAD:
 - Expanded `howto/howtoqa.md` with evidence classification, screenshot/mock limitations, test determinism, risk-based release recommendations and a structured QA handoff format.
 - The QA disposition, open findings, test inventory and historical evidence in this file were not changed or reclassified by this documentation task.
 - No QA execution was performed for this handbook update: no tests, browser sessions, native permission checks, accessibility audit or CI run. This entry records process-documentation work only, not a fresh product QA pass.
+
+
+## Test organization update — 2026-11-15 (manager branch)
+
+The existing 30 Node scenarios and 46 Playwright scenarios have been reorganized into focused files under `tests/unit/` and `tests/e2e/`. Shared fixtures now live in `tests/helpers/storage-fixtures.js` and `tests/e2e/fixtures/workspace.ts`. This is a source-organization change, not evidence of additional scenario coverage or a passing test run. Previous counts and historical CI evidence above are snapshots and should not be interpreted as current execution results. Refresh inventory and execute the full suite on the resulting commit.
