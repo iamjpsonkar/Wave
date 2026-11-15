@@ -717,3 +717,12 @@ CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was cor
 ## Documentation reorganization — 2026-11-15
 
 The project documentation library is organized under `etc/product/`, `etc/engineering/`, `etc/quality/` and `etc/history/`; see [etc/README.md](./etc/README.md). Contributor procedures and team governance are under `howto/`. The former `trash/` directory is removed. This reorganization preserves the feature catalogue, tracker IDs and history; it does not change application behavior or imply fresh test/CI verification.
+
+## 2026-11-15 — Manager-to-main documentation integrity reconciliation
+
+- Reconciled the reorganized canonical registers against the latest main-branch documentation before integrating PR #110.
+- Restored the four WAVE-0001 fix-history sections that were present in main's former `trash/dev-fixed.md` but absent from the reorganized manager copy; retained the 30 Node / 48 Playwright source inventory and permission/external-edit evidence in `etc/quality/bugs.md`.
+- Repaired issue archive references to the reorganized `etc/product/`, `etc/quality/` and `etc/history/` locations and restored missing issue traceability for #104–#106 and the existing accessibility issue #3.
+- Preserved the two distinct Markdown feature-gap audit notes in the development history, with links corrected to the reorganized canonical files.
+- PR [#110](https://github.com/iamjpsonkar/Wave/pull/110) head `f1d49c174279158f1a20a8fc9efb675ab0708b66` passed CI workflow [43693734660](https://github.com/iamjpsonkar/Wave/actions/runs/43693734660). This is GitHub CI evidence for that exact pre-reconciliation head; the documentation commits created by this reconciliation require a fresh workflow before merge.
+- No application source or test code changed. No local tests, typecheck or production build were run. PR #110 remains open and unmerged.
