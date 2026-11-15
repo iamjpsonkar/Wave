@@ -622,3 +622,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Updated [WIKI.md](./WIKI.md) with the new handbook map and migration note.
 - This establishes a proposed functional organization of seven teams. It does not create GitHub Teams, CODEOWNERS, branch protection, permissions, staff positions or hiring approvals. The ownership map is a documented proposal until repository settings are configured.
 - Documentation-only change. No application source or tests changed; no test, typecheck, build, E2E or CI run was performed. Relative links and rendered Markdown have not been validated by CI.
+
+
+## 2026-11-15 — Single-file AI agent entry point
+
+- Added root [AGENTS.md](./AGENTS.md) as the single first-read guide for any human or AI agent assigned work on Wave.
+- It explains what Wave is, why local-first/data-integrity/privacy constraints matter, how to inspect and execute tasks, the architecture and seven-team responsibility model, issue/branch/PR lifecycle, verification honesty, documentation obligations, definition of done and handoff format.
+- Added entry-point references from `README.md` and `WIKI.md`. Supporting detail remains in the canonical handoff files and `howto/`; agents should consult those only as the task requires.
+- Documentation-only change. No application source or tests changed; no test, typecheck, build, E2E or CI run was performed.
