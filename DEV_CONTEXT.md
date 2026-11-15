@@ -653,3 +653,8 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Final pre-handoff branch HEAD: `809db07849d579b19006cc9588b4af804c8ceac1`. Branch comparison reports 40 commits ahead and 0 behind `main` at comparison time.
 - Documentation-only changes. No application source/tests changed; no test, typecheck, build, E2E, Docker build or CI run was performed. Link audit verified target existence, not rendered anchors or external URLs.
 - No GitHub Teams, CODEOWNERS, branch protection, permissions, staff assignments or hiring approvals were configured. Those remain proposals requiring explicit setup and verification.
+
+
+## Test suite restructuring — 2026-11-15
+
+The test suite is organized by test level, product domain and scenario. Node tests live under `tests/unit/storage/` and `tests/unit/safety/`; shared in-memory filesystem setup is in `tests/helpers/storage-fixtures.js`. Playwright specs live under `tests/e2e/workspace/`, `tests/e2e/markdown/`, `tests/e2e/editor/` and `tests/e2e/ui/`; common browser setup is in `tests/e2e/fixtures/workspace.ts`. The `npm test` script targets `tests/unit` so nested test files are discovered. Playwright's configured `testDir` remains `tests/e2e`, where spec discovery is recursive. The 30 existing Node scenarios and 46 existing E2E scenarios were moved without intentionally dropping scenarios. This restructuring has not yet been locally executed; run `npm test`, `npm run typecheck`, `npm run build`, and `npm run test:e2e` before treating it as verified.
