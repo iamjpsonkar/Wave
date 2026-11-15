@@ -245,3 +245,41 @@ Do not claim a fresh pass if only an old CI run is available. Include the exact 
 - [ ] Remaining gaps and unverified scenarios are explicit.
 
 **Quality gate:** do not recommend merge while a known critical/high-risk defect, data-integrity concern, security issue, or required CI failure remains unresolved. If evidence is incomplete, state exactly what is missing and leave the PR unapproved when that gap blocks acceptance.
+
+
+## 11. Evidence quality and risk-based release recommendation
+
+Every finding must distinguish observation from inference. Label whether it is:
+- Reproduced in a running build.
+- Confirmed by an automated test.
+- Supported by source inspection only.
+- Reported by a user but not independently reproduced.
+- Historical and not rechecked on the current commit.
+
+A screenshot proves only the visible state captured; it does not establish hidden interactions, keyboard behavior, responsive states or underlying data integrity. A simulated browser permission API does not establish native OS permission behavior. A successful reload does not establish process-kill durability.
+
+For each high-risk finding, record affected versions/commit, impact, likelihood, reproducibility, workaround, data at risk and required regression evidence. Recommend no-go for unresolved data-loss, security/privacy or release-blocking defects. Any accepted exception must have an authorized owner, explicit rationale, mitigation and expiry/review point.
+
+## 12. Test design quality
+
+- Prefer deterministic fixtures and isolated temporary workspaces.
+- Assert user-visible outcomes and persisted filesystem state where relevant.
+- Avoid tests that depend on timing alone; use controlled promises, barriers or fault injection for race conditions.
+- Test both success and failure cleanup, including stream closure, locks and partial operations.
+- Ensure tests are independent, repeatable and meaningful; remove duplication only when distinct guarantees remain covered.
+- Keep native-browser/OS limitations explicit instead of treating mocks as equivalent.
+- Record flaky tests and investigate root causes; do not hide flakes with arbitrary retries.
+
+## 13. QA handoff format
+
+For each QA pass, report:
+- Target branch, exact commit and environment.
+- Scope and acceptance criteria reviewed.
+- Test cases and exact commands run.
+- Passed, failed, blocked, skipped and not-run counts.
+- Findings with stable IDs, severity, reproduction and evidence.
+- CI workflow URL and tested SHA, if available.
+- Limitations, residual risks and release recommendation.
+- Tracker/context files updated.
+
+Do not change a finding to fixed until the implementation exists and its relevant regression evidence passes on the intended commit.
