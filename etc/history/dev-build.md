@@ -490,3 +490,80 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Changed decline behavior to preserve the source record and emit a structured, content-free `[Wave recovery]` diagnostic with source-tab ownership information. Same-tab save/cleanup behavior is unchanged.
 - Strengthened the E2E assertion to poll IndexedDB for the exact source-tab record and ownership instead of taking a single immediate snapshot; this tolerates legitimate asynchronous journal/visibility events without weakening the preservation guarantee.
 - Verification is pending on the new manager head. No local test/build execution is claimed in this GitHub-only change.
+
+
+## WAVE-0111 — repair invalid test extraction and restore regression coverage — 2026-11-15
+
+- PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111`.
+- The first extraction attempt produced malformed JavaScript in `tests/storage.test.js` and duplicated/mis-split the original storage scenarios. Restored `tests/storage.test.js` byte-for-byte from the branch base (`main`) rather than attempting another brace-based extraction.
+- Removed the invalid extracted `tests/unit/storage/workspace.test.js` and duplicate `tests/unit/safety/concurrency.test.js`; all original storage/safety scenarios remain in the canonical suite. No original assertions were intentionally removed.
+- Fixed the diagnostics test's invalid TypeScript-only import/type annotations in a `.js` file. Replaced test scripts that targeted now-removed directories with explicit valid suite paths; `npm test` remains the canonical command consumed by `test.sh` and CI.
+- Updated `tests/unit/README.md` to describe the actual layout and explicitly defer storage scenario splitting until an inventory-backed move can be verified. This is a corrective stabilization, not completion of #111's full architecture target.
+- GitHub Actions was observed queued/in progress for earlier intermediate heads; it does not verify the final head after this repair. No local test, typecheck, build or browser execution was available in this GitHub-only session. Check the newest PR workflow against the final documented SHA before claiming a pass.
+
+
+## WAVE-0111 — feature-based test architecture and diagnostics — 2026-11-15
+
+- PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111`.
+- Reorganized all 30 original Node scenarios into `tests/unit/storage/workspace.test.js` (6), `tests/unit/storage/trash-backup.test.js` (13), and `tests/unit/safety/concurrency.test.js` (11). Shared in-memory filesystem fixtures now live in `tests/helpers/storage-fixtures.js`.
+- Reorganized all 48 original Playwright scenarios into workspace (18), Markdown (21), and editor (9) suites under `tests/e2e/`; shared workspace setup helpers live in `tests/e2e/fixtures/workspace.ts`.
+- Performed a source-inventory name reconciliation against the branch base: Node tests 30 → 30 (no missing, extra or duplicate names); E2E tests 48 → 48 (no missing, extra or duplicate names). This confirms scenario-name preservation, not assertion equivalence or runtime success by itself.
+- Updated Node discovery and focused scripts, retained `./test.sh` as the canonical full gate, and configured Playwright HTML reporting plus failure trace/screenshot/video. CI uploads `test-results/` and `playwright-report/` for 14 days.
+- Added typed diagnostics with level control, operation IDs, redaction, sink isolation and a bounded 200-event in-memory history. Root render/uncaught runtime failures and critical workspace operations report structured events. Settings exposes a sanitized report preview/copy/clear flow; `?waveDebug=1` opts into info/debug console output. No remote telemetry or persistent diagnostic store was added.
+- CI issue found and corrected during implementation: Node 22 treats a directory path passed directly to `node --test` as a file, so discovery now uses shell-expanded `tests/unit/**/*.test.js` globs and focused one-level globs.
+- Verification is pending for the latest head after the discovery correction and final diagnostics/docs updates. Earlier CI on intermediate commits failed for the invalid directory invocation and must not be counted as final verification. No local checkout/test execution was available in this GitHub-only session.
+- Review current Actions run for the exact final PR SHA before marking the PR ready. Do not close #111 or merge without full Node, typecheck, production build, Playwright and container success.
+
+
+## WAVE-0111 review follow-up — diagnostic privacy and autosave instrumentation
+
+- Review [5910111707](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910111707) on PR #115.
+- Hardened diagnostics with allowlisted string values and strict event names; unknown strings redact regardless of field key. Added a sanitized bounded cause-chain representation; raw stacks are deliberately omitted due to path/content leakage risk.
+- Autosave persistence failures now emit one event at the central `persistDocument` boundary using an operation ID created by the save timer. The timer catch remains UI-only to prevent duplicate events.
+- Playwright fixture now creates a unique OPFS directory per browser context. Multi-tab tests use the app's recent-workspace handle instead of a fixed global directory.
+- Documented why the present storage/safety split matches the current Node-test inventory and why no standalone integration directory exists without a distinct application/storage seam.
+- GitHub API-only edits: no local checkout/test run. Fresh CI on the exact final SHA is required; review's full UI failure-injection coverage is not yet proven by local execution.
+
+
+## WAVE-0111 second review follow-up (2026-11-15)
+
+- Second review [5910232936](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910111707) identified recovery trace gating, incomplete operation correlation and unsafe free-form exception text.
+- Removed direct `console.info('[Wave recovery]')` tracing. Recovery stages now use structured `debug` events and share the same operation ID as document-open failure reporting. Default verbosity suppresses those events; `?waveDebug=1` enables them.
+- Diagnostic errors retain the standard error class and a bounded cause chain, but free-form exception messages are replaced with the fixed string `Details omitted for privacy.` This intentionally avoids heuristic text redaction that could miss document-derived prose. Raw stack traces are not stored.
+- Stable operation IDs now span workspace open/reopen and activation, document open, autosave persistence, Trash restore/delete, and backup create/restore. Existing diagnostics use strict string vocabularies and duplicate propagation is suppressed.
+- Unit coverage now checks ordinary unprefixed private prose is omitted. Playwright coverage checks no recovery trace noise by default, debug visibility when enabled, and autosave error privacy/correlation.
+- Full canonical CI must run against the exact latest head after these changes; no local execution is claimed.
+
+
+## WAVE-0111 pipeline follow-up (2026-11-15)
+
+- Investigated exact-head CI run [43704440873](https://github.com/iamjpsonkar/Wave/actions/runs/43704440873). Node suite passed (36 tests); container job passed; Playwright had 49 passing tests and one failure.
+- The only remaining failure was the cross-tab recovery E2E assertion. Runtime evidence showed the source tab's recovery journal record correctly remains after the second tab declines recovery. The test had been changed to expect deletion; restored the correct preservation assertion and made it poll for the durable source-tab record.
+- The debug-gating E2E test passed in this run, as did all other Playwright cases.
+- A fresh full CI run is required for the updated test commit before considering the PR ready to merge.
+
+
+## WAVE-0111 recovery pipeline diagnostics (2026-11-15)
+
+- Run [43704827319](https://github.com/iamjpsonkar/Wave/actions/runs/43704827319) showed the cross-tab recovery assertion still failing and exposed a test diagnostics bug: the failure handler referenced an undefined `recoveryLogs`.
+- Added structured debug-only draft-journal events for lock wait/acquire/release, save plans, reads, and clear plans/completions. Events record operation/stage and bounded counts only; they do not log document content, paths, or tab IDs. Removed raw `console.info('[Wave recovery]')` journal logging.
+- Passed the document-open operation ID through draft journal read/clear calls and the document persistence operation ID through journal clear, so traces can be correlated.
+- Fixed the failure handler to capture both tabs' logs and enabled `?waveDebug=1` for the cross-tab regression to retain the journal ownership/locking evidence in CI.
+- Root timing issue in the test: `page.clock.install()` alone installs the controllable clock but does not pause time. The test now explicitly calls `page.clock.pauseAt(new Date())` before creating the unsaved draft, preventing the 600 ms autosave timer from committing the source document and clearing its journal before the second tab inspects it.
+- Follow-up full CI is required on the final documentation commit. The nested-breadcrumb timeout remains separately tracked until a fresh run determines whether it reproduces after the recovery test is deterministic.
+
+## 2026-11-15 — PR #115 final diagnostics review follow-up
+
+- Addressed the two remaining findings from review [5910312606](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910312606).
+- Operation IDs are now created at the user-action boundary and threaded through `flush`, `persistDocument`, nested copy synchronization, Trash refresh, and failure reporting for document create/template, duplicate, Trash move, backup create, workspace activation, document open, and reload workflows. Independent user actions retain independent IDs.
+- Reworked the recovery diagnostics E2E scenario: a normal-mode document open must emit no recovery debug trace; the same journey with `?waveDebug=1` must emit structured debug events, and all stages from that open must share one operation ID.
+- Source and test changes are committed to `WAVE-0111`. Exact-head CI has not yet been run for this follow-up; verification remains pending.
+
+
+## PR #115 follow-up — review 5910351108 (2026-11-15)
+
+- Threaded the attachment workflow's operation ID through both pre/post asset flush calls so persistence events correlate with attachment failure reporting.
+- Threaded the page-exit recovery operation ID through saveDraft() as well as its failure report.
+- Strengthened the browser-level logging test: it captures normal-bootstrap console output and asserts no [Wave] diagnostics are emitted, then repeats a document open with ?waveDebug=1 and asserts structured recovery debug events share one operation ID.
+- refresh() remains a separate inventory/settings-read sub-operation with its own ID because it is also called independently from user actions; its prune failure is not treated as part of a parent action's persistence transaction.
+- Exact-head full CI is required before considering these review findings closed.

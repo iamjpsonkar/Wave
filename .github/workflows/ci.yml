@@ -17,6 +17,18 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Run the same local verification script used by developers
         run: ./test.sh --skip-install --skip-playwright-install --skip-browser-install
+      - name: Upload browser test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: wave-playwright-diagnostics
+          path: |
+            test-results/
+            playwright-report/
+            config/test-results/
+            config/playwright-report/
+          if-no-files-found: ignore
+          retention-days: 14
 
   container:
     runs-on: ubuntu-24.04
