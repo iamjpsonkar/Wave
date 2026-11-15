@@ -94,3 +94,8 @@ Any dependency, font, icon, image, logo, copied snippet, documentation excerpt, 
 CI runs the metadata audit for every pull request. A passing check is not a legal compatibility opinion and does not replace manual review.
 
 For dependency changes, update the committed machine-readable inventory at `etc/legal/dependency-license-inventory.json` with `npm run license:audit:update` only after reviewing the new/changed packages' exact upstream terms. Review the complete JSON diff and commit it together with the lockfile and any required attribution changes. CI rejects an out-of-date inventory.
+
+## Commit scope and documentation
+
+Keep each task's implementation and its documentation together. The default is one cohesive commit containing related source changes, tests, configuration and the relevant Markdown updates (including the appropriate development history and handoff when applicable). Do not create a separate documentation-only commit for docs that explain the same implementation. Minimize commits without combining unrelated work; split only genuinely independent reviewable phases. Review the complete diff before pushing, and verify CI against the exact pushed commit. Amend unshared commits when needed; never rewrite shared main history. See [AGENTS.md](../../AGENTS.md) for the full agent commit policy.
+

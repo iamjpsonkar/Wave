@@ -314,3 +314,19 @@ For every dependency/asset change:
 - Treat automated SPDX metadata as a screening signal, not a legal compatibility conclusion.
 
 Keep the notices inventory, README link, dependency-audit script and CI step maintained together. Update `etc/history/dev-build.md` and `DEV_CONTEXT.md` after audit/process changes; update `DEV_CONTEXT.md` last.
+
+## Commit and documentation cohesion policy
+
+**Default: one task, one cohesive commit.** Implementation and its required documentation are one unit of work. Source code, tests, configuration, migration/inventory changes, and the Markdown updates that explain or track those changes should be committed together whenever they belong to the same task.
+
+- Before committing, identify and update the relevant existing Markdown sources: feature/user documentation, trackers, etc/history/dev-fixed.md or etc/history/dev-build.md, and DEV_CONTEXT.md as applicable.
+- Do not create a separate documentation-only commit for documentation that describes the code/configuration change in the same task.
+- Do not split code and its corresponding docs into separate commits merely to make the history look organized. Prefer a single implementation commit with a message describing the task.
+- Minimize commits, but do not combine unrelated tasks or create an oversized, hard-to-review commit. Use multiple commits only for genuinely independent, logically reviewable phases or when a technical dependency requires it.
+- Before pushing, review the complete staged/committed diff and confirm code, tests, config, generated inventories and relevant docs are included; check for accidental unrelated changes.
+- If the task's commit has not been pushed/shared and needs correction, amend it rather than adding a redundant follow-up commit. If already pushed to a feature branch, prefer a safe squash/rebase only when appropriate and coordinated; never rewrite shared main history. Respect branch protections and use force-with-lease if a rewrite is explicitly warranted.
+- Update the PR description and verification evidence as part of the same task workflow; avoid extra commits solely to restate information already recorded in the appropriate Markdown source.
+- After the cohesive commit is pushed, verify the branch head and run CI against that exact SHA. Do not claim verification from an earlier commit.
+
+This policy minimizes noisy history while keeping every implementation self-contained, reviewable and documented.
+

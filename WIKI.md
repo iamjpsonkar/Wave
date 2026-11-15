@@ -793,3 +793,8 @@ The third-party license audit implementation is tracked in [PR #121](https://git
 Follow-up attribution review records the upstream `caniuse-lite` instruction to credit `caniuse.com`, source/version references for the Apache-2.0 dependencies, and the Feather-derived Lucide icon attribution caveat in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md). The scanner is not a legal compatibility engine. Exact LICENSE/NOTICE inspection for every locked npm tarball and release artifact verification remain outstanding; a green metadata audit alone does not satisfy those checks.
 
 At the 2026-11-15 handoff, CI run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333) for follow-up commit `61f7425c44e182780c5d6d97c30b03d41024a8d6` had passed the npm license audit step while functional tests/build/E2E and container build were still in progress. See [dev-build history](./etc/history/dev-build.md) and the PR for current exact-head status. #118 and PR #121 remain open until all scoped acceptance and verification requirements are dispositioned.
+
+## Commit discipline — implementation and docs together
+
+Wave uses **one cohesive commit per task by default**. Code, tests, configuration and the Markdown documentation/history that belongs to that implementation must be updated and committed together. Avoid separate documentation-only commits for the same task. Minimize commit count without combining unrelated work; split only genuinely independent, reviewable phases. Review the full diff before pushing and verify CI on the exact pushed SHA. Amend unshared commits where practical, but never rewrite shared main history. The detailed mandatory policy is in [AGENTS.md](./AGENTS.md).
+

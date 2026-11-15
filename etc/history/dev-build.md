@@ -618,3 +618,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - CI: historical exact-head run [43711589863](https://github.com/iamjpsonkar/Wave/actions/runs/43711589863) passed for prior PR head `9085b0a5743e13ef86b89bf5187b7b58cea7c5c9`. Follow-up head `61f7425c44e182780c5d6d97c30b03d41024a8d6` triggered run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333); at handoff, both build and container jobs were in progress. The license audit step on this run has passed; full functional/build/E2E and container results remain pending.
 - Environment limitation: GitHub-only connector cannot execute local npm commands or unpack/download npm tarballs. Do not claim local test execution. Exact contents of all 221 package tarballs and exact Apache NOTICE presence remain unverified; release artifact notice inclusion must be checked. The audit is metadata/inventory plus targeted upstream-source review, not legal certification.
 - PR #121 remains open and #118 remains open. Do not merge/close until the updated exact-head CI passes and remaining distribution review is actually completed or explicitly dispositioned by the project owner/legal reviewer.
+
+## 2026-11-15 — Wave commit and documentation cohesion policy
+
+- Owner direction: minimize commit count. Documentation updates that describe or track an implementation belong in the same commit as its code, tests and configuration changes; do not make separate documentation-only commits for the same task.
+- Established the default of one cohesive commit per task. Split only genuinely independent, logically reviewable phases; do not combine unrelated tasks merely to reduce the count.
+- Require a complete diff review before push and exact-head CI verification afterward. Amend unshared commits when useful; do not rewrite shared main history. Detailed policy is recorded in AGENTS.md and referenced from WIKI.md and the contributor guide.
+

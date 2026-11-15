@@ -897,3 +897,12 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Removed `package-lock.json` from `.gitignore` in commit `fa9de6a18305704d7f560086490255238d116726` on `WAVE-0118`.
 - Verified `package-lock.json` remains present and tracked on both `main` and `WAVE-0118` (same blob SHA `0b67bf1a95283010f1aaeb7983f622e7248bebf1`).
 - This is required for reproducible `npm ci` installs and the committed dependency license inventory check.
+
+## 2026-11-15 — Commit discipline for future tasks
+
+- Owner direction: minimize commit count and keep documentation updates with the implementation they describe.
+- Default to one cohesive commit per task containing related code, tests, configuration and relevant Markdown documentation/history. Do not create separate documentation-only commits for the same task.
+- Split commits only for genuinely independent, reviewable phases or technical necessity; do not combine unrelated work just to reduce count.
+- Review the complete diff before pushing, then verify CI against the exact pushed SHA. Amend unshared commits where appropriate; never rewrite shared main history.
+- The authoritative detailed policy is in AGENTS.md; contributor and agent guidance also appears in etc/engineering/CONTRIBUTING.md and WIKI.md.
+
