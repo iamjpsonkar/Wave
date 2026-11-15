@@ -704,3 +704,12 @@ CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was cor
 - Accessibility remains tracked in existing [#3](https://github.com/iamjpsonkar/Wave/issues/3); do not create a duplicate accessibility ticket.
 - Latest verified PR #101 CI recorded on main: [run 43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), including 48/48 Playwright tests, Node tests, typecheck, production build and container job. This does not replace native/manual checks.
 - Reconciliation preserves the PR branch's implementation history and the base branch's issue split. This GitHub-only operation does not run tests or a build.
+
+
+## Automated test organization tracking — 2026-11-15
+
+- New issue [#111 — restructure automated tests into feature-based suites and scenarios](https://github.com/iamjpsonkar/Wave/issues/111) tracks an inventory-first test-layout refactor. Current baseline: Node test script uses flat `tests/*.test.js` discovery; Playwright journeys are concentrated in `tests/e2e/workspace.spec.ts`.
+- Scope includes meaningful unit/integration/E2E directories, feature-oriented files/scenarios, shared fixtures/helpers where justified, recursive/explicit discovery, focused commands, and synchronized `test.sh`/CI execution.
+- Preserve all unique assertions and guarantees. Coordinate with [#100](https://github.com/iamjpsonkar/Wave/issues/100), whose narrower duplicate-test cleanup must not remove unique coverage.
+- Issue index: [trash/github-issues.md](./trash/github-issues.md). Detailed task-creation history: [trash/dev-build.md](./trash/dev-build.md).
+- This was issue creation/documentation only; no source/test files changed and no tests/build were run.
