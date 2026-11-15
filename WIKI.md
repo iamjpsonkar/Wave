@@ -17,11 +17,12 @@ Before making any change:
 
 1. Read this `WIKI.md` in full enough to understand the relevant section.
 2. Read [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the current source baseline, implementation invariants, exact commands, latest known verification and task workflow.
-3. Read [CONTRIBUTING.md](./CONTRIBUTING.md) for repository contribution conventions.
-4. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
-5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [consolidated UI backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
-6. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
-7. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
+3. Read [etc/engineering/CONTRIBUTING.md](./etc/engineering/CONTRIBUTING.md) for repository contribution conventions and license-maintenance requirements.
+4. Read [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) before changing dependencies or third-party assets.
+5. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
+6. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [consolidated UI backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
+7. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
+8. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
 
 ### Agent operating contract
 
@@ -454,6 +455,8 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `DEV_CONTEXT.md` | Canonical concise developer handoff and current implementation baseline | Read before every coding task; update last after each implementation batch |
 | `README.md` | Public project overview, setup, deployment and license summary | Update when onboarding, capabilities, run/deploy workflow or public license description changes |
 | `LICENSE` | Canonical MIT License text and copyright notice | Keep exact canonical license wording; change holder/year only with owner approval |
+| `THIRD_PARTY_NOTICES.md` | Dependency, font, icon and external asset license/attribution inventory | Update on every dependency or third-party asset change; preserve upstream notices |
+| `scripts/check-dependency-licenses.mjs` | Lockfile-based dependency license metadata guard | Keep synchronized with lockfile format and CI; metadata screening only, not legal advice |
 | `etc/engineering/CONTRIBUTING.md` | Canonical contributor workflow, engineering rules and contribution licensing expectations | Update when contribution, verification or licensing practices change |
 | `etc/history/dev-fixed.md` | Append-only-ish implementation fix and regression history | Record bug fixes and regression tests |
 | `etc/history/dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
