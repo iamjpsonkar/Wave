@@ -457,3 +457,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 
 - Created [features-gap.md](../product/features-gap.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
 - The gap audit is updated in [features-gap.md](../product/features-gap.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
+
+## Automated test suite organization issue — 2026-11-15
+
+- Created [#111 — restructure automated tests into feature-based suites and scenarios](https://github.com/iamjpsonkar/Wave/issues/111).
+- Current source inspection confirmed Node tests are discovered through the flat `tests/*.test.js` package script, while Playwright coverage is concentrated in `tests/e2e/workspace.spec.ts`. The issue requests an inventory-first migration into meaningful unit/integration/E2E feature directories, focused files and scenarios.
+- Acceptance criteria explicitly preserve all existing assertions and guarantees, maintain complete discovery through `test.sh` and CI, support focused runs, and avoid test-order coupling.
+- Coordinated scope with [#100](https://github.com/iamjpsonkar/Wave/issues/100): duplicate cleanup must retain distinct coverage; #111 is the broader organizational restructuring.
+- This was issue creation and documentation only. No test files, application code or test commands were changed/run.
