@@ -743,3 +743,12 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Preserve all unique assertions and guarantees. Coordinate with [#100](https://github.com/iamjpsonkar/Wave/issues/100), whose narrower duplicate-test cleanup must not remove unique coverage.
 - Issue index: [github-issues.md](./etc/quality/github-issues.md). Detailed task-creation history: [dev-build.md](./etc/history/dev-build.md).
 - This was issue creation/documentation only; no source/test files changed and no tests/build were run.
+
+
+## #111 diagnostic logging scope update — 2026-11-15
+
+- [#111](https://github.com/iamjpsonkar/Wave/issues/111) now includes required test-run diagnostics and production failure observability in addition to test-suite restructuring.
+- Implementation must provide structured/log-level-controlled diagnostics, test failure context and CI artifacts, operation/correlation IDs, and error capture across critical workspace/storage/recovery flows.
+- Preserve Wave's local-first privacy model: redact sensitive data, never log document contents/secrets/raw paths by default, no remote telemetry without separate explicit opt-in, and keep diagnostic sinks bounded and non-blocking.
+- Detailed requirements and checklist live in the GitHub issue; task history is in [trash/dev-build.md](./trash/dev-build.md).
+- No code/test changes or verification were performed for this scope update.

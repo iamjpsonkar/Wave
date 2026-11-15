@@ -474,3 +474,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Reconciled the QA operating contract across `AGENTS.md`, `WIKI.md`, `howto/howtoqa.md`, `howto/engineering-rules.md` and the legacy QA entry point: QA is read-only in the repository; actionable findings go to GitHub issues and PR review comments; developers own fixes; QA does not approve or merge without explicit authorization.
 - Source inventory checked against current test files and `package.json`: 30 Node test definitions in `tests/storage.test.js` and 48 Playwright Chromium test definitions in `tests/e2e/workspace.spec.ts`. These are definitions, not a claim that tests were run in this documentation-only task.
 - Verification scope: GitHub repository tree and Markdown content inspection only. No local test, typecheck, production build, browser run or CI result is claimed.
+### #111 scope extension — diagnostic logging and production failure observability — 2026-11-15
+
+- Expanded [#111](https://github.com/iamjpsonkar/Wave/issues/111) to require actionable diagnostics for both test failures and production failures.
+- Test requirements now include structured suite/scenario context, focused debug levels, Node failure output, Playwright traces/screenshots/console and request diagnostics, CI artifact retention, and concurrency/recovery identifiers.
+- Production requirements include a small typed structured logger, operation/correlation IDs, error-boundary and unhandled-error capture, actionable user-facing failures, and diagnostics around filesystem, permission, autosave, recovery, backup/restore and asset operations.
+- Privacy constraints are explicit: local-first by default, no silent remote telemetry, no workspace content/secrets/raw paths in logs, bounded local diagnostics, and preview/redaction before report export. Logging must never block or mask save/recovery failures.
+- This updates issue scope only; no application logger or test instrumentation has been implemented and no tests were run.
