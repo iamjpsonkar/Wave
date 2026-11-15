@@ -513,3 +513,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - CI issue found and corrected during implementation: Node 22 treats a directory path passed directly to `node --test` as a file, so discovery now uses shell-expanded `tests/unit/**/*.test.js` globs and focused one-level globs.
 - Verification is pending for the latest head after the discovery correction and final diagnostics/docs updates. Earlier CI on intermediate commits failed for the invalid directory invocation and must not be counted as final verification. No local checkout/test execution was available in this GitHub-only session.
 - Review current Actions run for the exact final PR SHA before marking the PR ready. Do not close #111 or merge without full Node, typecheck, production build, Playwright and container success.
+
+
+## WAVE-0111 review follow-up — diagnostic privacy and autosave instrumentation
+
+- Review [5910111707](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910111707) on PR #115.
+- Hardened diagnostics with allowlisted string values and strict event names; unknown strings redact regardless of field key. Added a sanitized bounded cause-chain representation; raw stacks are deliberately omitted due to path/content leakage risk.
+- Autosave persistence failures now emit one event at the central `persistDocument` boundary using an operation ID created by the save timer. The timer catch remains UI-only to prevent duplicate events.
+- Playwright fixture now creates a unique OPFS directory per browser context. Multi-tab tests use the app's recent-workspace handle instead of a fixed global directory.
+- Documented why the present storage/safety split matches the current Node-test inventory and why no standalone integration directory exists without a distinct application/storage seam.
+- GitHub API-only edits: no local checkout/test run. Fresh CI on the exact final SHA is required; review's full UI failure-injection coverage is not yet proven by local execution.
