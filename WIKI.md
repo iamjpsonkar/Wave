@@ -784,3 +784,12 @@ A historical main-sync PR (#107) was closed unmerged when the owner chose to per
 ## Documentation organization
 
 The maintained project reference library is indexed at [etc/README.md](./etc/README.md). Team and contributor procedures are indexed at [howto/README.md](./howto/README.md). The former `trash/` documentation directory has been replaced by categorized product, engineering, quality and history directories.
+
+
+## 2026-11-15 — License audit work (#118 / PR #121)
+
+The third-party license audit implementation is tracked in [PR #121](https://github.com/iamjpsonkar/Wave/pull/121) and is also retained under the consolidated security tracker [#120](https://github.com/iamjpsonkar/Wave/issues/120). The branch adds an exact 221-entry npm lockfile inventory, a metadata freshness/license-declaration checker, CI enforcement, notices and a repeatable dependency/asset update procedure.
+
+Follow-up attribution review records the upstream `caniuse-lite` instruction to credit `caniuse.com`, source/version references for the Apache-2.0 dependencies, and the Feather-derived Lucide icon attribution caveat in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md). The scanner is not a legal compatibility engine. Exact LICENSE/NOTICE inspection for every locked npm tarball and release artifact verification remain outstanding; a green metadata audit alone does not satisfy those checks.
+
+At the 2026-11-15 handoff, CI run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333) for follow-up commit `61f7425c44e182780c5d6d97c30b03d41024a8d6` had passed the npm license audit step while functional tests/build/E2E and container build were still in progress. See [dev-build history](./etc/history/dev-build.md) and the PR for current exact-head status. #118 and PR #121 remain open until all scoped acceptance and verification requirements are dispositioned.
