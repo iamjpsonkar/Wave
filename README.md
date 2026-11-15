@@ -6,7 +6,7 @@
 
 Wave is a local-first workspace for notes, documents and ideas. Choose a folder and Wave creates a portable `.wave/` workspace inside it. Your Markdown pages and attachments remain ordinary files you own.
 
-[Features](./FEATURES.md) · [Roadmap](docs/ROADMAP.md) · [Architecture](docs/ARCHITECTURE.md) · [Documentation index](docs/README.md) · [Docker guide](docs/DOCKER.md)
+[Features](./trash/FEATURES.md) · [Roadmap](./trash/docs/ROADMAP.md) · [Architecture](./trash/docs/ARCHITECTURE.md) · [Documentation index](./trash/docs/README.md) · [Docker guide](./trash/docs/DOCKER.md)
 
 ## What Wave includes today
 
@@ -17,7 +17,7 @@ Wave is a local-first workspace for notes, documents and ideas. Choose a folder 
 - **Data safety:** autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore to a separate workspace.
 - **Responsive workspace:** full-window editor, mobile navigation and keyboard-oriented workflows.
 
-See [FEATURES.md](./FEATURES.md) for the combined shipped-feature overview and detailed feature map. The [complete product blueprint](upcoming-features.md) and [priority plan](priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
+See [FEATURES.md](./FEATURES.md) for the combined shipped-feature overview and detailed feature map. The [complete product blueprint](./trash/upcoming-features.md) and [priority plan](./trash/priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
 
 ## Choose how to run Wave
 
@@ -115,13 +115,16 @@ docker/               Nginx static hosting configuration
 *.md                  Product blueprints and engineering registers
 ```
 
-The consolidated feature, UI and QA registers reduce duplicate files while preserving their meaningful requirements, stable IDs and historical evidence. The complete product blueprint, priority plan, development logs and open/fixed bug registers remain separate because they serve distinct purposes. Start with the [documentation index](docs/README.md) to find the right one.
+The consolidated feature, UI and QA registers reduce duplicate files while preserving their meaningful requirements, stable IDs and historical evidence. The complete product blueprint, priority plan, development logs and open/fixed bug registers remain separate because they serve distinct purposes. Start with the [documentation index](./trash/docs/README.md) to find the right one.
 
 ## Product direction
 
-Wave's personal core remains local-first and useful without an account. Optional collaboration, connected services, richer database capabilities and a desktop application remain planned work. A versioned SQLite store and server-side services require explicit migration, authorization, integrity, export and recovery design; static Docker hosting does not imply those capabilities. See [the product constitution](upcoming-features.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers).
+Wave's personal core remains local-first and useful without an account. Optional collaboration, connected services, richer database capabilities and a desktop application remain planned work. A versioned SQLite store and server-side services require explicit migration, authorization, integrity, export and recovery design; static Docker hosting does not imply those capabilities. See [the product constitution](./trash/upcoming-features.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers).
 
 
 ## Project context
 
-- [Wave Wiki — complete product, repository and AI-agent context](./wiki.md)
+- [Wave Wiki — complete product, repository and AI-agent context](./WIKI.md)
+## Documentation location note
+
+The repository's current tree keeps the detailed product and engineering reference documents under `trash/` (including `trash/docs/` and the product/QA trackers). These are tracked files and must not be assumed deleted or disposable solely because of the directory name. Use the exact paths linked above and in the repository tree. Do not move, rename or purge them without first migrating their meaningful content, checking inbound links and obtaining the task's intended scope.
