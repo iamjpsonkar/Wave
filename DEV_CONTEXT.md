@@ -846,3 +846,76 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Added contributor licensing expectations to `etc/engineering/CONTRIBUTING.md`: contributions submitted for inclusion are offered under MIT, contributors retain their copyright, and no CLA/DCO requirement is introduced.
 - Updated `WIKI.md` to use the actual canonical contributor-guide path and to index the license; kept its documentation map table contiguous. Updated `etc/README.md` and README contributor links.
 - Branch: `WAVE-0117`. This is a GitHub API-only documentation/metadata change; no local tests, typecheck or build were run. Exact-head GitHub Actions verification is pending. GitHub's detected-license metadata is tied to the default branch and cannot be considered complete until this PR is merged.
+
+## Issue #118 — third-party license audit and maintenance controls (2026-11-15)
+
+- Default-branch lockfile audit: npm lockfileVersion 3, 221 package entries, all declared license metadata (MIT 210, ISC 7, Apache-2.0 2, BSD-3-Clause 1, CC-BY-4.0 1). The non-MIT data-license item is `caniuse-lite@1.0.30001826` (CC-BY-4.0); exact release attribution remains a manual release-review requirement.
+- Asset/source inventory: runtime Google Fonts DM Sans, DM Mono and Playfair Display (SIL OFL 1.1; font binaries not committed/pinned); Lucide React icons (`lucide-react@0.468.0`, ISC); Mermaid/Graphviz SVGs and Markdown templates are authored by Wave; end-user workspace images/media are user-provided and local. No tracked standalone image/font assets were identified in the repository tree audit.
+- Added `THIRD_PARTY_NOTICES.md` for third-party license/attribution inventory and `scripts/check-dependency-licenses.mjs` for exact lockfile metadata screening. Added npm scripts `license:audit`, `license:audit:json`, and `test:license`; CI now executes the audit after `npm ci`.
+- Ongoing maintenance rules added to `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md`; README and `etc/README.md` link to notices. Recheck exact upstream LICENSE/NOTICE files for modified/added packages; document all external assets, preserve attribution and escalate uncertain/possibly incompatible terms.
+- Limitations: metadata scan is not legal compatibility review and does not prove notice contents were preserved. Each package's exact tarball license/NOTICE has not yet been individually checked. caniuse-lite attribution and package-specific Apache NOTICE requirements need release artifact verification. Google Fonts exact font bytes are not pinned. No material was relicensed or substituted.
+- Branch `WAVE-0118`. GitHub API-only edits; local checker execution and exact-head CI are pending. Update this handoff last after any further documentation corrections.
+
+
+## Issue #118 — exact dependency inventory and ongoing maintenance (2026-11-15)
+
+- Added committed snapshot `etc/legal/dependency-license-inventory.json` with all 221 exact package entries from the lockfile: install path, package name/version, declared license, resolved npm tarball, integrity digest and dev-only marker. Counts: MIT 210, ISC 7, Apache-2.0 2, BSD-3-Clause 1, CC-BY-4.0 1. Snapshot data reconciled against the current branch lockfile; all records matched.
+- Audit metadata identifies Apache-2.0 packages `baseline-browser-mapping@2.11.37` and dev-only `typescript@5.7.3`; `caniuse-lite@1.0.30001826` is CC-BY-4.0. The notices file records Lucide React ISC and runtime Google Fonts DM Sans, DM Mono and Playfair Display under OFL-1.1; fonts are runtime-loaded and unpinned.
+- `scripts/check-dependency-licenses.mjs` now compares the committed exact inventory against `package-lock.json`; it fails on stale inventory, missing license declarations or unrecognized identifiers. Npm commands: `license:audit`, `license:audit:json`, `license:audit:update`, and `test:license`. CI invokes the audit after `npm ci`.
+- `THIRD_PARTY_NOTICES.md`, README, `etc/README.md`, `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md` now prescribe how to record and review future dependency and external-asset updates. Refresh the JSON only after reviewing upstream terms; inspect the full generated diff; preserve NOTICE/attribution material; escalate ambiguous terms.
+- Legal/verification limitations remain explicit: the 221 package tarballs' LICENSE/NOTICE files were not individually compared; Apache package-specific NOTICE presence and CC-BY attribution wording need release-artifact verification; Google Fonts CSS responses and exact font binaries are not pinned. The audit checker is not a legal compatibility opinion. No materials were changed or relicensed.
+- Branch: `WAVE-0118`. GitHub API-only changes; no local script execution or CI result claimed. Exact-head CI pending.
+
+
+### Issue #118 exact-head CI follow-up — 2026-11-15
+
+- The first PR #121 workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) ran `npm ci` successfully and then failed at `npm run license:audit`; the container job passed, while remaining build/browser steps were skipped. Log showed all 221 package counts as expected but the snapshot comparator considered inventory stale.
+- Independently compared all 221 snapshot package records with package-lock entries; exact names, versions, license IDs, registry sources, integrity digests and dev-only flags matched. Root cause was JSON serialization/property ordering and optional-field comparison.
+- Checker now compares normalized semantic fields and stable sorting. This correction is committed on `WAVE-0118`; the new exact-head workflow result is still required. Do not report CI green until it finishes.
+
+
+### Issue #118 exact-head CI final result — 2026-11-15
+
+- PR [#121](https://github.com/iamjpsonkar/Wave/pull/121) exact-head workflow [43711329699](https://github.com/iamjpsonkar/Wave/actions/runs/43711329699) completed successfully on source head `d6a1f49feddfec6bcee930807d779e2390e1c977`.
+- Passed jobs: build and container. The build job passed `npm ci`, the dependency-license inventory audit, Playwright runner setup, Chromium install, and the full `./test.sh --skip-install --skip-playwright-install --skip-browser-install` gate (Node tests, typecheck, production build, E2E); the container job passed Compose config validation and image build.
+- The first workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) failed only at inventory freshness comparison. The checker now normalizes record fields and sorts packages before comparison; the corrected exact-head CI passed.
+- PR description was updated with the exact-head green run. PR #121 remains open and mergeable pending owner review. Issue #118 was reopened because it had been auto/consolidation-closed as duplicate of #120 while this delivery remains under review; a status comment records the reason.
+- Remaining legal source-review gaps: package tarball LICENSE/NOTICE files were not individually compared, Apache NOTICE requirements and caniuse-lite attribution need release-artifact inspection, and the unpinned runtime Google Fonts files require capture/notice work only if the project chooses to self-host or bundle them. Do not imply these legal checks are complete from green CI.
+
+
+## 14. Third-party license audit follow-up — 2026-11-15
+
+- Work is in [PR #121](https://github.com/iamjpsonkar/Wave/pull/121), branch `WAVE-0118`, target `main`; broader consolidated tracking remains in [#120](https://github.com/iamjpsonkar/Wave/issues/120).
+- Follow-up notice correction: commit `61f7425c44e182780c5d6d97c30b03d41024a8d6` documents caniuse.com's CC-BY-4.0 attribution instruction, versioned source references for Apache-2.0 dependencies, Feather-derived Lucide attribution caveat and remaining package artifact review boundaries.
+- Documentation history was appended in `etc/history/dev-build.md` (commit `d76a97d7e8fe3f676561e247807de6bb69b50501`) and `WIKI.md` (commit `9a3c81b6feb58492b94a39cd8d4311459311e099`).
+- CI run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333) was in progress at the last inspection. Its npm ci and metadata license audit steps passed; remaining Playwright/build/container stages had not yet finished. Recheck before reporting.
+- Important limitation: exact LICENSE/NOTICE content across all 221 locked npm tarballs and final distribution artifact inclusion has not been verified. The GitHub-only tool session cannot run local npm or unpack the tarballs. This issue is not legally certified complete; keep #118 and PR #121 open until exact artifact review is completed or explicitly dispositioned by the owner/legal reviewer.
+
+
+## 2026-11-15 — Keep npm lockfile tracked
+
+- Removed `package-lock.json` from `.gitignore` in commit `fa9de6a18305704d7f560086490255238d116726` on `WAVE-0118`.
+- Verified `package-lock.json` remains present and tracked on both `main` and `WAVE-0118` (same blob SHA `0b67bf1a95283010f1aaeb7983f622e7248bebf1`).
+- This is required for reproducible `npm ci` installs and the committed dependency license inventory check.
+
+## 2026-11-15 — Commit discipline for future tasks
+
+- Owner direction: minimize commit count and keep documentation updates with the implementation they describe.
+- Default to one cohesive commit per task containing related code, tests, configuration and relevant Markdown documentation/history. Do not create separate documentation-only commits for the same task.
+- Split commits only for genuinely independent, reviewable phases or technical necessity; do not combine unrelated work just to reduce count.
+- Review the complete diff before pushing, then verify CI against the exact pushed SHA. Amend unshared commits where appropriate; never rewrite shared main history.
+- The authoritative detailed policy is in AGENTS.md; contributor and agent guidance also appears in etc/engineering/CONTRIBUTING.md and WIKI.md.
+
+
+
+## 2026-11-15 — PR #121 review remediation
+
+- Addressed review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985): dependency inventory names now derive from the final `node_modules/` path segment, including complete scoped names; regression coverage includes nested unscoped, nested scoped and root scoped packages.
+- Regenerated `etc/legal/dependency-license-inventory.json` with corrected package names and aligned the audit baseline in `THIRD_PARTY_NOTICES.md` to PR base SHA `7e895f26b05288dc8edfebcf03e14efe954950f5`.
+- Full exact-head CI is required before treating the code findings as verified. Previously documented package tarball/LICENSE/NOTICE and final distribution attribution checks remain open and must not be represented as legally complete.
+
+
+## 2026-11-15 — PR #121 CI test import fix
+
+- Run [43713413195](https://github.com/iamjpsonkar/Wave/actions/runs/43713413195) exposed an incorrect relative import in the new license inventory regression test. The npm audit and container build had passed; the full Node unit gate failed before executing that test.
+- Extracted inventory normalization into side-effect-free `scripts/dependency-license-inventory.mjs`; CLI checker imports it, tests import the helper directly, and the relative path is corrected. Exact-head CI is required after this fix.

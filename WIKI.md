@@ -17,11 +17,12 @@ Before making any change:
 
 1. Read this `WIKI.md` in full enough to understand the relevant section.
 2. Read [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the current source baseline, implementation invariants, exact commands, latest known verification and task workflow.
-3. Read [CONTRIBUTING.md](./CONTRIBUTING.md) for repository contribution conventions.
-4. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
-5. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [consolidated UI backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
-6. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
-7. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
+3. Read [etc/engineering/CONTRIBUTING.md](./etc/engineering/CONTRIBUTING.md) for repository contribution conventions and license-maintenance requirements.
+4. Read [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) before changing dependencies or third-party assets.
+5. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
+6. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [consolidated UI backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
+7. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
+8. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
 
 ### Agent operating contract
 
@@ -454,6 +455,8 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `DEV_CONTEXT.md` | Canonical concise developer handoff and current implementation baseline | Read before every coding task; update last after each implementation batch |
 | `README.md` | Public project overview, setup, deployment and license summary | Update when onboarding, capabilities, run/deploy workflow or public license description changes |
 | `LICENSE` | Canonical MIT License text and copyright notice | Keep exact canonical license wording; change holder/year only with owner approval |
+| `THIRD_PARTY_NOTICES.md` | Dependency, font, icon and external asset license/attribution inventory | Update on every dependency or third-party asset change; preserve upstream notices |
+| `scripts/check-dependency-licenses.mjs` | Lockfile-based dependency license metadata guard | Keep synchronized with lockfile format and CI; metadata screening only, not legal advice |
 | `etc/engineering/CONTRIBUTING.md` | Canonical contributor workflow, engineering rules and contribution licensing expectations | Update when contribution, verification or licensing practices change |
 | `etc/history/dev-fixed.md` | Append-only-ish implementation fix and regression history | Record bug fixes and regression tests |
 | `etc/history/dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
@@ -781,3 +784,27 @@ A historical main-sync PR (#107) was closed unmerged when the owner chose to per
 ## Documentation organization
 
 The maintained project reference library is indexed at [etc/README.md](./etc/README.md). Team and contributor procedures are indexed at [howto/README.md](./howto/README.md). The former `trash/` documentation directory has been replaced by categorized product, engineering, quality and history directories.
+
+
+## 2026-11-15 — License audit work (#118 / PR #121)
+
+The third-party license audit implementation is tracked in [PR #121](https://github.com/iamjpsonkar/Wave/pull/121) and is also retained under the consolidated security tracker [#120](https://github.com/iamjpsonkar/Wave/issues/120). The branch adds an exact 221-entry npm lockfile inventory, a metadata freshness/license-declaration checker, CI enforcement, notices and a repeatable dependency/asset update procedure.
+
+Follow-up attribution review records the upstream `caniuse-lite` instruction to credit `caniuse.com`, source/version references for the Apache-2.0 dependencies, and the Feather-derived Lucide icon attribution caveat in [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md). The scanner is not a legal compatibility engine. Exact LICENSE/NOTICE inspection for every locked npm tarball and release artifact verification remain outstanding; a green metadata audit alone does not satisfy those checks.
+
+At the 2026-11-15 handoff, CI run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333) for follow-up commit `61f7425c44e182780c5d6d97c30b03d41024a8d6` had passed the npm license audit step while functional tests/build/E2E and container build were still in progress. See [dev-build history](./etc/history/dev-build.md) and the PR for current exact-head status. #118 and PR #121 remain open until all scoped acceptance and verification requirements are dispositioned.
+
+## Commit discipline — implementation and docs together
+
+Wave uses **one cohesive commit per task by default**. Code, tests, configuration and the Markdown documentation/history that belongs to that implementation must be updated and committed together. Avoid separate documentation-only commits for the same task. Minimize commit count without combining unrelated work; split only genuinely independent, reviewable phases. Review the full diff before pushing and verify CI on the exact pushed SHA. Amend unshared commits where practical, but never rewrite shared main history. The detailed mandatory policy is in [AGENTS.md](./AGENTS.md).
+
+
+
+## PR #121 review correction
+
+Review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985) identified inaccurate package names for nested lockfile entries and a mismatched audit baseline SHA. Package-name normalization now uses the final `node_modules/` segment (including scoped names), with regression tests; the committed inventory has been regenerated and the notices baseline corrected to the PR base commit. Exact-head CI and outstanding release-artifact legal review remain required.
+
+
+## License inventory regression test implementation note
+
+Keep pure lockfile normalization helpers in `scripts/dependency-license-inventory.mjs` so unit tests can import them without executing the CLI audit. The CLI wrapper `scripts/check-dependency-licenses.mjs` should remain the command entry point. Regression tests cover nested unscoped and scoped package names plus root scoped packages.

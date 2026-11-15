@@ -577,3 +577,66 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Documented inbound contribution expectations in `etc/engineering/CONTRIBUTING.md`: contributions intended for inclusion are offered under MIT, contributors retain copyright, and no CLA/DCO is introduced.
 - Corrected WIKI.md's stale root CONTRIBUTING.md references to the actual canonical guide at `etc/engineering/CONTRIBUTING.md`; indexed the license in `etc/README.md`.
 - Work is on branch `WAVE-0117`; exact-head CI and GitHub default-branch license detection remain pending. No local tests/build are claimed for this GitHub-only documentation/metadata change.
+
+## 2026-11-15 — Issue #118: third-party dependency and asset license audit
+
+- Audited the default-branch npm lockfile (lockfileVersion 3): 221 resolved package entries, all with declared license metadata — MIT 210, ISC 7, Apache-2.0 2, BSD-3-Clause 1 and CC-BY-4.0 1. The CC-BY-4.0 entry is `caniuse-lite@1.0.30001826`; release attribution must be preserved and reviewed against its upstream LICENSE/source attribution record.
+- Identified Lucide React icons (`lucide-react@0.468.0`, ISC) and runtime Google Fonts families DM Sans, DM Mono and Playfair Display (SIL OFL 1.1). Font binaries are not checked into the repo; exact runtime font bytes are not pinned. Mermaid/Graphviz SVG output and sample templates are authored by Wave. Workspace media is user-provided local content.
+- Added `THIRD_PARTY_NOTICES.md` with the dated inventory, source links, obligations, audit limitations, and repeatable update process. README and `etc/README.md` link to it.
+- Added `scripts/check-dependency-licenses.mjs`, `npm run license:audit`, `npm run license:audit:json`, and `npm run test:license`. CI runs the audit after `npm ci`; the checker fails on missing or unrecognized SPDX declarations.
+- Added ongoing maintenance requirements to `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md`: verify exact upstream license/NOTICE files, inventory new assets, preserve attribution and escalate ambiguous terms. CI's check is metadata screening only, not a legal compatibility opinion.
+- Open follow-up items: inspect each package's actual LICENSE/NOTICE files before release redistribution; verify the exact attribution string and distribution conditions for caniuse-lite; pin or self-host Google Fonts with OFL text/author records if deterministic/offline assets are required. No license terms have been changed and no package/asset has been replaced.
+- Branch `WAVE-0118`. This work was performed through the GitHub API; no local execution or CI result is claimed yet. Exact-head CI and script runtime verification remain pending.
+
+## 2026-11-15 — Issue #118 audit maintenance refinement
+
+- Committed the exact dependency snapshot at `etc/legal/dependency-license-inventory.json`: 221 lockfile packages with each resolved version, declared license, npm source URL, integrity digest and dev-only marker. Snapshot was structurally reconciled against the current lockfile; all 221 records matched.
+- Strengthened `scripts/check-dependency-licenses.mjs` to compare that committed snapshot with current package-lock metadata, fail on stale inventory, missing declarations or unrecognized license identifiers, and provide an explicit reviewed refresh command (`npm run license:audit:update`). This is a lockfile metadata guard, not a per-package legal review.
+- Added package-specific attention to `baseline-browser-mapping@2.11.37` and `typescript@5.7.3` (Apache-2.0), and documented the package-level CC-BY-4.0 item and attribution follow-up for caniuse-lite.
+- The exact inventory refresh removes volatile lockfile blob SHA from the content comparison so regenerating the same package metadata does not create a false stale-inventory failure.
+- Verification remains GitHub source/metadata inspection only. Script runtime, full CI and individual tarball LICENSE/NOTICE review are not yet verified.
+
+## 2026-11-15 — Issue #118 CI follow-up: inventory comparison normalization
+
+- Exact PR #121 workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) showed the new audit command executing successfully through npm but failing its inventory freshness comparison. The container job passed; later build/E2E steps were skipped due to the audit failure.
+- The committed inventory's 221 records were already structurally identical to the package-lock entries. The failure came from JSON serialization differences in property ordering and omitted/optional fields, not a dependency license change.
+- Updated the checker to compare normalized semantic fields, sort package records by install path and license-count keys, and ignore non-content baseline metadata. Re-run CI on the new exact head before claiming the fix.
+
+## 2026-11-15 — Issue #118 exact-head CI passed
+
+- After correcting the inventory snapshot comparator, exact-head PR [#121](https://github.com/iamjpsonkar/Wave/pull/121) workflow [43711329699](https://github.com/iamjpsonkar/Wave/actions/runs/43711329699) passed on `d6a1f49feddfec6bcee930807d779e2390e1c977`.
+- The license audit passed and confirmed the checked-in 221-package inventory matches the lockfile. Node tests, typecheck, production build and Playwright E2E all passed through `./test.sh`; container Compose validation and image build also passed.
+- The first run [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) failed at the new metadata guard due to JSON serialization/order differences; normalized semantic comparison fixed that issue and was verified by the successful exact-head run.
+- Remaining acceptance work is legal-source validation, not CI: inspect actual package LICENSE/NOTICE files as part of release review, verify caniuse-lite's attribution text, and capture/pin font assets/notices if self-hosting or bundling is chosen. The metadata scanner remains a triage control, not a legal compatibility opinion.
+
+
+## 2026-11-15 — Issue #118 / PR #121 license audit follow-up
+
+- PR: [#121](https://github.com/iamjpsonkar/Wave/pull/121), branch `WAVE-0118`, target `main`.
+- Follow-up commit: `61f7425c44e182780c5d6d97c30b03d41024a8d6`; updates `THIRD_PARTY_NOTICES.md` with the upstream caniuse.com attribution instruction for `caniuse-lite@1.0.30001826`, source/version references for Apache-2.0 packages, Feather-derived Lucide icon attribution caveat, and a strict statement of what has not been inspected.
+- Source evidence: caniuse upstream says attribution may mention caniuse.com; versioned npm metadata confirms baseline-browser-mapping 2.11.37 Apache-2.0 and caniuse-lite 1.0.30001826 CC-BY-4.0; TypeScript 5.7.3 package manifest lists license and third-party notice files. See PR text and THIRD_PARTY_NOTICES.md.
+- CI: historical exact-head run [43711589863](https://github.com/iamjpsonkar/Wave/actions/runs/43711589863) passed for prior PR head `9085b0a5743e13ef86b89bf5187b7b58cea7c5c9`. Follow-up head `61f7425c44e182780c5d6d97c30b03d41024a8d6` triggered run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333); at handoff, both build and container jobs were in progress. The license audit step on this run has passed; full functional/build/E2E and container results remain pending.
+- Environment limitation: GitHub-only connector cannot execute local npm commands or unpack/download npm tarballs. Do not claim local test execution. Exact contents of all 221 package tarballs and exact Apache NOTICE presence remain unverified; release artifact notice inclusion must be checked. The audit is metadata/inventory plus targeted upstream-source review, not legal certification.
+- PR #121 remains open and #118 remains open. Do not merge/close until the updated exact-head CI passes and remaining distribution review is actually completed or explicitly dispositioned by the project owner/legal reviewer.
+
+## 2026-11-15 — Wave commit and documentation cohesion policy
+
+- Owner direction: minimize commit count. Documentation updates that describe or track an implementation belong in the same commit as its code, tests and configuration changes; do not make separate documentation-only commits for the same task.
+- Established the default of one cohesive commit per task. Split only genuinely independent, logically reviewable phases; do not combine unrelated tasks merely to reduce the count.
+- Require a complete diff review before push and exact-head CI verification afterward. Amend unshared commits when useful; do not rewrite shared main history. Detailed policy is recorded in AGENTS.md and referenced from WIKI.md and the contributor guide.
+
+
+
+## 2026-11-15 — PR #121 review findings corrected
+
+- Corrected npm lockfile package-name extraction to use the final `node_modules/` segment and preserve complete scoped names; nested packages no longer expose ancestor install paths as names.
+- Added focused Node regression tests for nested unscoped names, nested scoped names and root scoped names. The inventory snapshot was regenerated with corrected package names.
+- Reconciled the audit-start baseline in `THIRD_PARTY_NOTICES.md` to the actual PR base SHA `7e895f26b05288dc8edfebcf03e14efe954950f5`, matching the checker and PR base metadata.
+- These corrections address the two accuracy findings in review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985). Legal release-artifact inspection limitations remain open; green CI is not legal sign-off.
+
+
+## 2026-11-15 — PR #121 test import failure corrected
+
+- Exact-head CI run [43713413195](https://github.com/iamjpsonkar/Wave/actions/runs/43713413195) passed `npm ci`, the license inventory audit and container build, but the unit gate found the new regression test imported the checker from an incorrect relative path.
+- Extracted the lockfile inventory normalization into the side-effect-free `scripts/dependency-license-inventory.mjs` module. The CLI checker imports that helper, and the focused test imports the pure module directly; tests no longer execute the CLI audit as an import side effect.
+- Corrected the test module path and retained nested scoped/unscoped and root scoped package assertions. A new exact-head CI run is required; prior results do not verify this correction.

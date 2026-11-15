@@ -44,6 +44,8 @@ This directory contains the maintained product specifications, engineering refer
 - [Contributor handbook](../howto/README.md)
 - [User-facing overview](../README.md)
 - [Project license](../LICENSE) — canonical MIT License text
+- [Third-party notices](../THIRD_PARTY_NOTICES.md) — dependency, font and asset license inventory
+- [Exact dependency inventory](./legal/dependency-license-inventory.json) — lockfile-generated versions, sources and declared licenses
 
 ## Production documentation standard
 
