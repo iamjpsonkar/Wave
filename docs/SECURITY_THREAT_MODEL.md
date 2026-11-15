@@ -62,3 +62,35 @@ These are intentionally not represented as shipped:
 3. Decide whether an optional local encryption vault is a product priority; specify threat model, recovery, key derivation, migration, backup and key-loss semantics before implementation.
 4. Keep sync, teams, plugins, sharing and malware scanning blocked behind explicit product decisions and privacy review.
 5. Revisit this document when data flow, permissions, dependencies, renderer or deployment architecture changes.
+
+
+## Additional trust boundaries for two editions
+
+The two-edition plan adds a strict separation requirement. These are design requirements, not controls already shipped.
+
+### Wave Personal
+
+- No account/authentication client, application API client, sync worker, remote document store, analytics or telemetry is permitted in the Personal runtime bundle.
+- No workspace document, attachment, metadata, draft or encryption key may be sent to a Wave-operated service.
+- Network tests must fail on unexpected fetch/XHR/WebSocket/EventSource/beacon requests to application service origins. Static app assets and explicit user-initiated external navigation are separate and must be allow-listed narrowly.
+- Personal must continue opening, editing, saving, exporting and restoring local workspaces with network access disabled after the application is loaded.
+
+### Wave Full
+
+- Local workspace storage remains authoritative on each enrolled device. The planned canonical local store is SQLite with ordinary asset files; this is future work, not current behavior.
+- Identity/control-plane services may process account identifiers, device public keys, workspace membership metadata, authorization decisions, signaling, presence and notification metadata. Minimize and document each field and its retention.
+- Sync payloads and optional relay/backup objects must be end-to-end encrypted before leaving the client. Services must not receive plaintext workspace keys or readable document payloads.
+- Distinguish transport encryption (TLS) from end-to-end encryption. TLS alone does not prevent the service operator from reading stored or relayed plaintext.
+- Device enrollment, revocation, key rotation, recovery, lost-device handling, account deletion, workspace removal, export and ciphertext-retention behavior must be designed and tested before release.
+- A compromised authorized endpoint can read content while unlocked; E2E encryption does not protect against malware, browser extensions, screenshots or an already compromised device.
+- Conflict resolution, replay protection, event ordering, tombstones, offline queue limits and recovery from partial sync must be specified before multi-device write access.
+- Optional ciphertext relay/storage is a distinct, explicit capability. Document provider/operator, region, retention, deletion guarantees, metadata exposure, backup policy and user consent. Never market it as zero-knowledge without independent design review and evidence.
+
+### Release gates
+
+1. Separate Personal/Full build dependency graphs and inspect generated bundles.
+2. Automated Personal network-egress tests covering auth, API, sync, telemetry, uploads and external media.
+3. Threat model and security review for cryptographic protocol, identity, device lifecycle and server authorization.
+4. Multi-device offline/online, concurrent edit, conflict, replay, revocation, key-loss and restore tests.
+5. User-facing disclosure and consent for every remote data flow, including metadata and ciphertext storage.
+6. Export, deletion, retention and account/workspace offboarding verified end to end.

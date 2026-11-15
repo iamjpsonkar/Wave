@@ -829,3 +829,9 @@ The mobile drawer must expose a dedicated close control above the open sidebar. 
 - Do not represent unimplemented vault encryption, key recovery, E2E sync, teams/permissions, plugin sandboxing, server-side sharing, audit logs or workspace malware scanning as shipped. No remote content scanning is permitted without product approval and user consent.
 - Dependabot alerts/security updates and secret scanning/push protection require owner-side configuration; workflow files cannot enable these account/repository settings. Static code analysis uses credential-free OpenGrep and ESLint workflows; no Sonar account or token is required. Exact third-party tarball LICENSE/NOTICE and final release attributions still require manual legal review.
 - Keep issue #120 open until each inherited acceptance item is implemented or explicitly owner-approved and documented. Green CI/scanners are evidence, not a security certification.
+
+## 2026-11-15 — Two-edition architecture decision
+
+Wave Personal is the local-only edition: no accounts, backend, server database, document uploads, remote sync or collaboration dependency. Wave Full adds optional identity, encrypted synchronization and collaboration while preserving local/offline workspace ownership. The approved architecture rejects mandatory server-side storage of readable user documents; local SQLite remains the planned canonical store and is not yet implemented.
+
+Read [the edition architecture](etc/engineering/EDITIONS.md), [architecture](etc/engineering/ARCHITECTURE.md), and the threat-model extension in [SECURITY_THREAT_MODEL.md](docs/SECURITY_THREAT_MODEL.md). The work is tracked by [issue #135](https://github.com/iamjpsonkar/Wave/issues/135). Neither edition nor its future online services should be described as shipped until implementation and verification are complete.

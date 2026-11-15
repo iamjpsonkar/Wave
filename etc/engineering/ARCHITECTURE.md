@@ -95,3 +95,31 @@ The optional Docker image is a **static delivery layer**, not another storage ad
 The browser still runs the React application. The File System Access API continues to access a directory selected by the browser user on that user's device. The container does not mount, own, synchronize or back up that directory. IndexedDB remains browser-local and is not shared by the container. Consequently, static hosting does not provide accounts, multi-user access, collaboration, remote persistence, an API or SQLite.
 
 For remote deployment, terminate TLS at a trusted reverse proxy and use HTTPS so browser secure-context requirements are met. Authentication and network access controls must be supplied by the deployment environment if needed. See [Docker deployment](DOCKER.md) for exact commands and limitations.
+
+
+## Edition architecture — Wave Personal and Wave Full
+
+Wave is delivered as two editions from one codebase with separate, enforceable capability boundaries. The approved product decision and implementation stages are maintained in [EDITIONS.md](./EDITIONS.md).
+
+- **Wave Personal** is a local-only edition. It has no account, application backend, server database, document upload, remote sync or collaboration dependency. Its saved workspace remains in the user-selected local folder. Static hosting serves application files only.
+- **Wave Full** retains the same local/offline workspace model and adds optional identity, encrypted synchronization, collaboration and integrations. Users may connect a workspace to online services, but online connectivity does not transfer canonical ownership of readable documents to a Wave server.
+- The term **cloud-connected** is preferred to **cloud-first**. A Full workspace remains usable locally and offline. Optional coordination services may handle identity, workspace discovery, signaling, presence and notifications. A relay or backup service may persist/forward ciphertext only when explicitly enabled and disclosed.
+- The planned canonical workspace remains the versioned local SQLite database plus ordinary asset files defined in product constitution section 20.3. The current Markdown-file MVP remains supported and must be migrated repeat-safely; SQLite is not yet implemented.
+- No network feature may transmit content until its recipient, payload, purpose, encryption boundary, retention, deletion/export behavior and consent are documented and visible to the user.
+
+### Required implementation boundaries
+
+1. Define storage, identity, sync, collaboration and integration interfaces independently of React UI.
+2. Keep the Personal dependency/import graph free of Full service clients, credentials, account screens and sync workers. A runtime feature flag alone is not a security boundary.
+3. Enforce server authorization for every Full control-plane operation; client-side checks are UX, not access control.
+4. Keep workspace encryption keys client-side. Coordination/relay services must not receive plaintext keys or document content. Specify key derivation, device enrollment/revocation, recovery and loss semantics before enabling sync.
+5. Use authenticated encryption, versioned event/snapshot envelopes, replay protection, bounded queues and deterministic conflict handling. Define deletion propagation and tombstone retention before collaboration.
+6. Keep local writes durable when offline. Sync is an optional replication layer, never the only save path.
+7. Make any ciphertext persistence/relay opt-in per workspace, clearly label where ciphertext is stored and for how long, and provide export/deletion controls.
+8. Test Personal with network instrumentation that fails on unexpected application API, auth, sync, telemetry and document-upload requests. Allow only expected static application delivery and user-initiated external navigation.
+9. Build and test Personal and Full as separate targets from shared source. Verify emitted bundles and dependency graphs, not only hidden UI.
+10. Keep the current local MVP working until the SQLite migration and rollback path are proven on copied workspaces.
+
+### Migration and release rule
+
+Do not implement sync against the current filesystem adapter as a shortcut. First establish the storage abstraction and versioned SQLite local engine, then prove backup/restore, export and migration from the Markdown MVP. Only then add cryptographic identity/device lifecycle and encrypted sync. Collaboration, hosted integrations and optional encrypted relay persistence follow those foundations.

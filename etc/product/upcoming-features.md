@@ -1980,3 +1980,19 @@ The browser-only MVP remains the first delivery target. Docker is a later deploy
 | First vertical slice | Local page/block storage, migration, backup, restore and export |
 | Release quality | Integrity, migration, recovery, security and accessibility tests |
 
+
+
+## 20.8 Two editions from one codebase — approved decision (2026-11-15)
+
+Wave will be released as **Wave Personal** and **Wave Full**, preserving the data-ownership and offline-first decisions above.
+
+- **Personal:** local-only; no account, backend dependency, server database, document upload, remote sync, collaboration service or telemetry. Static hosting may deliver application assets only.
+- **Full:** retains local/offline workspaces and adds optional identity, device enrollment, encrypted synchronization, collaboration and permission-scoped integrations. It supports both hybrid/offline and cloud-connected workflows.
+- “Cloud-connected” does not mean cloud-first canonical document storage. The local workspace remains durable and usable offline. Hosted services coordinate identity, authorization, discovery, signaling, presence and notifications. Sync payloads must be end-to-end encrypted before leaving a client.
+- Optional relay/object storage may forward or retain ciphertext only when separately enabled, disclosed and consented. Services must not receive plaintext workspace keys or readable canonical documents.
+- The planned canonical local store remains versioned SQLite plus ordinary asset files under section 20.3. The current Markdown MVP must remain readable and be migrated repeat-safely; SQLite and the two editions are not yet implemented.
+- Personal and Full require separate build targets and dependency/import boundaries. Personal must exclude Full network clients, auth, sync workers and credentials; a runtime feature flag alone is insufficient.
+- Before Full sync release, specify cryptographic protocol, key recovery/loss/rotation, device revocation, authorization, conflict resolution, replay protection, deletion propagation, ciphertext retention, export and account offboarding.
+- Full architecture and release gates: [EDITIONS.md](../engineering/EDITIONS.md). Tracking: [issue #135](https://github.com/iamjpsonkar/Wave/issues/135).
+
+This decision rejects a mandatory server-side database of readable user documents. Any future proposal to change that boundary requires a separate explicit product-owner decision and privacy/security review.

@@ -278,3 +278,19 @@ A feature can be marked shipped only when:
 - [Detailed implementation status](FEATURES.md)
 - [Delivery roadmap](docs/ROADMAP.md)
 - [Bug and reliability tracker](bugs.md)
+
+
+## 13. Edition architecture and implementation sequence
+
+The approved two-edition decision is tracked in [issue #135](https://github.com/iamjpsonkar/Wave/issues/135) and specified in [EDITIONS.md](../engineering/EDITIONS.md). It does not mark either edition as shipped.
+
+- [ ] **E0 — Edition boundaries:** Personal/Full capability matrix, trust boundaries, threat model, bundle isolation and product disclosure (architecture documentation started; implementation pending).
+- [ ] **E1 — Storage abstraction:** separate UI/domain logic from the current File System Access adapter without changing existing behavior.
+- [ ] **E2 — Local SQLite engine:** versioned schema, ordinary asset files, repeat-safe Markdown migration, rollback, backup/restore, diagnostics and export.
+- [ ] **E3 — Cryptographic/device foundation:** protocol review, client-held keys, recovery/loss/rotation, device enrollment and revocation.
+- [ ] **E4 — Full coordination:** identity, server-side authorization, workspace discovery, signaling and presence without plaintext document storage.
+- [ ] **E5 — Encrypted sync:** bounded offline queue, encrypted event/snapshot transport, conflict/replay/deletion semantics and optional ciphertext relay.
+- [ ] **E6 — Collaboration/integrations:** comments, presence, concurrent editing and permission-scoped integrations.
+- [ ] **E7 — Edition builds:** separate Personal and Full entry points, generated-bundle inspection, Personal network-egress tests and release disclosure.
+
+**Hard dependency:** do not start sync against the current filesystem adapter as a shortcut. Prove local storage, migration, export and recovery before network replication. Every stage must preserve the existing Personal workflow and must not claim future capabilities as shipped.

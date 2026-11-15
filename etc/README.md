@@ -23,6 +23,7 @@ This directory contains the maintained product specifications, engineering refer
 
 ## Engineering and operations
 - [Architecture](./engineering/ARCHITECTURE.md)
+- [Personal and Full edition architecture](./engineering/EDITIONS.md)
 - [Markdown support](./engineering/MARKDOWN_SUPPORT.md)
 - [Docker deployment](./engineering/DOCKER.md)
 - [GitHub Pages deployment](../docs/GITHUB_PAGES.md)
@@ -54,3 +55,8 @@ This directory contains the maintained product specifications, engineering refer
 ## Production documentation standard
 
 A production-facing claim must identify the behavior, supported environment, storage/privacy implications, failure behavior and verification evidence. A production build or Docker deployment describes packaging/hosting capability; it does not by itself establish operational readiness, security certification, backups, monitoring, uptime, cross-browser support or a production release.
+
+
+## Edition architecture status
+
+Wave's approved direction is two editions from one codebase: **Personal** (local-only, no backend or document uploads) and **Full** (optional identity, encrypted sync and collaboration while retaining local/offline workspaces). This is an architecture decision and implementation plan, not a claim that either edition or its future SQLite/sync services are already shipped. See [the edition architecture](etc/engineering/EDITIONS.md) and [issue #135](https://github.com/iamjpsonkar/Wave/issues/135).
