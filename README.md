@@ -85,7 +85,7 @@ Useful variants:
 npm run test:local                # same full local suite
 ```
 
-Individual commands remain available: `npm test`, `npm run typecheck`, `npm run build` and `npm run test:e2e`.
+Individual commands remain available: `npm test`, `npm run typecheck`, `npm run build` and `npm run test:e2e`. Run `npm run test:links` to validate inline local Markdown links and exact path casing.
 
 GitHub Actions runs Node tests, TypeScript checks, a production build and the Playwright suite. Separate credential-free workflows run OpenGrep security-pattern analysis and ESLint code-quality checks. Container image construction is also checked in CI.
 
