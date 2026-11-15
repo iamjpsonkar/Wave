@@ -558,3 +558,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Operation IDs are now created at the user-action boundary and threaded through `flush`, `persistDocument`, nested copy synchronization, Trash refresh, and failure reporting for document create/template, duplicate, Trash move, backup create, workspace activation, document open, and reload workflows. Independent user actions retain independent IDs.
 - Reworked the recovery diagnostics E2E scenario: a normal-mode document open must emit no recovery debug trace; the same journey with `?waveDebug=1` must emit structured debug events, and all stages from that open must share one operation ID.
 - Source and test changes are committed to `WAVE-0111`. Exact-head CI has not yet been run for this follow-up; verification remains pending.
+
+
+## PR #115 follow-up — review 5910351108 (2026-11-15)
+
+- Threaded the attachment workflow's operation ID through both pre/post asset flush calls so persistence events correlate with attachment failure reporting.
+- Threaded the page-exit recovery operation ID through saveDraft() as well as its failure report.
+- Strengthened the browser-level logging test: it captures normal-bootstrap console output and asserts no [Wave] diagnostics are emitted, then repeats a document open with ?waveDebug=1 and asserts structured recovery debug events share one operation ID.
+- refresh() remains a separate inventory/settings-read sub-operation with its own ID because it is also called independently from user actions; its prune failure is not treated as part of a parent action's persistence transaction.
+- Exact-head full CI is required before considering these review findings closed.
