@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { ChevronDown, ChevronUp, Clock3, FileSearch, Blocks, ListTree, Redo2, Undo2, X } from 'lucide-react';
 
-type Props = { content: string; onChange: (value: string) => void; editorRef: RefObject<HTMLTextAreaElement>; preview: boolean; blockMode: boolean; onBlockModeChange: (value: boolean) => void };
+type Props = { content: string; onChange: (value: string) => void; editorRef: RefObject<HTMLTextAreaElement | null>; preview: boolean; blockMode: boolean; onBlockModeChange: (value: boolean) => void };
 
 export default function EditorEnhancements({ content, onChange, editorRef, preview, blockMode, onBlockModeChange }: Props) {
   const past = useRef<string[]>([]), future = useRef<string[]>([]), previous = useRef(content), applyingHistory = useRef(false);

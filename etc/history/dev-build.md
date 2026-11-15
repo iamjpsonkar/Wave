@@ -1106,3 +1106,9 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Combined the package metadata from the separate npm-generated Dependabot lockfile updates, preserving independent dependency entries and applying the coordinated root dependency map. This is a candidate lockfile merge, not a local npm regeneration; fresh `npm ci` on the PR is the acceptance gate.
 - Candidate lock inventory: 181 packages; MIT 142, Apache-2.0 22, ISC 3, MPL-2.0 12, BSD-3-Clause 1, 0BSD 1; no missing license declarations. Added MPL-2.0 to the checker allowlist after reviewing Mozilla's official license and Lightning CSS 1.33.0 package metadata. Updated third-party notices to record source-availability and notice obligations; no legal certification is claimed.
 - Local checkout/npm execution is blocked by DNS resolution for github.com. No local tests or build are claimed. Exact-head CI must validate lock consistency, React 19/TypeScript 7/Vite 8 compatibility, unit tests, E2E and all security workflows.
+
+### React 19 / TypeScript 7 first CI correction — 2026-11-15
+
+- Exact PR #139 run [43733896044](https://github.com/iamjpsonkar/Wave/actions/runs/43733896044): `npm ci`, dependency license audit and all 39 Node unit tests passed. Typecheck then failed on two migration issues: React 19's textarea ref is `RefObject<HTMLTextAreaElement | null>`, while EditorEnhancements required the narrower type; TypeScript 7 also requires an explicit declaration for the CSS side-effect import.
+- Updated the component prop to accept the nullable ref and added Vite's official `vite/client` type reference in `src/vite-env.d.ts` (which supplies the CSS module shim). No compiler strictness was disabled and no test assertions were changed.
+- Exact-head CI must rerun typecheck, production build, Playwright and the full security/container matrix. No pass is claimed for this correction yet.

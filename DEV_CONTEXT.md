@@ -842,3 +842,9 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Combined the npm-generated lockfile updates from the closed Dependabot branches and regenerated the exact dependency license inventory from that candidate lock data. Fresh `npm ci` and the full CI matrix are still required; do not treat the lock merge as validated until exact-head workflows pass.
 - License audit snapshot: 181 package entries; includes 12 MPL-2.0 Lightning CSS packages and 22 Apache-2.0 entries (TypeScript 7 platform packages and other transitive packages). Updated checker allowlist and third-party notice disclosures. This is not legal certification.
 - Local tests/build were not run because this environment cannot resolve github.com. See `etc/history/dev-build.md` and the PR for CI evidence.
+
+## 2026-11-15 — React 19 / TypeScript 7 migration correction
+
+- PR #139 first exact-head CI run [43733896044](https://github.com/iamjpsonkar/Wave/actions/runs/43733896044) passed `npm ci`, license audit and all 39 Node tests, then exposed two typecheck errors: nullable React 19 textarea ref variance and missing CSS side-effect import typing under TypeScript 7.
+- Corrected the ref contract in `src/EditorEnhancements.tsx` and added `src/vite-env.d.ts` referencing `vite/client` for the CSS module shim. Strict type checking remains enabled.
+- Fresh exact-head CI is required; no pass is claimed until the new workflow completes. See `etc/history/dev-build.md` and PR #139.
