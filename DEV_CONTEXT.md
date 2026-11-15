@@ -890,3 +890,10 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Documentation history was appended in `etc/history/dev-build.md` (commit `d76a97d7e8fe3f676561e247807de6bb69b50501`) and `WIKI.md` (commit `9a3c81b6feb58492b94a39cd8d4311459311e099`).
 - CI run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333) was in progress at the last inspection. Its npm ci and metadata license audit steps passed; remaining Playwright/build/container stages had not yet finished. Recheck before reporting.
 - Important limitation: exact LICENSE/NOTICE content across all 221 locked npm tarballs and final distribution artifact inclusion has not been verified. The GitHub-only tool session cannot run local npm or unpack the tarballs. This issue is not legally certified complete; keep #118 and PR #121 open until exact artifact review is completed or explicitly dispositioned by the owner/legal reviewer.
+
+
+## 2026-11-15 — Keep npm lockfile tracked
+
+- Removed `package-lock.json` from `.gitignore` in commit `fa9de6a18305704d7f560086490255238d116726` on `WAVE-0118`.
+- Verified `package-lock.json` remains present and tracked on both `main` and `WAVE-0118` (same blob SHA `0b67bf1a95283010f1aaeb7983f622e7248bebf1`).
+- This is required for reproducible `npm ci` installs and the committed dependency license inventory check.
