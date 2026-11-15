@@ -37,6 +37,7 @@ Open the Vite URL (normally [http://localhost:5173](http://localhost:5173)) in a
 ```bash
 npm ci
 npm test
+npm run test:links
 npm run typecheck
 npm run build
 npm run preview
