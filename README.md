@@ -134,7 +134,7 @@ The MIT license was selected to permit broad reuse, forks, modification and redi
 
 ## Third-party licenses and notices
 
-Wave's source code is licensed under the [MIT License](./LICENSE). Third-party packages and assets retain their own licenses and attribution conditions; those terms are not replaced by Wave's MIT license. See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for the dated dependency and asset inventory, known obligations and maintenance process. Run `npm run license:audit` after changing dependencies; the automated check validates lockfile license metadata and is not a legal compatibility review.
+Wave's source code is licensed under the [MIT License](./LICENSE). Third-party packages and assets retain their own licenses and attribution conditions; those terms are not replaced by Wave's MIT license. See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for the dated dependency and asset inventory, known obligations and maintenance process. Run `npm run license:audit` after changing dependencies. After reviewing upstream license terms, refresh the committed exact-version inventory with `npm run license:audit:update`. CI checks that the inventory matches the lockfile; neither command is a legal compatibility review.
 
 ## Project context
 
