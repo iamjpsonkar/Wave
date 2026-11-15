@@ -528,3 +528,10 @@ The remaining acceptance work from parent issue [#1](https://github.com/iamjpson
 ## Documentation reorganization — 2026-11-15
 
 QA registers and issue traceability now live under `etc/quality/`; product/UI and Markdown coverage records live under `etc/product/`. See [etc/README.md](./etc/README.md). The move is documentation-only and does not alter QA evidence or test execution status.
+
+## Documentation reconciliation and current manager CI — 2026-11-15
+
+- Reconciled the reorganized QA register with the latest main-branch evidence: current source inventory is **30 Node test definitions and 48 Playwright Chromium scenarios**. Historical run counts above remain historical and must not be read as the current suite size.
+- PR [#110](https://github.com/iamjpsonkar/Wave/pull/110) targets `main`, head `f1d49c174279158f1a20a8fc9efb675ab0708b66`. Its CI workflow [43693734660](https://github.com/iamjpsonkar/Wave/actions/runs/43693734660) completed successfully on that exact head.
+- This workflow result verifies the configured CI jobs for the manager head; it does not satisfy native picker/OS permission, external-process race, abrupt process-termination or full accessibility acceptance work tracked under issues #3 and #104–#106.
+- No application source or test code was changed in this documentation reconciliation. No local tests, typecheck or build were run.
