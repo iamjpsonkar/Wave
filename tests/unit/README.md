@@ -15,7 +15,14 @@ tests/
       workspace.test.js
       trash-backup.test.js
   e2e/
-    workspace.spec.ts
+    fixtures/
+      workspace.ts
+    workspace/
+      workspace.spec.ts
+    markdown/
+      markdown.spec.ts
+    editor/
+      editor.spec.ts
 ```
 
 - `unit/storage`: workspace/document operations, Trash, backup and recovery behavior.
