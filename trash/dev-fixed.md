@@ -301,3 +301,21 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Commits: sample component `65fb14ba86541accb9a36617588dbd80b9c65b99`; App integration `148fc99d14bfbc792e4be0a830938cbf001a791e`, escape correction `40ca59461ae6cab5c2b772f4e11b32d07d55e26f`, event typing `e55a34748dcf02c1ec6ae2c87aa27afadb7aa664`; CSS `6ffe152c88fec619cca223871d51086894ebe408`, nav alignment `c1f7265ed48cafe50dc9fab2fb8975c59aa0700b`; E2E `4c616bba1d7c3e37408834b8fdba117918f4e321`, syntax correction `81261223084692acf14486db9d937cd77238e055`.
 - CI: run `43632920367` passed Node tests, TypeScript typecheck and production build, but E2E stopped at parse time due to an extra suite-closing `});` that had been left before the PDF scenario. Removed that stray token in `8126122`; fresh CI run `43633086687` is queued. The CSS-only run `43632988620` failed for the same E2E parse issue before the correction. No E2E pass or visual QA is claimed yet.
 - Regression follow-up: expanded the list Enter scenario to verify nested indentation and that Enter inside a fenced code block remains a normal newline. The empty-task-item expectation now explicitly checks the blank line that terminates the list. Test commit `757d8edba0925432bf8c5027924074ee8331a1eb`; CI run `43633137209` is in progress. Earlier run `43633086687` passed Node tests, typecheck and production build; Playwright execution was still running at the last check.
+
+## 2026-11-15 — WAVE-0001 permission and external-edit regression coverage
+
+### Scope
+Strengthen deterministic browser coverage for the WAVE-031 reliability/QA gap without misrepresenting simulated browser permissions as native OS picker coverage.
+
+### Changes
+- `tests/e2e/workspace.spec.ts`
+  - Extended the OPFS permission fixture to count `requestPermission()` calls and independently model the requested result.
+  - Added a reauthorization scenario: a remembered workspace starts in the prompt state, the user clicks Reopen, the permission request is granted, and the workspace becomes available.
+  - Added an external-writer scenario: a file is changed outside Wave after it is loaded; Wave's subsequent save reports the conflict and the external contents remain on disk.
+
+### Verification boundary
+- These are deterministic Playwright scenarios using OPFS and a simulated permission contract. They do not exercise the native OS folder picker, real browser/OS permission revocation, or external-process scheduling races.
+- Existing Node storage tests already cover conditional-save conflict rejection and backup snapshot mutation detection; the new browser scenario verifies the editor surfaces the save conflict without overwriting the external content.
+- CI execution is pending on the WAVE-0001 pull request. No test pass is claimed until the workflow result is checked.
+- WAVE-031 remains open until native supported-browser checks, broader external read/save/backup/restore race coverage, keyboard/focus/accessibility review, and lifecycle fault testing are evidenced.
+
