@@ -476,8 +476,8 @@ const BLOCKED_ATTACHMENT_MIME_TYPES = new Set([
 ]);
 
 const ACTIVE_ATTACHMENT_SIGNATURES: Array<{ mime: string; matches: (bytes: Uint8Array) => boolean }> = [
-  { mime: 'image/svg+xml', matches: bytes => new TextDecoder().decode(bytes).trimStart().startsWith('<svg') || /^<\\?xml[\\s\\S]*?<svg\\b/i.test(new TextDecoder().decode(bytes)) },
-  { mime: 'text/html', matches: bytes => /^\\s*(?:<!doctype\\s+html|<html\\b|<script\\b|<iframe\\b)/i.test(new TextDecoder().decode(bytes)) },
+  { mime: 'image/svg+xml', matches: bytes => new TextDecoder().decode(bytes).trimStart().startsWith('<svg') || /^<\?xml[\s\S]*?<svg\b/i.test(new TextDecoder().decode(bytes)) },
+  { mime: 'text/html', matches: bytes => /^\s*(?:<!doctype\s+html|<html\b|<script\b|<iframe\b)/i.test(new TextDecoder().decode(bytes)) },
   { mime: 'application/pdf', matches: bytes => bytes[0]===0x25&&bytes[1]===0x50&&bytes[2]===0x44&&bytes[3]===0x46 },
   { mime: 'image/png', matches: bytes => bytes.length>=8&&bytes[0]===0x89&&bytes[1]===0x50&&bytes[2]===0x4e&&bytes[3]===0x47&&bytes[4]===0x0d&&bytes[5]===0x0a&&bytes[6]===0x1a&&bytes[7]===0x0a },
   { mime: 'image/jpeg', matches: bytes => bytes.length>=3&&bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff },
@@ -524,10 +524,10 @@ export async function validateAttachmentContent(file: File): Promise<void> {
   // that affirmatively identifies as a different active format.
   if(!file.size)return;
   const bytes=new Uint8Array(await file.slice(0,512).arrayBuffer());
-  const text=new TextDecoder().decode(bytes).replace(/^\\uFEFF/,'').trimStart();
+  const text=new TextDecoder().decode(bytes).replace(/^\uFEFF/,'').trimStart();
   console.debug('[attachment-validation] inspect', { name: file.name, declaredMime: file.type, size: file.size, prefixHex: Array.from(bytes.slice(0, 16), byte => byte.toString(16).padStart(2, '0')).join(' ') });
-  const svgLike=/^(?:<\\?xml[\\s\\S]*?)?<svg\\b/i.test(text);
-  const htmlLike=/^(?:<!doctype\\s+html|<html\\b|<script\\b|<iframe\\b)/i.test(text);
+  const svgLike=/^(?:<\?xml[\s\S]*?)?<svg\b/i.test(text);
+  const htmlLike=/^(?:<!doctype\s+html|<html\b|<script\b|<iframe\b)/i.test(text);
   if(svgLike||htmlLike) {
     console.warn('[attachment-validation] rejected active text signature', { name: file.name, declaredMime: file.type, svgLike, htmlLike });
     throw new Error('The attachment content contains active SVG or HTML content.');
