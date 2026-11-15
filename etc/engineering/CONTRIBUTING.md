@@ -92,3 +92,5 @@ Any dependency, font, icon, image, logo, copied snippet, documentation excerpt, 
 5. Include the audit result and any remaining legal/attribution questions in the PR.
 
 CI runs the metadata audit for every pull request. A passing check is not a legal compatibility opinion and does not replace manual review.
+
+For dependency changes, update the committed machine-readable inventory at `etc/legal/dependency-license-inventory.json` with `npm run license:audit:update` only after reviewing the new/changed packages' exact upstream terms. Review the complete JSON diff and commit it together with the lockfile and any required attribution changes. CI rejects an out-of-date inventory.
