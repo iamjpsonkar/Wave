@@ -605,3 +605,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Existing open defect, UI, Markdown, export and roadmap tickets were checked before creation; do not open duplicates for the same scope.
 - Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [trash/github-issues.md](./trash/github-issues.md).
 - No source code changed and no tests/build/CI execution is claimed for this audit.
+
+
+## WAVE-031 verification issue split — 2026-11-15
+
+- Parent reliability issue [#1](https://github.com/iamjpsonkar/Wave/issues/1) remains open pending native/manual acceptance evidence.
+- New child workstreams: [#104 WAVE-031A — native picker and real permission lifecycle](https://github.com/iamjpsonkar/Wave/issues/104); [#105 WAVE-031B — external filesystem races and backup/restore fault handling](https://github.com/iamjpsonkar/Wave/issues/105); [#106 WAVE-031C — abrupt browser termination and recovery drafts](https://github.com/iamjpsonkar/Wave/issues/106).
+- Accessibility is tracked in existing [#3](https://github.com/iamjpsonkar/Wave/issues/3); issue comment links keyboard/focus/screen-reader/contrast checks back to #1. Do not create a duplicate accessibility ticket.
+- Updated `QA_CONTEXT.md`, `trash/dev-build.md`, and `trash/github-issues.md`; these contain scope, evidence limitations and tracker links.
+- Latest verified PR #101 CI: [run 43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), success including 48/48 Playwright tests, Node tests, typecheck, production build and container job. This does not replace native/manual checks.
+- No application source changed and no tests were run for this issue-decomposition/documentation task.
