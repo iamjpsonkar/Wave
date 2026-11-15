@@ -13,9 +13,9 @@
 
 Wave is a local-first workspace. A user chooses a local folder; Wave creates and manages a portable `.wave/` workspace inside it. Documents are Markdown files and attachments are ordinary files that users own and can inspect outside Wave.
 
-Current product capabilities include Markdown writing and preview, folders and navigation, templates, favorites, wiki links/backlinks, search, local attachments, autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore. Consult the current [README](./README.md) and [FEATURES](./trash/FEATURES.md) for the verified shipped scope.
+Current product capabilities include Markdown writing and preview, folders and navigation, templates, favorites, wiki links/backlinks, search, local attachments, autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore. Consult the current [README](./README.md) and [FEATURES](./etc/product/FEATURES.md) for the verified shipped scope.
 
-The broader agreed product scope is maintained in [upcoming-features.md](./trash/upcoming-features.md); [priority-features.md](./trash/priority-features.md) controls sequencing, not whether a feature may be forgotten. Do not silently remove, narrow, or mark an agreed feature as cancelled.
+The broader agreed product scope is maintained in [upcoming-features.md](./etc/product/upcoming-features.md); [priority-features.md](./etc/product/priority-features.md) controls sequencing, not whether a feature may be forgotten. Do not silently remove, narrow, or mark an agreed feature as cancelled.
 
 ## 2. Why Wave has strict rules
 
@@ -87,7 +87,7 @@ The current documented architecture (verify files before relying on it):
 - `.github/workflows/ci.yml` — CI workflow.
 - `config/` and `docker/` — build/test/deployment configuration.
 
-Runtime and implementation details may change. Inspect the current source and `package.json` before editing or quoting this map. Read `docs/ARCHITECTURE.md` and `docs/MARKDOWN_SUPPORT.md` when relevant.
+Runtime and implementation details may change. Inspect the current source and `package.json` before editing or quoting this map. Read `etc/engineering/ARCHITECTURE.md` and `etc/engineering/MARKDOWN_SUPPORT.md` when relevant.
 
 ### Organizational model
 
@@ -162,7 +162,7 @@ Documentation is part of every task. After each implementation, bug fix, refacto
 
 - Update the relevant feature catalogue/status map and feature specification.
 - Update `bugs.md` for current open findings and `fixed-bugs.md` only when a fix and regression evidence are established.
-- Keep `trash/dev-fixed.md` for fix history and `trash/dev-build.md` for feature/build/CI implementation history, following the current repository's conventions.
+- Keep `etc/history/dev-fixed.md` for fix history and `etc/history/dev-build.md` for feature/build/CI implementation history, following the current repository's conventions.
 - Update `QA_CONTEXT.md` after QA work and `DEV_CONTEXT.md` for implementation handoff changes.
 - Update roadmap/priority records only when their facts or status change. Never prune the full feature scope to make progress look better.
 - Update relevant user docs, architecture docs and `howto/` procedures.
@@ -194,8 +194,8 @@ This is the only file an agent should need as its initial instruction. Read supp
 - [QA_CONTEXT.md](./QA_CONTEXT.md) — QA disposition, test inventory and known limitations.
 - [howto/README.md](./howto/README.md) — contributor and organizational handbook index.
 - [howto/organization.md](./howto/organization.md), [teams.md](./howto/teams.md), [ownership.md](./howto/ownership.md), [workflow.md](./howto/workflow.md), [engineering-rules.md](./howto/engineering-rules.md) — team governance and engineering rules.
-- [upcoming-features.md](./trash/upcoming-features.md) and [priority-features.md](./trash/priority-features.md) — full scope and delivery priority.
-- [bugs.md](./trash/bugs.md), [fixed-bugs.md](./trash/fixed-bugs.md), and relevant UI/Markdown gap trackers — current defects and coverage gaps.
+- [upcoming-features.md](./etc/product/upcoming-features.md) and [priority-features.md](./etc/product/priority-features.md) — full scope and delivery priority.
+- [bugs.md](./etc/quality/bugs.md), [fixed-bugs.md](./etc/quality/fixed-bugs.md), and relevant UI/Markdown gap trackers — current defects and coverage gaps.
 - [GitHub Issues](https://github.com/iamjpsonkar/Wave/issues), PRs and current Actions runs — live work and verification evidence.
 
 If a supporting document conflicts with current source or a newer explicit user decision, investigate and reconcile it; do not silently guess. Security and data-protection constraints remain mandatory.
@@ -282,6 +282,8 @@ A lower-ranked source cannot silently override a higher-ranked one. If two curre
 Agents may autonomously inspect, plan, edit scoped files, add tests and run safe local checks. Obtain explicit authorization before destructive data operations, production releases, permission/secret changes, branch-protection changes, force pushes, history rewrites, external data transfer or changes that materially alter the privacy/product contract.
 
 ## 13. Repository documentation map and link discipline
+
+The canonical project documentation directory is [`etc/`](./etc/README.md). It contains product specifications, roadmaps, engineering/deployment references, QA registers, issue traceability and implementation history. The former `trash/` directory has been fully reorganized; do not recreate it. Use `etc/README.md` as the index and preserve the distinction between shipped behavior and planned scope.
 
 Use [howto/README.md](./howto/README.md) as the index for the operational handbook. Use [WIKI.md](./WIKI.md) for broad project orientation, [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the latest development handoff and [QA_CONTEXT.md](./QA_CONTEXT.md) for QA disposition. Trackers and detailed product specifications remain separate because they have distinct purposes.
 
