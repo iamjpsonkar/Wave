@@ -1,4 +1,5 @@
 import { newestDraft } from './safety';
+import { createOperationId, reportDiagnostic } from './diagnostics';
 
 interface DraftRecord {
   id?: number;
@@ -30,10 +31,10 @@ function lockName(workspace:FileSystemDirectoryHandle,path:string):string{
   // ensures separate tabs cannot race while matching handles with isSameEntry().
   return 'wave-draft:'+workspace.name+':'+path;
 }
-async function withDraftLock<T>(workspace:FileSystemDirectoryHandle,path:string,operation:()=>Promise<T>):Promise<T>{
+async function withDraftLock<T>(workspace:FileSystemDirectoryHandle,path:string,operation:()=>Promise<T>,operationId=createOperationId(),operationName='journal-operation'):Promise<T>{
   const name=lockName(workspace,path);
   const manager=typeof navigator!=='undefined'?(navigator as Navigator & {locks?:LockManager}).locks:undefined;
-  if(manager)return manager.request(name,{mode:'exclusive'},operation);
+  if(manager){reportDiagnostic('debug','draft-journal:lock-wait',{operation:operationName,stage:'lock-wait'},operationId);return manager.request(name,{mode:'exclusive'},async()=>{reportDiagnostic('debug','draft-journal:lock-acquired',{operation:operationName,stage:'lock-acquired'},operationId);try{return await operation();}finally{reportDiagnostic('debug','draft-journal:lock-released',{operation:operationName,stage:'lock-released'},operationId);}});}
   const previous=localQueues.get(name)??Promise.resolve();
   const current=previous.catch(()=>undefined).then(operation);
   localQueues.set(name,current);
@@ -76,7 +77,7 @@ function writeTransaction(db:IDBDatabase,operation:(store:IDBObjectStore)=>void)
     transaction.onabort=()=>reject(transaction.error??new Error('Draft journal update was aborted.'));
   });
 }
-export async function saveDraft(workspace:FileSystemDirectoryHandle,path:string,content:string):Promise<void>{
+export async function saveDraft(workspace:FileSystemDirectoryHandle,path:string,content:string,operationId=createOperationId()):Promise<void>{
   if(!('indexedDB' in window))return;
   await withDraftLock(workspace,path,async()=>{
     const db=await openDatabase();
@@ -88,6 +89,7 @@ export async function saveDraft(workspace:FileSystemDirectoryHandle,path:string,
       const ownMatches=matches.filter(record=>record.tabId===tabId);
       const legacyMatches=ownMatches.length?[]:matches.filter(record=>!record.tabId).slice(0,1);
       const candidates=ownMatches.length?ownMatches:legacyMatches;
+      reportDiagnostic('debug','draft-journal:save-plan',{operation:'save',stage:'records-read',count:matches.length,attempt:ownMatches.length},operationId);
       const previous=newestDraft(candidates);
       const updatedAt=Math.max(Date.now(),(previous?.updatedAt??0)+1);
       const record:DraftRecord={...(previous?.id?{id:previous.id}:{}),workspace,path,content,updatedAt,tabId};
@@ -96,16 +98,16 @@ export async function saveDraft(workspace:FileSystemDirectoryHandle,path:string,
         for(const duplicate of candidates)if(duplicate.id!==previous?.id&&duplicate.id!==undefined)store.delete(duplicate.id);
       });
     }finally{db.close();}
-  });
+  },operationId,'save');
 }
-export async function getDraft(workspace:FileSystemDirectoryHandle,path:string):Promise<DraftRecord|undefined>{
+export async function getDraft(workspace:FileSystemDirectoryHandle,path:string,operationId=createOperationId()):Promise<DraftRecord|undefined>{
   if(!('indexedDB' in window))return undefined;
   return withDraftLock(workspace,path,async()=>{
     const db=await openDatabase();
-    try{return newestDraft(await findDrafts(db,workspace,path));}finally{db.close();}
-  });
+    try{const matches=await findDrafts(db,workspace,path);const result=newestDraft(matches);reportDiagnostic('debug','draft-journal:read-result',{operation:'read',stage:'records-read',count:matches.length,hasDraft:Boolean(result)},operationId);return result;}finally{db.close();}
+  },operationId,'read');
 }
-export async function clearDraft(workspace:FileSystemDirectoryHandle,path:string):Promise<void>{
+export async function clearDraft(workspace:FileSystemDirectoryHandle,path:string,operationId=createOperationId()):Promise<void>{
   if(!('indexedDB' in window))return;
   await withDraftLock(workspace,path,async()=>{
     const db=await openDatabase();
@@ -116,13 +118,11 @@ export async function clearDraft(workspace:FileSystemDirectoryHandle,path:string
       // reliable owner, so preserve them rather than risk deleting another
       // tab's recoverable work during an autosave or recovery decision.
       const ownMatches=matches.filter(record=>record.tabId===tabId);
-      if(!ownMatches.length){
-        console.info('[Wave recovery] journal:clear-skipped',{path,tabId,matchingRecords:matches.length,reason:'no-current-tab-record'});
-        return;
-      }
       const ids=ownMatches.map(record=>record.id).filter((id):id is number=>id!==undefined);
+      reportDiagnostic('debug','draft-journal:clear-plan',{operation:'clear',stage:'records-read',count:matches.length,attempt:ownMatches.length},operationId);
+      if(!ownMatches.length)return;
       await writeTransaction(db,store=>{for(const id of ids)store.delete(id);});
-      console.info('[Wave recovery] journal:clear-current-tab',{path,tabId,removed:ids.length,foreignRecordsPreserved:matches.length-ownMatches.length});
+      reportDiagnostic('debug','draft-journal:clear-complete',{operation:'clear',stage:'transaction-complete',count:ids.length,attempt:matches.length-ids.length},operationId);
     }finally{db.close();}
-  });
+  },operationId,'clear');
 }
