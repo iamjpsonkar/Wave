@@ -13,6 +13,8 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
+      - name: Audit locked dependency license metadata
+        run: npm run license:audit
       - run: npm install --no-save --package-lock=false @playwright/test@1.55.0
       - run: npx playwright install --with-deps chromium
       - name: Run the same local verification script used by developers
