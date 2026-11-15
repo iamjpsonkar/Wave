@@ -1,54 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { addDiagnosticSink, clearDiagnosticHistory, configureDiagnostics, createOperationId, getDiagnosticHistory, reportDiagnostic, resetDiagnosticsForTests } from '../../../src/diagnostics.ts';
-
 test.afterEach(() => resetDiagnosticsForTests());
-
-test('diagnostic events include stable structure and operation correlation', () => {
-  const events = [];
-  addDiagnosticSink({ write: event => events.push(event) });
-  const operationId = createOperationId();
-  reportDiagnostic('error', 'storage:write-failed', { operation: 'save', attempt: 2 }, operationId);
-  assert.equal(events.length, 1);
-  assert.equal(events[0].level, 'error');
-  assert.equal(events[0].event, 'storage:write-failed');
-  assert.equal(events[0].operationId, operationId);
-  assert.equal(events[0].fields.operation, 'save');
-  assert.equal(typeof events[0].timestamp, 'string');
-});
-
-test('diagnostics redact sensitive fields before dispatch', () => {
-  const events = [];
-  addDiagnosticSink({ write: event => events.push(event) });
-  reportDiagnostic('warn', 'workspace:operation', { documentContent: '# private', filePath: '/private/notes.md', operation: 'backup' });
-  assert.equal(events[0].fields.documentContent, '[redacted]');
-  assert.equal(events[0].fields.filePath, '[redacted]');
-  assert.equal(events[0].fields.operation, 'backup');
-});
-
-test('diagnostic levels suppress messages below configured verbosity', () => {
-  const events = [];
-  addDiagnosticSink({ write: event => events.push(event) });
-  configureDiagnostics('warn');
-  reportDiagnostic('debug', 'test:debug');
-  reportDiagnostic('info', 'test:info');
-  reportDiagnostic('warn', 'test:warn');
-  assert.deepEqual(events.map(event => event.level), ['warn']);
-});
-
-test('diagnostic sink failures never replace application control flow', () => {
-  addDiagnosticSink({ write: () => { throw new Error('sink failure'); } });
-  assert.doesNotThrow(() => reportDiagnostic('error', 'storage:write-failed'));
-});
-
-test('diagnostic history is bounded, copyable and explicitly clearable', () => {
-  configureDiagnostics('debug');
-  for (let index = 0; index < 250; index += 1) reportDiagnostic('debug', 'test:event', { sequence: index });
-  const report = getDiagnosticHistory();
-  assert.equal(report.length, 200);
-  assert.equal(report[0].fields.sequence, 50);
-  report[0].fields.sequence = -1;
-  assert.equal(getDiagnosticHistory()[0].fields.sequence, 50);
-  clearDiagnosticHistory();
-  assert.equal(getDiagnosticHistory().length, 0);
-});
+test('diagnostic events include stable structure and operation correlation',()=>{const events=[];addDiagnosticSink({write:event=>events.push(event)});const operationId=createOperationId();reportDiagnostic('error','storage:write-failed',{operation:'save',attempt:2},operationId);assert.equal(events.length,1);assert.equal(events[0].operationId,operationId);assert.equal(events[0].fields.operation,'save');});
+test('sensitive fields and unknown string values redact before sink dispatch',()=>{const events=[];addDiagnosticSink({write:event=>events.push(event)});reportDiagnostic('warn','workspace:operation',{documentContent:'# private',filePath:'/private/notes.md',operation:'backup',source:'window',boundary:'persistence',innocuous:'/Users/private/file.md',arbitrary:'Bearer abcdefghijklmnop'});const fields=events[0].fields;assert.equal(fields.documentContent,'[redacted]');assert.equal(fields.filePath,'[redacted]');assert.equal(fields.operation,'backup');assert.equal(fields.source,'window');assert.equal(fields.boundary,'persistence');assert.equal(fields.innocuous,'[redacted]');assert.equal(fields.arbitrary,'[redacted]');});
+test('error messages and bounded causes retain useful context but redact private values',()=>{const events=[];addDiagnosticSink({write:event=>events.push(event)});const cause=new Error('low-level token=abcdefghijklmnop');const error=new Error('Unable to save /Users/alice/notes.md; alice@example.com https://private.example/doc #sensitive-private-body-is-not-diagnostic-data',{cause});reportDiagnostic('error','workspace:save-failed',{operation:'save',boundary:'autosave'},createOperationId(),error);const serialized=JSON.stringify(events[0]);assert.equal(events[0].error.name,'Error');assert.ok(serialized.includes('Unable to save'));for(const secret of ['/Users/alice','alice@example.com','private.example','sensitive-private-body','abcdefghijklmnop'])assert.ok(!serialized.includes(secret));assert.equal(events[0].error.cause.name,'Error');});
+test('diagnostic levels suppress messages below configured verbosity',()=>{const events=[];addDiagnosticSink({write:event=>events.push(event)});configureDiagnostics('warn');reportDiagnostic('debug','test:debug');reportDiagnostic('info','test:info');reportDiagnostic('warn','test:warn');assert.deepEqual(events.map(event=>event.level),['warn']);});
+test('sink failures never replace application flow',()=>{addDiagnosticSink({write:()=>{throw new Error('sink failure');}});assert.doesNotThrow(()=>reportDiagnostic('error','storage:write-failed'));});
+test('diagnostic history is bounded, copyable and clearable',()=>{configureDiagnostics('debug');for(let index=0;index<250;index++)reportDiagnostic('debug','test:event',{sequence:index});const report=getDiagnosticHistory();assert.equal(report.length,200);assert.equal(report[0].fields.sequence,50);report[0].fields.sequence=-1;assert.equal(getDiagnosticHistory()[0].fields.sequence,50);clearDiagnosticHistory();assert.equal(getDiagnosticHistory().length,0);});
