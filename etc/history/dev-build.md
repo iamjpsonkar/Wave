@@ -1185,3 +1185,12 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - After PR #141 merged, the Markdown audit was recreated on fresh main. The first exact-head run `43739976737` correctly caught six stale Markdown-support/coverage links retained in the merged developer handoff.
 - Corrected those references in `DEV_CONTEXT.md` while preserving the PR #141 handoff and history. Fresh exact-head CI is required before merge.
 
+
+
+## 2026-11-15 — Security tracker documentation accuracy follow-up
+
+- Reviewed the remaining scope in [issue #120](https://github.com/iamjpsonkar/Wave/issues/120) against current source and security documentation after PR #122.
+- Found stale third-party notice statements: the notices described Google Fonts as runtime imports even though the current stylesheet uses a system font stack, and a package-tarball audit limitation still referred to 181 packages instead of the current 161-entry inventory.
+- Corrected the notices to label the former Google Fonts families as historical attribution records, state that no Google Fonts CSS/font request is currently made, and align the package-tarball review count with the current inventory.
+- This is a documentation accuracy correction only. It does not complete the manual package-tarball/NOTICE legal review, owner-side GitHub security settings, or any future product-security capabilities in #120.
+- Source inspection only; no local tests or CI run are claimed. The PR must pass exact-head CI before merge.

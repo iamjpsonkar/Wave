@@ -31,15 +31,15 @@ All 161 package entries in the proposed lock snapshot have a non-empty license f
 
 ## Fonts and other non-package assets
 
-### Google Fonts loaded at runtime
+### Google Fonts (historical; no longer loaded by Wave)
 
-`src/styles.css` imports the following font families from the Google Fonts CSS API:
+The following font families were used by an earlier stylesheet and are retained here as historical attribution records:
 
 - DM Sans — SIL Open Font License 1.1 (OFL-1.1); upstream family source: [googlefonts/dm-fonts](https://github.com/googlefonts/dm-fonts).
 - DM Mono — SIL Open Font License 1.1 (OFL-1.1); upstream family source: [googlefonts/dm-mono](https://github.com/googlefonts/dm-mono).
 - Playfair Display — SIL Open Font License 1.1 (OFL-1.1); upstream family source: [googlefonts/Playfair-Display](https://github.com/clauseggers/Playfair-Display).
 
-The fonts are requested from Google's hosted CSS endpoint at runtime; font binaries are not checked into this repository. The OFL permits embedding and redistribution subject to its conditions. If the project begins self-hosting or bundling font binaries, include the relevant upstream copyright notice and full OFL text with the font files, preserve any Reserved Font Names, and record the exact upstream revision/files used. The project currently has not pinned a font file version or CSS response; therefore this record documents the current runtime family request, not a byte-identical font asset receipt. Upstream Google Fonts guidance: [license-file requirements](https://googlefonts.github.io/gf-guide/license-file.html).
+Wave no longer imports Google Fonts. The current `src/styles.css` uses a system font stack and does not request Google Fonts CSS or font binaries. No font binaries are checked into this repository. Keep these historical attribution records if the families are reintroduced; before self-hosting or bundling font binaries, record the exact upstream revision/files and include the required OFL text and notices. Upstream Google Fonts guidance: [license-file requirements](https://googlefonts.github.io/gf-guide/license-file.html).
 
 ### Icons
 
@@ -78,10 +78,10 @@ Runtime Google Fonts remain remotely requested and unpinned; no font binaries ar
 
 ## Known audit limitations and owner follow-up
 
-- The dependency audit is based on package metadata from the checked-in lockfile. It has not independently opened and compared every one of the 181 package tarball LICENSE files.
+- The dependency audit is based on package metadata from the checked-in lockfile. It has not independently opened and compared every one of the 161 package tarball LICENSE files in the current inventory.
 - The historical CC-BY-4.0 entry is absent from the proposed lockfile. If caniuse-lite is reintroduced, restore its attribution and verify the actual contents included in the final distribution.
 - Apache-2.0 packages require package-specific NOTICE inspection and correct reproduction where applicable.
-- Google Fonts runtime family names are recorded, but exact font-file revisions are not pinned by the application. Consider pinning/self-hosting the exact files and bundling their OFL notices for deterministic/offline builds; this is a product decision and is not done by this audit.
+- The former Google Fonts families are retained as historical attribution records only; the current app uses system fonts and makes no Google Fonts runtime request. Reintroducing those families or bundling font files requires a fresh asset/license review.
 - No custom license, missing license metadata or conflicting SPDX expression was found in the historical 221-entry baseline snapshot; the proposed 161-entry snapshot is summarized below. Re-run the checker after every dependency update and investigate all new/unknown results.
 
 ## Current dependency upgrade audit — 2026-11-15
