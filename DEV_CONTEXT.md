@@ -865,3 +865,10 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - `THIRD_PARTY_NOTICES.md`, README, `etc/README.md`, `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md` now prescribe how to record and review future dependency and external-asset updates. Refresh the JSON only after reviewing upstream terms; inspect the full generated diff; preserve NOTICE/attribution material; escalate ambiguous terms.
 - Legal/verification limitations remain explicit: the 221 package tarballs' LICENSE/NOTICE files were not individually compared; Apache package-specific NOTICE presence and CC-BY attribution wording need release-artifact verification; Google Fonts CSS responses and exact font binaries are not pinned. The audit checker is not a legal compatibility opinion. No materials were changed or relicensed.
 - Branch: `WAVE-0118`. GitHub API-only changes; no local script execution or CI result claimed. Exact-head CI pending.
+
+
+### Issue #118 exact-head CI follow-up — 2026-11-15
+
+- The first PR #121 workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) ran `npm ci` successfully and then failed at `npm run license:audit`; the container job passed, while remaining build/browser steps were skipped. Log showed all 221 package counts as expected but the snapshot comparator considered inventory stale.
+- Independently compared all 221 snapshot package records with package-lock entries; exact names, versions, license IDs, registry sources, integrity digests and dev-only flags matched. Root cause was JSON serialization/property ordering and optional-field comparison.
+- Checker now compares normalized semantic fields and stable sorting. This correction is committed on `WAVE-0118`; the new exact-head workflow result is still required. Do not report CI green until it finishes.
