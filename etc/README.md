@@ -59,4 +59,4 @@ A production-facing claim must identify the behavior, supported environment, sto
 
 ## Edition architecture status
 
-Wave's approved direction is two editions from one codebase: **Personal** (local-only, no backend or document uploads) and **Full** (optional identity, encrypted sync and collaboration while retaining local/offline workspaces). This is an architecture decision and implementation plan, not a claim that either edition or its future SQLite/sync services are already shipped. See [the edition architecture](etc/engineering/EDITIONS.md) and [issue #135](https://github.com/iamjpsonkar/Wave/issues/135).
+Wave's approved direction is two editions from one codebase: **Personal** (local-only, no backend or document uploads) and **Full** (optional identity, encrypted sync and collaboration while retaining local/offline workspaces). This is an architecture decision and implementation plan, not a claim that either edition or its future SQLite/sync services are already shipped. See [the edition architecture](./engineering/EDITIONS.md) and [issue #135](https://github.com/iamjpsonkar/Wave/issues/135).
