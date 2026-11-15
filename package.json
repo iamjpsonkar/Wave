@@ -8,16 +8,16 @@
     "build": "tsc -b && vite build --config config/vite.config.ts",
     "preview": "vite preview --config config/vite.config.ts",
     "typecheck": "tsc -b --pretty",
-    "test": "node --experimental-strip-types --test tests/unit",
+    "test": "node --experimental-strip-types --test tests/unit/**/*.test.js",
     "test:e2e": "playwright test --config config/playwright.config.ts",
     "docker:build": "docker build -t wave:local .",
     "docker:up": "docker compose up --build -d",
     "docker:down": "docker compose down",
     "test:local": "bash ./test.sh",
-    "test:unit": "node --experimental-strip-types --test tests/unit",
-    "test:unit:storage": "node --experimental-strip-types --test tests/unit/storage",
-    "test:unit:diagnostics": "node --experimental-strip-types --test tests/unit/diagnostics",
-    "test:unit:safety": "node --experimental-strip-types --test tests/unit/safety"
+    "test:unit": "node --experimental-strip-types --test tests/unit/**/*.test.js",
+    "test:unit:storage": "node --experimental-strip-types --test tests/unit/storage/*.test.js",
+    "test:unit:diagnostics": "node --experimental-strip-types --test tests/unit/diagnostics/*.test.js",
+    "test:unit:safety": "node --experimental-strip-types --test tests/unit/safety/*.test.js"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
