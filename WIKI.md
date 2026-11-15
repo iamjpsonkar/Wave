@@ -707,3 +707,12 @@ Branch naming is case-sensitive and zero-padded to exactly four digits. Do not r
 - After a CI failure, always re-fetch the PR head SHA and workflow runs. Multiple commits on the same branch create separate runs; only the run tied to the latest PR head determines current verification.
 - A completed run that is red is not remedied by an earlier green job subset. Report total E2E pass/fail counts and every remaining failure category; verify fresh results after each subsequent fix.
 - UI event tests that simulate toolbar actions must account for browser focus/selection loss and React's controlled-state timing. Prefer dispatching through the real interaction and verify the persisted editor value, rather than relying on a stale DOM selection.
+
+
+## WAVE-0001 CI triage — consolidated follow-up (2026-11-15)
+
+When a latest-head E2E run fails, use the failure log and retry trace as the source of truth; do not infer current state from older runs. For run [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184), 42 Playwright scenarios passed and 6 failed. The container job passed; Node tests, TypeScript and production build passed.
+
+The follow-up patch reads the latest editor source through `contentRef.current`, sends toolbar color mutations through `handleEditorChange` so recovery drafts/title state are updated, and replaces the current Markdown block range for color updates. Settings tests must close the dialog before clicking editor controls because the modal backdrop intentionally blocks pointer events. Check icon expectations against the installed Lucide version's rendered SVG class (`file-code2`).
+
+**Verification rule:** these are source-level corrections, not verified fixes until a new workflow for the exact current PR head completes. Never mark WAVE-031 closed based on simulated OPFS permission tests; native picker/OS revocation, external-process races, full accessibility review and pre-commit process-kill behavior remain documented acceptance gaps.
