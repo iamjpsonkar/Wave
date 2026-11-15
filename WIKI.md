@@ -452,8 +452,9 @@ This map is intentionally explicit so an agent knows which file to read/update a
 |---|---|---|
 | `WIKI.md` | This comprehensive product/repository/agent orientation | Read first; update when durable cross-project decisions or repository structure materially change |
 | `DEV_CONTEXT.md` | Canonical concise developer handoff and current implementation baseline | Read before every coding task; update last after each implementation batch |
-| `README.md` | Public project overview, setup and deployment | Update when onboarding, capabilities or run/deploy workflow changes |
-| `CONTRIBUTING.md` | Contributor workflow and engineering rules | Update when contribution or verification practices change |
+| `README.md` | Public project overview, setup, deployment and license summary | Update when onboarding, capabilities, run/deploy workflow or public license description changes |
+| `LICENSE` | Canonical MIT License text and copyright notice | Keep exact canonical license wording; change holder/year only with owner approval |
+| `etc/engineering/CONTRIBUTING.md` | Canonical contributor workflow, engineering rules and contribution licensing expectations | Update when contribution, verification or licensing practices change |
 | `etc/history/dev-fixed.md` | Append-only-ish implementation fix and regression history | Record bug fixes and regression tests |
 | `etc/history/dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
 | `upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
@@ -656,7 +657,7 @@ Use competitor research as workflow inspiration, not as an instruction to copy f
 ## 17. Final agent checklist
 
 Before coding:
-- [ ] Read `WIKI.md`, `DEV_CONTEXT.md` and `CONTRIBUTING.md`.
+- [ ] Read `WIKI.md`, `DEV_CONTEXT.md` and `etc/engineering/CONTRIBUTING.md`.
 - [ ] Refresh current `main` baseline and relevant CI status.
 - [ ] Inspect source and tests, not just documentation.
 - [ ] Identify existing feature/bug/UI/roadmap IDs.

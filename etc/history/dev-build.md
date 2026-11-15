@@ -567,3 +567,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Strengthened the browser-level logging test: it captures normal-bootstrap console output and asserts no [Wave] diagnostics are emitted, then repeats a document open with ?waveDebug=1 and asserts structured recovery debug events share one operation ID.
 - refresh() remains a separate inventory/settings-read sub-operation with its own ID because it is also called independently from user actions; its prune failure is not treated as part of a parent action's persistence transaction.
 - Exact-head full CI is required before considering these review findings closed.
+
+## 2026-11-15 — Issue #117: publish MIT licensing terms
+
+- Owner decision: MIT License (SPDX identifier: `MIT`); copyright notice approved as `Copyright (c) 2026 Jay Prakash Sonkar`.
+- Added the complete canonical MIT license text at the repository root in `LICENSE`, substituting only the approved holder/year line.
+- Added an accurate README license section describing permissive reuse, modification and redistribution, the notice condition, warranty/liability disclaimer, and the rationale for selecting MIT.
+- Declared `"license": "MIT"` in `package.json` and the root package entry in `package-lock.json`.
+- Documented inbound contribution expectations in `etc/engineering/CONTRIBUTING.md`: contributions intended for inclusion are offered under MIT, contributors retain copyright, and no CLA/DCO is introduced.
+- Corrected WIKI.md's stale root CONTRIBUTING.md references to the actual canonical guide at `etc/engineering/CONTRIBUTING.md`; indexed the license in `etc/README.md`.
+- Work is on branch `WAVE-0117`; exact-head CI and GitHub default-branch license detection remain pending. No local tests/build are claimed for this GitHub-only documentation/metadata change.

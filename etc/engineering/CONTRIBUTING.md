@@ -74,3 +74,9 @@ Keep each document's purpose intact:
 - Existing UI gap IDs and engineering history are append-only unless the product owner explicitly requests otherwise.
 
 See [the documentation index](docs/README.md) for the full map.
+
+## License and contributions
+
+Wave is distributed under the [MIT License](../../LICENSE) (SPDX identifier: `MIT`). The license permits use, modification and redistribution, including commercial use, subject to retaining the copyright and license notices. The complete terms are in the repository-root [LICENSE](../../LICENSE) file.
+
+By submitting a contribution for inclusion in Wave, you agree that the contribution is made available under the project's MIT License. You retain copyright in your contribution; this statement does not assign copyright to the project owner. No Contributor License Agreement (CLA) or Developer Certificate of Origin (DCO) is currently required. Do not add either requirement without an explicit project-owner decision.
