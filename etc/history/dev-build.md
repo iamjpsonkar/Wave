@@ -533,3 +533,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Stable operation IDs now span workspace open/reopen and activation, document open, autosave persistence, Trash restore/delete, and backup create/restore. Existing diagnostics use strict string vocabularies and duplicate propagation is suppressed.
 - Unit coverage now checks ordinary unprefixed private prose is omitted. Playwright coverage checks no recovery trace noise by default, debug visibility when enabled, and autosave error privacy/correlation.
 - Full canonical CI must run against the exact latest head after these changes; no local execution is claimed.
+
+
+## WAVE-0111 pipeline follow-up (2026-11-15)
+
+- Investigated exact-head CI run [43704440873](https://github.com/iamjpsonkar/Wave/actions/runs/43704440873). Node suite passed (36 tests); container job passed; Playwright had 49 passing tests and one failure.
+- The only remaining failure was the cross-tab recovery E2E assertion. Runtime evidence showed the source tab's recovery journal record correctly remains after the second tab declines recovery. The test had been changed to expect deletion; restored the correct preservation assertion and made it poll for the durable source-tab record.
+- The debug-gating E2E test passed in this run, as did all other Playwright cases.
+- A fresh full CI run is required for the updated test commit before considering the PR ready to merge.
