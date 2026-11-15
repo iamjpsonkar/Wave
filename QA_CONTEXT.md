@@ -188,13 +188,13 @@ Important documentation drift observed at the same HEAD:
 
 **Audit baseline:** current `main` HEAD `82388f392a3089266f883c548f2246748937255c` (latest branch ref checked during this audit).
 
-**Files reviewed:** `upcoming-features.md`, `priority-features.md`, `features.md`, `docs/FEATURES.md`, `features-gap.md`, `README.md`, `src/App.tsx`, `src/storage.ts`, `src/markdown.tsx`, `src/draftJournal.ts`, `src/templates.ts`, Node tests, Playwright E2E tests and CI workflow.
+**Files reviewed:** `etc/product/upcoming-features.md`, `etc/product/priority-features.md`, `features.md`, `docs/FEATURES.md`, `etc/product/markdown-coverage.md`, `README.md`, `src/App.tsx`, `src/storage.ts`, `src/markdown.tsx`, `src/draftJournal.ts`, `src/templates.ts`, Node tests, Playwright E2E tests and CI workflow.
 
 **Feature coverage conclusions:**
 - Current working MVP includes local Markdown pages/editing/autosave, browser-local recovery drafts, nested folders/navigation, title/content search, favorites, duplicate pages, Trash/recovery, local attachments, verified local backups/restore, external-edit conflict detection, mobile navigation, command palette, wiki links/backlinks and a substantial Markdown preview subset.
 - Markdown is not full showcase parity. Current code and E2E definitions include unique heading IDs, safe inline syntax, emoji shortcodes, DETAILS disclosures, limited MathML, local code token coloring, and Mermaid flowchart/sequence/pie output. Full TeX, broad Mermaid grammar/families, Graphviz/PlantUML/Vega/D2/AsciiDoc, unrestricted HTML (deliberately disabled), arbitrary media embeds, and broad conformance/accessibility coverage remain incomplete or intentionally excluded.
-- `features-gap.md` is stale relative to the current renderer: it still lists duplicate heading suffixes, emoji shortcodes, DETAILS blocks, sequence diagrams and pie charts as missing even though current source and E2E tests implement those subsets. Its audit should be refreshed before treating it as authoritative.
-- Feature tracking is inconsistent: `docs/FEATURES.md` has 19 checked, 47 unchecked and 1 partial item; `priority-features.md` has 104 unchecked items; `upcoming-features.md` has 973 checklist entries, only one checked (the status-convention definition) and 972 unchecked. The latter two are not meaningful implementation status trackers and should not be read as evidence that nothing has shipped. `features.md` is the current shipped-feature showcase.
+- `etc/product/markdown-coverage.md` is stale relative to the current renderer: it still lists duplicate heading suffixes, emoji shortcodes, DETAILS blocks, sequence diagrams and pie charts as missing even though current source and E2E tests implement those subsets. Its audit should be refreshed before treating it as authoritative.
+- Feature tracking is inconsistent: `docs/FEATURES.md` has 19 checked, 47 unchecked and 1 partial item; `etc/product/priority-features.md` has 104 unchecked items; `etc/product/upcoming-features.md` has 973 checklist entries, only one checked (the status-convention definition) and 972 unchecked. The latter two are not meaningful implementation status trackers and should not be read as evidence that nothing has shipped. `features.md` is the current shipped-feature showcase.
 - Some docs conflict: `features.md` says command palette is implemented, while `docs/FEATURES.md` still marks it planned. Reconcile the feature map with code/tests.
 
 **Current verification at this audit:**
@@ -204,8 +204,8 @@ Important documentation drift observed at the same HEAD:
 
 **Next feature-audit actions:**
 1. Resolve the current wiki-link E2E failure and obtain a full green CI run on the resulting HEAD.
-2. Refresh `features-gap.md` to distinguish newly implemented Markdown subsets from remaining gaps and retain all unsupported syntax/security decisions.
-3. Reconcile `docs/FEATURES.md` against current source and tests; use `features.md` for the shipped showcase and keep the full `upcoming-features.md` catalogue intact.
+2. Refresh `etc/product/markdown-coverage.md` to distinguish newly implemented Markdown subsets from remaining gaps and retain all unsupported syntax/security decisions.
+3. Reconcile `docs/FEATURES.md` against current source and tests; use `features.md` for the shipped showcase and keep the full `etc/product/upcoming-features.md` catalogue intact.
 4. Build a feature-by-feature evidence matrix for the full blueprint: implemented + tested, implemented but under-tested, partial, planned, intentionally excluded. Do not delete or drop any planned capability.
 5. Keep WAVE-031 and WAVE-039 open until their stated verification gaps are genuinely closed.
 
@@ -253,7 +253,7 @@ Important documentation drift observed at the same HEAD:
 
 **Review baseline:** main at `9facb8bf1b71b4470ea661cb4b30a76660217f18` before this handoff update.
 
-**Scope reviewed:** `src/App.tsx`, `src/storage.ts`, `src/draftJournal.ts`, `src/safety.ts`, `src/markdown.tsx`, `src/templates.ts`, Node storage tests, Playwright E2E tests, CI workflow, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `features.md`, `docs/FEATURES.md`, `docs/MARKDOWN_SUPPORT.md`, `docs/ROADMAP.md`, `priority-features.md`, `upcoming-features.md`, `DEV_CONTEXT.md`, `dev-fixed.md` and `dev-build.md`.
+**Scope reviewed:** `src/App.tsx`, `src/storage.ts`, `src/draftJournal.ts`, `src/safety.ts`, `src/markdown.tsx`, `src/templates.ts`, Node storage tests, Playwright E2E tests, CI workflow, `bugs.md`, `fixed-bugs.md`, `etc/product/markdown-coverage.md`, `features.md`, `docs/FEATURES.md`, `etc/engineering/MARKDOWN_SUPPORT.md`, `docs/ROADMAP.md`, `etc/product/priority-features.md`, `etc/product/upcoming-features.md`, `DEV_CONTEXT.md`, `dev-fixed.md` and `dev-build.md`.
 
 ### Current implementation and verification
 
@@ -272,9 +272,9 @@ Important documentation drift observed at the same HEAD:
 ### Feature and documentation findings
 
 - The implementation includes a substantial CommonMark/GFM subset, wiki links/backlinks, safe URL handling, local-only media, limited MathML, constrained Mermaid families and lightweight DOT/PlantUML/Vega/D2/AsciiDoc renderers. These are not full language implementations.
-- `features-gap.md` still contains stale earlier checklist/status statements: it says the technical-notes template is broken, reports 23 E2E scenarios, and lists several implemented Markdown extensions/diagram families as missing. Its appended remediation notes also predate the latest successful CI. Treat source + current tests + `docs/MARKDOWN_SUPPORT.md` as the current technical evidence until the gap checklist is reconciled.
-- `docs/FEATURES.md` and `docs/ROADMAP.md` still understate some shipped behavior (notably wiki-link/backlink workflows and recent Markdown renderer work) while `features.md` and `docs/MARKDOWN_SUPPORT.md` describe more of the current implementation. Reconcile the status map without deleting any planned capability.
-- `priority-features.md` has 104 unchecked planning items and `upcoming-features.md` has 972 unchecked catalogue entries. These are planning documents, not evidence that the capabilities are absent from the current app; preserve the full catalogue and distinguish planned scope from shipped status.
+- `etc/product/markdown-coverage.md` still contains stale earlier checklist/status statements: it says the technical-notes template is broken, reports 23 E2E scenarios, and lists several implemented Markdown extensions/diagram families as missing. Its appended remediation notes also predate the latest successful CI. Treat source + current tests + `etc/engineering/MARKDOWN_SUPPORT.md` as the current technical evidence until the gap checklist is reconciled.
+- `docs/FEATURES.md` and `docs/ROADMAP.md` still understate some shipped behavior (notably wiki-link/backlink workflows and recent Markdown renderer work) while `features.md` and `etc/engineering/MARKDOWN_SUPPORT.md` describe more of the current implementation. Reconcile the status map without deleting any planned capability.
+- `etc/product/priority-features.md` has 104 unchecked planning items and `etc/product/upcoming-features.md` has 972 unchecked catalogue entries. These are planning documents, not evidence that the capabilities are absent from the current app; preserve the full catalogue and distinguish planned scope from shipped status.
 - README and feature showcase should continue to state the real browser boundary (File System Access API / Chromium family), local-first storage and deliberate remote HTML/media exclusions.
 
 ### Source review notes
@@ -294,7 +294,7 @@ Important documentation drift observed at the same HEAD:
 ### Recommended next actions
 
 1. Obtain and inspect a fresh CI run for the diagram-accessibility patch on current main; repair any failures without weakening behavior assertions.
-2. Reconcile `features-gap.md`, `docs/FEATURES.md`, `docs/ROADMAP.md` and the current feature showcase against source/tests; preserve every original planned feature.
+2. Reconcile `etc/product/markdown-coverage.md`, `docs/FEATURES.md`, `docs/ROADMAP.md` and the current feature showcase against source/tests; preserve every original planned feature.
 3. Expand WAVE-031 verification with native picker/permission revocation where supported, external filesystem mutation tests, accessibility tooling and process-lifecycle fault injection.
 4. Continue WAVE-039 durability investigation with controlled IndexedDB transaction delay and real browser-process termination tests; do not promise zero crash window.
 5. Add large-workspace performance budgets, Unicode/platform path fixtures, malformed/oversized parser limits and broader preview/source round-trip tests.
@@ -304,7 +304,7 @@ Important documentation drift observed at the same HEAD:
 
 - Updated `bugs.md` to two open findings and 50 retained fixed findings; WAVE-052 is no longer open.
 - Updated the current verification addendum in `fixed-bugs.md` to distinguish the green 28-scenario CI baseline from the later unverified diagram-accessibility patch.
-- Appended a current status override to `features-gap.md`, preserving its original requirements while superseding stale implementation claims.
+- Appended a current status override to `etc/product/markdown-coverage.md`, preserving its original requirements while superseding stale implementation claims.
 - Updated `docs/FEATURES.md` and `docs/ROADMAP.md` to distinguish implemented wiki links/backlinks from still-planned mentions and rich link previews.
 - Updated `features.md` to describe the current constrained local diagram-renderer families and technical learning-notes template.
 - These are documentation-only changes; no source or test files changed. The CI run for the source/test baseline remains 43618423075. The newest documentation commits have not been independently checked in CI.
@@ -338,7 +338,7 @@ Important documentation drift observed at the same HEAD:
 ## diagrams.net research and diagram roadmap — 2026-11-14
 
 - Researched the official app.diagrams.net site and official draw.io feature/editor/manual/layers/integration documentation.
-- Reviewed current Wave `src/markdown.tsx`, `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `src/App.tsx` and `src/styles.css`.
+- Reviewed current Wave `src/markdown.tsx`, `etc/engineering/MARKDOWN_SUPPORT.md`, `etc/product/markdown-coverage.md`, `src/App.tsx` and `src/styles.css`.
 - Created `diagram-features.md` with reference capability analysis, Wave's current renderer baseline, explicit visual-editor gaps, local-first design principles, proposed native graph architecture, a comprehensive feature catalogue, five implementation phases, acceptance criteria and test strategy.
 - Current Wave Markdown renderer baseline includes constrained Mermaid flowchart/sequence/pie/class/ER/state/Gantt/git graph/mindmap/timeline/quadrant/requirement/architecture-beta subsets and constrained DOT/Graphviz, PlantUML, Vega/Vega-Lite, D2 and AsciiDoc renderers. These are source-based preview renderers, not an editable canvas diagram application.
 - Roadmap preserves these existing renderers and proposes a structured native diagram document model with canvas, shapes, connectors, styles, undo/redo, pages/layers, layouts, import/export, domain libraries and optional later collaboration.
@@ -365,7 +365,7 @@ Important documentation drift observed at the same HEAD:
 
 ## GitHub issue triage — 2026-11-15
 
-- Reviewed current `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `ui-gaps.md`, `ui-bug.md`, `diagram-features.md`, `docs/FEATURES.md`, `docs/ROADMAP.md`, `priority-features.md` and `upcoming-features.md`.
+- Reviewed current `bugs.md`, `fixed-bugs.md`, `etc/product/markdown-coverage.md`, `ui-gaps.md`, `ui-bug.md`, `diagram-features.md`, `docs/FEATURES.md`, `docs/ROADMAP.md`, `etc/product/priority-features.md` and `etc/product/upcoming-features.md`.
 - Checked the repository's open issue search before creating issues; no existing open issues were returned, so the identified work did not duplicate an existing open issue.
 - Created 10 GitHub issues, grouped by implementation and verification work:
   - #1 WAVE-031 native filesystem/permission/lifecycle verification.
@@ -388,7 +388,7 @@ Important documentation drift observed at the same HEAD:
 
 ## Full roadmap issue creation — 2026-11-15
 
-- Parsed the current `upcoming-features.md` directly (1,983 lines). It contains 974 checkbox entries; one is already marked shipped, and two remaining entries are status-legend definitions rather than product features.
+- Parsed the current `etc/product/upcoming-features.md` directly (1,983 lines). It contains 974 checkbox entries; one is already marked shipped, and two remaining entries are status-legend definitions rather than product features.
 - Created 80 roadmap tracking issues covering **971 unchecked/in-progress checklist entries**. Each issue is grouped by an existing blueprint subsection and contains the source wording, source line references, checkboxes and a definition-of-done checklist.
 - Coverage includes A–P, release 0.3 through Later, Q–AA, product coverage, specialist capability areas 14.1–14.10, cross-cutting areas 15.1–15.6 and competitor coverage.
 - Release roll-up and competitor/product coverage checklists were retained as traceability issues instead of being silently dropped. Where requirements overlap existing bug/gap tickets, canonical issue links are included where applicable.
@@ -405,9 +405,9 @@ Important documentation drift observed at the same HEAD:
 
 - Audited current `main` at commit `d831bf04ac458a888206de4d492830f55958b022`, including repository orientation/developer handoff, QA and bug registers, issue index, package scripts, CI workflow, configuration relocation, storage tests and Playwright E2E test source.
 - Reconciled against all **98 existing GitHub issues** (92 open, 6 closed) before creating new tickets. Existing WAVE-031/WAVE-039, UI/Markdown/export issues and roadmap/coverage epics were treated as canonical; no duplicate issue was opened for their scope.
-- Created [#99 — repair case-sensitive and stale Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99). Confirmed examples include README's `./wiki.md` versus maintained `WIKI.md`, missing `docs/README.md`, and root-level tracker links where the maintained files live under `trash/`.
+- Created [#99 — repair case-sensitive and stale Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99). Confirmed examples include README's `./wiki.md` versus maintained `WIKI.md`, missing `docs/README.md`, and root-level tracker links where the maintained files live under `etc/`.
 - Created [#100 — remove duplicate storage regression scenarios](https://github.com/iamjpsonkar/Wave/issues/100). `tests/storage.test.js` repeats the backup-lock interleaving scenario at lines 300–321 and 334–355, and repeats the copied-file mutation scenario at lines 322–333 and 356 onward. The issue requires preserving distinct locking and integrity guarantees while removing redundant tests.
-- Updated `trash/github-issues.md` to include both issues and the verified open-issue count.
+- Updated `etc/quality/github-issues.md` to include both issues and the verified open-issue count.
 - This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
 
  
@@ -421,3 +421,8 @@ Important documentation drift observed at the same HEAD:
 ## Test organization update — 2026-11-15 (manager branch)
 
 The existing 30 Node scenarios and 46 Playwright scenarios have been reorganized into focused files under `tests/unit/` and `tests/e2e/`. Shared fixtures now live in `tests/helpers/storage-fixtures.js` and `tests/e2e/fixtures/workspace.ts`. This is a source-organization change, not evidence of additional scenario coverage or a passing test run. Previous counts and historical CI evidence above are snapshots and should not be interpreted as current execution results. Refresh inventory and execute the full suite on the resulting commit.
+
+
+## Documentation directory migration — 2026-11-15
+
+The former `trash/` documentation tree has been moved into the canonical `etc/` hierarchy (`product/`, `engineering/`, `quality/`, `history/`). All meaningful source documents and stable tracker IDs were preserved. Consult [etc/README.md](./etc/README.md) for the maintained index. This migration changes documentation organization only; it does not change application behavior or verification status.
