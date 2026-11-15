@@ -18,7 +18,7 @@
 ## Current summary
 
 - **2 open findings:** WAVE-031 and WAVE-039.
-- **30 Node test definitions** and **28 Playwright Chromium scenarios** are present in the current test sources.
+- **29 Node test definitions on branch `WAVE-0100`** and **28 Playwright Chromium scenarios** are present in the current test sources.
 - The OPFS E2E fixture simulates the File System Access permission contract; it does not exercise the native OS folder picker or OS-level permission revocation.
 - Baseline CI run [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, production build and all 28 Playwright scenarios before the later diagram-accessibility patch.
 - Diagram-accessibility patch CI exposed a failing accessible-name assertion. Commit `268de12338bce554f18e5feef27acbb5e9ea45fe` corrects the sequence diagram to use its Mermaid title as its SVG accessible name. Verification of that correction is pending; do not count it as passed until a new workflow completes.
