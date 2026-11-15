@@ -319,3 +319,13 @@ Strengthen deterministic browser coverage for the WAVE-031 reliability/QA gap wi
 - CI execution is pending on the WAVE-0001 pull request. No test pass is claimed until the workflow result is checked.
 - WAVE-031 remains open until native supported-browser checks, broader external read/save/backup/restore race coverage, keyboard/focus/accessibility review, and lifecycle fault testing are evidenced.
 
+
+
+## 2026-11-15 — WAVE-0001 CI failure fixes (verification pending)
+
+- External-edit browser scenario now writes real newlines and checks `.app-error`, matching the rendered error container.
+- Updated Playwright selectors to use exact accessible names and scoped template search; corrected the template-preview creation step and image/diagram/PDF assertions.
+- Fixed Enter on an empty task item: checkbox syntax no longer makes an otherwise empty list item appear non-empty.
+- Fixed Markdown block-color parser/serializer to use real newline separators and correct whitespace/callout regular expressions.
+- Prevented toolbar color preset/clear mouse-down from discarding the editor selection before the action executes.
+- Verification: original CI run `43682365587` failed Playwright (33 passed, 15 failed); remediation run `43683698072` was in progress. No local tests/build claimed. Remaining CI failures, if any, must be addressed before marking verified.
