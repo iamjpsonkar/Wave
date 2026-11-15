@@ -680,3 +680,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 - CI `43688050754`: 47/48 E2E passed; 30 Node tests, typecheck, production build and container build passed. The only failure was the recovery prompt assertion: the source tab autosaved its content after 600ms, before the second tab attempted recovery.
 - Updated the E2E setup to freeze only the source page's clock after workspace setup and before editing. The immediate IndexedDB recovery journal write can complete while the delayed Markdown autosave stays pending. The second page is intentionally left on real time.
 - Fresh CI is required. No local browser test is claimed. This is the final documentation update for this pass.
+
+
+## Latest CI handoff — cross-tab recovery fixture correction (2026-11-15)
+
+- Latest inspected run `43688362527` failed at 47/48 Playwright tests; container, 30 Node tests, TypeScript typecheck and production build passed.
+- Corrected `tests/e2e/workspace.spec.ts`: the source page's clock is no longer installed before workspace setup. It is frozen once after the baseline page has been created/saved and before the unsaved cross-tab draft is entered; the second tab remains on real time.
+- Test commit: `a983dc3199264348331a9e172217d6e70ec4d099`. QA evidence and development history are appended in `QA_CONTEXT.md`, `WIKI.md`, `trash/dev-fixed.md` and `trash/dev-build.md`.
+- Fresh CI is required; no local tests were executed. PR #101 remains open/unmerged and issue #1 remains open pending manual native picker/permission, external-process race, accessibility and process-termination acceptance checks.
