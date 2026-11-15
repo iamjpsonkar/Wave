@@ -142,15 +142,15 @@ The retired planning, defect, UI-backlog and development-log Markdown files are 
 
 ## Issue traceability entries restored during documentation migration
 
-The retired planning, defect, UI-backlog and development-log Markdown files are preserved under [`trash/`](https://github.com/iamjpsonkar/Wave/tree/main/trash). The `ui-gaps.md` and `ui-features.md` names were not separate repository files; their combined source was `UI_BACKLOG.md`, now archived as `trash/UI_BACKLOG.md`.
-| [#98](https://github.com/iamjpsonkar/Wave/issues/98) | Priority order, dependency gates and release sequencing from `trash/priority-features.md` |
-| [#93](https://github.com/iamjpsonkar/Wave/issues/93) | `trash/fixed-bugs.md` | Full regression records WAVE-001–020 |
-| [#96](https://github.com/iamjpsonkar/Wave/issues/96) | `trash/fixed-bugs.md` | Full regression records WAVE-021–040 |
-| [#97](https://github.com/iamjpsonkar/Wave/issues/97) | `trash/fixed-bugs.md` | Full regression records WAVE-041–052; WAVE-031 and WAVE-039 remain open in #1 and #2 |
-| [#94](https://github.com/iamjpsonkar/Wave/issues/94) | `trash/dev-fixed.md` | Completed implementation history, 2026-11-14 through 2026-11-15 |
-| [#95](https://github.com/iamjpsonkar/Wave/issues/95) | `trash/dev-build.md` | CI/build chronology and verification evidence; pending checks remain pending |
-- Update `upcoming-features.md`, `FEATURES.md`, `FEATURES.md`, `trash/bugs.md`, `trash/fixed-bugs.md`, `trash/UI_BACKLOG.md` and `QA_CONTEXT.md` as appropriate when work is delivered.
-- `trash/features-gap.md` is included in #6 and its color-extension follow-up #9; `trash/priority-features.md` is preserved in #98, while the complete roadmap is represented by #11–#91. `trash/UI_BACKLOG.md` UI gaps/UIB records are covered by #3–#10; remaining UI feature proposals are tracked in #92.
+The retired planning, defect, UI-backlog and development-log Markdown files are preserved under [`etc/`](https://github.com/iamjpsonkar/Wave/tree/main/etc). The `ui-gaps.md` and `ui-features.md` names were not separate repository files; their combined source was `UI_BACKLOG.md`, now archived as `etc/product/UI_BACKLOG.md`.
+| [#98](https://github.com/iamjpsonkar/Wave/issues/98) | Priority order, dependency gates and release sequencing from `etc/product/priority-features.md` |
+| [#93](https://github.com/iamjpsonkar/Wave/issues/93) | `etc/quality/fixed-bugs.md` | Full regression records WAVE-001–020 |
+| [#96](https://github.com/iamjpsonkar/Wave/issues/96) | `etc/quality/fixed-bugs.md` | Full regression records WAVE-021–040 |
+| [#97](https://github.com/iamjpsonkar/Wave/issues/97) | `etc/quality/fixed-bugs.md` | Full regression records WAVE-041–052; WAVE-031 and WAVE-039 remain open in #1 and #2 |
+| [#94](https://github.com/iamjpsonkar/Wave/issues/94) | `etc/history/dev-fixed.md` | Completed implementation history, 2026-11-14 through 2026-11-15 |
+| [#95](https://github.com/iamjpsonkar/Wave/issues/95) | `etc/history/dev-build.md` | CI/build chronology and verification evidence; pending checks remain pending |
+- Update `upcoming-features.md`, `FEATURES.md`, `FEATURES.md`, `etc/quality/bugs.md`, `etc/quality/fixed-bugs.md`, `etc/product/UI_BACKLOG.md` and `QA_CONTEXT.md` as appropriate when work is delivered.
+- `etc/product/markdown-coverage.md` is included in #6 and its color-extension follow-up #9; `etc/product/priority-features.md` is preserved in #98, while the complete roadmap is represented by #11–#91. `etc/product/UI_BACKLOG.md` UI gaps/UIB records are covered by #3–#10; remaining UI feature proposals are tracked in #92.
 - [#104 — [P1][Reliability] Native folder picker and real filesystem permission lifecycle (WAVE-031A)](https://github.com/iamjpsonkar/Wave/issues/104)
 - [#105 — [P1][Reliability] External filesystem races and backup/restore fault handling (WAVE-031B)](https://github.com/iamjpsonkar/Wave/issues/105)
 - [#106 — [P1][Reliability] Recovery drafts under abrupt browser process termination (WAVE-031C)](https://github.com/iamjpsonkar/Wave/issues/106)
