@@ -101,9 +101,22 @@ try {
     } catch (error) {
       throw new Error('Committed dependency inventory is missing or invalid. Run npm run license:audit:update and review the resulting diff. ' + (error instanceof Error ? error.message : String(error)));
     }
-    const { baselineMainCommit: _baseline, ...currentComparable } = inventory;
-    const { baselineMainCommit: _committedBaseline, ...committedComparable } = committed;
-    const inventoryMatches = JSON.stringify(currentComparable) === JSON.stringify(committedComparable);
+    const comparable = value => ({
+      generatedFrom: value.generatedFrom,
+      root: value.root,
+      packageCount: value.packageCount,
+      licenseCounts: Object.fromEntries(Object.entries(value.licenseCounts || {}).sort(([a],[b]) => a.localeCompare(b))),
+      packages: [...(value.packages || [])].map(pkg => ({
+        installPath: pkg.installPath,
+        name: pkg.name,
+        version: pkg.version,
+        license: pkg.license,
+        source: pkg.source,
+        integrity: pkg.integrity,
+        devOnly: pkg.devOnly === true
+      })).sort((a,b) => a.installPath.localeCompare(b.installPath))
+    });
+    const inventoryMatches = JSON.stringify(comparable(inventory)) === JSON.stringify(comparable(committed));
 
     console.log('Locked packages: ' + inventory.packageCount);
     for (const [license,count] of Object.entries(inventory.licenseCounts).sort(([a],[b]) => a.localeCompare(b))) {
