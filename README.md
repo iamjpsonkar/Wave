@@ -125,6 +125,12 @@ The consolidated feature, UI and QA registers reduce duplicate files while prese
 Wave's personal core remains local-first and useful without an account. Optional collaboration, connected services, richer database capabilities and a desktop application remain planned work. A versioned SQLite store and server-side services require explicit migration, authorization, integrity, export and recovery design; static Docker hosting does not imply those capabilities. See [the product constitution](upcoming-features.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers).
 
 
+## License
+
+Wave is licensed under the [MIT License](./LICENSE) (SPDX identifier: `MIT`). It may be used, modified, and redistributed, including commercially, provided the copyright and license notice are retained in copies or substantial portions. The license disclaims warranty and limits liability; see the complete [LICENSE](./LICENSE) text for the terms.
+
+The MIT license was selected to permit broad reuse, forks, modification and redistribution without a copyleft requirement, while preserving attribution through the notice condition. Contributions intended for inclusion are offered under the same MIT License; see the [contributor guide](./etc/engineering/CONTRIBUTING.md).
+
 ## Project context
 
 - [Wave Wiki — complete product, repository and AI-agent context](./WIKI.md)
