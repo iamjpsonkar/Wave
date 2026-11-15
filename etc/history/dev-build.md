@@ -990,3 +990,11 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Inspected job [132840278700](https://github.com/iamjpsonkar/Wave/actions/runs/43723476897/job/132840278700). Install, license audit, Chromium setup, workflow YAML/policy checks passed; `./test.sh` failed before Playwright at Node unit tests (36 passed, 3 failed).
 - Root cause: the initial content-signature gate required all claimed PNG/PDF/image data to match exact signatures, breaking existing opaque-image fixture behavior and intercepting the permission lookup test before its intended storage permission failure. Refined the gate to reject active SVG/HTML payloads masquerading as other types and known archive/container signatures inconsistent with the declared MIME, while retaining the supported-extension/MIME mismatch checks. Updated fixtures to use a valid PNG signature where the test specifically exercises the subsequent storage permission failure; spoof tests now assert against concrete detected SVG/HTML and ZIP signatures.
 - These are source corrections only so far. Require a fresh exact-head CI run; no local test execution is claimed.
+
+
+### Attachment-signature test correction — 2026-11-15
+
+- Exact Main CI run [43723789551](https://github.com/iamjpsonkar/Wave/actions/runs/43723789551), job [132841222439](https://github.com/iamjpsonkar/Wave/actions/runs/43723789551/job/132841222439) failed only in attachment validation unit test (38/39 passed). The failing assertion supplied ZIP magic bytes with `text/plain` and expected a signature mismatch rejection.
+- The signature detector already recognizes ZIP, but the validator intentionally treated unknown/container formats as non-blocking. Since ZIP is a container and no archive extraction is supported, rejecting a recognized ZIP signature when it is not declared as `application/zip` is appropriate; accepting it under `text/plain` is a metadata spoof.
+- Updated the validator to classify ZIP and gzip signatures as container formats requiring a matching declared MIME, preserving unknown/unrecognized payload compatibility. Updated the regression test to expect ZIP under `text/plain` to reject; added positive coverage for a correctly declared ZIP only if that policy remains supported.
+- Exact-head CI is required; no local execution is claimed.
