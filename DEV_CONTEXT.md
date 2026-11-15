@@ -881,3 +881,12 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - The first workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) failed only at inventory freshness comparison. The checker now normalizes record fields and sorts packages before comparison; the corrected exact-head CI passed.
 - PR description was updated with the exact-head green run. PR #121 remains open and mergeable pending owner review. Issue #118 was reopened because it had been auto/consolidation-closed as duplicate of #120 while this delivery remains under review; a status comment records the reason.
 - Remaining legal source-review gaps: package tarball LICENSE/NOTICE files were not individually compared, Apache NOTICE requirements and caniuse-lite attribution need release-artifact inspection, and the unpinned runtime Google Fonts files require capture/notice work only if the project chooses to self-host or bundle them. Do not imply these legal checks are complete from green CI.
+
+
+## 14. Third-party license audit follow-up — 2026-11-15
+
+- Work is in [PR #121](https://github.com/iamjpsonkar/Wave/pull/121), branch `WAVE-0118`, target `main`; broader consolidated tracking remains in [#120](https://github.com/iamjpsonkar/Wave/issues/120).
+- Follow-up notice correction: commit `61f7425c44e182780c5d6d97c30b03d41024a8d6` documents caniuse.com's CC-BY-4.0 attribution instruction, versioned source references for Apache-2.0 dependencies, Feather-derived Lucide attribution caveat and remaining package artifact review boundaries.
+- Documentation history was appended in `etc/history/dev-build.md` (commit `d76a97d7e8fe3f676561e247807de6bb69b50501`) and `WIKI.md` (commit `9a3c81b6feb58492b94a39cd8d4311459311e099`).
+- CI run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333) was in progress at the last inspection. Its npm ci and metadata license audit steps passed; remaining Playwright/build/container stages had not yet finished. Recheck before reporting.
+- Important limitation: exact LICENSE/NOTICE content across all 221 locked npm tarballs and final distribution artifact inclusion has not been verified. The GitHub-only tool session cannot run local npm or unpack the tarballs. This issue is not legally certified complete; keep #118 and PR #121 open until exact artifact review is completed or explicitly dispositioned by the owner/legal reviewer.
