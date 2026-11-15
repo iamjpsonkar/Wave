@@ -219,7 +219,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Audited the complete user-provided 20-section Markdown Feature Showcase against the current renderer, App preview wiring, styles, templates, `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `FEATURES.md` and E2E test source.
 - Conclusion: Markdown is **not feature-complete** against that showcase. Existing support includes common Markdown/GFM, alert callouts, wiki links/backlinks, local images, heading anchors, a small MathML subset and simple Mermaid flowcharts.
-- Created [features-gap.md](./features-gap.md) as the canonical itemized gap/acceptance checklist. Major gaps: full LaTeX/math grammar, advanced Mermaid diagram families and syntax, syntax highlighting/diff coloring, safe HTML-like inline formatting and collapsible sections, emoji shortcodes, GitHub mention/issue references, Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, media embeds, duplicate-heading slugs, and broader accessibility/conformance coverage.
+- Created [features-gap.md](./trash/features-gap.md) as the canonical itemized gap/acceptance checklist. Major gaps: full LaTeX/math grammar, advanced Mermaid diagram families and syntax, syntax highlighting/diff coloring, safe HTML-like inline formatting and collapsible sections, emoji shortcodes, GitHub mention/issue references, Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, media embeds, duplicate-heading slugs, and broader accessibility/conformance coverage.
 - Raw HTML and arbitrary media remain deliberately disabled for safety; any future support must use explicit safe components/allowlists rather than enabling unrestricted HTML.
 - Updated `dev-build.md` with the audit record. This was a source/documentation audit only; no application code changed and no tests were run for this audit. Existing CI evidence is historical and must not be described as full Markdown showcase verification.
 - Latest documentation commits: `features-gap.md` `0b85dd6`; `dev-build.md` `69f749a`. This handoff update is the final documentation step for the task.
@@ -342,7 +342,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Current source defines **30 Node tests** and **28 Playwright Chromium scenarios**.
 - Baseline workflow [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, production build and all 28 Playwright scenarios.
 - The diagram accessibility follow-up initially failed because the sequence SVG used a generic accessible name. Fixed in `268de12338bce554f18e5feef27acbb5e9ea45fe`; workflow [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) was still running at this handoff. Verify latest-main CI before claiming the accessibility correction fully passed.
-- Detailed current state: [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [features-gap.md](./features-gap.md), [dev-build.md](./dev-build.md) and [dev-fixed.md](./dev-fixed.md).
+- Detailed current state: [bugs.md](./trash/bugs.md), [fixed-bugs.md](./trash/fixed-bugs.md), [features-gap.md](./trash/features-gap.md), [dev-build.md](./trash/dev-build.md) and [dev-fixed.md](./trash/dev-fixed.md).
 
 
 ## 24. Markdown image accessibility and fallback behavior — 2026-11-14
@@ -575,9 +575,9 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 2026-11-15 — Comprehensive project wiki and AI-agent onboarding
 
-- Added [wiki.md](./wiki.md) as the comprehensive product, repository and AI-agent orientation guide. It consolidates durable instructions from the available Wave project conversation context, product constitution, current architecture/source map, storage boundaries, engineering invariants, UI/Markdown decisions, QA limitations, roadmap coverage, documentation ownership, Docker boundaries and recommended improvements.
-- Linked the wiki from [README.md](./README.md) and [docs/README.md](./docs/README.md).
-- Detailed implementation and verification note: [dev-build.md](./dev-build.md).
+- Added [wiki.md](./WIKI.md) as the comprehensive product, repository and AI-agent orientation guide. It consolidates durable instructions from the available Wave project conversation context, product constitution, current architecture/source map, storage boundaries, engineering invariants, UI/Markdown decisions, QA limitations, roadmap coverage, documentation ownership, Docker boundaries and recommended improvements.
+- Linked the wiki from [README.md](./README.md) and [docs/README.md](./trash/docs/README.md).
+- Detailed implementation and verification note: [dev-build.md](./trash/dev-build.md).
 - This is a documentation-only change. Repository files were inspected through GitHub; no local tests/build or new CI run was performed.
 - Current baseline before this handoff update: wiki commit `8f1ebafc01c44d36230dd45d9030f16236642105`; README commit `1eaa559f158c46afa1beddbaca797ace9de7ce7c`; docs index commit `5a5bc4dabb1a353c61bfba0658eaf42e6119706c`; build log commit `888d54fac0c980a81332286993794a907758f991`. Refresh the repository HEAD before the next task.
 
@@ -590,11 +590,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 2026-11-15 — Markdown documentation consolidation and enforcement policy
 
-- Consolidated overlapping documentation into [FEATURES.md](./FEATURES.md), [UI_BACKLOG.md](./UI_BACKLOG.md) and [QA_CONTEXT.md](./QA_CONTEXT.md). The former seven duplicate source files were removed only after verifying their meaningful content and stable IDs were present in the destinations.
-- Updated [README.md](./README.md), [CONTRIBUTING.md](./CONTRIBUTING.md), [docs/README.md](./docs/README.md), the product/priority/issue references, and the [Wave Wiki](./wiki.md).
+- Consolidated overlapping documentation into [FEATURES.md](./trash/FEATURES.md), [UI_BACKLOG.md](./trash/UI_BACKLOG.md) and [QA_CONTEXT.md](./QA_CONTEXT.md). The former seven duplicate source files were removed only after verifying their meaningful content and stable IDs were present in the destinations.
+- Updated [README.md](./README.md), [CONTRIBUTING.md](./trash/CONTRIBUTING.md), [docs/README.md](./trash/docs/README.md), the product/priority/issue references, and the [Wave Wiki](./WIKI.md).
 - The wiki now contains a mandatory **Documentation enforcement after every task** section. Every implementation, fix, refactor, QA or configuration task must review Markdown impact, update the authoritative records that changed, validate links and IDs, avoid unnecessary duplicate files, and update this handoff last.
 - The full product blueprint, priority plan, development logs, open/fixed bug registers, Markdown compatibility checklist and diagram research remain separate.
-- Detailed migration record: [dev-build.md](./dev-build.md), entry dated 2026-11-15.
+- Detailed migration record: [dev-build.md](./trash/dev-build.md), entry dated 2026-11-15.
 - Verification: source/destination content comparison and tracker-ID checks completed before source deletion. No application code changed; no local tests/build or CI run was performed. Refresh `main` and CI before the next implementation task.
 
 
