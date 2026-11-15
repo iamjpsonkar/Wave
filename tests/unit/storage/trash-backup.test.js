@@ -41,6 +41,8 @@ test('backup is listed only after its completion marker is written',async()=>{
   assert.equal(backups.length,1);
   assert.equal(backups[0].name,name);
   assert.equal(backups[0].documents,1);
+  const snapshot=await(await workspace.backups.getDirectoryHandle(name)).getDirectoryHandle('documents');
+  assert.equal(await readDoc(snapshot,'A.md'),'alpha');
 });
 
 test('incomplete backup snapshots are not offered for restore',async()=>{

@@ -87,6 +87,28 @@ test('backup holds the workspace operation lock until the snapshot is verified',
   assert.equal(await readDoc(workspace.documents,'locked.md'),'after backup');
 });
 
+
+test('backup rejects source mutation during copying and excludes the failed snapshot',async()=>{
+  const {workspace}=await fixture();
+  await saveDoc(workspace.documents,'source-race.md','stable before copy');
+  const file=await workspace.documents.getFileHandle('source-race.md');
+  const originalGetFile=file.getFile.bind(file);
+  let calls=0;
+  file.getFile=async()=>{
+    calls++;
+    if(calls===2){
+      const copiedRead=await originalGetFile();
+      file.data='changed by external writer during backup';
+      file.lastModified++;
+      return copiedRead;
+    }
+    return originalGetFile();
+  };
+  await assert.rejects(()=>createBackup(workspace),/Workspace files changed during backup/);
+  assert.equal(await readDoc(workspace.documents,'source-race.md'),'changed by external writer during backup');
+  assert.deepEqual(await listBackups(workspace.backups),[]);
+});
+
 test('backup rejects a copied file that differs even if source content is restored before the final scan',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'race.md','stable original');
@@ -98,36 +120,6 @@ test('backup rejects a copied file that differs even if source content is restor
   assert.deepEqual(await listBackups(workspace.backups),[]);
 });
 
-test('backup and Wave-managed writes share one workspace-wide lock',async()=>{
-  const {workspace}=await fixture();
-  await saveDoc(workspace.documents,'locked.md','before backup');
-  const file=await workspace.documents.getFileHandle('locked.md');
-  const originalGetFile=file.getFile.bind(file);
-  let calls=0,enteredResolve,releaseResolve;
-  const entered=new Promise(resolve=>{enteredResolve=resolve;});
-  const release=new Promise(resolve=>{releaseResolve=resolve;});
-  file.getFile=async()=>{calls++;if(calls===2){enteredResolve();await release;}return originalGetFile();};
-  const backupPromise=createBackup(workspace);
-  await entered;
-  let saveFinished=false;
-  const savePromise=saveDoc(workspace.documents,'locked.md','after backup').then(()=>{saveFinished=true;});
-  await new Promise(resolve=>setTimeout(resolve,10));
-  assert.equal(saveFinished,false,'document mutation must wait until backup verification completes');
-  releaseResolve();
-  const backupName=await backupPromise;
-  await savePromise;
-  const backupDocs=await(await workspace.backups.getDirectoryHandle(backupName)).getDirectoryHandle('documents');
-  assert.equal(await readDoc(backupDocs,'locked.md'),'before backup');
-  assert.equal(await readDoc(workspace.documents,'locked.md'),'after backup');
-});
 
-test('backup rejects a copied file that differs from its before-and-after source snapshots',async()=>{
-  const {workspace}=await fixture();
-  await saveDoc(workspace.documents,'race.md','stable original');
-  const file=await workspace.documents.getFileHandle('race.md');
-  const originalGetFile=file.getFile.bind(file);
-  let calls=0;
-  file.getFile=async()=>{calls++;if(calls===2)return new File(['mutated content'],'race.md',{lastModified:1});return originalGetFile();};
-  await assert.rejects(()=>createBackup(workspace),/copied snapshot differs/);
-  assert.deepEqual(await listBackups(workspace.backups),[]);
-});
+
+
