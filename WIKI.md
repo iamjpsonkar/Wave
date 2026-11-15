@@ -674,3 +674,21 @@ Before finishing:
 - [ ] Report evidence and limitations honestly.
 
 **If two documents appear to conflict:** follow the most recent explicit product-owner instruction for workflow, the product constitution and complete catalogue for scope, `DEV_CONTEXT.md` for current implementation facts, source/tests for actual behavior, and the latest successful CI evidence for verification. Record and resolve material conflicts rather than silently choosing the convenient interpretation.
+
+
+---
+
+## How-to and organization handbook
+
+The `howto/` directory is the canonical home for operational guides and team governance:
+- `howto/README.md` — navigation and authority.
+- `howto/howtodev.md` — contributor workflow.
+- `howto/howtoqa.md` — QA workflow.
+- `howto/organization.md` — leadership and operating model.
+- `howto/teams.md` — team charters and responsibilities.
+- `howto/ownership.md` — code ownership and review boundaries.
+- `howto/workflow.md` — cross-team delivery lifecycle.
+- `howto/engineering-rules.md` — mandatory engineering practices.
+- `howto/hiring-roadmap.md` — staged staffing plan.
+
+The former `etc/` directory has been retired after both existing guides were copied to their new canonical paths and the old files were removed. Update links to point to `howto/`; do not recreate `etc/` as a parallel documentation home.
