@@ -770,3 +770,16 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Updated `etc/history/dev-build.md` with the corrective work and verification caveats.
 - GitHub Actions runs on intermediate SHAs were queued/in progress; they do not verify this final documentation commit. No local tests, typecheck, build or Playwright run were executed in this GitHub-only session. Verify the latest CI workflow for the exact PR head before claiming success or making the PR ready.
 - Remaining #111 scope: inventory-backed feature/layer split without lost assertions, robust Playwright failure artifacts, app diagnostics integration at critical failure boundaries, focused debug controls, and full local/CI verification. PR #115 remains draft.
+
+
+## WAVE-0111 — completed test architecture and diagnostics handoff — 2026-11-15
+
+- PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111` (base `main`).
+- Node suite: all 30 original storage/safety scenarios moved intact into `tests/unit/storage/` and `tests/unit/safety/`; shared in-memory filesystem fixtures are in `tests/helpers/storage-fixtures.js`. Five diagnostics contract tests bring the current Node total to 35.
+- Browser suite: all 48 original Playwright journeys moved intact into `tests/e2e/workspace/`, `tests/e2e/markdown/` and `tests/e2e/editor/`; shared browser workspace setup is in `tests/e2e/fixtures/workspace.ts`.
+- Source inventory reconciliation against the branch base found no missing, extra or duplicate scenario names: 30/30 Node and 48/48 E2E.
+- `npm test` uses Node's built-in recursive discovery. Focused commands are `npm run test:unit:storage`, `npm run test:unit:safety`, and `npm run test:unit:diagnostics`. `./test.sh` remains the canonical full gate used by CI.
+- Playwright retains HTML reports, traces, screenshots and video on failure. CI uploads diagnostic artifacts with 14-day retention. Runtime diagnostics are structured, level-controlled, redacted and bounded to 200 in-memory events; the user can preview/copy/clear a sanitized report in Settings. `?waveDebug=1` opts into debug output. No remote telemetry or persistent diagnostic storage.
+- Full CI run [43700194483](https://github.com/iamjpsonkar/Wave/actions/runs/43700194483) passed on source head `ada90b58b05247358604a644a3e6902edcbed80f`: 35 Node tests, typecheck, production build, 48 Playwright tests and container job all passed. Artifact `wave-playwright-diagnostics` was uploaded (1.5 MB, 14-day retention).
+- This task used GitHub repository operations only; no local checkout or local test execution is claimed. The final docs commit and workflow artifact-path extension also trigger a fresh CI run; verify the latest PR workflow against the final head before merging.
+- PR #115 is open and should be reviewed/merged by the repository owner; do not merge or close issue #111 automatically.
