@@ -1,3 +1,5 @@
+import { expect } from '@playwright/test';
+
 export async function installWorkspaceFixture(page: import('@playwright/test').Page) {
   await page.addInitScript(async () => {
     // A stable OPFS entry lets multiple tabs open the same workspace while
