@@ -1151,3 +1151,8 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - The first run's unit suite reached 41 passes and one expected integration failure due to the findings above. A fresh exact-head run is required after the corrections.
 - README now documents `npm run test:links`.
 
+### Markdown link checker lint follow-up — 2026-11-15
+
+- Exact-head run `43738426652` passed the functional gate: **42 Node tests**, typecheck, production build and **50/50 Playwright scenarios**; container, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy passed.
+- ESLint found one error in the new checker (a redundant initial assignment) and an unused import. Both were removed. The run therefore remains failed overall until fresh exact-head CI confirms lint and the full matrix.
+
