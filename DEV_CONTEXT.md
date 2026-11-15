@@ -867,3 +867,12 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Candidate versions: Vite 8.3.8/plugin-react 6.3.0; React/React DOM 19.3.1 and matching React type packages 19.3.0; TypeScript 6.0.3; react-markdown 10.1.0; lucide-react 1.72.0. TypeScript 7 is deferred under issue #140 because stable typescript-eslint 8.72.2 does not support its peer range yet.
 - License inventory: 161 package entries (MIT 142, Apache-2.0 2, ISC 3, MPL-2.0 12, BSD-3-Clause 1, 0BSD 1). Third-party notices document MPL-2.0 source/notice obligations; this is not legal certification.
 - No local tests/build were run; all verification above is from exact-head CI. DEV_CONTEXT is the final handoff record for this implementation batch.
+
+## 2026-11-15 — Markdown navigation audit handoff (#102)
+
+- Branch: `WAVE-0099-markdown-link-audit`, based on `main` at `222ce3bf818fde45a15f853f87c4cc368242f663`.
+- Corrected stale links in README, WIKI, DEV_CONTEXT, `howto/howtodev.md` and `etc/engineering/CONTRIBUTING.md` to match the current repository tree.
+- Added `scripts/check-markdown-links.mjs`, `tests/unit/docs/markdown-links.test.js`, and `npm run test:links`. The checker covers inline local Markdown links, exact-case path segments, URL decoding, relative/root paths, and skips code examples and external URLs.
+- The integration test checks all maintained Markdown files in the checkout. Reference-style links and heading-anchor validity are not checked automatically.
+- Verification pending on the exact PR head. Do not claim the checker passes until GitHub Actions reports success.
+
