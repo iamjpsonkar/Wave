@@ -238,6 +238,8 @@ test('two tabs editing the same workspace do not silently overwrite each other',
   await expect.poll(readPersistedAndDraftContent, { timeout: 12000 }).toContain('Change from second tab');
 });
 test('recovery prompt identifies a draft created in another tab and preserves its record when declined', async ({ page, context }) => {
+  const recoveryLogs: string[] = [];
+  page.on('console', message => { if (message.text().includes('[Wave recovery]')) recoveryLogs.push(message.text()); });
   await openWorkspace(page);
   const firstEditor = await createPage(page, 'Cross-tab Recovery');
   // Freeze only the source tab's autosave timer after setup. Its recovery
@@ -304,12 +306,18 @@ test('recovery prompt identifies a draft created in another tab and preserves it
     sameWorkspace: true
   });
 
+  const secondRecoveryLogs: string[] = [];
+  second.on('console', message => { if (message.text().includes('[Wave recovery]')) secondRecoveryLogs.push(message.text()); });
   let promptMessage = '';
-  second.once('dialog', async dialog => {
+  const dialogPromise = second.waitForEvent('dialog', { timeout: 5000 }).then(async dialog => {
     promptMessage = dialog.message();
     await dialog.dismiss();
   });
   await second.getByRole('button', { name: /Cross-tab Recovery/ }).click();
+  await dialogPromise.catch(error => {
+    console.error('[Cross-tab recovery diagnostics]', JSON.stringify({ sourceJournal, secondJournal, sourceLogs: recoveryLogs, secondLogs: secondRecoveryLogs, dialogError: String(error) }, null, 2));
+    throw error;
+  });
   expect(promptMessage).toContain('another browser tab');
   await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\n\nBrowser regression content');
 
