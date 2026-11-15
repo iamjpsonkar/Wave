@@ -72,8 +72,9 @@ export default function MarkdownBlockEditor({ content, onChange }: { content: st
   function applyBlockColor(block: Block, color: string) {
     const hex = color.toUpperCase();
     const lines = block.source.split('\n');
-    if (/^\s*>\s*\[!COLOR=#[0-9a-f]{6}\]/i.test(lines[0])) {
-      lines[0] = lines[0].replace(/\[!COLOR=#[0-9a-f]{6}\]/i, '[!COLOR=' + hex + ']');
+    const existing = lines[0].match(/^\s*>\s*\[!COLOR=#[0-9a-f]{6}\]\s*/i);
+    if (existing) {
+      lines[0] = '> [!COLOR=' + hex + ']';
     } else {
       const quoted = lines.map(line => '> ' + line);
       quoted.unshift('> [!COLOR=' + hex + ']');
