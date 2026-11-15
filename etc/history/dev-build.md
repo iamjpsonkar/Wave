@@ -1144,3 +1144,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - CI is required to reveal any remaining broken links outside the initial manual audit. Reference-style navigation and heading-anchor correctness still need manual review.
 - No application runtime behavior changed.
 
+### Markdown link checker CI refinement — 2026-11-15
+
+- First exact-head CI run `43738234294` executed the checker and reported stale links in active Wiki, project indexes, feature/priority/product docs, QA bug register and QA how-to. Those current navigation references were repaired against the actual tree.
+- The initial scan also found historical path references embedded in dated `etc/history/` development snapshots. These are preserved records of repository state at the time and are now excluded from automated link enforcement; current maintained navigation and tracker documents remain checked.
+- The first run's unit suite reached 41 passes and one expected integration failure due to the findings above. A fresh exact-head run is required after the corrections.
+- README now documents `npm run test:links`.
+
