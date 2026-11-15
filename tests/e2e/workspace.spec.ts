@@ -182,10 +182,10 @@ test('an external file edit is preserved and the editor reports a save conflict'
     const documents = await wave.getDirectoryHandle('documents');
     const file = await documents.getFileHandle('untitled.md');
     const writable = await file.createWritable();
-    await writable.write('# External Conflict\\n\\nChanged by another filesystem writer');
+    await writable.write('# External Conflict\n\nChanged by another filesystem writer');
     await writable.close();
   });
-  await editor.fill('# External Conflict\\n\\nMy local draft must not overwrite the external edit');
+  await editor.fill('# External Conflict\n\nMy local draft must not overwrite the external edit');
   await expect(page.locator('.app-error')).toContainText('changed outside Wave', { timeout: 8000 });
   const diskContent = await page.evaluate(async () => {
     const root = (window as any).__waveTestRoot;
@@ -1534,7 +1534,7 @@ test('block editor applies and updates a block background without leaving block 
   await openWorkspace(page);
   await createPage(page, 'Block Color Editing');
   const editor = page.locator('.editor textarea');
-  await editor.fill('# Colorable heading\\n\\nA paragraph to color.');
+  await editor.fill('# Colorable heading\n\nA paragraph to color.');
   await page.getByRole('button', { name: 'Block editing' }).click();
   const blocks = page.getByRole('region', { name: 'Markdown block editor' });
   await blocks.getByRole('textbox', { name: 'Edit paragraph block 2' }).focus();
@@ -1572,7 +1572,7 @@ test('Wave Complete Feature Test template is available and previews its feature 
   await expect(preview.getByRole('heading', { name: 'Wave Complete Feature Test' })).toBeVisible();
   await expect(preview.locator('span[style*="color: rgb(54, 95, 186)"]')).toContainText('blue');
   await expect(preview.locator('blockquote.markdown-color-block')).toContainText('soft green background');
-  await expect(preview.locator('svg[role="img"]')).toBeVisible();
+  await expect(preview.locator('svg[aria-label="Mermaid flowchart"]')).toBeVisible();
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await expect(editor).toHaveValue(markdown);
 });
