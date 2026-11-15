@@ -551,3 +551,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Fixed the failure handler to capture both tabs' logs and enabled `?waveDebug=1` for the cross-tab regression to retain the journal ownership/locking evidence in CI.
 - Root timing issue in the test: `page.clock.install()` alone installs the controllable clock but does not pause time. The test now explicitly calls `page.clock.pauseAt(new Date())` before creating the unsaved draft, preventing the 600 ms autosave timer from committing the source document and clearing its journal before the second tab inspects it.
 - Follow-up full CI is required on the final documentation commit. The nested-breadcrumb timeout remains separately tracked until a fresh run determines whether it reproduces after the recovery test is deterministic.
+
+## 2026-11-15 — PR #115 final diagnostics review follow-up
+
+- Addressed the two remaining findings from review [5910312606](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910312606).
+- Operation IDs are now created at the user-action boundary and threaded through `flush`, `persistDocument`, nested copy synchronization, Trash refresh, and failure reporting for document create/template, duplicate, Trash move, backup create, workspace activation, document open, and reload workflows. Independent user actions retain independent IDs.
+- Reworked the recovery diagnostics E2E scenario: a normal-mode document open must emit no recovery debug trace; the same journey with `?waveDebug=1` must emit structured debug events, and all stages from that open must share one operation ID.
+- Source and test changes are committed to `WAVE-0111`. Exact-head CI has not yet been run for this follow-up; verification remains pending.
