@@ -367,3 +367,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Fixed application defects discovered during triage: empty task-list item continuation, block-color newline parsing/serialization, and editor selection preservation for color actions.
 - Branch `WAVE-0001`, PR [#101](https://github.com/iamjpsonkar/Wave/pull/101). Remediation CI [run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072) was still running when this entry was written. Do not claim pass until its final result is checked.
 - No local execution was available; use CI logs to identify and fix remaining failures. Keep #1 open for native picker, external-process race, accessibility and lifecycle acceptance evidence.
+
+
+## 2026-11-15 — second WAVE-0001 CI triage pass
+
+- Rechecked latest completed workflow [43683760674](https://github.com/iamjpsonkar/Wave/actions/runs/43683760674): Playwright 39 passed / 9 failed; Node tests, typecheck, production build and container job passed.
+- Remaining categories: settings dialog Escape handling; icon class expectation; strict locators for code/diagram/template/color spans; color-toolbar event/state application; block-callout classification.
+- Follow-up changes pushed: allow Escape to close settings, align icon expectation with rendered Lucide class, scope template search and narrow code/diagram/color selectors, route color edits through controlled content change, and correct block-color callout classifier. Verify current PR head's next CI run before marking complete.
