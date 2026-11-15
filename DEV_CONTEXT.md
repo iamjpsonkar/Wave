@@ -4,7 +4,7 @@
 > Repository: https://github.com/iamjpsonkar/Wave
 > Default branch: `main`
 > Last reviewed: 2026-11-15
-> Baseline commit/tree observed: `cc0c234af4bc6038bb27c0b6c48d581b671d5ed2` (tree `0e0cdb3e576b47348eda1b43824f21179b7419bb`; refresh HEAD before every task)
+> Latest audited baseline: `d831bf04ac458a888206de4d492830f55958b022` (refresh HEAD before every task)
 
 ## 1. Product contract
 
@@ -596,3 +596,12 @@ This remains historical CI evidence and does not verify later commits. The curre
 - The full product blueprint, priority plan, development logs, open/fixed bug registers, Markdown compatibility checklist and diagram research remain separate.
 - Detailed migration record: [dev-build.md](./dev-build.md), entry dated 2026-11-15.
 - Verification: source/destination content comparison and tracker-ID checks completed before source deletion. No application code changed; no local tests/build or CI run was performed. Refresh `main` and CI before the next implementation task.
+
+
+## 9. Latest repository-wide audit — 2026-11-15
+
+- Audited current main baseline `d831bf04ac458a888206de4d492830f55958b022`.
+- New findings are tracked in [#99 — Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99) and [#100 — duplicate storage regression tests](https://github.com/iamjpsonkar/Wave/issues/100).
+- Existing open defect, UI, Markdown, export and roadmap tickets were checked before creation; do not open duplicates for the same scope.
+- Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [trash/github-issues.md](./trash/github-issues.md).
+- No source code changed and no tests/build/CI execution is claimed for this audit.
