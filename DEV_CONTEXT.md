@@ -833,3 +833,12 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Aligned all reusable workflows and the container job with the verified immutable GitHub Actions pins already used by the primary CI: checkout v7.0.1, setup-node v7.1.0 and upload-artifact v7.0.2.
 - No npm package versions or lockfiles changed in this batch. The Vite/plugin-react, React/type-definition and independent dependency upgrades remain separate compatibility batches under #137; they require regenerated lockfiles and full test verification.
 - Source review completed; local tests/build were not run because this environment cannot resolve github.com. See `etc/history/dev-build.md` and the PR for exact-head CI results.
+
+## 2026-11-15 — Coordinated npm dependency upgrade handoff
+
+- Branch: `WAVE-0137-npm-upgrades`, issue #137.
+- Candidate stack: Vite 8.3.8 + plugin-react 6.3.0; React/React DOM 19.3.1 + both React type packages 19.3.0; TypeScript 7.0.2; react-markdown 10.1.0; lucide-react 1.72.0.
+- The current Vite config uses `react()` without Babel-specific options, so the plugin-react 6 Babel removal does not require a config change by source inspection. CI Node 22 satisfies Vite 8's minimum 22.12 requirement on the hosted runner.
+- Combined the npm-generated lockfile updates from the closed Dependabot branches and regenerated the exact dependency license inventory from that candidate lock data. Fresh `npm ci` and the full CI matrix are still required; do not treat the lock merge as validated until exact-head workflows pass.
+- License audit snapshot: 181 package entries; includes 12 MPL-2.0 Lightning CSS packages and 22 Apache-2.0 entries (TypeScript 7 platform packages and other transitive packages). Updated checker allowlist and third-party notice disclosures. This is not legal certification.
+- Local tests/build were not run because this environment cannot resolve github.com. See `etc/history/dev-build.md` and the PR for CI evidence.

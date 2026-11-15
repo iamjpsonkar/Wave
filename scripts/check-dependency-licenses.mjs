@@ -11,7 +11,7 @@ const LOCK_PATH = new URL('../package-lock.json', import.meta.url);
 const INVENTORY_PATH = new URL('../etc/legal/dependency-license-inventory.json', import.meta.url);
 const KNOWN_LICENSES = new Set([
   '0BSD', 'Apache-2.0', 'Artistic-2.0', 'BlueOak-1.0.0', 'BSD-2-Clause',
-  'BSD-3-Clause', 'CC-BY-4.0', 'CC0-1.0', 'ISC', 'MIT', 'OFL-1.1',
+  'BSD-3-Clause', 'CC-BY-4.0', 'CC0-1.0', 'ISC', 'MIT', 'MPL-2.0', 'OFL-1.1',
   'Unlicense', 'Zlib'
 ]);
 
