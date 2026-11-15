@@ -1,10 +1,57 @@
 import test from 'node:test';
-import assert from '
+import assert from 'node:assert/strict';
+import {
+  addAsset, backUpAndResetWorkspaceSettings, createBackup, createDoc, createFolder, createUniqueDirectory, listBackups,
+  listTrashDetailed, openWorkspace, readDoc, readWorkspaceSettings, restoreBackupToNewWorkspace, restoreTrashItem, moveDocToTrash, listDocs, searchDocs,
+  saveDoc, saveDocIfUnchanged, slug
+} from '../src/storage.ts';
+import { conflictCopyPath, enqueueWorkspaceTask, flushUntilStable, isWorkspaceGenerationCurrent, newestDraft, relativeAssetPath } from '../src/safety.ts';
+
+class MemoryFileHandle {
+  constructor(name, data='') { this.kind='file'; this.name=name; this.data=data; this.lastModified=Date.now(); }
+  async getFile() {
+    const data=this.data, name=this.name, lastModified=this.lastModified;
+    const file=new File([data],name,{lastModified});
+    return file;
+  }
+  async createWritable() {
+    let pending='';
+    return {
+      write:async value=>{pending=typeof value==='string'?value:await value.text();},
+      close:async()=>{this.data=pending;this.lastModified=Date.now();},
+      abort:async()=>{}
+    };
+  }
+}
+class MemoryDirectoryHandle {
+  constructor(name='root'){this.kind='directory';this.name=name;this.entriesMap=new Map();}
+  async getFileHandle(name,options={}) {
+    const current=this.entriesMap.get(name);
+    if(current&&current.kind==='directory')throw new DOMException('Type mismatch','TypeMismatchError');
+    if(!current&&!options.create)throw new DOMException('Missing file','NotFoundError');
+    if(!current){const created=new MemoryFileHandle(name);this.entriesMap.set(name,created);return created;}
+    return current;
+  }
+  async getDirectoryHandle(name,options={}) {
+    const current=this.entriesMap.get(name);
+    if(current&&current.kind!=='directory')throw new DOMException('Type mismatch','TypeMismatchError');
+    if(!current&&!options.create)throw new DOMException('Missing directory','NotFoundError');
+    if(!current){const created=new MemoryDirectoryHandle(name);this.entriesMap.set(name,created);return created;}
+    return current;
+  }
+  async removeEntry(name){if(!this.entriesMap.has(name))throw new DOMException('Missing entry','NotFoundError');this.entriesMap.delete(name);}
+  async *entries(){for(const item of this.entriesMap.entries())yield item;}
+}
+async function fixture(){
+  const root=new MemoryDirectoryHandle('Test Workspace');
+  const workspace=await openWorkspace(root);
+  return {root,workspace};
+}
+
 test('slug produces a safe Markdown filename',()=>{
   assert.equal(slug('Project Plan'),'project-plan.md');
   assert.equal(slug('!!!'),'untitled.md');
 });
-
 test('createDoc never overwrites a page with the same requested name',async()=>{
   const {workspace}=await fixture();
   const first=await createDoc(workspace.documents,'Notes.md','first');
@@ -14,7 +61,6 @@ test('createDoc never overwrites a page with the same requested name',async()=>{
   assert.equal(await readDoc(workspace.documents,first),'first');
   assert.equal(await readDoc(workspace.documents,second),'second');
 });
-
 test('Trash restore chooses an unused path and preserves existing files',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'Notes.md','new page');
@@ -27,7 +73,6 @@ test('Trash restore chooses an unused path and preserves existing files',async()
   assert.equal(await readDoc(workspace.documents,'Notes.md'),'new page');
   assert.equal(await readDoc(workspace.documents,restored),'trashed page');
 });
-
 test('malformed Trash metadata does not prevent listing valid entries',async()=>{
   const {workspace}=await fixture();
   const id='aabbccdd-1122-3344-5566-77889900aabb';
@@ -39,7 +84,6 @@ test('malformed Trash metadata does not prevent listing valid entries',async()=>
   assert.ok(listing.issues.some(issue=>issue.includes('broken.json')));
   assert.ok(listing.issues.some(issue=>issue.includes('orphan.md')));
 });
-
 test('backup is listed only after its completion marker is written',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'A.md','alpha');
@@ -49,7 +93,6 @@ test('backup is listed only after its completion marker is written',async()=>{
   assert.equal(backups[0].name,name);
   assert.equal(backups[0].documents,1);
 });
-
 test('saveDocIfUnchanged refuses to overwrite external edits',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'Notes.md','original');
@@ -57,13 +100,11 @@ test('saveDocIfUnchanged refuses to overwrite external edits',async()=>{
   await assert.rejects(()=>saveDocIfUnchanged(workspace.documents,'Notes.md','my draft','original'),/changed outside Wave/);
   assert.equal(await readDoc(workspace.documents,'Notes.md'),'changed externally');
 });
-
 test('createFolder returns full nested path and rejects duplicate names',async()=>{
   const {workspace}=await fixture();
   assert.equal(await createFolder(workspace.documents,'Projects/Backend'),'Projects/Backend');
   await assert.rejects(()=>createFolder(workspace.documents,'Projects/Backend'),/already exists/);
 });
-
 test('asset lookup permission errors are not treated as free filenames',async()=>{
   const denied=new MemoryDirectoryHandle('assets');
   denied.getFileHandle=async()=>{throw new DOMException('Denied','NotAllowedError');};
@@ -80,7 +121,6 @@ test('concurrent page creation and case-only names never overwrite',async()=>{
   assert.equal(await readDoc(workspace.documents,one),'first');
   assert.equal(await readDoc(workspace.documents,two),'second');
 });
-
 test('concurrent same-name asset uploads receive distinct filenames',async()=>{
   const {workspace}=await fixture();
   const [one,two]=await Promise.all([
@@ -91,7 +131,6 @@ test('concurrent same-name asset uploads receive distinct filenames',async()=>{
   assert.equal(await(await(await workspace.assets.getFileHandle(one)).getFile()).text(),'one');
   assert.equal(await(await(await workspace.assets.getFileHandle(two)).getFile()).text(),'two');
 });
-
 test('incomplete backup snapshots are not offered for restore',async()=>{
   const {workspace}=await fixture();
   workspace.assets.entries=async function*(){throw new Error('simulated read failure');};
@@ -112,7 +151,6 @@ test('Trash inspection completes an interrupted verified move safely',async()=>{
   await assert.rejects(()=>readDoc(workspace.documents,'Interrupted.md'),/Missing file/);
   await assert.rejects(()=>workspace.trash.getFileHandle(id+'.op.json'),/Missing file/);
 });
-
 test('Trash inspection rolls back an incomplete copy when original remains',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'Safe.md','original safe');
@@ -136,6 +174,7 @@ test('corrupt settings are preserved before a safe reset',async()=>{
   assert.deepEqual(settings.favorites,[]);
 });
 
+
 test('concurrent backups reserve distinct destination folders',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'A.md','alpha');
@@ -143,7 +182,6 @@ test('concurrent backups reserve distinct destination folders',async()=>{
   assert.notEqual(first,second);
   assert.equal((await listBackups(workspace.backups)).length,2);
 });
-
 test('unique directory allocation never reuses an existing file or folder',async()=>{
   const {root}=await fixture();
   const first=await createUniqueDirectory(root,'restore-target','test-restore-allocation');
@@ -152,7 +190,6 @@ test('unique directory allocation never reuses an existing file or folder',async
   assert.equal(second.name,'restore-target-2');
   assert.equal((await root.getDirectoryHandle(first.name)).name,'restore-target');
 });
-
 test('backup restore skips a pre-existing destination and preserves it',async()=>{
   const {root,workspace}=await fixture();
   await saveDoc(workspace.documents,'A.md','alpha');
@@ -175,7 +212,6 @@ test('backup restore skips a pre-existing destination and preserves it',async()=
     assert.equal(await readDoc(await restoredWave.getDirectoryHandle('documents'),'A.md'),'alpha');
   }finally{globalThis.Date=OriginalDate;}
 });
-
 test('failed backup restore is marked and cannot be opened as a workspace',async()=>{
   const {root,workspace}=await fixture();
   await saveDoc(workspace.documents,'A.md','alpha');
@@ -192,7 +228,6 @@ test('failed backup restore is marked and cannot be opened as a workspace',async
   assert.equal(marker.status,'failed');
   await assert.rejects(()=>openWorkspace(targets[0].handle),/incomplete backup restore/);
 });
-
 test('concurrent restore of one Trash item creates only one page',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'Notes.md','restore exactly once');
@@ -208,7 +243,6 @@ test('concurrent restore of one Trash item creates only one page',async()=>{
   assert.equal((await listDocs(workspace.documents)).length,1);
   assert.equal(await readDoc(workspace.documents,'Notes.md'),'restore exactly once');
 });
-
 test('document titles, Trash titles and search snippets parse real newlines',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'actual-name.md','# Human Title\n\nbody text with phrase');
@@ -221,6 +255,47 @@ test('document titles, Trash titles and search snippets parse real newlines',asy
   const trash=await listTrashDetailed(workspace.trash);
   assert.equal(trash.items[0].title,'Human Title');
 });
+test('conflict-copy path strips only a Markdown extension',()=>{
+  assert.equal(conflictCopyPath('folder/Notes.md'),'folder/Notes-conflict-copy.md');
+  assert.equal(conflictCopyPath('folder/Notes.MD'),'folder/Notes-conflict-copy.md');
+});
+test('workspace generation guards reject stale asynchronous completions',()=>{
+  const workspaceA={name:'A'},workspaceB={name:'B'};
+  assert.equal(isWorkspaceGenerationCurrent(2,2,workspaceA,workspaceA),true);
+  assert.equal(isWorkspaceGenerationCurrent(1,2,workspaceA,workspaceB),false);
+  assert.equal(isWorkspaceGenerationCurrent(2,2,workspaceA,workspaceB),false);
+});
+test('draft journal chooses the newest duplicate recovery record',()=>{
+  const records=[{id:1,updatedAt:100,content:'old'},{id:3,updatedAt:200,content:'new'},{id:2,updatedAt:200,content:'tie'}];
+  assert.equal(newestDraft(records).content,'new');
+});
+test('attachment links resolve from root and nested document folders',()=>{
+  assert.equal(relativeAssetPath('Notes.md','image.png'),'../assets/image.png');
+  assert.equal(relativeAssetPath('Projects/Notes.md','image.png'),'../../assets/image.png');
+  assert.equal(relativeAssetPath('Projects/Backend/Notes.md','image.png'),'../../../assets/image.png');
+});
+
+test('revision flush persists edits typed while an earlier save is pending',async()=>{
+  let revision=1,content='first',writes=0;
+  const saved=[];
+  await flushUntilStable(()=>({value:content,revision}),async(value)=>{writes++;saved.push(value);if(writes===1){content='typed during save';revision++;}},()=>true);
+  assert.deepEqual(saved,['first','typed during save']);
+  assert.equal(writes,2);
+});
+test('workspace task queues serialize each workspace independently',async()=>{
+  const queues=new WeakMap(),workspaceA={},workspaceB={},events=[];
+  let release;
+  const blocker=new Promise(resolve=>{release=resolve;});
+  const first=enqueueWorkspaceTask(queues,workspaceA,async()=>{events.push('a1-start');await blocker;events.push('a1-end');});
+  const second=enqueueWorkspaceTask(queues,workspaceA,async()=>{events.push('a2');});
+  const other=enqueueWorkspaceTask(queues,workspaceB,async()=>{events.push('b1');});
+  await other;
+  assert.deepEqual(events,['a1-start','b1']);
+  release();
+  await Promise.all([first,second]);
+  assert.deepEqual(events,['a1-start','b1','a1-end','a2']);
+});
+
 
 test('backup holds the workspace operation lock until the snapshot is verified',async()=>{
   const {workspace}=await fixture();
@@ -244,7 +319,6 @@ test('backup holds the workspace operation lock until the snapshot is verified',
   assert.equal(await readDoc(backupDocs,'locked.md'),'before backup');
   assert.equal(await readDoc(workspace.documents,'locked.md'),'after backup');
 });
-
 test('backup rejects a copied file that differs even if source content is restored before the final scan',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'race.md','stable original');
@@ -255,6 +329,7 @@ test('backup rejects a copied file that differs even if source content is restor
   await assert.rejects(()=>createBackup(workspace),/copied snapshot differs/);
   assert.deepEqual(await listBackups(workspace.backups),[]);
 });
+
 
 test('backup and Wave-managed writes share one workspace-wide lock',async()=>{
   const {workspace}=await fixture();
@@ -278,7 +353,6 @@ test('backup and Wave-managed writes share one workspace-wide lock',async()=>{
   assert.equal(await readDoc(backupDocs,'locked.md'),'before backup');
   assert.equal(await readDoc(workspace.documents,'locked.md'),'after backup');
 });
-
 test('backup rejects a copied file that differs from its before-and-after source snapshots',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'race.md','stable original');
