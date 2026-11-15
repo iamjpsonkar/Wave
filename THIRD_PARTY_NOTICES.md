@@ -3,17 +3,17 @@
 This file records third-party software and other externally sourced material used by Wave. It is supplementary to the upstream license files and package records; it does not replace those terms or relicense any component. Wave's own source is licensed under the MIT License in [LICENSE](./LICENSE).
 
 Historical pre-upgrade audit baseline: 2026-11-15 (commit `7e895f26b05288dc8edfebcf03e14efe954950f5`, 221 resolved package entries).  
-Current proposed dependency snapshot: 2026-11-15, lockfileVersion 3, 181 resolved package entries. See the current upgrade audit section below.
+Current proposed dependency snapshot: 2026-11-15, lockfileVersion 3, 161 resolved package entries. See the current upgrade audit section below.
 
 ## Dependency inventory
 
-The committed exact-version inventory is [`etc/legal/dependency-license-inventory.json`](./etc/legal/dependency-license-inventory.json). It records all 181 package entries, their exact versions, declared licenses, resolved npm tarball URLs, integrity digests and npm's dev-only marker, alongside the root production/development dependency declarations. The root `package-lock.json` remains the canonical source of resolution data. The audit script `scripts/check-dependency-licenses.mjs` compares the committed inventory against the lockfile and detects missing license metadata, unrecognized SPDX identifiers, and stale inventory snapshots. Use `npm run license:audit:update` only after reviewing the dependency changes and upstream license/NOTICE obligations, then inspect and commit the generated JSON diff. The script is a metadata quality check only; it does not determine legal compatibility, validate package license-file contents, or replace human review.
+The committed exact-version inventory is [`etc/legal/dependency-license-inventory.json`](./etc/legal/dependency-license-inventory.json). It records all 161 package entries, their exact versions, declared licenses, resolved npm tarball URLs, integrity digests and npm's dev-only marker, alongside the root production/development dependency declarations. The root `package-lock.json` remains the canonical source of resolution data. The audit script `scripts/check-dependency-licenses.mjs` compares the committed inventory against the lockfile and detects missing license metadata, unrecognized SPDX identifiers, and stale inventory snapshots. Use `npm run license:audit:update` only after reviewing the dependency changes and upstream license/NOTICE obligations, then inspect and commit the generated JSON diff. The script is a metadata quality check only; it does not determine legal compatibility, validate package license-file contents, or replace human review.
 
 | Declared license | Resolved packages | Treatment |
 |---|---:|---|
 | MIT | 142 | Permissive notice obligations remain with each upstream package; retain upstream package notices when redistributing their code |
 | ISC | 3 | Permissive license; retain copyright and permission notice |
-| Apache-2.0 | 22 | Retain license and applicable NOTICE/attribution material; review patent and modification conditions in the upstream package |
+| Apache-2.0 | 2 | Retain license and applicable NOTICE/attribution material; review patent and modification conditions in the upstream package |
 | BSD-3-Clause | 1 | Retain copyright, conditions and disclaimer; respect non-endorsement clause |
 | MPL-2.0 | 12 | File-level copyleft; preserve notices and provide recipients reasonable access to corresponding source when distributing executable form |
 | 0BSD | 1 | Permissive; retain any upstream notices supplied with the package |
@@ -22,12 +22,12 @@ The committed exact-version inventory is [`etc/legal/dependency-license-inventor
 ### Packages needing specific notice handling
 
 - `baseline-browser-mapping@2.11.37` — Apache-2.0 in the historical 221-entry baseline; it is removed from the proposed lockfile after the React plugin toolchain change. Reassess if reintroduced.
-- `typescript@7.0.2` — Apache-2.0 in the proposed lockfile. Its 20 optional platform packages under `@typescript/typescript-*` also declare Apache-2.0. Preserve applicable upstream license/NOTICE material if these development tools are redistributed; the compiler is not part of the application runtime bundle.
+- `typescript@6.0.3` — Apache-2.0 in the proposed lockfile. Preserve the upstream license and applicable NOTICE material if the compiler is redistributed; it is a development tool and is not part of the application runtime bundle.
 - `caniuse-lite@1.0.30001826` — `CC-BY-4.0`, from the `browserslist/caniuse-lite` project and npm registry package. This was the only dependency outside the MIT/ISC/Apache-2.0/BSD-3-Clause set in the historical lock snapshot; it is absent from the proposed lockfile. Attribution 4.0 requires appropriate credit, a license link and indication of changes where applicable. The package's upstream LICENSE file is the authoritative legal text. This is a historical pre-upgrade entry and is not present in the proposed 181-package lockfile. See [upstream repository](https://github.com/browserslist/caniuse-lite) and [upstream LICENSE](https://github.com/browserslist/caniuse-lite/blob/main/LICENSE).
 - `lucide-react@1.72.0` — declared `ISC` in the lockfile. The Lucide project's React package documentation identifies the ISC license; the upstream project license file is authoritative. See [Lucide React](https://github.com/lucide-icons/lucide/tree/main/packages/lucide-react) and [Lucide license](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
 - Apache-2.0 entries in the lockfile must be distributed with required upstream license and NOTICE text, when applicable. Review the exact installed package files before creating a release artifact; the lockfile expression alone does not prove whether an upstream NOTICE file applies.
 
-All 181 package entries in the proposed lock snapshot have a non-empty license field. The three ISC package entries are individually named and versioned in the committed JSON inventory. The audit should be rerun whenever the lockfile changes. Package count and license distribution are a dated snapshot, not a permanent assertion.
+All 161 package entries in the proposed lock snapshot have a non-empty license field. The three ISC package entries are individually named and versioned in the committed JSON inventory. The audit should be rerun whenever the lockfile changes. Package count and license distribution are a dated snapshot, not a permanent assertion.
 
 ## Fonts and other non-package assets
 
@@ -64,7 +64,7 @@ The npm lockfile metadata check is passing, but it is not a substitute for inspe
 
 ### Audit disposition (do not overstate)
 
-The repository/lockfile metadata inventory is complete for the proposed snapshot (181 entries); it is not a package-file-content audit. Public source records above corroborate license identifiers and the caniuse attribution instruction, but the exact npm tarballs were not unpacked in this review environment. In particular, exact package-level NOTICE inclusion for the Apache-2.0 dependencies and complete license-file inspection for all 181 packages in the proposed lockfile remain release-review work. Do not report this issue as legally certified or all acceptance items complete until the actual locked tarballs and any applicable distribution artifact are inspected and required notices are reproduced.
+The repository/lockfile metadata inventory is complete for the proposed snapshot (181 entries); it is not a package-file-content audit. Public source records above corroborate license identifiers and the caniuse attribution instruction, but the exact npm tarballs were not unpacked in this review environment. In particular, exact package-level NOTICE inclusion for the Apache-2.0 dependencies and complete license-file inspection for all 161 packages in the proposed lockfile remain release-review work. Do not report this issue as legally certified or all acceptance items complete until the actual locked tarballs and any applicable distribution artifact are inspected and required notices are reproduced.
 
 Runtime Google Fonts remain remotely requested and unpinned; no font binaries are checked in. Pinning or self-hosting them is a separate product/distribution decision, not silently performed by this audit.
 
@@ -97,7 +97,7 @@ The coordinated candidate dependency set updates React and React DOM together wi
 | BSD-3-Clause | 1 |
 | 0BSD | 1 |
 
-All 181 entries have non-empty license metadata and the checker allowlist includes each observed SPDX identifier. This is a metadata review only; it does not constitute legal certification or package-tarball inspection.
+All 161 entries have non-empty license metadata and the checker allowlist includes each observed SPDX identifier. This is a metadata review only; it does not constitute legal certification or package-tarball inspection.
 
 - `lightningcss@1.33.0` and its 11 platform packages declare MPL-2.0 and enter through the Vite 8 toolchain. MPL-2.0 is a file-level copyleft license. Sections 3.1–3.4 address source-form distribution, executable-form source availability and preservation of notices. See the [versioned Lightning CSS package](https://www.npmjs.com/package/lightningcss/v/1.33.0), [upstream source](https://github.com/parcel-bundler/lightningcss/tree/v1.33.0) and [official MPL-2.0 text](https://www.mozilla.org/en-US/MPL/2.0/). Before shipping an artifact containing this code, verify whether/how the toolchain package is included and provide the corresponding source and license notices through a reasonable distribution mechanism.
 - `typescript@7.0.2` and its 20 `@typescript/typescript-*` platform packages declare Apache-2.0. Preserve the upstream license and applicable NOTICE material if redistributed. See the [versioned TypeScript package](https://www.npmjs.com/package/typescript/v/7.0.2).
@@ -105,7 +105,7 @@ All 181 entries have non-empty license metadata and the checker allowlist includ
 - `lucide-react@1.72.0` declares ISC. Keep the current Lucide attribution and re-check the exact package notice before release.
 - The historical `caniuse-lite@1.0.30001826` CC-BY-4.0 entry and `baseline-browser-mapping@2.11.37` entry are absent from the proposed lockfile; their historical audit records above are retained for traceability, not represented as current dependencies.
 
-The candidate inventory was assembled from the exact npm-generated package metadata in the seven closed Dependabot PR lockfiles, each based on the same package-lock baseline. The resulting combined lockfile must pass a fresh `npm ci`, typecheck, build, unit/E2E tests and security workflows on the PR head before acceptance. If npm rejects the combined lockfile, regenerate it with npm in a network-enabled environment; do not hand-edit resolved versions or integrity hashes.
+The candidate inventory was assembled from the exact npm-generated package metadata in the seven closed Dependabot PR lockfiles, each based on the same package-lock baseline. TypeScript was changed to stable 6.0.3 because the pinned stable typescript-eslint 8.72.2 toolchain declares a TypeScript peer range below 6.1 and rejects TypeScript 7. The TypeScript 7 upgrade is deferred until stable lint-tool support is published. The resulting combined lockfile must pass a fresh `npm ci`, typecheck, build, unit/E2E tests and security workflows on the PR head before acceptance. If npm rejects the combined lockfile, regenerate it with npm in a network-enabled environment; do not hand-edit resolved versions or integrity hashes.
 
 ## Maintenance procedure
 

@@ -1118,3 +1118,9 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Exact PR #139 run [43734105883](https://github.com/iamjpsonkar/Wave/actions/runs/43734105883): `npm ci`, license audit, all 39 Node tests, TypeScript 7 typecheck and production build passed. Playwright passed 49 of 50 scenarios.
 - The only failure was the toolbar icon assertion expecting the old `lucide-file-code2` class. Lucide 1.72 maps the existing `FileCode2` export to an SVG with `lucide-file-code-corner lucide-file-code-2`; the UI label and behavior remained correct.
 - Updated the regression assertion to accept the new icon class while still checking that the code-block icon is distinct from the inline-code icon. Fresh exact-head E2E and downstream CI are required.
+
+### TypeScript 7 toolchain compatibility decision — 2026-11-15
+
+- The full PR #139 workflow reached the code-quality job after the functional suite passed. ESLint tooling installation failed because pinned stable `typescript-eslint@8.72.2` declares peer `typescript >=4.8.4 <6.1.0` and rejects TypeScript 7.0.2.
+- Did not bypass peer validation or install a canary. Changed the candidate compiler to stable TypeScript 6.0.3, which is inside the supported peer range and is the TypeScript transition release before the native TypeScript 7 compiler. Updated the lock entry using the exact package metadata and integrity from npm-generated TypeScript 6.0.3 lockfiles; removed the TypeScript 7 platform packages.
+- TypeScript 7 is deferred until the stable typescript-eslint toolchain explicitly supports it. The current PR must re-run npm ci, license audit, typecheck, build, all 50 E2E tests and the full CI matrix on the new head.

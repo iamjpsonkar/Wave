@@ -853,3 +853,9 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 
 - PR #139 run [43734105883](https://github.com/iamjpsonkar/Wave/actions/runs/43734105883) passed npm ci, license audit, 39 Node tests, TypeScript 7 typecheck and production build. Playwright passed 49/50; one assertion expected the old Lucide v0 class `lucide-file-code2`, while v1.72 emits `lucide-file-code-corner lucide-file-code-2` for the same `FileCode2` export.
 - Updated `tests/e2e/editor/editor.spec.ts` to match the current v1 class while preserving the distinct-icon assertion. New exact-head CI is required; no full pass is claimed.
+
+## 2026-11-15 — TypeScript 7 deferral / stable TypeScript 6 selection
+
+- PR #139's full functional suite passed (50/50 E2E, 39 Node tests, typecheck and build), but the Code Quality job could not install pinned `typescript-eslint@8.72.2` with TypeScript 7.0.2: its declared peer range is `>=4.8.4 <6.1.0`.
+- Selected stable TypeScript 6.0.3 instead of forcing or using a canary lint parser. The package lock uses the exact TypeScript 6.0.3 registry URL, integrity and metadata from npm-generated lockfiles; removed TypeScript 7's platform-specific packages. Candidate inventory now contains 161 package entries.
+- TypeScript 7 remains a tracked future upgrade once stable typescript-eslint support is published. Fresh exact-head CI is required; no full pass is claimed yet.
