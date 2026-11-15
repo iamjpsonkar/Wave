@@ -68,6 +68,7 @@ The container builds the frontend and serves static files through an unprivilege
 ```bash
 npm ci
 npm test
+npm run test:links
 npm run typecheck
 npm run build
 
