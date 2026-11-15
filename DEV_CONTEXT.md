@@ -605,3 +605,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Existing open defect, UI, Markdown, export and roadmap tickets were checked before creation; do not open duplicates for the same scope.
 - Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [trash/github-issues.md](./trash/github-issues.md).
 - No source code changed and no tests/build/CI execution is claimed for this audit.
+
+
+## 2026-11-15 — Developer and QA workflow guide refresh
+
+- Reworked [etc/howtodev.md](./etc/howtodev.md) into a complete contributor workflow covering issue selection, branch/base strategy, architecture boundaries, local-first and data-safety invariants, tests, documentation ownership, commit metadata, PR preparation, review, and completion criteria.
+- Reworked [etc/howtoqa.md](./etc/howtoqa.md) into a risk-based QA workflow covering test planning, data integrity, concurrency/lifecycle, Markdown security, accessibility, automated verification, PR review, actionable bug reports, severity, bug lifecycle, and evidence standards.
+- Both documentation updates were committed to the `manager` branch: developer guide `6487eba6f7a5d5872247e6fcbbb732583448eb94`; QA guide `a6e09aafc52fa79292663e8d05e1d9aa6b6005cd`.
+- Documentation-only work. No application source or tests changed. No test suite, typecheck, build, E2E, or CI run was performed. Refresh the branch HEAD and run the relevant checks before relying on verification status.
