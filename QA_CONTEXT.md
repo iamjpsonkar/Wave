@@ -20,11 +20,13 @@
 
 ## Current test inventory (source, not execution)
 
-- `tests/storage.test.js`: **30** Node test definitions.
-- `tests/e2e/workspace.spec.ts`: **13** Playwright Chromium test definitions.
+- **76 preserved test definitions** are organized across 11 focused spec files.
+- Node unit tests: 30 definitions under `tests/unit/storage/` (25? split by domain) and `tests/unit/safety/` (5).
+- Playwright Chromium E2E: 46 definitions under `tests/e2e/workspace/`, `tests/e2e/markdown/`, `tests/e2e/editor/` and `tests/e2e/ui/`.
+- Shared Node fixture: `tests/helpers/storage-fixtures.js`; shared browser fixture and page helpers: `tests/e2e/fixtures/workspace.ts`.
 - E2E fixture: Origin Private File System (OPFS) directory handles; `showDirectoryPicker` is replaced with a fixture and permission query/request behavior is simulated.
-- Current E2E coverage includes workspace creation/autosave, reload recovery, Trash round trip, root/nested attachments, mobile navigation, backup/restore, strict IndexedDB durability request, simulated permission denial, same-workspace two-tab edits, cross-tab recovery provenance, Markdown sanitization/GFM, command palette keyboard execution, and wiki links/backlinks.
-- Historical CI evidence in `dev-build.md` reports 30 Node tests and 10 E2E scenarios passing for commit `09021ed224f739fd66325bb8f6cc8f1bcca5b142`. That run does **not** establish that the current 13-scenario E2E suite passed.
+- This inventory counts test definitions in source; it does **not** claim they were executed or passed.
+- Historical CI evidence in `dev-build.md` reports 30 Node tests and 10 E2E scenarios passing for commit `09021ed224f739fd66325bb8f6cc8f1bcca5b142`. That historical run does **not** verify the reorganized suite.
 
 ## Files reviewed
 
