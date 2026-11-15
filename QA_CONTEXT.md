@@ -437,3 +437,13 @@ Important documentation drift observed at the same HEAD:
 - Created [#100 — remove duplicate storage regression scenarios](https://github.com/iamjpsonkar/Wave/issues/100). `tests/storage.test.js` repeats the backup-lock interleaving scenario at lines 300–321 and 334–355, and repeats the copied-file mutation scenario at lines 322–333 and 356 onward. The issue requires preserving distinct locking and integrity guarantees while removing redundant tests.
 - Updated `trash/github-issues.md` to include both issues and the verified open-issue count.
 - This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
+
+
+## WAVE-0001 CI failure remediation — 2026-11-15
+
+- Initial PR run `43682365587` passed `npm test`, typecheck, production build and container build, but Playwright failed 15 scenarios (33 passed). The failure was not a single product regression: several tests used stale/ambiguous accessible-name selectors or expected an obsolete error class; multiple fixtures encoded literal `\\n` instead of real line breaks.
+- Corrected the external-edit fixture to write actual Markdown newlines and assert the current `.app-error` surface. Tightened ambiguous Edit/Preview/Settings/code-action selectors, fixed template-preview flow/scoping, corrected image/diagram expectations, and repaired PDF fixture newlines.
+- Fixed task-list Enter handling so a blank `- [ ] ` item is recognized as empty and exits the list.
+- Fixed block-color parsing/serialization to split/join real newlines and match callout syntax correctly. Preserved editor selection while clicking color preset/clear actions.
+- Re-run workflow for commit `639be32a7060c6d0b4454a611c944eb909c9b353`: [CI run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072). Status was in progress at documentation time; do not record as passing until final job conclusions are checked.
+- No local test/typecheck/build run was performed. The E2E run remains the acceptance gate; inspect any remaining failures rather than loosening assertions.
