@@ -154,7 +154,14 @@ The checked-in `dev-build.md` reports workflow run [43604242348](https://github.
 - TypeScript typecheck passed.
 - Production build passed.
 
-This remains historical CI evidence and does not verify later commits. The current checked-in test sources define 30 Node tests and 13 Playwright Chromium scenarios; the documented successful CI run covers an earlier 10-scenario browser suite. The 2026-11-14 QA recheck was source-only: no local build/tests or new CI run were performed. Refresh the default-branch HEAD and CI before relying on test status.
+This remains historical CI evidence and does not verify later commits. On branch `WAVE-0100`, `tests/storage.test.js` now defines 29 unique Node tests (30 on the main baseline before duplicate consolidation); the Playwright source is unchanged by this issue. The documented successful CI run covers an earlier 10-scenario browser suite. No local test/build execution was performed for WAVE-0100; check its PR workflow before claiming verification.
+
+### WAVE-0100 — backup regression test deduplication (2026-11-15)
+
+- Removed one duplicate workspace-lock/backup/save test and one duplicate copied-snapshot mutation test.
+- Added distinct source-mutation-during-copy coverage and strengthened successful backup snapshot content verification.
+- Current Node test source inventory: **29 unique definitions**. Source inspection only; PR CI is pending.
+- Detailed changes and verification limits: `trash/dev-fixed.md` and `trash/dev-build.md`.
 
 ## 9. Required workflow for every future task
 
