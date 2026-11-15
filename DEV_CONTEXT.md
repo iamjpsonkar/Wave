@@ -15,7 +15,7 @@ Non-negotiable principles:
 - Portable content: Markdown documents and ordinary asset files remain inspectable outside Wave.
 - Privacy by default: don't introduce uploads, analytics, remote processing, or third-party services without an explicit product decision and disclosure.
 - Reliability before breadth: integrity, safe failure, recovery, backup/restore, migration, accessibility and export are release gates.
-- Preserve scope: never silently prune agreed features. `upcoming-features.md` is the complete scope catalogue; `priority-features.md` assigns delivery order, not permission to drop requirements.
+- Preserve scope: never silently prune agreed features. `etc/product/upcoming-features.md` is the complete scope catalogue; `etc/product/priority-features.md` assigns delivery order, not permission to drop requirements.
 
 ## 2. Stack and development commands
 
@@ -125,11 +125,11 @@ Preserve all of the following:
 
 ## 6. Project documents and their responsibilities
 
-- `upcoming-features.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
-- `priority-features.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
+- `etc/product/upcoming-features.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
+- `etc/product/priority-features.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
 - `FEATURES.md`: combined shipped-feature overview and detailed shipped/planned feature map.
 - `docs/ROADMAP.md`: release sequencing.
-- `docs/ARCHITECTURE.md`: architecture and reliability/security rationale.
+- `etc/engineering/ARCHITECTURE.md`: architecture and reliability/security rationale.
 - `bugs.md`: only current reproducible/source-supported bugs and material QA gaps.
 - `fixed-bugs.md`: resolved bug history and regression baseline; recheck on every QA task.
 - `dev-fixed.md`: implementation/fix log (problem, code changes, tests, commit, limitations).
@@ -176,7 +176,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 6. Keep README/docs/catalogues consistent with actual behavior.
 
 ### At the end of every task
-- Feature work: update `FEATURES.md`, `FEATURES.md`, `priority-features.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `upcoming-features.md` catalogue.
+- Feature work: update `FEATURES.md`, `FEATURES.md`, `etc/product/priority-features.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `etc/product/upcoming-features.md` catalogue.
 - Bug work: current findings only in `bugs.md`; move to `fixed-bugs.md` only after verification; retain IDs and regression scenarios.
 - Code fixes: append problem, changes, files, tests, commit/CI and limitations to `dev-fixed.md`.
 - Build/test/CI: append exact commit and suite-level outcome to `dev-build.md`; distinguish not run, queued, failed and passed.
@@ -212,33 +212,33 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/App.tsx`: maps Markdown heading levels to anchor IDs and routes code nodes through the custom renderer.
 - `src/styles.css`: preview styling for math, diagrams and heading levels.
 - `src/templates.ts`: adds the Markdown feature showcase template.
-- `docs/MARKDOWN_SUPPORT.md`: canonical syntax compatibility/security matrix. Raw HTML remains disabled; full LaTeX, advanced Mermaid, PlantUML, Graphviz, Vega, D2, AsciiDoc, syntax highlighting and media embeds are not claimed as supported.
+- `etc/engineering/MARKDOWN_SUPPORT.md`: canonical syntax compatibility/security matrix. Raw HTML remains disabled; full LaTeX, advanced Mermaid, PlantUML, Graphviz, Vega, D2, AsciiDoc, syntax highlighting and media embeds are not claimed as supported.
 - E2E test source now contains 14 scenarios, including the new math/flowchart/heading scenario. Run 43612461372 passed `npm ci` and 30 Node tests but failed typecheck because `MarkdownElementProps` lacked `className`; fixed in `035e442a90d7e8cb48b88e4e9df93971a1bcaa24`. Follow-up run 43612488927 passed install, 30 Node tests, typecheck and production build; Playwright install/E2E remained in progress at last check. Latest run 43612554015 on `983055ca882936345a37abbf8de5b9a90a0ea9fc` had passed install, Node tests and typecheck, with build/E2E still in progress. Check `dev-build.md` before claiming a full pass.
-- Always read `docs/MARKDOWN_SUPPORT.md` before extending Markdown support; preserve local-only rendering and sanitization boundaries.
+- Always read `etc/engineering/MARKDOWN_SUPPORT.md` before extending Markdown support; preserve local-only rendering and sanitization boundaries.
 
 
 ## 13. Markdown showcase gap audit — 2026-11-14
 
-- Audited the complete user-provided 20-section Markdown Feature Showcase against the current renderer, App preview wiring, styles, templates, `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `FEATURES.md` and E2E test source.
+- Audited the complete user-provided 20-section Markdown Feature Showcase against the current renderer, App preview wiring, styles, templates, `etc/engineering/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `FEATURES.md` and E2E test source.
 - Conclusion: Markdown is **not feature-complete** against that showcase. Existing support includes common Markdown/GFM, alert callouts, wiki links/backlinks, local images, heading anchors, a small MathML subset and simple Mermaid flowcharts.
 - Created [features-gap.md](./features-gap.md) as the canonical itemized gap/acceptance checklist. Major gaps: full LaTeX/math grammar, advanced Mermaid diagram families and syntax, syntax highlighting/diff coloring, safe HTML-like inline formatting and collapsible sections, emoji shortcodes, GitHub mention/issue references, Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, media embeds, duplicate-heading slugs, and broader accessibility/conformance coverage.
 - Raw HTML and arbitrary media remain deliberately disabled for safety; any future support must use explicit safe components/allowlists rather than enabling unrestricted HTML.
 - Updated `dev-build.md` with the audit record. This was a source/documentation audit only; no application code changed and no tests were run for this audit. Existing CI evidence is historical and must not be described as full Markdown showcase verification.
-- Latest documentation commits: `features-gap.md` `0b85dd6`; `dev-build.md` `69f749a`. This handoff update is the final documentation step for the task.
+- Latest documentation commits: `etc/product/markdown-coverage.md` `0b85dd6`; `dev-build.md` `69f749a`. This handoff update is the final documentation step for the task.
 
 
 ## 14. Markdown implementation follow-up — 2026-11-14
 
-- Audited `features-gap.md` and implemented an additional source-supported subset without modifying that file, `bugs.md`, or `fixed-bugs.md`.
+- Audited `etc/product/markdown-coverage.md` and implemented an additional source-supported subset without modifying that file, `bugs.md`, or `fixed-bugs.md`.
 - `src/markdown.tsx`: safe inline formatting shorthands (`==mark==`, `++underline++`, `^sup^`, `~sub~`, `[[kbd:...]]`), common emoji shortcodes, lightweight token coloring for common code languages, recursive MathML groups/fractions/roots/scripts and common commands, local Mermaid sequence and pie renderers, safe DETAILS disclosure blocks, and a rehype heading-ID plugin that runs after sanitization.
 - `src/App.tsx`: the heading-ID plugin is ordered after `rehypeSanitize`; local image fallback retains alt/title and links retain title metadata.
 - `src/styles.css`: styles for syntax tokens, diagrams, inline styles and disclosure.
 - `src/templates.ts`: expanded Markdown showcase examples, including math, sequence/pie charts, inline syntax and details.
 - Added E2E scenarios for extended rendering and CommonMark conformance. Current browser suite source: **17 scenarios**; Node suite source: **30 tests**.
-- Updated `FEATURES.md`, `FEATURES.md`, `docs/MARKDOWN_SUPPORT.md`, `README.md`, `dev-fixed.md` and `dev-build.md`.
+- Updated `FEATURES.md`, `FEATURES.md`, `etc/engineering/MARKDOWN_SUPPORT.md`, `README.md`, `dev-fixed.md` and `dev-build.md`.
 - Verification: workflow [43614071812](https://github.com/iamjpsonkar/Wave/actions/runs/43614071812), code commit `1df330599916a9d657e83838b03231bd39296ae5`: `npm ci`, 30 Node tests, typecheck and production build passed; Playwright E2E was still in progress at last check. Earlier E2E run [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208) failed four preview journeys; the heading/disclosure/sidebar timing corrections were added afterwards and need the new E2E result before verification is complete.
 - Still not full parity: complete TeX/LaTeX environments, all Mermaid diagram families and advanced syntax, full grammar-based syntax/diff highlighting, GitHub mention/issue semantics, PlantUML/Graphviz/Vega/D2/AsciiDoc renderers, arbitrary media embeds, cross-browser/visual/accessibility audits and a full conformance fixture suite. Raw HTML remains disabled intentionally.
-- Explicitly untouched in this task: `bugs.md`, `fixed-bugs.md`, and `features-gap.md`.
+- Explicitly untouched in this task: `bugs.md`, `fixed-bugs.md`, and `etc/product/markdown-coverage.md`.
 - Final documentation handoff commit follows this update; check the current Actions run before relying on browser-test status.
 
 
@@ -264,29 +264,29 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Initial remediation pass committed to `main`: fixed the technical learning-notes template's literal backslash-n separator in `src/templates.ts`; added a Playwright template-selection/editor-newline/preview-structure scenario; corrected three stale/overly strict E2E assertions for wiki links, syntax-token selection and Mermaid flowchart output.
 - Code/test commits: `b8e936b707d9f8c2d78a88991943b7a57c705689`, `65f62060152596d160f66effebcf17a274edc80b`, `f633ccc75c9afb9d3ab7529b489e557d7ae9f8c8`, `5d6b16d18e552c79f11dd6471c47aeab54662f47`.
-- Updated `dev-fixed.md`, `dev-build.md` and `features-gap.md` with the remediation and explicit verification boundary. This context update is the final documentation step; its parent documentation checkpoint is `88899a31f721a6dadcd5f2174b73e569562ee0a5`.
+- Updated `dev-fixed.md`, `dev-build.md` and `etc/product/markdown-coverage.md` with the remediation and explicit verification boundary. This context update is the final documentation step; its parent documentation checkpoint is `88899a31f721a6dadcd5f2174b73e569562ee0a5`.
 - Browser test source now defines 24 scenarios; Node test source remains 30 tests. **No local tests were run and no CI run for these new commits has been verified.** The last inspected CI evidence remains the earlier 20/23 Playwright result; do not claim the corrected suite passes.
 - Keep WAVE-052 in `bugs.md` and do not move it to `fixed-bugs.md` until the new template regression passes in CI. WAVE-031 and WAVE-039 remain partial.
 - Remaining Markdown acceptance scope is still open: complete TeX/LaTeX, Mermaid and external renderer compatibility; grammar-based highlighting and unified diff parsing; broader accessibility, cross-browser and visual checks; malformed/oversized input limits; full preview/source round-trip fixtures; exhaustive showcase coverage. Preserve raw-HTML/remote-media security boundaries and inert GitHub references unless product semantics are explicitly changed.
-- For the next pass, inspect the latest Actions run for the current `main` head, fix any actual failures, then proceed through the remaining `features-gap.md` acceptance groups. Never mark the Markdown feature set complete based on source presence alone.
+- For the next pass, inspect the latest Actions run for the current `main` head, fix any actual failures, then proceed through the remaining `etc/product/markdown-coverage.md` acceptance groups. Never mark the Markdown feature set complete based on source presence alone.
 
 
 ## 18. Markdown security regression expansion — 2026-11-14
 
-- Picked the next item from the core compatibility/security coverage group in `features-gap.md`: a URL-scheme and local-media path security regression matrix.
+- Picked the next item from the core compatibility/security coverage group in `etc/product/markdown-coverage.md`: a URL-scheme and local-media path security regression matrix.
 - Added a Playwright scenario in `tests/e2e/workspace.spec.ts` that verifies HTTPS/mailto links remain available while `javascript:`, `data:`, `vbscript:`, `file:` and mixed-case JavaScript URLs do not become anchors.
 - The same test creates a sentinel `secret.mp3` in the local assets directory and checks that parent traversal, percent-encoded traversal, absolute paths, Windows-style paths and remote media references do not produce playable audio/video elements.
-- Updated `docs/MARKDOWN_SUPPORT.md` with the intended sanitized URL and local single-filename media resolution contract. Updated `features-gap.md`, `dev-fixed.md` and `dev-build.md` with scope and verification status.
+- Updated `etc/engineering/MARKDOWN_SUPPORT.md` with the intended sanitized URL and local single-filename media resolution contract. Updated `etc/product/markdown-coverage.md`, `dev-fixed.md` and `dev-build.md` with scope and verification status.
 - Test source now defines **25 Playwright scenarios** and **30 Node tests**. No local test execution or CI run for this scenario has been verified; do not report it as passing. This step adds regression coverage and documentation only; it is not a source-code security fix and closes no bug.
 - Next: inspect CI for current `main`; fix any real failures exposed by the new security scenario. Then continue with another core conformance item (preview/source round-trip invariance or accessibility coverage) before moving into the larger renderer-compatibility projects.
 
 
 ## 19. Markdown preview/source round-trip regression — 2026-11-14
 
-- Picked the next core conformance item from `features-gap.md`: verify preview transformations never rewrite the original Markdown source.
+- Picked the next core conformance item from `etc/product/markdown-coverage.md`: verify preview transformations never rewrite the original Markdown source.
 - Added a Playwright E2E scenario in `tests/e2e/workspace.spec.ts` with hard breaks, ordinary/wiki links, inline and fenced code, escaped table pipes, fenced math, callouts and raw-HTML text.
 - The scenario checks byte-for-byte equality after Preview → Edit, reads the saved Markdown file and compares exact contents, then reloads/reopens the workspace and checks the editor value again.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. No runtime application code changed.
+- Updated `etc/engineering/MARKDOWN_SUPPORT.md`, `etc/product/markdown-coverage.md`, `dev-fixed.md` and `dev-build.md`. No runtime application code changed.
 - Browser test source now defines **26 Playwright scenarios**; Node test source remains **30 tests**. No local test execution or CI result for this scenario has been verified. Treat it as regression coverage defined, not passed.
 - Latest code/test commit for this item: `cf824115ba035c41ecaf1e8c5923310e69599986`; documentation commits follow in `006ec92`, `9d15249`, `dd3a84d` and this handoff update.
 - Next: inspect current CI for the latest `main` head and repair any actual test failures. Then continue with accessibility checks (including keyboard focus, headings, images, tables, task lists, callouts, math and diagram fallbacks). Keep full language compatibility and malformed/oversized-input testing open.
@@ -301,7 +301,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Added two Playwright scenarios:
   - Multiline code insertion, fenced preview rendering and exact clipboard-copy fidelity.
   - Accessibility smoke checks for heading levels, accessible link name, table and column headers, task-list checkbox roles, NOTE callout role/name, DETAILS disclosure and keyboard focus/activation.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`.
+- Updated `etc/engineering/MARKDOWN_SUPPORT.md`, `etc/product/markdown-coverage.md`, `dev-fixed.md` and `dev-build.md`.
 - Current test source counts: **28 Playwright scenarios**, **30 Node tests**. No local tests or CI run for these commits have been executed/inspected. Do not claim passing. Accessibility coverage is a focused semantic/keyboard smoke test, not a full WCAG audit or screen-reader certification.
 - Main implementation commit: `2553d24d95ed322a21588a1b02a6cb14107b45ec`; E2E coverage commits: `55e51e1f7d8d8b45a38843248456bf14493c2f98`, `d4f3a375888c033645ab1af07463a011b082926d`.
 - Next: inspect CI on current main and repair any actual failures; then expand accessibility coverage (images/alt text, focus visibility, color contrast, diagram source/fallback semantics) and malformed/oversized input tests. Preserve all outstanding feature scope.
@@ -328,7 +328,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Picked the next accessibility item from the Markdown gap work: diagram source disclosures must remain independently available to keyboard and assistive-technology users.
 - `src/markdown.tsx`: moved accessible image roles/names from the 15 diagram wrapper containers onto their SVG elements. Wrappers now remain normal document containers so the nested **View diagram source** disclosure is not flattened by an image role.
 - `tests/e2e/workspace.spec.ts`: extended the accessibility smoke scenario to assert a named sequence-diagram image, keyboard focus/Enter activation of its source disclosure, and readable diagram source.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`.
+- Updated `etc/engineering/MARKDOWN_SUPPORT.md`, `etc/product/markdown-coverage.md`, `dev-fixed.md` and `dev-build.md`.
 - Multiline code support remains implemented: the Code block toolbar wraps selected multiline text in a fenced block, retains the selection, supports an empty-selection placeholder, and has a preview/copy fidelity E2E scenario.
 - Baseline CI run [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, build and all Playwright scenarios before this patch. The accessibility patch itself is **pending CI**; do not claim it passed until a workflow for the updated source completes.
 - Implementation commit: `052840f834f879e54ac32567aecc3e4c7a0cad13`; regression test commit: `ed34c50b6f21c134d762786f869801785b2452d3`. Latest main before this handoff update: `c2c470d1d2ebc04283eea4646704e20292fea155`.
@@ -340,7 +340,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Refreshed repository source baseline to `268de12338bce554f18e5feef27acbb5e9ea45fe`.
 - `bugs.md` now contains only the two current open findings: WAVE-031 (native picker/external filesystem/lifecycle and comprehensive accessibility QA coverage) and WAVE-039 (residual IndexedDB pre-commit crash window). WAVE-042 and WAVE-052 remain in the fixed-history register.
 - `fixed-bugs.md` retains all **50** historical finding IDs and their regression scenarios. Its latest addendum distinguishes the successful 30-Node/28-Playwright baseline from the later diagram-accessibility patch.
-- `features-gap.md` has been consolidated into one current 16-section Markdown acceptance checklist. The original requirement families remain preserved; repeated contradictory status snapshots were removed, not scope.
+- `etc/product/markdown-coverage.md` has been consolidated into one current 16-section Markdown acceptance checklist. The original requirement families remain preserved; repeated contradictory status snapshots were removed, not scope.
 - Current source defines **30 Node tests** and **28 Playwright Chromium scenarios**.
 - Baseline workflow [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, production build and all 28 Playwright scenarios.
 - The diagram accessibility follow-up initially failed because the sequence SVG used a generic accessible name. Fixed in `268de12338bce554f18e5feef27acbb5e9ea45fe`; workflow [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) was still running at this handoff. Verify latest-main CI before claiming the accessibility correction fully passed.
@@ -349,21 +349,21 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 24. Markdown image accessibility and fallback behavior — 2026-11-14
 
-- Picked the next core compatibility/accessibility item from `features-gap.md`: image alt semantics, decorative empty-alt handling, broken-image fallback, and reference-style linked images.
+- Picked the next core compatibility/accessibility item from `etc/product/markdown-coverage.md`: image alt semantics, decorative empty-alt handling, broken-image fallback, and reference-style linked images.
 - `src/App.tsx` / `LocalMarkdownImage`: loaded images preserve explicit Markdown alt text and title; when alt is omitted, the title (or a neutral unavailable label) supplies a fallback name. Missing informative images render a visible `role="img"` fallback with an accessible name. Explicit empty-alt images remain decorative, including when the asset is missing (`role="presentation"`, `aria-hidden="true"`).
 - `tests/e2e/workspace.spec.ts`: added a browser scenario for a local image, decorative image, missing informative/decorative assets, reference-style linked image metadata, and keyboard focus on the wrapping link. Corrected the previous accessibility smoke test's broad DETAILS-summary selector, which CI showed also matched the Mermaid source disclosure.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. Full WCAG/screen-reader certification remains open.
+- Updated `etc/engineering/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `etc/product/markdown-coverage.md`, `dev-fixed.md` and `dev-build.md`. Full WCAG/screen-reader certification remains open.
 - Current source inventory: 30 Node tests and 29 Playwright E2E scenarios. CI run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed install, Node tests, typecheck and build but failed one existing Playwright selector assertion (27/28 passed). That selector and the new image scenario are in commits `211a19dfca41096cc9617c1124cf439a1313a5cc` and `f5dc998b77176af54d46db22e28034f137328470`; CI is pending for the updated source. Do not report the new scenario as passed until the workflow finishes.
 - Open reliability findings remain WAVE-031 and WAVE-039. No bug trackers were changed.
 
 
 ## 25. Math parser malformed-input and complexity limits — 2026-11-14
 
-- Picked the next open math item in `features-gap.md`: malformed grouping, oversized expressions and parser resource bounds.
+- Picked the next open math item in `etc/product/markdown-coverage.md`: malformed grouping, oversized expressions and parser resource bounds.
 - `src/markdown.tsx`: added preflight brace-balance validation and explicit bounds of 8192 source characters, 48 recursive nesting levels and 2048 parser steps. Invalid/over-limit expressions return a readable `.markdown-math-fallback` note with a bounded source preview; no TeX execution or remote renderer is introduced.
 - `src/styles.css`: added a readable fallback style for rejected expressions.
 - `tests/e2e/workspace.spec.ts`: added a scenario for an unbalanced fraction, 60 nested groups and an 8200-character expression. Current E2E source count: 30; Node test source count: 30.
-- Updated `features-gap.md` and `docs/MARKDOWN_SUPPORT.md`. General parser fuzzing, delimiter conflicts and full TeX grammar remain open.
+- Updated `etc/product/markdown-coverage.md` and `etc/engineering/MARKDOWN_SUPPORT.md`. General parser fuzzing, delimiter conflicts and full TeX grammar remain open.
 - The previous image-accessibility CI exposed a second broad DETAILS-summary selector and a linked-image fallback assertion mismatch; both assertions were narrowed to Wave's disclosure/fallback elements in the current commit. The previous CI also showed the new image scenario itself passing on one run. Current combined source CI is [43620567676](https://github.com/iamjpsonkar/Wave/actions/runs/43620567676); at handoff it is running. Do not claim all 30 E2E scenarios pass until CI completes.
 - Implementation commit: `c8ad5066f24333e7777e910378c49b206e65d71a`. The latest source follow-up corrects the budget label to parser steps for accuracy.
 - Open reliability findings remain WAVE-031 and WAVE-039. No bug trackers were changed.
@@ -399,7 +399,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Created `UI_BACKLOG.md` as an additive UI proposal backlog based on the supplied spreadsheet-toolbar screenshot and inspection of current Wave editor source.
 - Captures Markdown-editor improvements (undo/redo verification, document-local find, responsive toolbar grouping/overflow, heading styles, shortcut hints, safe insertion/table/link workflows, document statistics, zoom/focus mode and contextual formatting state).
-- Separates spreadsheet-only controls (number formats, cell formatting, grid controls, formulas/sort/filter/charts) into a future dedicated sheet UI, aligned with `priority-features.md` P2.3; these are not proposed for the Markdown editor toolbar.
+- Separates spreadsheet-only controls (number formats, cell formatting, grid controls, formulas/sort/filter/charts) into a future dedicated sheet UI, aligned with `etc/product/priority-features.md` P2.3; these are not proposed for the Markdown editor toolbar.
 - Includes stable UIF-001–UIF-021 IDs, priorities, current-state notes, acceptance criteria, dependencies, delivery order and relationships to existing planning documents. All are proposals, not shipped features.
 - No application code, existing gap tracker, product catalogue or tests were changed. No test/build/CI result is claimed for this documentation-only task.
 - Backlog commit: `d9211992d04fd3510f93cc546b814c5a067798d5`.
@@ -475,7 +475,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/markdown.tsx`: added local inline conversion and rendering for the two directives. Only six-digit hexadecimal tokens are accepted; color spans are generated as React elements with a validated color value. Inline-code content is not transformed; malformed color tokens remain literal. Raw HTML and arbitrary style strings remain disabled.
 - `src/styles.css`: added theme-aware color picker controls and a System-light correction.
 - `tests/e2e/workspace.spec.ts`: added one regression for foreground and background application, preview styles, inline-code preservation, invalid-token fallback and returning to Edit. Browser source inventory: **40 scenarios**; Node test source remains **30 tests**. These are definitions, not run results.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `dev-fixed.md` and `dev-build.md`. New UI-021 records the inline color controls as implemented in source with CI/visual verification pending. Existing UI IDs and the broader product catalogue remain intact.
+- Updated `etc/engineering/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `etc/product/markdown-coverage.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `dev-fixed.md` and `dev-build.md`. New UI-021 records the inline color controls as implemented in source with CI/visual verification pending. Existing UI IDs and the broader product catalogue remain intact.
 - Source commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07` and System-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, `48af3998748b51779a0abe75ca5853dd80fa03b1`, `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`.
 - Documentation commits: Markdown support `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`; feature gap `99007028e8f9c98de8baa5d32d55ce97d346d183`; UI feature backlog `bd27ca629c7556b3f2fbeac75e3b600b976365b9`; UI gap register `a0974f7144ec7e0c9fb68a641e4493aadf11c825`; dev-fixed `2b85f26668d6d4f22fe62dcf7ea1f3646444d920`; dev-build `e42d1beff37a08cb5ec4c57cbe97ed9401ad4891`.
 - Remaining color scope: curated preset swatches, remove/reset formatting, nested color spans, block-level fills, selection in Blocks mode, non-Wave fallback/rendering and visual/contrast verification.
@@ -489,7 +489,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `src/markdown.tsx`: `MarkdownBlockquote` recognizes only the `[!COLOR=#RRGGBB]` marker with a six-digit hex token, strips the marker from rendered content and creates a blockquote with the validated background color. Existing NOTE/TIP/WARNING/DETAILS blockquotes are unchanged.
 - `src/styles.css`: added swatch, clear action and block-fill styling with focus-visible states and theme-aware block borders.
 - `tests/e2e/workspace.spec.ts`: added one regression covering quick swatch insertion, selection-based removal, block-fill source syntax and preview rendering. E2E source inventory is now **41 scenarios**; Node test source remains **30 tests**. These are source counts, not test execution.
-- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-021 remains partial/CI pending; nested inline color ranges, Blocks-mode selection, non-Wave reader fallback and contrast/accessibility review remain open.
+- Updated `etc/engineering/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `etc/product/markdown-coverage.md`, `dev-fixed.md` and `dev-build.md`. UI-021 remains partial/CI pending; nested inline color ranges, Blocks-mode selection, non-Wave reader fallback and contrast/accessibility review remain open.
 - Source commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`; renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`; styles `7020028201eeee4be404a003b4e2c2abc7925c9a`; E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
 - Documentation commits: Markdown support `e71535c61698145ae199a898c9ac6cdf2b910089`; feature inventory `de91a21626ca4fc6bcea07c2e37ee5b8f347e6d2`; UI gap register `8ec018ce51b592282c4e1a0ee91ebe33345b41e8`; UI feature backlog `ece36cd16ecf68c3fd292231bc48034dee6e760a`; renderer feature gap `61213bd311329d75fa2814145847c0f47da6b0a7`; dev-fixed `7a752555c70bb96a17d0ac1bbd7e6187599be7e7`; dev-build `a0aae6b812ecf0a931b77dff41f518b5cad5da89`.
 - Latest observed GitHub Actions run for the documentation commit `a0aae6b812ecf0a931b77dff41f518b5cad5da89` is `43627623167`, queued at the time of inspection. Earlier documentation runs were in progress. No local tests, typecheck, production build or screenshot review were performed; do not claim a pass.
@@ -503,7 +503,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Extended the optional Markdown Blocks editor with an accessible per-block native background color picker. Applying a color wraps the original block source in the safe `> [!COLOR=#RRGGBB]` quote directive; changing a previously colored block updates the marker in place rather than nesting another color wrapper.
 - Updated block classification so Wave color blocks are recognized as callout blocks. Added light/dark theme styling and an E2E source scenario covering first application, changing the color, switching to Preview and checking the rendered block.
 - Fixed a TypeScript error in the existing source-toolbar block-color cursor calculation. CI for the preceding color batch exposed that a concatenated marker expression produced a string cursor argument; the code now computes a single marker string and uses its numeric length.
-- Updated compatibility and feature records: `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-001–UI-020 and all previous feature proposals remain preserved; UI-021 is expanded, not replaced.
+- Updated compatibility and feature records: `etc/engineering/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `etc/product/markdown-coverage.md`, `dev-fixed.md` and `dev-build.md`. UI-001–UI-020 and all previous feature proposals remain preserved; UI-021 is expanded, not replaced.
 - Source commits: Blocks editor `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`; styles `93bf0eb5dc809e373292570d900066161f6e7be3`; E2E `0cf474ff0d0765f882916c04efbb69e49c95cb85`; toolbar TypeScript fix `efd19504e8d44ab16869f6b82482b00da816d162`.
 - Documentation commits: Markdown support `4e895839c50e6f42d5b1e3830de86d0e1a921066`; feature inventory `6fe3fff45580b238d433ed353f5588ecbc9e80ed`; UI gaps `ea0d90b7e96d6d060bab06a5319297f0bc52e208`; UI feature backlog `a07722b61658e6df1008373323da757f18fc1dd3`; renderer feature gaps `f68a9ac601b7b3aeffdeb6b153c5c29a0446bf19`; dev-fixed `9f85560bfcf7cc921fa46084e8b06d9549c2abc7`; dev-build `dce84d4c2f7dd4d236f8f8676f8676c692bcf730`.
 - Regression source inventory: **42 Playwright E2E scenarios** and **30 Node test definitions**. These are source counts only. The CI run for the preceding docs commit failed at TypeScript because of the cursor expression; Node tests passed 30/30, while build and E2E steps were skipped. The fix is committed; CI run `43627887363` for `efd19504e8d44ab16869f6b82482b00da816d162` was **in progress** at handoff. No pass is claimed yet.
@@ -605,7 +605,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Audited current main baseline `d831bf04ac458a888206de4d492830f55958b022`.
 - New findings are tracked in [#99 — Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99) and [#100 — duplicate storage regression tests](https://github.com/iamjpsonkar/Wave/issues/100).
 - Existing open defect, UI, Markdown, export and roadmap tickets were checked before creation; do not open duplicates for the same scope.
-- Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [trash/github-issues.md](./trash/github-issues.md).
+- Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [etc/quality/github-issues.md](./etc/quality/github-issues.md).
 - No source code changed and no tests/build/CI execution is claimed for this audit.
 
 
@@ -639,7 +639,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Expanded root `AGENTS.md` with task-specific execution protocols, authority/conflict precedence, safe-autonomy boundaries, repository-link discipline, final reporting contract and evidence language.
 - Strengthened all `howto/` procedures: document ownership/index, organization accountability and decision records, team operating agreements and maintenance ownership, risk-based review matrix, work-item/PR requirements, dependency/supply-chain rules, incident response, hiring decision gates, AI-agent boundaries, and developer/QA evidence standards.
 - Aligned `WIKI.md` so `AGENTS.md` is the first-read contract and the wiki is the deeper reference.
-- Audited the actual Git tree and found that many detailed docs and trackers are currently under `trash/`; they remain tracked files. Updated the root README links to the verified current paths rather than assuming root-level or `docs/` locations.
+- Audited the actual Git tree and found that many detailed docs and trackers are currently under `etc/`; they remain tracked files. Updated the root README links to the verified current paths rather than assuming root-level or `docs/` locations.
 - This is documentation/governance work on `manager`. No application source, tests, GitHub permissions, CODEOWNERS, branch protection, GitHub Teams or CI settings were changed. No test, typecheck, build, E2E or CI run was performed.
 - Documentation links were adjusted using the actual recursive Git tree; a complete automated Markdown link checker was not run. Continue auditing inbound references before any further file moves.
 
@@ -649,7 +649,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Expanded `AGENTS.md` into the definitive agent operating contract, including task-specific protocols, authority precedence, safe-autonomy boundaries, evidence standards, documentation map and final reporting requirements.
 - Strengthened the complete `howto/` handbook: index/document ownership; organization accountability and decision records; team charters and maintenance expectations; code ownership and high-risk review matrix; cross-team work-item/PR standards; engineering, supply-chain and incident rules; hiring decision gates; developer execution and QA evidence protocols.
 - Aligned `WIKI.md` with the single-entry model: agents read `AGENTS.md` first and use the wiki as deeper reference.
-- Updated `README.md` to point to the actual tracked docs. Recursive tree inspection confirmed the legacy detailed docs and product trackers currently reside under `trash/`; they remain tracked and were not deleted. Updated references in README, AGENTS, WIKI and developer/QA guides to those verified paths.
+- Updated `README.md` to point to the actual tracked docs. Recursive tree inspection confirmed the legacy detailed docs and product trackers currently reside under `etc/`; they remain tracked and were not deleted. Updated references in README, AGENTS, WIKI and developer/QA guides to those verified paths.
 - Ran a repository-tree-based relative Markdown link audit across README, AGENTS, WIKI and all nine howto documents: zero missing internal targets in those checked files.
 - Updated `QA_CONTEXT.md` only to record QA-process documentation changes; product QA disposition and open findings were not reclassified.
 - Final pre-handoff branch HEAD: `809db07849d579b19006cc9588b4af804c8ceac1`. Branch comparison reports 40 commits ahead and 0 behind `main` at comparison time.
@@ -660,3 +660,8 @@ This remains historical CI evidence and does not verify later commits. The curre
 ## Test suite restructuring — 2026-11-15
 
 The test suite is organized by test level, product domain and scenario. Node tests live under `tests/unit/storage/` and `tests/unit/safety/`; shared in-memory filesystem setup is in `tests/helpers/storage-fixtures.js`. Playwright specs live under `tests/e2e/workspace/`, `tests/e2e/markdown/`, `tests/e2e/editor/` and `tests/e2e/ui/`; common browser setup is in `tests/e2e/fixtures/workspace.ts`. The `npm test` script targets `tests/unit` so nested test files are discovered. Playwright's configured `testDir` remains `tests/e2e`, where spec discovery is recursive. The 30 existing Node scenarios and 46 existing E2E scenarios were moved without intentionally dropping scenarios. This restructuring has not yet been locally executed; run `npm test`, `npm run typecheck`, `npm run build`, and `npm run test:e2e` before treating it as verified.
+
+
+## Documentation directory migration — 2026-11-15
+
+The former `trash/` documentation tree has been moved into the canonical `etc/` hierarchy (`product/`, `engineering/`, `quality/`, `history/`). All meaningful source documents and stable tracker IDs were preserved. Consult [etc/README.md](./etc/README.md) for the maintained index. This migration changes documentation organization only; it does not change application behavior or verification status.
