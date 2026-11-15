@@ -1031,3 +1031,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Kept least-privilege job permissions, full-SHA action pins, existing scanner policies, artifacts, timeouts and per-workflow concurrency. Caller permissions are limited to the union required by the invoked workflows; each job grants only its own required scopes.
 - Updated docs/SECURITY_OPERATIONS.md to document the execution order and skip behavior.
 - Verification: source/configuration review only. Local ./test.sh, YAML parsing, workflow-security script and Docker validation were not run in this environment. The CI functional gate itself validates workflow YAML and the repository security policy; exact-head Actions results are required before calling this change verified.
+
+### 2026-11-15 — Reject malformed supported-format attachment signatures
+
+- Exact CI run [43725766392](https://github.com/iamjpsonkar/Wave/actions/runs/43725766392), job [132847238237](https://github.com/iamjpsonkar/Wave/actions/runs/43725766392/job/132847238237) failed at the attachment validation unit test (38/39 passed). A `.pdf` declared as `application/pdf` but containing plain text was accepted.
+- Root cause: the validator rejected recognized signatures with a mismatched MIME, but did not require a signature when the declared MIME itself represented a supported signature-bearing format.
+- Added the reciprocal check for every supported signature-bearing MIME type. Unknown formats remain compatible, and a valid PDF signature has positive regression coverage.
+- Local `./test.sh` remains unrun because repository checkout access is unavailable here. Exact-head CI must verify the change; no pass is claimed before that run completes.

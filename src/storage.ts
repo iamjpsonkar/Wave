@@ -537,6 +537,12 @@ export async function validateAttachmentContent(file: File): Promise<void> {
   // filename/MIME allowlist and later become dangerous if the asset is handled
   // by another component. Unknown formats remain compatible.
   const matched=ACTIVE_ATTACHMENT_SIGNATURES.filter(item=>item.matches(bytes));
+  // Supported signature-bearing formats must prove their declared type.
+  // Unknown formats (for example ordinary text) remain compatible.
+  const signatureRequired=ACTIVE_ATTACHMENT_SIGNATURES.some(item=>item.mime===file.type);
+  if(signatureRequired && !matched.some(item=>item.mime===file.type)) {
+    throw new Error('The attachment content does not match its declared file type.');
+  }
   const activeOrContainer=matched.filter(item=>
     item.mime==='image/svg+xml'||item.mime==='text/html'||
     item.mime==='application/zip'||item.mime==='application/gzip'||item.mime==='application/wasm'

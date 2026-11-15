@@ -78,6 +78,7 @@ test('attachment validation rejects active content, metadata mismatches, spoofed
   const renamedSvg = new File(['<svg onload="alert(1)"></svg>'],'renamed.png',{type:'image/png'});
   await expectReject('content-only SVG validation',()=>validateAttachmentContent(renamedSvg),/active SVG or HTML content/);
   await expectReject('invalid PDF signature',()=>addAsset(workspace.assets,new File(['not pdf'],'document.pdf',{type:'application/pdf'})),/content does not match/);
+  await expectAccept('valid PDF signature',()=>addAsset(workspace.assets,new File(['%PDF-1.7\nvalid fixture'],'valid.pdf',{type:'application/pdf'})));
   const zipBytes=new Uint8Array([0x50,0x4b,0x03,0x04,0,0,0,0]);
   await expectReject('ZIP payload declared as text/plain',()=>addAsset(workspace.assets,new File([zipBytes],'notes.txt',{type:'text/plain'})),/content does not match/);
   await expectAccept('ZIP payload declared as application/zip',()=>addAsset(workspace.assets,new File([zipBytes],'archive.zip',{type:'application/zip'})));

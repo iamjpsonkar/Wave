@@ -769,3 +769,7 @@ The latest CI failure was caused by incorrectly double-escaped regex literals in
 - Converted those seven quality/security workflows into reusable workflows invoked by CI. Their weekly schedules and manual dispatch triggers remain available as standalone executions.
 - Retained workflow security controls, action SHA pins, scan behavior, SARIF/report artifacts, timeouts and least-privilege job permissions.
 - Validation status: source review only; local ./test.sh, YAML parser, security-policy script and Docker checks not run here. Await exact-head CI to validate GitHub reusable-workflow syntax and the new job dependency graph.
+
+### 2026-11-15 — Attachment signature verification follow-up
+
+The latest functional CI job [132847238237](https://github.com/iamjpsonkar/Wave/actions/runs/43725766392/job/132847238237) failed because a PDF containing plain text passed content validation. The validator now requires a matching signature for every supported signature-bearing MIME type, while continuing to allow unknown formats such as ordinary text. Regression coverage includes malformed and valid PDF fixtures. Local test execution was unavailable; exact-head CI is pending.
