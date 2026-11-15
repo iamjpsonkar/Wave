@@ -420,3 +420,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Run `43688362527` completed with container success and 47/48 Playwright tests passing; 30 Node tests, typecheck and production build passed. The remaining test did not observe the cross-tab recovery prompt.
 - Corrected the E2E fixture to install the source page's clock only after workspace setup and baseline page save, immediately before creating the unsaved recovery draft. Removed the earlier duplicate installation before setup; the second tab remains on real time.
 - The change is limited to regression-test setup. A new PR workflow must confirm the outcome. No local tests are claimed.
+
+
+## Cross-tab recovery diagnostics
+- Added source-tab and second-tab IndexedDB inspections before recovery is attempted.
+- Assertions cover exact unsaved text, matching workspace handle identity, source tab ownership, and distinct tab session IDs.
+- Kept the actual cross-tab prompt assertion and the declined-draft-retention assertion unchanged.
+- Next CI result should identify whether the draft is absent at write time, invisible/mismatched in the second tab, or lost later in `open()`.
