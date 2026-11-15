@@ -329,3 +329,12 @@ Strengthen deterministic browser coverage for the WAVE-031 reliability/QA gap wi
 - Fixed Markdown block-color parser/serializer to use real newline separators and correct whitespace/callout regular expressions.
 - Prevented toolbar color preset/clear mouse-down from discarding the editor selection before the action executes.
 - Verification: original CI run `43682365587` failed Playwright (33 passed, 15 failed); remediation run `43683698072` was in progress. No local tests/build claimed. Remaining CI failures, if any, must be addressed before marking verified.
+
+
+## 2026-11-15 — WAVE-0001 second CI triage fixes (verification pending)
+
+- Latest inspected run `43683760674` failed Playwright at 39 pass / 9 fail while Node, typecheck, build and container passed.
+- Fixed settings Escape handling, icon test's expected Lucide class, strict selectors for code block, template search, Mermaid diagrams and PDF custom-color spans.
+- Updated toolbar color insertion/clear to pass through `handleEditorChange` so controlled React content and recovery draft update together; clear action expands selection to include the wrapper delimiters.
+- Updated block-color classification handling so generated `[!COLOR=#...]` callouts remain recognized as callout blocks.
+- New CI is pending for subsequent commits. These fixes are not verified until fresh Playwright results confirm them.
