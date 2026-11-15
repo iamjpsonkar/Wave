@@ -51,10 +51,15 @@ test('attachments are saved locally with correct root and nested Markdown paths'
   await page.once('dialog', dialog => dialog.accept('Projects'));
   await page.locator('button[title="New folder"]').click();
   await expect(page.getByRole('button', { name: /Projects/ })).toBeVisible();
+  // The folder-creation flow triggers a sidebar refresh and a document
+  // transition. Wait for the editor to be enabled before entering content;
+  // visibility alone can be true while the previous document is still flushing.
   await page.locator('.sidebar nav button').first().click();
   const editor = page.locator('textarea');
   await expect(editor).toBeVisible();
-  await editor.fill('# Nested Attachment\n\nNested page content');
+  await expect(editor).toBeEnabled({ timeout: 10000 });
+  await expect(editor).toHaveValue(/Browser regression content|Root Attachment/, { timeout: 10000 });
+  await editor.fill('# Nested Attachment\n\nNested page content', { timeout: 15000 });
   await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
   await page.locator('input[type="file"]').setInputFiles({ name: 'nested.txt', mimeType: 'text/plain', buffer: Buffer.from('nested attachment bytes') });
   await expect(editor).toHaveValue(/\.\.\/\.\.\/assets\/nested\.txt/);
