@@ -754,3 +754,8 @@ The initial Trivy attempt found a HIGH Dockerfile non-root configuration issue a
 
 - Run [43724391529](https://github.com/iamjpsonkar/Wave/actions/runs/43724391529), job [132843050515](https://github.com/iamjpsonkar/Wave/actions/runs/43724391529/job/132843050515) failed at line 68 because a renamed SVG payload is specifically rejected as active SVG/HTML while the assertion expected generic MIME mismatch. Updated test expectation and added per-case START/PASS/FAIL output plus safe signature metadata logs.
 - `./test.sh` was not run locally: GitHub clone was blocked by DNS/network resolution failure. Do not record local success; verify on new exact PR head.
+
+
+### 2026-11-15 — Attachment signature detection follow-up
+
+The latest CI failure was caused by incorrectly double-escaped regex literals in the attachment SVG/HTML detectors. The tests were correctly expecting active SVG rejection; the implementation fell through to the generic MIME/signature mismatch. The regexes were corrected without weakening tests. CI validation for commit `9c25904e2e8609de1720db7a5fbc417033fb60fb` is pending. Local `./test.sh` remains unexecuted due unavailable repository checkout/network in this environment.
