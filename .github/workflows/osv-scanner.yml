@@ -28,6 +28,13 @@ jobs:
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           persist-credentials: false
+      - name: Install OSV-Scanner CLI
+        if: github.event_name == 'pull_request' || github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/google/osv-scanner/v2.2.1/install.sh | sh -s -- -b "$RUNNER_TEMP/osv"
+          echo "$RUNNER_TEMP/osv" >> "$GITHUB_PATH"
+          osv-scanner --version
       - name: Check out target branch baseline commit
         if: github.event_name == 'pull_request'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -46,15 +53,14 @@ jobs:
       - name: Scan target branch baseline
         if: github.event_name == 'pull_request'
         id: scan-old
-        continue-on-error: true
-        uses: google/osv-scanner-action/osv-scanner-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
-        with:
-          scan-args: |-
-            --format=json
-            --output-file=old-results.json
-            --include-git-root
-            -r
-            ./
+        shell: bash
+        run: |
+          set +e
+          osv-scanner --format=json --output-file=old-results.json --include-git-root -r ./
+          status=$?
+          if [[ ! -s old-results.json ]]; then echo "::error::OSV baseline scan failed without writing old-results.json"; exit 1; fi
+          if [[ "$status" -ne 0 ]]; then echo "OSV baseline reported findings (exit $status); comparison will determine whether they are new."; fi
+          exit 0
       - name: Check out proposed pull-request head commit
         if: github.event_name == 'pull_request'
         uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -73,27 +79,25 @@ jobs:
       - name: Scan proposed pull-request commit
         if: github.event_name == 'pull_request'
         id: scan-new
-        continue-on-error: true
-        uses: google/osv-scanner-action/osv-scanner-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
-        with:
-          scan-args: |-
-            --format=json
-            --output-file=new-results.json
-            --include-git-root
-            -r
-            ./
+        shell: bash
+        run: |
+          set +e
+          osv-scanner --format=json --output-file=new-results.json --include-git-root -r ./
+          status=$?
+          if [[ ! -s new-results.json ]]; then echo "::error::OSV proposed-source scan failed without writing new-results.json"; exit 1; fi
+          if [[ "$status" -ne 0 ]]; then echo "OSV proposed-source scan reported findings (exit $status); comparison will determine whether they are new."; fi
+          exit 0
       - name: Scan default branch or scheduled source
         if: github.event_name != 'pull_request'
         id: scan-full
-        continue-on-error: true
-        uses: google/osv-scanner-action/osv-scanner-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
-        with:
-          scan-args: |-
-            --format=json
-            --output-file=full-results.json
-            --include-git-root
-            -r
-            ./
+        shell: bash
+        run: |
+          set +e
+          osv-scanner --format=json --output-file=full-results.json --include-git-root -r ./
+          status=$?
+          if [[ ! -s full-results.json ]]; then echo "::error::OSV full scan failed without writing full-results.json"; exit 1; fi
+          if [[ "$status" -ne 0 ]]; then echo "OSV full scan reported findings (exit $status)."; fi
+          exit 0
       - name: Verify scanner completed and wrote its report
         if: always()
         shell: bash
@@ -109,19 +113,19 @@ jobs:
         uses: google/osv-scanner-action/osv-reporter-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
         with:
           scan-args: |-
-            --output-files=sarif:osv-results.sarif
+            --output=osv-results.sarif
             --old=old-results.json
             --new=new-results.json
-            --output-files=gh-annotations:#stderr
+            --gh-annotations=true
             --fail-on-vuln=true
       - name: Report full-scan findings and create SARIF
         if: github.event_name != 'pull_request'
         uses: google/osv-scanner-action/osv-reporter-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
         with:
           scan-args: |-
-            --output-file=osv-results.sarif
+            --output=osv-results.sarif
             --new=full-results.json
-                        --fail-on-vuln=true
+            --fail-on-vuln=true
       - name: Upload OSV SARIF to code scanning
         if: always() && hashFiles('osv-results.sarif') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4

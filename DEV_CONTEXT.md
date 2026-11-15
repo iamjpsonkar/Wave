@@ -782,3 +782,8 @@ CI run [43726027375](https://github.com/iamjpsonkar/Wave/actions/runs/4372602737
 ### 2026-11-15 — PR #122 QA re-review corrections
 
 Implemented both findings from QA comment [6896404719](https://github.com/iamjpsonkar/Wave/pull/122#issuecomment-6896404719): OSV now scans explicitly verified base/head commit SHAs; active SVG/HTML marker detection scans the complete attachment payload and has padded bypass regressions. Updated `docs/SECURITY_OPERATIONS.md` to state the remaining limits of this defense-in-depth check. Exact-head CI pending.
+
+
+### 2026-11-15 — OSV JSON report persistence correction
+
+The OSV workflow correctly checked out and verified both base and proposed SHAs, but Docker-action report files were not visible to host steps, causing the report-existence guard to fail. Replaced scanner calls with pinned OSV-Scanner CLI host execution writing JSON directly into the workspace, retained the SHA guards, and aligned reporter flags to upstream v2.7.1 usage. Exact-head CI pending.

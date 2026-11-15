@@ -63,3 +63,6 @@ Automated license inventory/audit is metadata triage, not a legal opinion. Exact
 ## Attachment content validation boundary
 
 Wave rejects blocked extensions/MIME types, enforces the attachment size limit, and performs bounded signature checks for selected known formats. Text-based SVG/HTML markers are checked across the complete attachment payload (up to the 25 MiB attachment limit), including padded content. This is not a full parser, malware scanner, polyglot detector or guarantee that every active format is recognized. Do not describe it as comprehensive active-content detection; continue to treat attachments as untrusted data and preserve the local-only storage boundary.
+
+
+OSV PR scanning explicitly checks out and verifies the target commit and proposed head commit. Its pinned OSV-Scanner CLI runs on the runner with JSON output files written to the workspace; the reporter compares old/new reports and fails on newly introduced vulnerabilities. A successful CLI exit or missing report is never treated as an empty/clean comparison.

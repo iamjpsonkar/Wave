@@ -1054,3 +1054,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Attachment SVG/HTML marker checks now inspect the complete bounded file payload rather than the first 512 bytes. Added padded SVG and HTML regression cases with markup beyond the old prefix boundary.
 - Security operations documentation explicitly scopes the guarantee: signature/pattern defense-in-depth, not complete parsing, malware scanning, or polyglot detection.
 - Exact-head CI and scan-result verification are pending. No CI success is claimed until the new head finishes.
+
+
+### 2026-11-15 — OSV report persistence failure correction
+
+- Run [43726878501](https://github.com/iamjpsonkar/Wave/actions/runs/43726878501), OSV job [132851185917](https://github.com/iamjpsonkar/Wave/actions/runs/43726878501/job/132851185917): explicit baseline and proposed SHAs both verified successfully and both scanner containers returned exit code 0, but their `--output-file` reports were not persisted to the host workspace. The subsequent required-report check correctly failed closed.
+- Replaced the non-persisting Docker action invocation with the pinned OSV-Scanner CLI installed on the runner, so JSON reports are created in the checked-out workspace and can be consumed by the reporter step. Retained explicit base/head checkout and SHA verification; updated reporter arguments to the upstream documented flags.
+- Exact-head CI is pending. No scan result or CI pass is claimed yet.
