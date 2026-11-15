@@ -627,3 +627,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Remediated invalid newline fixtures, current error class and ambiguous/stale selectors; corrected template preview flow, image/diagram/PDF assertions; fixed empty task-list Enter handling and block-color newline parsing/serialization; preserved selection during color toolbar mouse-down.
 - QA/WIKI/archive logs record exact scope and limitations. Latest CI at initial remediation check: [run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072), still in progress at time of writing. Verify the final run for the latest PR head before claiming success.
 - No local tests/typecheck/build were run. Native OS picker/revocation, real external-process races, full accessibility audit and process-termination checks remain unverified. Issue #1 remains open; PR must not be merged by the agent.
+
+
+## 38. WAVE-0001 — second CI triage pass — 2026-11-15
+
+- Rechecked PR #101, current head at the time of this pass `98f3a77e90ed1819811998d1519d010516c1203d`; latest completed run `43683760674` failed Playwright with 39 passed / 9 failed. Node tests, typecheck, production build and container job passed.
+- Failure categories: settings Escape/focus trap, Lucide icon class expectation, strict selectors for preview code/template/diagrams/PDF color spans, color toolbar not applying background/clear due to selection/state handling, and generated block-color callout classification.
+- Follow-up commits: scoped Playwright selectors and icon expectation; settings Escape support; toolbar color edits now use the controlled editor change path and clear wrapper-aware selection; block color classifier corrected. Updated QA/WIKI/development archive notes.
+- A newer workflow triggered by later commits must be checked against the latest PR head SHA. This remains unverified; no local tests were run. Do not merge. Issue #1 still has open native picker/OS permission, external-process race, accessibility and termination acceptance criteria.
