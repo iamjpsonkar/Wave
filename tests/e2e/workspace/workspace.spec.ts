@@ -486,12 +486,10 @@ test('autosave write failures are visible and create a sanitized diagnostic even
   await expect(report).toContainText('workspace:document-save:failed');
   await expect(report).toContainText('NotAllowedError');
   await expect(report).not.toContainText('/Users/private/notes.md');
-  await page.evaluate(() => {
-    const prototype = Object.getPrototypeOf((window as any).__waveTestRoot);
-    // The FileSystemDirectoryHandle prototype is not the file-handle prototype
-    // patched above; restore is performed on the saved file-handle prototype.
+  await page.evaluate(async () => {
     const root = (window as any).__waveTestRoot as FileSystemDirectoryHandle;
-    void root.getDirectoryHandle('.wave').then(wave => wave.getDirectoryHandle('documents')).then(docs => docs.getFileHandle('untitled.md')).then(file => Object.defineProperty(Object.getPrototypeOf(file), 'createWritable', { configurable: true, value: (window as any).__waveOriginalCreateWritable }));
-    void prototype;
+    const documents = await (await root.getDirectoryHandle('.wave')).getDirectoryHandle('documents');
+    const file = await documents.getFileHandle('untitled.md');
+    Object.defineProperty(Object.getPrototypeOf(file), 'createWritable', { configurable: true, value: (window as any).__waveOriginalCreateWritable });
   });
 });
