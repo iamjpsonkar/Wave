@@ -260,8 +260,10 @@ test('recovery prompt identifies a draft created in another tab and preserves it
     sameWorkspace: true
   });
 
+  const sourceRecoveryLogs: string[] = [];
+  page.on('console', message => { if (message.text().includes('[Wave]')) sourceRecoveryLogs.push(message.text()); });
   const secondRecoveryLogs: string[] = [];
-  second.on('console', message => { if (message.text().includes('[Wave recovery]')) secondRecoveryLogs.push(message.text()); });
+  second.on('console', message => { if (message.text().includes('[Wave]')) secondRecoveryLogs.push(message.text()); });
   let promptMessage = '';
   const dialogPromise = second.waitForEvent('dialog', { timeout: 5000 }).then(async dialog => {
     promptMessage = dialog.message();
@@ -269,7 +271,7 @@ test('recovery prompt identifies a draft created in another tab and preserves it
   });
   await second.getByRole('button', { name: /Cross-tab Recovery/ }).click();
   await dialogPromise.catch(error => {
-    console.error('[Cross-tab recovery diagnostics]', JSON.stringify({ sourceJournal, secondJournal, sourceLogs: recoveryLogs, secondLogs: secondRecoveryLogs, dialogError: String(error) }, null, 2));
+    console.error('[Cross-tab recovery diagnostics]', JSON.stringify({ sourceJournal, secondJournal, sourceLogs: sourceRecoveryLogs, secondLogs: secondRecoveryLogs, dialogError: String(error) }, null, 2));
     throw error;
   });
   expect(promptMessage).toContain('another browser tab');
