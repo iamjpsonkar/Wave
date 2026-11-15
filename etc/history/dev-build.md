@@ -1112,3 +1112,9 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Exact PR #139 run [43733896044](https://github.com/iamjpsonkar/Wave/actions/runs/43733896044): `npm ci`, dependency license audit and all 39 Node unit tests passed. Typecheck then failed on two migration issues: React 19's textarea ref is `RefObject<HTMLTextAreaElement | null>`, while EditorEnhancements required the narrower type; TypeScript 7 also requires an explicit declaration for the CSS side-effect import.
 - Updated the component prop to accept the nullable ref and added Vite's official `vite/client` type reference in `src/vite-env.d.ts` (which supplies the CSS module shim). No compiler strictness was disabled and no test assertions were changed.
 - Exact-head CI must rerun typecheck, production build, Playwright and the full security/container matrix. No pass is claimed for this correction yet.
+
+### Lucide 1.x icon class compatibility — 2026-11-15
+
+- Exact PR #139 run [43734105883](https://github.com/iamjpsonkar/Wave/actions/runs/43734105883): `npm ci`, license audit, all 39 Node tests, TypeScript 7 typecheck and production build passed. Playwright passed 49 of 50 scenarios.
+- The only failure was the toolbar icon assertion expecting the old `lucide-file-code2` class. Lucide 1.72 maps the existing `FileCode2` export to an SVG with `lucide-file-code-corner lucide-file-code-2`; the UI label and behavior remained correct.
+- Updated the regression assertion to accept the new icon class while still checking that the code-block icon is distinct from the inline-code icon. Fresh exact-head E2E and downstream CI are required.

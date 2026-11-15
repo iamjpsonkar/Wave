@@ -3,7 +3,7 @@
 This file records third-party software and other externally sourced material used by Wave. It is supplementary to the upstream license files and package records; it does not replace those terms or relicense any component. Wave's own source is licensed under the MIT License in [LICENSE](./LICENSE).
 
 Historical pre-upgrade audit baseline: 2026-11-15 (commit `7e895f26b05288dc8edfebcf03e14efe954950f5`, 221 resolved package entries).  
-Current proposed dependency snapshot: 2026-11-15, package-lockVersion 3, 181 resolved package entries. See the current upgrade audit section below.
+Current proposed dependency snapshot: 2026-11-15, lockfileVersion 3, 181 resolved package entries. See the current upgrade audit section below.
 
 ## Dependency inventory
 
@@ -72,7 +72,7 @@ Runtime Google Fonts remain remotely requested and unpinned; no font binaries ar
 
 - Preserve each package's upstream license and copyright notices in source and production distributions as required by that license.
 - Include applicable Apache-2.0 NOTICE files and other upstream attribution material. Do not assume npm lock metadata includes the notice contents.
-- Include CC-BY-4.0 attribution for caniuse-lite when distributing the database or derivative material in a way covered by CC-BY-4.0. The upstream project specifically permits attribution by mentioning **caniuse.com**; include the license link and required change indication where applicable.
+- If caniuse-lite is reintroduced, include CC-BY-4.0 attribution for its database material. The historical upstream project permits attribution by mentioning **caniuse.com**; include the license link and required change indication where applicable.
 - Do not copy third-party code, text, examples, graphics, fonts or brand assets without tracing their origin and license.
 - Wave's MIT license applies to Wave-authored project code; it does not supersede third-party licenses or convert third-party assets to MIT.
 

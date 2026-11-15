@@ -848,3 +848,8 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - PR #139 first exact-head CI run [43733896044](https://github.com/iamjpsonkar/Wave/actions/runs/43733896044) passed `npm ci`, license audit and all 39 Node tests, then exposed two typecheck errors: nullable React 19 textarea ref variance and missing CSS side-effect import typing under TypeScript 7.
 - Corrected the ref contract in `src/EditorEnhancements.tsx` and added `src/vite-env.d.ts` referencing `vite/client` for the CSS module shim. Strict type checking remains enabled.
 - Fresh exact-head CI is required; no pass is claimed until the new workflow completes. See `etc/history/dev-build.md` and PR #139.
+
+## 2026-11-15 — Lucide 1.x icon regression correction
+
+- PR #139 run [43734105883](https://github.com/iamjpsonkar/Wave/actions/runs/43734105883) passed npm ci, license audit, 39 Node tests, TypeScript 7 typecheck and production build. Playwright passed 49/50; one assertion expected the old Lucide v0 class `lucide-file-code2`, while v1.72 emits `lucide-file-code-corner lucide-file-code-2` for the same `FileCode2` export.
+- Updated `tests/e2e/editor/editor.spec.ts` to match the current v1 class while preserving the distinct-icon assertion. New exact-head CI is required; no full pass is claimed.
