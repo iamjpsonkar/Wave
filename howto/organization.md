@@ -80,3 +80,21 @@ Escalate unresolved risks rather than proceeding on an undocumented assumption.
 ## 6. Scaling
 
 Start with a lean cross-functional group and combine roles where necessary. Split teams or create feature squads only when workload, ownership conflicts or sustained delivery demand justify it. See [hiring-roadmap.md](./hiring-roadmap.md).
+
+
+## 7. Operating model and accountability
+
+For each initiative, appoint one directly responsible owner (DRO). Supporting teams advise and review; accountability must not be distributed so widely that no one owns the outcome.
+
+A decision record for a material product, architecture, privacy or data-format decision should capture:
+- Context and problem.
+- Options considered.
+- Decision and accountable approver.
+- Consequences, risks and rollback/migration implications.
+- Date, affected issue/PR and review trigger.
+
+Use GitHub issues/PRs and concise repository decision records rather than relying on chat-only agreements. Revisit a decision when assumptions, product scope or technical constraints materially change.
+
+## 8. Organization status and limits
+
+This handbook defines a proposed operating model. It does not establish actual staffing, employment relationships, budgets, GitHub teams, CODEOWNERS, branch protections, repository permissions or release approvals. Those require separate explicit decisions and configuration verification.
