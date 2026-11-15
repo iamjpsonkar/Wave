@@ -55,6 +55,23 @@ test('concurrent same-name asset uploads receive distinct filenames',async()=>{
   assert.equal(await(await(await workspace.assets.getFileHandle(two)).getFile()).text(),'two');
 });
 
+test('attachment validation never logs user filenames or content metadata to the console',async()=>{
+  const originalDebug=console.debug,originalWarn=console.warn;
+  const calls=[];
+  console.debug=(...args)=>calls.push(['debug',...args]);
+  console.warn=(...args)=>calls.push(['warn',...args]);
+  try{
+    const activeSvg=new File(['<svg onload="alert(1)"></svg>'],'private-client-record.svg',{type:'image/svg+xml'});
+    await assert.rejects(()=>validateAttachmentContent(activeSvg),/active SVG or HTML content/);
+    const validText=new File(['ordinary note'],'private-client-record.txt',{type:'text/plain'});
+    await validateAttachmentContent(validText);
+    assert.deepEqual(calls,[]);
+  }finally{
+    console.debug=originalDebug;
+    console.warn=originalWarn;
+  }
+});
+
 test('attachment validation rejects active content, metadata mismatches, spoofed signatures and oversized files',async()=>{
   const {workspace}=await fixture();
   const expectReject = async (label, operation, pattern) => {
