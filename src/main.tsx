@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import DiagnosticsErrorBoundary from './DiagnosticsErrorBoundary';
 import { configureDiagnostics, reportDiagnostic } from './diagnostics';
+import './styles.css';
 
 if (new URLSearchParams(window.location.search).get('waveDebug') === '1') configureDiagnostics('debug');
-import './styles.css';
 
 window.addEventListener('error', event => {
   reportDiagnostic('error', 'runtime:uncaught-error', {
