@@ -1006,3 +1006,9 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - The previous fix only classified ZIP/gzip signatures as required MIME matches. The active SVG/HTML signatures were filtered out of the signature list, so the content-specific test was exercising a second inconsistent branch. The generic text-prefix check is not an adequate single source of truth for these recognized signatures.
 - Removed that filtering and explicitly treat detected SVG, HTML, ZIP, gzip and WASM signatures as active/container signatures requiring the matching declared MIME. Kept supported benign image/document signature matching and unknown-format compatibility. Updated the test to directly exercise `validateAttachmentContent` for the renamed PNG content case, so the failing layer is tested without relying on `addAsset`'s earlier checks.
 - New exact-head CI is required; no local execution is claimed.
+
+
+### 2026-11-15 — Attachment unit-test debug instrumentation
+
+- Exact run [43724391529](https://github.com/iamjpsonkar/Wave/actions/runs/43724391529), job [132843050515](https://github.com/iamjpsonkar/Wave/actions/runs/43724391529/job/132843050515) failed at attachment test line 68 (38/39 passed). The active SVG payload renamed as PNG is correctly rejected by the validator as active SVG/HTML, but the previous assertion expected the generic content mismatch error. Updated expected error and added labelled case-by-case debug output. Validator diagnostics log metadata and the first 16 bytes as hex only, never file contents.
+- A local checkout attempt and `./test.sh` were blocked by unavailable DNS access to github.com; local test status is NOT RUN. Exact-head CI is required before claiming success.
