@@ -640,3 +640,16 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Audited the actual Git tree and found that many detailed docs and trackers are currently under `trash/`; they remain tracked files. Updated the root README links to the verified current paths rather than assuming root-level or `docs/` locations.
 - This is documentation/governance work on `manager`. No application source, tests, GitHub permissions, CODEOWNERS, branch protection, GitHub Teams or CI settings were changed. No test, typecheck, build, E2E or CI run was performed.
 - Documentation links were adjusted using the actual recursive Git tree; a complete automated Markdown link checker was not run. Continue auditing inbound references before any further file moves.
+
+
+## 2026-11-15 — Documentation system hardening completion (manager)
+
+- Expanded `AGENTS.md` into the definitive agent operating contract, including task-specific protocols, authority precedence, safe-autonomy boundaries, evidence standards, documentation map and final reporting requirements.
+- Strengthened the complete `howto/` handbook: index/document ownership; organization accountability and decision records; team charters and maintenance expectations; code ownership and high-risk review matrix; cross-team work-item/PR standards; engineering, supply-chain and incident rules; hiring decision gates; developer execution and QA evidence protocols.
+- Aligned `WIKI.md` with the single-entry model: agents read `AGENTS.md` first and use the wiki as deeper reference.
+- Updated `README.md` to point to the actual tracked docs. Recursive tree inspection confirmed the legacy detailed docs and product trackers currently reside under `trash/`; they remain tracked and were not deleted. Updated references in README, AGENTS, WIKI and developer/QA guides to those verified paths.
+- Ran a repository-tree-based relative Markdown link audit across README, AGENTS, WIKI and all nine howto documents: zero missing internal targets in those checked files.
+- Updated `QA_CONTEXT.md` only to record QA-process documentation changes; product QA disposition and open findings were not reclassified.
+- Final pre-handoff branch HEAD: `809db07849d579b19006cc9588b4af804c8ceac1`. Branch comparison reports 40 commits ahead and 0 behind `main` at comparison time.
+- Documentation-only changes. No application source/tests changed; no test, typecheck, build, E2E, Docker build or CI run was performed. Link audit verified target existence, not rendered anchors or external URLs.
+- No GitHub Teams, CODEOWNERS, branch protection, permissions, staff assignments or hiring approvals were configured. Those remain proposals requiring explicit setup and verification.
