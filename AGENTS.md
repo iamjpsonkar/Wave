@@ -76,8 +76,14 @@ The current documented architecture (verify files before relying on it):
 - `src/markdown.tsx` — Markdown preprocessing and safe rendering extensions.
 - `src/templates.ts` — built-in templates.
 - `src/styles.css` — application styling and responsive behavior.
-- `tests/storage.test.js` — storage and safety tests.
-- `tests/e2e/workspace.spec.ts` — Playwright browser journeys.
+- `tests/unit/storage/` — focused Node tests for documents, Trash, backups and assets.
+- `tests/unit/safety/` — concurrency, recovery and path-safety unit tests.
+- `tests/helpers/storage-fixtures.js` — shared in-memory filesystem fixtures for unit tests.
+- `tests/e2e/workspace/lifecycle.spec.ts` — workspace creation, persistence, recovery and lifecycle journeys.
+- `tests/e2e/markdown/` — Markdown rendering, security and accessibility scenarios.
+- `tests/e2e/editor/productivity.spec.ts` — editor, templates, formatting and productivity journeys.
+- `tests/e2e/ui/navigation-and-preferences.spec.ts` — navigation, responsive UI and preferences journeys.
+- `tests/e2e/fixtures/workspace.ts` — shared Playwright workspace fixture and page helpers.
 - `.github/workflows/ci.yml` — CI workflow.
 - `config/` and `docker/` — build/test/deployment configuration.
 
