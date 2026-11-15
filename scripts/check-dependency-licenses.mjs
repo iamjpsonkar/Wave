@@ -31,7 +31,7 @@ function licenseValue(value) {
   return '';
 }
 
-function inventoryFromLock(lock, lockBlobSha) {
+function inventoryFromLock(lock) {
   if (!lock.packages || typeof lock.packages !== 'object') {
     throw new Error('package-lock.json is missing the packages map; regenerate it with the supported npm version.');
   }
@@ -87,7 +87,7 @@ try {
     throw new Error('Expected npm lockfileVersion 3; found ' + lock.lockfileVersion);
   }
 
-  const inventory = inventoryFromLock(lock, null);
+  const inventory = inventoryFromLock(lock);
   const problems = findMetadataProblems(inventory);
   if (options.updateInventory) {
     await writeFile(INVENTORY_PATH, JSON.stringify(inventory, null, 2) + '\n', 'utf8');
@@ -101,8 +101,8 @@ try {
     } catch (error) {
       throw new Error('Committed dependency inventory is missing or invalid. Run npm run license:audit:update and review the resulting diff. ' + (error instanceof Error ? error.message : String(error)));
     }
-    const currentComparable = { ...inventory, lockfileBlobSha: undefined, baselineMainCommit: undefined };
-    const committedComparable = { ...committed, lockfileBlobSha: undefined, baselineMainCommit: undefined };
+    const { baselineMainCommit: _baseline, ...currentComparable } = inventory;
+    const { baselineMainCommit: _committedBaseline, ...committedComparable } = committed;
     const inventoryMatches = JSON.stringify(currentComparable) === JSON.stringify(committedComparable);
 
     console.log('Locked packages: ' + inventory.packageCount);
