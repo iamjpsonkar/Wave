@@ -348,3 +348,9 @@ Strengthen deterministic browser coverage for the WAVE-031 reliability/QA gap wi
 - Settings modal E2E now closes the modal before clicking Preview; modal backdrop remains intentionally modal. Lucide icon test expects the actual `lucide-file-code2` class.
 - Source commits: App `763008201aa6f8112345f6343bb480fbfbd85372`; block editor `43830417f3be88556a4db952789416cc46211916`; E2E `9c1e653e38e3478e7eb9a1e1f0249775f044d768`.
 - Verification remains pending the new latest-head workflow. No test pass is claimed here.
+
+## 2026-11-15 — Cross-tab recovery E2E fixture correction
+
+- Diagnosed run `43688362527`: 47/48 Playwright passed; the only failure was an empty cross-tab recovery prompt message. Node tests (30), typecheck, production build and container build passed.
+- Removed the premature `page.clock.install()` that ran before workspace/page creation. The test now installs the source tab's fake clock once, after `createPage()` confirms the baseline document is saved, then writes the unsaved draft. The second tab remains on real time.
+- This corrects the test's clock lifecycle; it does not change application behavior. Fresh CI is pending, and no local browser execution is claimed.
