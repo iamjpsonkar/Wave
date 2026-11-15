@@ -2,7 +2,7 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { pathToFileURL } from "node:url";
 
 const IGNORED_DIRECTORIES = new Set([".git", "node_modules", "dist", "coverage", "test-results", "playwright-report", "history"]);
 
@@ -51,7 +51,7 @@ export function extractInlineMarkdownLinks(markdown) {
       }
       let start = open + 2;
       while (/\s/.test(line[start] || "")) start++;
-      let destination = "";
+      let destination;
       let end = start;
       if (line[start] === "<") {
         const close = line.indexOf(">", start + 1);
