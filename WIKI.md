@@ -108,7 +108,7 @@ Wave is evolving from a local-first Markdown workspace into a complete workspace
 - Build useful end-to-end workflows, not feature parity for its own sake.
 - Reliability, data integrity, accessibility, recovery, portability and security are release gates, not optional polish.
 
-The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./etc/product/upcoming-features.md). The actionable order is in [priority-features.md](./priority-features.md).
+The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./etc/product/upcoming-features.md). The actionable order is in [priority-features.md](./etc/product/priority-features.md).
 
 ---
 
@@ -410,7 +410,7 @@ Dependencies matter. For example:
 - Public publishing requires access control, safe rendering, revocation and export semantics.
 - Plugins require a permission/capability model and sandboxing.
 
-[priority-features.md](./priority-features.md) is the practical execution sequence. [github-issues.md](./github-issues.md) indexes the roadmap issues and defect/gap issues. GitHub issue counts and checklists are snapshots; re-fetch before reporting current status.
+[priority-features.md](./etc/product/priority-features.md) is the practical execution sequence. [github-issues.md](./etc/quality/github-issues.md) indexes the roadmap issues and defect/gap issues. GitHub issue counts and checklists are snapshots; re-fetch before reporting current status.
 
 ---
 
