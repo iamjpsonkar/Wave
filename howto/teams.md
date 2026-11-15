@@ -145,3 +145,22 @@ Every team must:
 | All teams ↔ DevOps | Pipeline and release requirements are agreed before merge |
 | Ecosystem ↔ Security/Platform | Permission, network and data boundaries reviewed before implementation |
 | Product ↔ Engineering | Scope, feasibility, dependencies and acceptance are agreed before build |
+
+
+## Team-level operating agreement
+
+Every team charter should be actionable. For each active workstream, maintain:
+- One accountable lead or directly responsible owner.
+- A bounded mission and explicit non-goals.
+- Owned modules/data contracts and named collaborating teams.
+- A prioritized backlog linked to canonical issues.
+- Test, documentation and maintenance responsibilities.
+- Escalation path for security, privacy, data-loss and release risks.
+
+### Maintenance ownership
+
+Feature Engineering does not hand off a feature and walk away. The feature-owning team remains responsible for defects, compatibility, documentation, regression tests and deprecation planning. Core Platform owns shared storage contracts; Product Experience owns shared interaction patterns; QA independently verifies outcomes; DevOps owns the reliability of build/release automation.
+
+### Capacity rule
+
+Do not create a permanent squad solely because a capability appears in the roadmap. Form temporary cross-functional workstreams first. Establish a separate squad only when there is sustained demand, a coherent backlog, clear ownership and enough people to maintain it without starving platform and QA work.
