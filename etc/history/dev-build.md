@@ -1144,3 +1144,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - No production storage code changed. The existing implementation already compares before/after source trees and copied snapshot trees and marks failed backups as non-restorable.
 - Source review confirms the focused regression cases are present. Tests, typecheck, build and browser suite have **not** been run in this GitHub-only edit; exact-head CI is required. Do not claim execution success until CI completes.
 
+### PR #141 exact-head CI verification — 2026-11-15
+
+- Exact source head `c1e6eeff71bb57d03d294e343aae0c85a0c35e41`; workflow [43737101051](https://github.com/iamjpsonkar/Wave/actions/runs/43737101051) completed successfully.
+- Functional gate: `npm ci`, license metadata audit, **38/38 Node tests**, TypeScript typecheck, production build and **50/50 Playwright Chromium scenarios** passed. The new source-mutation-during-copy regression passed as Node subtest 17.
+- Container configuration/image build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy filesystem/image scan all passed. GitHub Pages deployment was skipped as expected for a pull request.
+- This verifies exact head `c1e6eeff...`; any subsequent source commit requires a fresh exact-head CI run. No local test/build execution is claimed.
+
