@@ -292,11 +292,13 @@ test('recovery prompt identifies a draft created in another tab and preserves it
       db.close();
     }
   });
-  const retainedAfterDecline = await readRetainedDrafts();
-  expect(retainedAfterDecline).not.toContainEqual(expect.objectContaining({
-    content: '# Cross-tab Recovery\n\nUnsaved change owned by first tab',
-    tabId: sourceJournal.tabId
-  }));
+  await expect.poll(async () => {
+    const retained = await readRetainedDrafts();
+    return retained.some(record =>
+      record.content === '# Cross-tab Recovery\n\nUnsaved change owned by first tab' &&
+      record.tabId === sourceJournal.tabId
+    );
+  }, { timeout: 5000, message: 'Declining cross-tab recovery must preserve the source tab journal record' }).toBe(true);
   expect(secondRecoveryLogs).toEqual([]);
 });
 
