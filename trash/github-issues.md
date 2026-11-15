@@ -35,6 +35,7 @@ The retired planning, defect, UI-backlog and development-log Markdown files are 
 | [#98](https://github.com/iamjpsonkar/Wave/issues/98) | Priority order, dependency gates and release sequencing from `trash/priority-features.md` |
 | [#99](https://github.com/iamjpsonkar/Wave/issues/99) | Broken case-sensitive and stale Markdown navigation links across README/wiki/developer context |
 | [#100](https://github.com/iamjpsonkar/Wave/issues/100) | Duplicate storage backup/locking regression test scenarios; consolidate without reducing coverage |
+| [#111](https://github.com/iamjpsonkar/Wave/issues/111) | Reorganize automated tests into feature-based directories, focused files and independently runnable scenarios without losing coverage |
 
 ## Historical archives (closed)
 
