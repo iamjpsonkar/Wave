@@ -58,7 +58,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          osv-scanner --format=json --output-file=old-results.json --include-git-root -r ./
+          osv-scanner --format=json --output=old-results.json --include-git-root -r ./
           status=$?
           if [[ ! -s old-results.json ]]; then echo "::error::OSV baseline scan failed without writing old-results.json"; exit 1; fi
           if [[ "$status" -ne 0 ]]; then echo "OSV baseline reported findings (exit $status); comparison will determine whether they are new."; fi
@@ -84,7 +84,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          osv-scanner --format=json --output-file=new-results.json --include-git-root -r ./
+          osv-scanner --format=json --output=new-results.json --include-git-root -r ./
           status=$?
           if [[ ! -s new-results.json ]]; then echo "::error::OSV proposed-source scan failed without writing new-results.json"; exit 1; fi
           if [[ "$status" -ne 0 ]]; then echo "OSV proposed-source scan reported findings (exit $status); comparison will determine whether they are new."; fi
@@ -95,7 +95,7 @@ jobs:
         shell: bash
         run: |
           set +e
-          osv-scanner --format=json --output-file=full-results.json --include-git-root -r ./
+          osv-scanner --format=json --output=full-results.json --include-git-root -r ./
           status=$?
           if [[ ! -s full-results.json ]]; then echo "::error::OSV full scan failed without writing full-results.json"; exit 1; fi
           if [[ "$status" -ne 0 ]]; then echo "OSV full scan reported findings (exit $status)."; fi

@@ -792,3 +792,8 @@ The OSV workflow correctly checked out and verified both base and proposed SHAs,
 ### 2026-11-15 — OSV scanner installation integrity
 
 Pinned the official OSV-Scanner v2.2.1 Linux amd64 release binary and verified it against its GitHub-published SHA-256 before execution. This replaces the earlier invalid installer URL. Exact-head CI pending.
+
+
+### 2026-11-15 — OSV CLI flag compatibility
+
+The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release uses `--output`. Updated all report-producing scan calls to the supported flag. Existing release checksum, base/head SHA verification and fail-closed report checks remain. Exact-head CI pending.

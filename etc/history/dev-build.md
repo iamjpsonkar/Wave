@@ -1068,3 +1068,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Replaced the invalid guessed install-script URL with the official OSV-Scanner v2.2.1 Linux amd64 release binary.
 - Embedded and verify the SHA-256 digest published in GitHub release metadata (`59e3bbd49f964265efc495b7ff896bff3c725b14c9fcce2e82088e053af98e7b`) before execution. Scanner JSON output is written directly to the runner workspace; base/head SHA checks and fail-closed report checks remain enforced.
 - Exact-head CI pending.
+
+
+### 2026-11-15 — Correct OSV CLI output flag
+
+- Run [43727455161](https://github.com/iamjpsonkar/Wave/actions/runs/43727455161), OSV job [132853138100](https://github.com/iamjpsonkar/Wave/actions/runs/43727455161/job/132853138100) showed OSV-Scanner v2.2.1 rejected `--output-file` (`flag provided but not defined`). The upstream v2.2.1 CLI uses `--output`.
+- Updated baseline, proposed-source and scheduled scan invocations to use `--output=<report>`. Binary version and SHA-256 verification, explicit base/head SHA checks, report-existence validation and comparison gate remain intact.
+- Exact-head CI pending.
