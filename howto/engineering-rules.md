@@ -93,3 +93,29 @@ Not every task changes every document. Update only the records whose facts or st
 - Do not make destructive or privileged changes without the required authorization.
 - Ask for clarification when a decision materially affects product scope, user data or security.
 - Leave a concise, evidence-based report of changes and limitations.
+
+
+## 10. Decision records and changes to invariants
+
+Any proposed exception to local-first behavior, user-data safety, privacy, Markdown security, portability or backward compatibility requires an explicit product decision before implementation. Record the rationale, user impact, data flow, threat model, migration/rollback plan and approver. A code comment or passing test is not product approval.
+
+For consequential technical choices, record alternatives and trade-offs in the existing architecture/decision documentation. Avoid creating a new Markdown file if an authoritative architecture document already exists.
+
+## 11. Dependency and supply-chain hygiene
+
+- Prefer existing platform/browser capabilities and current dependencies over adding a package.
+- Before adding or upgrading a dependency, explain why it is needed, its maintenance posture, license, bundle/runtime impact and security implications.
+- Keep lockfiles synchronized with intentional package changes.
+- Do not add install-time scripts or network-dependent runtime behavior without review.
+- Treat imported files, archives, URLs, Markdown and extension packages as untrusted input.
+- Pin CI/tool versions consistently with the repository's package and workflow configuration.
+
+## 12. Incident and data-loss response
+
+If a task reveals possible data corruption, privacy exposure or destructive behavior:
+1. Stop the risky operation or rollout if safe and authorized.
+2. Preserve logs and reproducible evidence without copying sensitive document content.
+3. Identify affected versions, operations and data boundaries.
+4. Notify the accountable maintainer and QA owner.
+5. Prioritize containment and recovery over new feature work.
+6. Do not claim recovery until the restored data has been independently verified.
