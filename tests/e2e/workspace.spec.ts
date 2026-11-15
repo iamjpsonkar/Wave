@@ -1781,3 +1781,4 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await expect(editor).toHaveValue('```md\n- Literal code line\n\n```');
   await expect.poll(() => editor.evaluate(node => node === document.activeElement && node.selectionStart === node.value.indexOf('Literal code line') + 'Literal code line'.length + 1)).toBe(true);
 });
+- Strengthened the list/code-block Playwright regression to verify the caret remains in the expected position after Enter inside a fenced block immediately following a nested-list edit.
