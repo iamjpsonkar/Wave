@@ -31,7 +31,22 @@ function licenseValue(value) {
   return '';
 }
 
-function inventoryFromLock(lock) {
+function packageNameFromInstallPath(installPath) {
+  // Lockfile install paths can contain ancestor packages for nested installs.
+  // The package name is the final node_modules segment and may be scoped.
+  const marker = '/node_modules/';
+  const finalSegment = installPath.lastIndexOf(marker);
+  const packagePath = finalSegment >= 0
+    ? installPath.slice(finalSegment + marker.length)
+    : installPath.slice('node_modules/'.length);
+  if (packagePath.startsWith('@')) {
+    const [scope, name] = packagePath.split('/');
+    return scope && name ? scope + '/' + name : packagePath;
+  }
+  return packagePath.split('/')[0];
+}
+
+export function inventoryFromLock(lock) {
   if (!lock.packages || typeof lock.packages !== 'object') {
     throw new Error('package-lock.json is missing the packages map; regenerate it with the supported npm version.');
   }
@@ -41,7 +56,7 @@ function inventoryFromLock(lock) {
     const license = licenseValue(metadata.license);
     packages.push({
       installPath,
-      name: installPath.slice('node_modules/'.length),
+      name: packageNameFromInstallPath(installPath),
       version: String(metadata.version || ''),
       license: license || null,
       source: metadata.resolved || null,

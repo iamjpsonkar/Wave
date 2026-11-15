@@ -99,3 +99,6 @@ For dependency changes, update the committed machine-readable inventory at `etc/
 
 Keep each task's implementation and its documentation together. The default is one cohesive commit containing related source changes, tests, configuration and the relevant Markdown updates (including the appropriate development history and handoff when applicable). Do not create a separate documentation-only commit for docs that explain the same implementation. Minimize commits without combining unrelated work; split only genuinely independent reviewable phases. Review the complete diff before pushing, and verify CI against the exact pushed commit. Amend unshared commits when needed; never rewrite shared main history. See [AGENTS.md](../../AGENTS.md) for the full agent commit policy.
 
+
+
+When changing the dependency inventory generator, keep the package-name extraction semantics tested for both scoped and unscoped nested install paths. Ensure the audit baseline commit is consistent in all inventory and notice records and matches the actual base commit.

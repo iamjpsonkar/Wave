@@ -7,6 +7,8 @@ tests/
   helpers/
     storage-fixtures.js
   unit/
+    license/
+      dependency-license-inventory.test.js
     diagnostics/
       diagnostics.test.js
     safety/
@@ -25,6 +27,7 @@ tests/
       editor.spec.ts
 ```
 
+- `unit/license`: lockfile inventory normalization and dependency metadata guard behavior.
 - `unit/storage`: workspace/document operations, Trash, backup and recovery behavior.
 - `unit/safety`: concurrency, locking, revision flushes, path safety and stale-workspace guards.
 - `unit/diagnostics`: structured event shape, redaction, levels and sink isolation.

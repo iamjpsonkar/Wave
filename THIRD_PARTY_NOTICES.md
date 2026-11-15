@@ -3,7 +3,7 @@
 This file records third-party software and other externally sourced material used by Wave. It is supplementary to the upstream license files and package records; it does not replace those terms or relicense any component. Wave's own source is licensed under the MIT License in [LICENSE](./LICENSE).
 
 Audit baseline: 2026-11-15  
-Repository commit at audit start: `7e895f26b05247358604a644a3e6902edcbed80f`  
+Repository commit at audit start: `7e895f26b05288dc8edfebcf03e14efe954950f5`  
 Dependency source: npm `package-lock.json`, lockfileVersion 3, 221 resolved package entries.
 
 ## Dependency inventory

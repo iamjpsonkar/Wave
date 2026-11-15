@@ -330,3 +330,8 @@ Keep the notices inventory, README link, dependency-audit script and CI step mai
 
 This policy minimizes noisy history while keeping every implementation self-contained, reviewable and documented.
 
+
+
+## Dependency inventory correctness checks
+
+The dependency inventory generator must derive each npm package name from the final `node_modules/` segment of its lockfile install path, not from the full nested path after the first segment. Preserve complete scoped names such as `@types/unist`. Keep regression coverage for root and nested scoped and unscoped packages, and regenerate the committed inventory whenever generator semantics change. Keep the audit baseline SHA identical across the generator, inventory metadata and `THIRD_PARTY_NOTICES.md`; verify it against the actual PR base commit.

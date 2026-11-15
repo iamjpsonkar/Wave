@@ -625,3 +625,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Established the default of one cohesive commit per task. Split only genuinely independent, logically reviewable phases; do not combine unrelated tasks merely to reduce the count.
 - Require a complete diff review before push and exact-head CI verification afterward. Amend unshared commits when useful; do not rewrite shared main history. Detailed policy is recorded in AGENTS.md and referenced from WIKI.md and the contributor guide.
 
+
+
+## 2026-11-15 — PR #121 review findings corrected
+
+- Corrected npm lockfile package-name extraction to use the final `node_modules/` segment and preserve complete scoped names; nested packages no longer expose ancestor install paths as names.
+- Added focused Node regression tests for nested unscoped names, nested scoped names and root scoped names. The inventory snapshot was regenerated with corrected package names.
+- Reconciled the audit-start baseline in `THIRD_PARTY_NOTICES.md` to the actual PR base SHA `7e895f26b05288dc8edfebcf03e14efe954950f5`, matching the checker and PR base metadata.
+- These corrections address the two accuracy findings in review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985). Legal release-artifact inspection limitations remain open; green CI is not legal sign-off.

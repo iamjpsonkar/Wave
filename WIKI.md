@@ -798,3 +798,8 @@ At the 2026-11-15 handoff, CI run [43712184333](https://github.com/iamjpsonkar/W
 
 Wave uses **one cohesive commit per task by default**. Code, tests, configuration and the Markdown documentation/history that belongs to that implementation must be updated and committed together. Avoid separate documentation-only commits for the same task. Minimize commit count without combining unrelated work; split only genuinely independent, reviewable phases. Review the full diff before pushing and verify CI on the exact pushed SHA. Amend unshared commits where practical, but never rewrite shared main history. The detailed mandatory policy is in [AGENTS.md](./AGENTS.md).
 
+
+
+## PR #121 review correction
+
+Review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985) identified inaccurate package names for nested lockfile entries and a mismatched audit baseline SHA. Package-name normalization now uses the final `node_modules/` segment (including scoped names), with regression tests; the committed inventory has been regenerated and the notices baseline corrected to the PR base commit. Exact-head CI and outstanding release-artifact legal review remain required.

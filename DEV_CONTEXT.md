@@ -906,3 +906,10 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Review the complete diff before pushing, then verify CI against the exact pushed SHA. Amend unshared commits where appropriate; never rewrite shared main history.
 - The authoritative detailed policy is in AGENTS.md; contributor and agent guidance also appears in etc/engineering/CONTRIBUTING.md and WIKI.md.
 
+
+
+## 2026-11-15 — PR #121 review remediation
+
+- Addressed review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985): dependency inventory names now derive from the final `node_modules/` path segment, including complete scoped names; regression coverage includes nested unscoped, nested scoped and root scoped packages.
+- Regenerated `etc/legal/dependency-license-inventory.json` with corrected package names and aligned the audit baseline in `THIRD_PARTY_NOTICES.md` to PR base SHA `7e895f26b05288dc8edfebcf03e14efe954950f5`.
+- Full exact-head CI is required before treating the code findings as verified. Previously documented package tarball/LICENSE/NOTICE and final distribution attribution checks remain open and must not be represented as legally complete.
