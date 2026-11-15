@@ -577,3 +577,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Documented inbound contribution expectations in `etc/engineering/CONTRIBUTING.md`: contributions intended for inclusion are offered under MIT, contributors retain copyright, and no CLA/DCO is introduced.
 - Corrected WIKI.md's stale root CONTRIBUTING.md references to the actual canonical guide at `etc/engineering/CONTRIBUTING.md`; indexed the license in `etc/README.md`.
 - Work is on branch `WAVE-0117`; exact-head CI and GitHub default-branch license detection remain pending. No local tests/build are claimed for this GitHub-only documentation/metadata change.
+
+## 2026-11-15 — Issue #118: third-party dependency and asset license audit
+
+- Audited the default-branch npm lockfile (lockfileVersion 3): 221 resolved package entries, all with declared license metadata — MIT 210, ISC 7, Apache-2.0 2, BSD-3-Clause 1 and CC-BY-4.0 1. The CC-BY-4.0 entry is `caniuse-lite@1.0.30001826`; release attribution must be preserved and reviewed against its upstream LICENSE/source attribution record.
+- Identified Lucide React icons (`lucide-react@0.468.0`, ISC) and runtime Google Fonts families DM Sans, DM Mono and Playfair Display (SIL OFL 1.1). Font binaries are not checked into the repo; exact runtime font bytes are not pinned. Mermaid/Graphviz SVG output and sample templates are authored by Wave. Workspace media is user-provided local content.
+- Added `THIRD_PARTY_NOTICES.md` with the dated inventory, source links, obligations, audit limitations, and repeatable update process. README and `etc/README.md` link to it.
+- Added `scripts/check-dependency-licenses.mjs`, `npm run license:audit`, `npm run license:audit:json`, and `npm run test:license`. CI runs the audit after `npm ci`; the checker fails on missing or unrecognized SPDX declarations.
+- Added ongoing maintenance requirements to `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md`: verify exact upstream license/NOTICE files, inventory new assets, preserve attribution and escalate ambiguous terms. CI's check is metadata screening only, not a legal compatibility opinion.
+- Open follow-up items: inspect each package's actual LICENSE/NOTICE files before release redistribution; verify the exact attribution string and distribution conditions for caniuse-lite; pin or self-host Google Fonts with OFL text/author records if deterministic/offline assets are required. No license terms have been changed and no package/asset has been replaced.
+- Branch `WAVE-0118`. This work was performed through the GitHub API; no local execution or CI result is claimed yet. Exact-head CI and script runtime verification remain pending.
