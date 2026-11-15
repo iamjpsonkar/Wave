@@ -704,3 +704,12 @@ CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was cor
 - Accessibility remains tracked in existing [#3](https://github.com/iamjpsonkar/Wave/issues/3); do not create a duplicate accessibility ticket.
 - Latest verified PR #101 CI recorded on main: [run 43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), including 48/48 Playwright tests, Node tests, typecheck, production build and container job. This does not replace native/manual checks.
 - Reconciliation preserves the PR branch's implementation history and the base branch's issue split. This GitHub-only operation does not run tests or a build.
+
+## Main sync verification and operating procedure — 2026-11-15
+
+- Product owner manually merged the latest `main` into `manager` and force-pushed the branch. Main sync PR [#107](https://github.com/iamjpsonkar/Wave/pull/107) is closed unmerged and must remain abandoned for this purpose.
+- Verified refs at the start of this documentation pass: `main` `c421f7bcf40ec430eda90fe0a57e98464762e68f`; `manager` `6747efdf0204c1cded75fd03475a75d0cbdef60b`. Manager's tip is a merge commit whose second parent is the exact current main SHA. Compare reports manager ahead 2 / behind 0, confirming main is fully contained in manager.
+- The compare endpoint reports only two manager-only additions relative to main: `etc/howtodev.md` and `etc/howtoqa.md`. No source/test file differences were reported by that comparison.
+- Future synchronization and conflict resolution are now documented in [etc/howtodev.md](./etc/howtodev.md#main-to-feature-branch-synchronization-required-workflow), linked from [WIKI.md](./WIKI.md#main-to-feature-synchronization-and-conflict-resolution-policy), and recorded in [trash/dev-build.md](./trash/dev-build.md).
+- Verification limits: GitHub refs, commit parents, tree and compare metadata were inspected. No local checkout/status, tests, typecheck, build or CI run was executed in this environment. Check CI for the latest manager commit before claiming runtime validation.
+- This is the final developer-context update for the main-sync documentation batch.
