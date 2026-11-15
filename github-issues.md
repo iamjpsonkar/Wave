@@ -4,6 +4,10 @@
 > Repository: https://github.com/iamjpsonkar/Wave  
 > This index links the active defect/gap issues and the full feature-roadmap issue set. GitHub issue checklists are the day-to-day tracking surface; `upcoming-features.md` remains the canonical product blueprint.
 
+## Documentation archive
+
+The retired planning, defect, UI-backlog and development-log Markdown files are preserved under [`trash/`](https://github.com/iamjpsonkar/Wave/tree/main/trash). The `ui-gaps.md` and `ui-features.md` names were not separate repository files; their combined source was `UI_BACKLOG.md`, now archived as `trash/UI_BACKLOG.md`.
+
 ## Summary
 
 - **92 open issues verified:** 10 existing defect/gap issues, 1 detailed UI feature backlog issue, 80 roadmap tracking issues, and 1 priority/dependency planning issue.
@@ -28,17 +32,17 @@
 | [#9](https://github.com/iamjpsonkar/Wave/issues/9) | Wave color-extension portability and accessible contrast |
 | [#10](https://github.com/iamjpsonkar/Wave/issues/10) | Native local-first visual diagram editor |
 | [#92](https://github.com/iamjpsonkar/Wave/issues/92) | Remaining UI feature proposals UIF-003–UIF-021; supplements #4, #5, #11, #13 and #32 without duplicating their broad scope |
-| [#98](https://github.com/iamjpsonkar/Wave/issues/98) | Priority order, dependency gates and release sequencing from `priority-features.md` |
+| [#98](https://github.com/iamjpsonkar/Wave/issues/98) | Priority order, dependency gates and release sequencing from `trash/priority-features.md` |
 
 ## Historical archives (closed)
 
 | Issue | Archived source | Coverage |
 |---|---|---|
-| [#93](https://github.com/iamjpsonkar/Wave/issues/93) | `fixed-bugs.md` | Full regression records WAVE-001–020 |
-| [#96](https://github.com/iamjpsonkar/Wave/issues/96) | `fixed-bugs.md` | Full regression records WAVE-021–040 |
-| [#97](https://github.com/iamjpsonkar/Wave/issues/97) | `fixed-bugs.md` | Full regression records WAVE-041–052; WAVE-031 and WAVE-039 remain open in #1 and #2 |
-| [#94](https://github.com/iamjpsonkar/Wave/issues/94) | `dev-fixed.md` | Completed implementation history, 2026-11-14 through 2026-11-15 |
-| [#95](https://github.com/iamjpsonkar/Wave/issues/95) | `dev-build.md` | CI/build chronology and verification evidence; pending checks remain pending |
+| [#93](https://github.com/iamjpsonkar/Wave/issues/93) | `trash/fixed-bugs.md` | Full regression records WAVE-001–020 |
+| [#96](https://github.com/iamjpsonkar/Wave/issues/96) | `trash/fixed-bugs.md` | Full regression records WAVE-021–040 |
+| [#97](https://github.com/iamjpsonkar/Wave/issues/97) | `trash/fixed-bugs.md` | Full regression records WAVE-041–052; WAVE-031 and WAVE-039 remain open in #1 and #2 |
+| [#94](https://github.com/iamjpsonkar/Wave/issues/94) | `trash/dev-fixed.md` | Completed implementation history, 2026-11-14 through 2026-11-15 |
+| [#95](https://github.com/iamjpsonkar/Wave/issues/95) | `trash/dev-build.md` | CI/build chronology and verification evidence; pending checks remain pending |
 
 ## Complete roadmap issues
 
@@ -129,7 +133,7 @@
 - Each roadmap issue contains the exact checklist items from its source subsection. Check individual boxes only after implementation and verification.
 - Close a roadmap issue only when all its checklist items are complete or a documented product-owner decision explicitly changes scope.
 - If an epic is split into child issues, keep the parent open and link the children; do not lose the original checklist.
-- Update `upcoming-features.md`, `FEATURES.md`, `FEATURES.md`, `bugs.md`, `fixed-bugs.md`, `UI_BACKLOG.md` and `QA_CONTEXT.md` as appropriate when work is delivered.
+- Update `upcoming-features.md`, `FEATURES.md`, `FEATURES.md`, `trash/bugs.md`, `trash/fixed-bugs.md`, `trash/UI_BACKLOG.md` and `QA_CONTEXT.md` as appropriate when work is delivered.
 - Existing bug IDs and historical fixed-bug records remain authoritative. Do not create duplicate defect issues when a roadmap issue overlaps; link the canonical issue instead.
-- `features-gap.md` is included in #6 and its color-extension follow-up #9; `priority-features.md` is preserved in #98, while the complete roadmap is represented by #11–#91. `UI_BACKLOG.md` UI gaps/UIB records are covered by #3–#10; remaining UI feature proposals are tracked in #92.
+- `trash/features-gap.md` is included in #6 and its color-extension follow-up #9; `trash/priority-features.md` is preserved in #98, while the complete roadmap is represented by #11–#91. `trash/UI_BACKLOG.md` UI gaps/UIB records are covered by #3–#10; remaining UI feature proposals are tracked in #92.
 - Completed histories are indexed in closed archives #93–#95. Keep detailed evidence in their source registers until an intentional documentation retirement is approved.
