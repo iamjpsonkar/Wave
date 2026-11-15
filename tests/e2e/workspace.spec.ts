@@ -246,12 +246,63 @@ test('recovery prompt identifies a draft created in another tab and preserves it
   await page.clock.install();
   await firstEditor.fill('# Cross-tab Recovery\n\nUnsaved change owned by first tab');
   await expect(page.locator('.topright small')).toContainText('Recovery draft saved', { timeout: 5000 });
+  const sourceJournal = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot as FileSystemDirectoryHandle;
+    const tabId = sessionStorage.getItem('wave-draft-session-id');
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('wave-draft-journal', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const records = await new Promise<Array<{ path: string; content: string; tabId?: string; workspace: FileSystemDirectoryHandle }>>((resolve, reject) => {
+      const request = db.transaction('drafts', 'readonly').objectStore('drafts').getAll();
+      request.onsuccess = () => resolve(request.result as Array<{ path: string; content: string; tabId?: string; workspace: FileSystemDirectoryHandle }>);
+      request.onerror = () => reject(request.error);
+    });
+    const matching = [];
+    for (const record of records.filter(item => item.path === 'untitled.md')) {
+      matching.push({ content: record.content, tabId: record.tabId, sameWorkspace: await record.workspace.isSameEntry(root) });
+    }
+    db.close();
+    return { tabId, matching };
+  });
+  expect(sourceJournal.matching).toEqual([expect.objectContaining({
+    content: '# Cross-tab Recovery\\n\\nUnsaved change owned by first tab',
+    tabId: sourceJournal.tabId,
+    sameWorkspace: true
+  })]);
 
   const second = await context.newPage();
   await installWorkspaceFixture(second);
   await second.goto('/');
   await second.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(second.getByRole('button', { name: /Cross-tab Recovery/ })).toBeVisible();
+  const secondJournal = await second.evaluate(async () => {
+    const root = (window as any).__waveTestRoot as FileSystemDirectoryHandle;
+    const tabId = sessionStorage.getItem('wave-draft-session-id');
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('wave-draft-journal', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const records = await new Promise<Array<{ path: string; content: string; tabId?: string; workspace: FileSystemDirectoryHandle }>>((resolve, reject) => {
+      const request = db.transaction('drafts', 'readonly').objectStore('drafts').getAll();
+      request.onsuccess = () => resolve(request.result as Array<{ path: string; content: string; tabId?: string; workspace: FileSystemDirectoryHandle }>);
+      request.onerror = () => reject(request.error);
+    });
+    const matching = [];
+    for (const record of records.filter(item => item.path === 'untitled.md')) {
+      matching.push({ content: record.content, tabId: record.tabId, sameWorkspace: await record.workspace.isSameEntry(root) });
+    }
+    db.close();
+    return { tabId, matching };
+  });
+  expect(secondJournal.tabId).not.toBe(sourceJournal.tabId);
+  expect(secondJournal.matching).toContainEqual({
+    content: '# Cross-tab Recovery\\n\\nUnsaved change owned by first tab',
+    tabId: sourceJournal.tabId,
+    sameWorkspace: true
+  });
 
   let promptMessage = '';
   second.once('dialog', async dialog => {
