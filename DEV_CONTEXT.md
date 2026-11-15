@@ -630,3 +630,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - It explains what Wave is, why local-first/data-integrity/privacy constraints matter, how to inspect and execute tasks, the architecture and seven-team responsibility model, issue/branch/PR lifecycle, verification honesty, documentation obligations, definition of done and handoff format.
 - Added entry-point references from `README.md` and `WIKI.md`. Supporting detail remains in the canonical handoff files and `howto/`; agents should consult those only as the task requires.
 - Documentation-only change. No application source or tests changed; no test, typecheck, build, E2E or CI run was performed.
+
+ 
+## 2026-11-15 — Agent handbook and documentation system hardening (manager branch)
+
+- Expanded root `AGENTS.md` with task-specific execution protocols, authority/conflict precedence, safe-autonomy boundaries, repository-link discipline, final reporting contract and evidence language.
+- Strengthened all `howto/` procedures: document ownership/index, organization accountability and decision records, team operating agreements and maintenance ownership, risk-based review matrix, work-item/PR requirements, dependency/supply-chain rules, incident response, hiring decision gates, AI-agent boundaries, and developer/QA evidence standards.
+- Aligned `WIKI.md` so `AGENTS.md` is the first-read contract and the wiki is the deeper reference.
+- Audited the actual Git tree and found that many detailed docs and trackers are currently under `trash/`; they remain tracked files. Updated the root README links to the verified current paths rather than assuming root-level or `docs/` locations.
+- This is documentation/governance work on `manager`. No application source, tests, GitHub permissions, CODEOWNERS, branch protection, GitHub Teams or CI settings were changed. No test, typecheck, build, E2E or CI run was performed.
+- Documentation links were adjusted using the actual recursive Git tree; a complete automated Markdown link checker was not run. Continue auditing inbound references before any further file moves.
