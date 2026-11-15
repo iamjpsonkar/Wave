@@ -174,3 +174,32 @@ test('document titles, Trash titles and search snippets parse real newlines',asy
   const trash=await listTrashDetailed(workspace.trash);
   assert.equal(trash.items[0].title,'Human Title');
 });
+
+test('restore rejects backup mutation during copying and marks the destination incomplete',async()=>{
+  const {root,workspace}=await fixture();
+  await saveDoc(workspace.documents,'A.md','alpha');
+  const backupName=await createBackup(workspace);
+  const source=await workspace.backups.getDirectoryHandle(backupName);
+  const sourceDocs=await source.getDirectoryHandle('documents');
+  const file=await sourceDocs.getFileHandle('A.md');
+  const originalGetFile=file.getFile.bind(file);
+  let calls=0;
+  file.getFile=async()=>{
+    calls++;
+    if(calls===2){
+      const copiedRead=await originalGetFile();
+      file.data='changed by external writer during restore';
+      file.lastModified++;
+      return copiedRead;
+    }
+    return originalGetFile();
+  };
+  await assert.rejects(()=>restoreBackupToNewWorkspace(workspace,backupName),/Backup files changed during restore/);
+  const targets=[];
+  for await(const [name,handle] of root.entries())if(handle.kind==='directory'&&name.includes('-restore-'))targets.push({name,handle});
+  assert.equal(targets.length,1);
+  const wave=await targets[0].handle.getDirectoryHandle('.wave');
+  const marker=JSON.parse(await(await(await wave.getFileHandle('restore-status.json')).getFile()).text());
+  assert.equal(marker.status,'failed');
+  await assert.rejects(()=>openWorkspace(targets[0].handle),/incomplete backup restore/);
+});

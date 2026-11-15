@@ -922,3 +922,11 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Follow-up documentation correction on branch `WAVE-0120-license-docs`: Google Fonts references in `THIRD_PARTY_NOTICES.md` are now explicitly historical because the current stylesheet uses system fonts; the current dependency tarball-review count is 161, not the stale 181 figure. The exact package tarballs and applicable NOTICE files still require manual owner/legal review.
 - This batch is documentation-only and source-reviewed. No local tests or CI results are claimed; require exact-head CI before merging.
 - Implementation history: [etc/history/dev-build.md](etc/history/dev-build.md), 2026-11-15 entry.
+
+## 2026-11-15 — Restore integrity verification (#105)
+
+- Branch: `WAVE-0105-restore-integrity`, based on current `main`.
+- Hardened backup restore against external mutation of the backup source while files are being copied. Restore now snapshots source documents/assets before and after copying, verifies the restored destination against the original snapshot, and performs equivalent before/after/copy checks for manifest and settings metadata.
+- A mismatch fails closed: the restore status is marked `failed`, and `openWorkspace` continues to reject the incomplete destination.
+- Added a deterministic regression that mutates a backup document between the copy read and final verification, then asserts the restore is rejected and the destination cannot be opened.
+- No local tests, typecheck, build, Playwright, or Docker checks were run in this GitHub-only edit. Exact-head CI is required before merge.

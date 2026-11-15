@@ -1194,3 +1194,12 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Corrected the notices to label the former Google Fonts families as historical attribution records, state that no Google Fonts CSS/font request is currently made, and align the package-tarball review count with the current inventory.
 - This is a documentation accuracy correction only. It does not complete the manual package-tarball/NOTICE legal review, owner-side GitHub security settings, or any future product-security capabilities in #120.
 - Source inspection only; no local tests or CI run are claimed. The PR must pass exact-head CI before merge.
+
+## 2026-11-15 — Detect backup mutation during restore (#105)
+
+- Issue: [#105 — external filesystem races and backup/restore fault handling](https://github.com/iamjpsonkar/Wave/issues/105).
+- Restore previously checked the copied file count against the backup completion marker, but a same-count source mutation during copying could produce a mixed or stale restored workspace without detection.
+- Added SHA-256 tree snapshots around document and asset copying. Restore compares the backup source before/after the operation and verifies the destination tree matches the pre-copy source snapshot.
+- Added equivalent consistency checks for `manifest.json` and `settings.json`, including detection of files appearing, disappearing or changing during copy.
+- Added a regression that mutates a source backup document after its copy read. The restore must reject, persist a failed marker, and remain blocked by `openWorkspace`.
+- Verification is pending exact-head GitHub Actions. No local test/build execution is claimed.
