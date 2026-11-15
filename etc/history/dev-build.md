@@ -983,3 +983,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 ### OSV reporter CLI correction — 2026-11-15
 
 - The first follow-up after switching the scanner command to `--output-file` exposed that reporter CLI v2.7.1 uses `--output-files=sarif:<path>` (plural), not `--output-file`. The reporter's `--gh-annotations` flag is also deprecated; annotations now use `--output-files=gh-annotations:#stderr` for PR comparison. Corrected from the exact workflow log for run [43723343889](https://github.com/iamjpsonkar/Wave/actions/runs/43723343889). New exact-head CI remains required.
+
+
+## 2026-11-15 — Main CI unit-test failures from run 43723476897
+
+- Inspected job [132840278700](https://github.com/iamjpsonkar/Wave/actions/runs/43723476897/job/132840278700). Install, license audit, Chromium setup, workflow YAML/policy checks passed; `./test.sh` failed before Playwright at Node unit tests (36 passed, 3 failed).
+- Root cause: the initial content-signature gate required all claimed PNG/PDF/image data to match exact signatures, breaking existing opaque-image fixture behavior and intercepting the permission lookup test before its intended storage permission failure. Refined the gate to reject active SVG/HTML payloads masquerading as other types and known archive/container signatures inconsistent with the declared MIME, while retaining the supported-extension/MIME mismatch checks. Updated fixtures to use a valid PNG signature where the test specifically exercises the subsequent storage permission failure; spoof tests now assert against concrete detected SVG/HTML and ZIP signatures.
+- These are source corrections only so far. Require a fresh exact-head CI run; no local test execution is claimed.
