@@ -1142,7 +1142,13 @@ test('workspace settings persist appearance and typography preferences locally',
   await expect(page.locator('.editor textarea')).toHaveCSS('line-height', '34.2px');
   await dialog.getByRole('button', { name: 'Done' }).click();
   await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
-  await expect(page.locator('.markdown-preview')).toHaveCSS('width', '680px');
+  // 680px is the configured maximum; the editor work column may be narrower
+  // while the contextual sample library is open, so assert the cap rather than
+  // assuming the available grid column is always at least 680px wide.
+  await expect(page.locator('[data-testid="wave-app"]')).toHaveCSS('--editor-content-width', '680px');
+  const previewWidth = await page.locator('.markdown-preview').evaluate(node => node.getBoundingClientRect().width);
+  expect(previewWidth).toBeGreaterThan(0);
+  expect(previewWidth).toBeLessThanOrEqual(680);
   const settings = await page.evaluate(async () => {
     const root = (window as any).__waveTestRoot;
     const wave = await root.getDirectoryHandle('.wave');

@@ -727,3 +727,8 @@ The root scripts are the supported shortcuts:
 - `npm run test:local`: package-script alias for the full local test script.
 
 The scripts fail fast, print the failing stage, validate the minimum supported Node version, and return a non-zero exit code on failure. A local pass shortens feedback time; GitHub CI remains the shared authoritative run on the pushed commit. Browser E2E requires Chromium and may require OS libraries on Linux.
+
+
+## Mobile workspace preferences
+
+On narrow screens the sidebar is a slide-out navigation drawer. The top bar exposes a dedicated Settings control so users can open workspace preferences without first opening the drawer. The editor content-width preference is a maximum width; the rendered editor/preview may be narrower when its available grid column is constrained by the contextual sample library or viewport.

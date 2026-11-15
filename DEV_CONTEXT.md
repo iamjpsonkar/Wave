@@ -657,3 +657,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `./run.sh` now only bootstraps dependencies when needed and starts the Vite server; removed unreachable typecheck/build commands that followed a long-running server process. Supports `--install`, `WAVE_HOST`, and `WAVE_PORT`.
 - Added executable `./test.sh` as the local quality gate: Node tests, TypeScript typecheck, production build and Playwright Chromium E2E. It installs missing dependencies and the pinned Playwright/browser prerequisites; `--no-e2e` provides a fast non-browser pass. CI invokes this same script after provisioning browser system dependencies.
 - Added `npm run test:local` alias. README, QA context, WIKI and development log updated. This task used GitHub repository editing only; no local test execution is claimed. Check the workflow on this final commit for script syntax and behavior.
+
+
+## Workspace UI regression follow-up
+
+- Color picker inputs use a neutral initial selection so choosing the standard highlight or block-background colors fires the change handler and inserts the expected Markdown formatting.
+- Mobile Settings is available from the top bar even when the sidebar is collapsed.
+- Content width preferences are maximum widths bounded by the available editor grid column; tests should assert the configured cap and the rendered width constraint, not force horizontal overflow.
+- See QA_CONTEXT.md and WIKI.md for the regression details. CI verification for the latest commit is authoritative.

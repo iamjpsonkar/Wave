@@ -390,3 +390,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added executable `test.sh`: Node tests, typecheck, production build and Playwright Chromium E2E in one local command. It bootstraps missing npm dependencies, the same pinned Playwright version used by CI, and Chromium; supports no-E2E and pre-provisioned dependency flags.
 - Added `npm run test:local` alias. CI now provisions Chromium with OS dependencies and invokes the same script with setup skipped, keeping the actual check sequence shared.
 - Updated README, QA context, WIKI and developer handoff. No local execution was available through the GitHub-only editing workflow; the new CI run must validate shell syntax/behavior and test suite outcome. Developers can immediately run `./test.sh` after pulling the branch.
+
+
+## 2026-11-15 — Workspace UI regression follow-up
+
+- Corrected color-picker initial values so applying the toolbar's default highlight/block colors is an actual color change and triggers formatting.
+- Exposed Settings directly in the mobile top bar.
+- Aligned the narrow-width E2E check with the product contract: configured width is a maximum, not a promise to overflow its available editor column.
+- CI verification pending; no local run claimed.

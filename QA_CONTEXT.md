@@ -470,3 +470,11 @@ Important documentation drift observed at the same HEAD:
 - `./test.sh --no-e2e` runs the fast non-browser checks. `--skip-install`, `--skip-playwright-install` and `--skip-browser-install` support pre-provisioned/CI environments and fail clearly if a required tool is missing.
 - CI now provisions its Linux browser dependencies and invokes the same script with install steps skipped, reducing local/CI command drift.
 - No local execution is claimed for this repository-edit task; run `./test.sh` from a checkout to verify locally. Chromium system libraries may need OS-specific installation on Linux.
+
+
+## CI follow-up — workspace theme and color-formatting regressions
+
+- Fixed the three color-formatting E2E regressions by making the color inputs start from a neutral `#ffffff` value. This allows selecting the documented warm highlight (`#fff0a8`) and green block background (`#eaf2e8`) to produce a real input change event, instead of asking the browser to re-select the already-selected color.
+- Added a compact mobile Settings action in the top bar so appearance preferences remain reachable when the sidebar is collapsed into its navigation drawer.
+- Corrected the narrow-content-width assertion: 680px is the configured maximum, while the editor's grid column can be narrower when the contextual sample library is visible. The test now verifies the configured cap and that the rendered preview respects it.
+- Verification is pending the PR workflow for the follow-up commit; no local execution is claimed.
