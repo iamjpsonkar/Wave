@@ -1134,3 +1134,13 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Candidate set: Vite 8.3.8 + plugin-react 6.3.0; React/React DOM 19.3.1 + matching type packages 19.3.0; TypeScript 6.0.3; react-markdown 10.1.0; lucide-react 1.72.0. TypeScript 7 is deferred in issue #140 until stable typescript-eslint supports it.
 - Candidate license inventory: 161 entries (MIT 142, Apache-2.0 2, ISC 3, MPL-2.0 12, BSD-3-Clause 1, 0BSD 1). MPL-2.0 Lightning CSS notices and source-availability obligations are documented in `THIRD_PARTY_NOTICES.md`; no legal certification is claimed.
 - No local build/test was run; all reported verification is from the exact-head GitHub Actions workflow above.
+
+## 2026-11-15 — Markdown navigation and exact-case link audit (#102 / #137)
+
+- Re-audited the closed #102 proposal against current `main`; the old branch was not reused because it targeted a superseded repository layout.
+- Corrected stale links in README, Wiki, developer handoff, developer procedure and contributor guide to match the current `etc/`, `docs/` and `howto/` ownership paths.
+- Added a dependency-free checker for inline local Markdown links. It checks exact path casing, percent-encoded paths, relative and repository-root paths, and missing targets; external URLs, anchor-only links, code examples and reference-style definitions remain outside its stated scope.
+- Added focused parser/path tests and an integration test over maintained repository Markdown. Exposed `npm run test:links`; the existing `npm test` discovery command also includes the integration test.
+- CI is required to reveal any remaining broken links outside the initial manual audit. Reference-style navigation and heading-anchor correctness still need manual review.
+- No application runtime behavior changed.
+
