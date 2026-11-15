@@ -217,7 +217,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Audited the complete user-provided 20-section Markdown Feature Showcase against the current renderer, App preview wiring, styles, templates, `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `FEATURES.md` and E2E test source.
 - Conclusion: Markdown is **not feature-complete** against that showcase. Existing support includes common Markdown/GFM, alert callouts, wiki links/backlinks, local images, heading anchors, a small MathML subset and simple Mermaid flowcharts.
-- Created [features-gap.md](./features-gap.md) as the canonical itemized gap/acceptance checklist. Major gaps: full LaTeX/math grammar, advanced Mermaid diagram families and syntax, syntax highlighting/diff coloring, safe HTML-like inline formatting and collapsible sections, emoji shortcodes, GitHub mention/issue references, Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, media embeds, duplicate-heading slugs, and broader accessibility/conformance coverage.
+- Created [markdown-coverage.md](./etc/product/markdown-coverage.md) as the canonical itemized gap/acceptance checklist. Major gaps: full LaTeX/math grammar, advanced Mermaid diagram families and syntax, syntax highlighting/diff coloring, safe HTML-like inline formatting and collapsible sections, emoji shortcodes, GitHub mention/issue references, Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, media embeds, duplicate-heading slugs, and broader accessibility/conformance coverage.
 - Raw HTML and arbitrary media remain deliberately disabled for safety; any future support must use explicit safe components/allowlists rather than enabling unrestricted HTML.
 - Updated `dev-build.md` with the audit record. This was a source/documentation audit only; no application code changed and no tests were run for this audit. Existing CI evidence is historical and must not be described as full Markdown showcase verification.
 - Latest documentation commits: `features-gap.md` `0b85dd6`; `dev-build.md` `69f749a`. This handoff update is the final documentation step for the task.
@@ -337,10 +337,10 @@ This remains historical CI evidence and does not verify later commits. The curre
 - `bugs.md` now contains only the two current open findings: WAVE-031 (native picker/external filesystem/lifecycle and comprehensive accessibility QA coverage) and WAVE-039 (residual IndexedDB pre-commit crash window). WAVE-042 and WAVE-052 remain in the fixed-history register.
 - `fixed-bugs.md` retains all **50** historical finding IDs and their regression scenarios. Its latest addendum distinguishes the successful 30-Node/28-Playwright baseline from the later diagram-accessibility patch.
 - `features-gap.md` has been consolidated into one current 16-section Markdown acceptance checklist. The original requirement families remain preserved; repeated contradictory status snapshots were removed, not scope.
-- Current source defines **30 Node tests** and **28 Playwright Chromium scenarios**.
+- At this historical checkpoint, source defined **30 Node tests** and **28 Playwright Chromium scenarios**; the reconciled current inventory is **30 Node tests and 48 Playwright Chromium scenarios**.
 - Baseline workflow [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, production build and all 28 Playwright scenarios.
 - The diagram accessibility follow-up initially failed because the sequence SVG used a generic accessible name. Fixed in `268de12338bce554f18e5feef27acbb5e9ea45fe`; workflow [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) was still running at this handoff. Verify latest-main CI before claiming the accessibility correction fully passed.
-- Detailed current state: [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [features-gap.md](./features-gap.md), [dev-build.md](./dev-build.md) and [dev-fixed.md](./dev-fixed.md).
+- Detailed current state: [bugs.md](./etc/quality/bugs.md), [fixed-bugs.md](./etc/quality/fixed-bugs.md), [markdown-coverage.md](./etc/product/markdown-coverage.md), [dev-build.md](./etc/history/dev-build.md) and [dev-fixed.md](./etc/history/dev-fixed.md).
 
 
 ## 24. Markdown image accessibility and fallback behavior — 2026-11-14
@@ -575,7 +575,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Added [wiki.md](./WIKI.md) as the comprehensive product, repository and AI-agent orientation guide. It consolidates durable instructions from the available Wave project conversation context, product constitution, current architecture/source map, storage boundaries, engineering invariants, UI/Markdown decisions, QA limitations, roadmap coverage, documentation ownership, Docker boundaries and recommended improvements.
 - Linked the wiki from [README.md](./README.md) and [docs/README.md](./docs/README.md).
-- Detailed implementation and verification note: [dev-build.md](./dev-build.md).
+- Detailed implementation and verification note: [dev-build.md](./etc/history/dev-build.md).
 - This is a documentation-only change. Repository files were inspected through GitHub; no local tests/build or new CI run was performed.
 - Current baseline before this handoff update: wiki commit `8f1ebafc01c44d36230dd45d9030f16236642105`; README commit `1eaa559f158c46afa1beddbaca797ace9de7ce7c`; docs index commit `5a5bc4dabb1a353c61bfba0658eaf42e6119706c`; build log commit `888d54fac0c980a81332286993794a907758f991`. Refresh the repository HEAD before the next task.
 
@@ -592,7 +592,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Updated [README.md](./README.md), [CONTRIBUTING.md](./CONTRIBUTING.md), [docs/README.md](./docs/README.md), the product/priority/issue references, and the [Wave Wiki](./WIKI.md).
 - The wiki now contains a mandatory **Documentation enforcement after every task** section. Every implementation, fix, refactor, QA or configuration task must review Markdown impact, update the authoritative records that changed, validate links and IDs, avoid unnecessary duplicate files, and update this handoff last.
 - The full product blueprint, priority plan, development logs, open/fixed bug registers, Markdown compatibility checklist and diagram research remain separate.
-- Detailed migration record: [dev-build.md](./dev-build.md), entry dated 2026-11-15.
+- Detailed migration record: [dev-build.md](./etc/history/dev-build.md), entry dated 2026-11-15.
 - Verification: source/destination content comparison and tracker-ID checks completed before source deletion. No application code changed; no local tests/build or CI run was performed. Refresh `main` and CI before the next implementation task.
 
 
@@ -710,7 +710,7 @@ CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was cor
 - Product owner manually merged the latest `main` into `manager` and force-pushed the branch. Main sync PR [#107](https://github.com/iamjpsonkar/Wave/pull/107) is closed unmerged and must remain abandoned for this purpose.
 - Verified refs at the start of this documentation pass: `main` `c421f7bcf40ec430eda90fe0a57e98464762e68f`; `manager` `6747efdf0204c1cded75fd03475a75d0cbdef60b`. Manager's tip is a merge commit whose second parent is the exact current main SHA. Compare reports manager ahead 2 / behind 0, confirming main is fully contained in manager.
 - The compare endpoint reports only two manager-only additions relative to main: `etc/howtodev.md` and `etc/howtoqa.md`. No source/test file differences were reported by that comparison.
-- Future synchronization and conflict resolution are now documented in [etc/howtodev.md](./etc/howtodev.md#main-to-feature-branch-synchronization-required-workflow), linked from [WIKI.md](./WIKI.md#main-to-feature-synchronization-and-conflict-resolution-policy), and recorded in [trash/dev-build.md](./trash/dev-build.md).
+- Future synchronization and conflict resolution are now documented in [etc/howtodev.md](./etc/howtodev.md#main-to-feature-branch-synchronization-required-workflow), linked from [WIKI.md](./WIKI.md#main-to-feature-synchronization-and-conflict-resolution-policy), and recorded in [etc/history/dev-build.md](./etc/history/dev-build.md).
 - Verification limits: GitHub refs, commit parents, tree and compare metadata were inspected. No local checkout/status, tests, typecheck, build or CI run was executed in this environment. Check CI for the latest manager commit before claiming runtime validation.
 - This is the final developer-context update for the main-sync documentation batch.
 
