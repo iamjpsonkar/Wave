@@ -18,7 +18,7 @@
 ## Current summary
 
 - **2 open findings:** WAVE-031 and WAVE-039.
-- **30 Node test definitions** and **28 Playwright Chromium scenarios** are present in the current test sources.
+- **30 Node test definitions** and **48 Playwright Chromium scenarios** are present in the current test sources. WAVE-0001's latest inspected historical run (43684569184) reported 42 passed / 6 failed; subsequent remediation and later verification must be read from the exact latest-head workflow.
 - The OPFS E2E fixture simulates the File System Access permission contract; it does not exercise the native OS folder picker or OS-level permission revocation.
 - Baseline CI run [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, production build and all 28 Playwright scenarios before the later diagram-accessibility patch.
 - Diagram-accessibility patch CI exposed a failing accessible-name assertion. Commit `268de12338bce554f18e5feef27acbb5e9ea45fe` corrects the sequence diagram to use its Mermaid title as its SVG accessible name. Verification of that correction is pending; do not count it as passed until a new workflow completes.
@@ -84,3 +84,12 @@ Never report a recovery draft as committed until its IndexedDB transaction compl
 ### Verification boundary
 
 The residual pre-commit loss window is an inherent asynchronous durability limitation and remains open. Existing tests cover post-commit recovery and strict durability configuration, not actual process termination before commit.
+
+- **30 Node test definitions** and **48 Playwright Chromium scenarios** are present in the current test sources. WAVE-0001's latest inspected CI run (43684569184) reported 42 passed / 6 failed; subsequent remediation is pending new CI.
+5. Retain the current 48 Chromium journeys, 30 Node tests, simulated permission denial and two-tab regression scenarios.
+### WAVE-0001 branch follow-up — 2026-11-15
+- Added two deterministic Playwright scenarios on branch `WAVE-0001`: prompt-state permission reauthorization and external file edit conflict handling in the editor.
+- The reauthorization test proves the application calls `requestPermission()` from the Reopen button gesture and activates the workspace when the simulated permission request is granted.
+- The external-edit test changes the OPFS-backed Markdown file outside Wave after it is loaded, then confirms the editor surfaces the save conflict and the external bytes remain intact.
+- Current test source inventory: 30 Node definitions and 48 Playwright scenarios. These are definitions, not executed results.
+- Manual native-platform checklist is recorded in [QA_CONTEXT.md](../QA_CONTEXT.md). Native picker/OS permission revocation and screen-reader audit are not simulated by these tests.
