@@ -413,3 +413,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Workflow `43688050754` passed 47 of 48 Playwright tests; Node tests (30), typecheck, production build and container image passed. The remaining failure was the cross-tab recovery test: after removing the fake clock from both pages, the source tab's 600ms autosave committed the changed Markdown before the second tab opened it, so no recovery dialog was expected and the prompt assertion received an empty string.
 - Corrected the test to freeze only the source tab's clock after workspace/page setup and before editing. Draft-journal writes remain immediate; only the delayed Markdown autosave is held. The second tab remains on real time so navigation and recovery interaction are not blocked.
 - Fresh CI is pending. No local browser execution is claimed. Outstanding manual OS picker/permission, external-process race, accessibility, and process-termination criteria remain tracked; issue #1 and PR #101 remain open.
+
+
+## 2026-11-15 — Cross-tab recovery E2E clock lifecycle
+
+- Run `43688362527` completed with container success and 47/48 Playwright tests passing; 30 Node tests, typecheck and production build passed. The remaining test did not observe the cross-tab recovery prompt.
+- Corrected the E2E fixture to install the source page's clock only after workspace setup and baseline page save, immediately before creating the unsaved recovery draft. Removed the earlier duplicate installation before setup; the second tab remains on real time.
+- The change is limited to regression-test setup. A new PR workflow must confirm the outcome. No local tests are claimed.
