@@ -700,3 +700,10 @@ Branch naming is case-sensitive and zero-padded to exactly four digits. Do not r
 - Markdown fixtures must contain actual newline characters (`\\n` in TypeScript source), not literal backslash-plus-n text (`\\\\n`). Validate both fixture data and expected values.
 - Preserve meaningful end-to-end coverage. Correct tests to match intended product behavior; do not delete scenarios, broaden locators to hide ambiguity, or weaken expectations just to turn CI green.
 - After changes, inspect the latest PR head SHA and its own workflow run. Report each job's conclusion and keep the issue/PR open until required checks and acceptance criteria are complete.
+
+
+### Follow-up: interpreting failed Playwright retries
+
+- After a CI failure, always re-fetch the PR head SHA and workflow runs. Multiple commits on the same branch create separate runs; only the run tied to the latest PR head determines current verification.
+- A completed run that is red is not remedied by an earlier green job subset. Report total E2E pass/fail counts and every remaining failure category; verify fresh results after each subsequent fix.
+- UI event tests that simulate toolbar actions must account for browser focus/selection loss and React's controlled-state timing. Prefer dispatching through the real interaction and verify the persisted editor value, rather than relying on a stale DOM selection.
