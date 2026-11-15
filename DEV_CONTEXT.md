@@ -814,3 +814,12 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - `config/vite.config.ts` uses `/Wave/` only when `GITHUB_PAGES=true`; normal local and Docker builds remain rooted at `/`.
 - One-time owner setting: **Settings → Pages → Build and deployment → Source → GitHub Actions**. No PAT or external host account is needed.
 - Source-level review only at handoff; local tests/build were not run here. Require exact-main CI and a public URL browser smoke test before marking hosting verified.
+
+
+## 2026-11-15 — Wave Personal / Wave Full architecture decision (issue #135)
+
+- Approved two editions from one codebase: **Personal** is local-only with no account/backend/server DB/document upload/remote sync/collaboration dependency; **Full** adds optional identity, encrypted synchronization and collaboration while preserving local/offline workspace ownership.
+- Resolved the cloud-first vs hybrid ambiguity by preserving product constitution section 20.2–20.5: use cloud-connected/hybrid workflows, not a server-side canonical database of readable documents. Local SQLite remains the planned canonical workspace store; the current Markdown MVP remains supported pending safe migration.
+- Defined separate edition build/import boundaries, Personal network-egress requirements, Full trust boundaries, client-held encryption keys, optional ciphertext relay disclosure, device/key lifecycle requirements, offline/conflict/replay/deletion requirements and staged implementation dependencies.
+- Added `etc/engineering/EDITIONS.md`, updated architecture, threat model, complete product blueprint, priority plan, documentation index and WIKI.
+- Scope of this tranche is architecture/documentation only. No app code, backend, SQLite engine, auth, encryption, sync, collaboration or edition build target was implemented. No local tests or CI were run.

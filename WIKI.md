@@ -829,3 +829,4 @@ The mobile drawer must expose a dedicated close control above the open sidebar. 
 - Do not represent unimplemented vault encryption, key recovery, E2E sync, teams/permissions, plugin sandboxing, server-side sharing, audit logs or workspace malware scanning as shipped. No remote content scanning is permitted without product approval and user consent.
 - Dependabot alerts/security updates and secret scanning/push protection require owner-side configuration; workflow files cannot enable these account/repository settings. Static code analysis uses credential-free OpenGrep and ESLint workflows; no Sonar account or token is required. Exact third-party tarball LICENSE/NOTICE and final release attributions still require manual legal review.
 - Keep issue #120 open until each inherited acceptance item is implemented or explicitly owner-approved and documented. Green CI/scanners are evidence, not a security certification.
+undefined
