@@ -347,3 +347,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Updated the wiki, README, contributor guidance, developer handoff, roadmap/issue references and documentation index. Added a mandatory per-task Markdown review/enforcement section to `wiki.md`: update authoritative docs, preserve IDs/history, avoid duplicate sources, validate links and update `DEV_CONTEXT.md` last.
 - Preserved as separate files: `upcoming-features.md`, `priority-features.md`, `dev-fixed.md`, `dev-build.md`, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `diagram-features.md`, and the architecture/deployment/Markdown/roadmap guides.
 - Verification: fetched and compared source/destination contents before deletion; confirmed UIB-001..006, UI-001..024, UIF-001..021 and WAVE-031/WAVE-039/WAVE-042 are present in the consolidated destinations. Checked navigation and corrected stale links in the consolidated feature guide. No application code changed; no local tests/build or CI run was performed.
+
+
+## WAVE-031 follow-up issue decomposition — 2026-11-15
+
+- Created [#104 — WAVE-031A](https://github.com/iamjpsonkar/Wave/issues/104) for native folder picker, cancellation, real browser/OS permission revocation and reauthorization verification.
+- Created [#105 — WAVE-031B](https://github.com/iamjpsonkar/Wave/issues/105) for external filesystem read/save races and backup/restore fault injection.
+- Created [#106 — WAVE-031C](https://github.com/iamjpsonkar/Wave/issues/106) for controlled browser-process termination and IndexedDB recovery-draft commit-boundary verification.
+- Reused existing [#3](https://github.com/iamjpsonkar/Wave/issues/3) for keyboard/focus, screen-reader and contrast audit; added a comment linking that scope to parent #1 instead of creating a duplicate.
+- Added cross-links/comments to parent [#1](https://github.com/iamjpsonkar/Wave/issues/1) and indexed the new tickets in `trash/github-issues.md`.
+- Parent #1 remains open. No application code changed and no tests were run in this documentation/tracking task; the latest previously verified PR CI is run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), 48/48 Playwright plus all other workflow jobs passing.
