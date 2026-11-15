@@ -481,3 +481,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Production requirements include a small typed structured logger, operation/correlation IDs, error-boundary and unhandled-error capture, actionable user-facing failures, and diagnostics around filesystem, permission, autosave, recovery, backup/restore and asset operations.
 - Privacy constraints are explicit: local-first by default, no silent remote telemetry, no workspace content/secrets/raw paths in logs, bounded local diagnostics, and preview/redaction before report export. Logging must never block or mask save/recovery failures.
 - This updates issue scope only; no application logger or test instrumentation has been implemented and no tests were run.
+
+
+## 2026-11-15 — Preserve another tab's recovery draft when recovery is declined
+
+- Investigated PR #110 CI run [43695466439](https://github.com/iamjpsonkar/Wave/actions/runs/43695466439): Node tests (30), typecheck, production build and container job passed; one Playwright scenario failed because the source-tab recovery journal record was absent after the second tab declined recovery.
+- Root cause in the open-page recovery path: declining a cross-tab prompt invoked the generic draft-clear operation asynchronously. That operation is scoped to the current tab, but declining another tab's draft must be a non-destructive action; do not schedule deletion at all for this branch.
+- Changed decline behavior to preserve the source record and emit a structured, content-free `[Wave recovery]` diagnostic with source-tab ownership information. Same-tab save/cleanup behavior is unchanged.
+- Strengthened the E2E assertion to poll IndexedDB for the exact source-tab record and ownership instead of taking a single immediate snapshot; this tolerates legitimate asynchronous journal/visibility events without weakening the preservation guarantee.
+- Verification is pending on the new manager head. No local test/build execution is claimed in this GitHub-only change.

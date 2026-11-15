@@ -752,3 +752,11 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Preserve Wave's local-first privacy model: redact sensitive data, never log document contents/secrets/raw paths by default, no remote telemetry without separate explicit opt-in, and keep diagnostic sinks bounded and non-blocking.
 - Detailed requirements and checklist live in the GitHub issue; task history is in [trash/dev-build.md](./trash/dev-build.md).
 - No code/test changes or verification were performed for this scope update.
+
+
+## Cross-tab recovery decline preservation — 2026-11-15
+
+- PR #110 CI run [43695466439](https://github.com/iamjpsonkar/Wave/actions/runs/43695466439) had one remaining Playwright failure: after declining another tab's recovery prompt, the original source-tab journal record was not present in the final IndexedDB snapshot. Unit tests, typecheck, production build and container build passed in that run.
+- Updated the recovery decline branch to preserve the other tab's journal record without invoking draft cleanup; added content-free ownership diagnostics. Same-tab cleanup and normal autosave remain unchanged.
+- Updated the E2E check to poll for the original record by exact content and source tab ID, avoiding a single-snapshot race while retaining a strict preservation assertion.
+- Commit and fresh CI verification are pending. Do not claim the regression fixed until the full workflow passes on the resulting head SHA.

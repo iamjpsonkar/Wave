@@ -321,21 +321,30 @@ test('recovery prompt identifies a draft created in another tab and preserves it
   expect(promptMessage).toContain('another browser tab');
   await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\n\nBrowser regression content');
 
-  const retainedDrafts = await second.evaluate(async () => {
+  const readRetainedDrafts = () => second.evaluate(async () => {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
       const request = indexedDB.open('wave-draft-journal', 1);
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => reject(request.error);
     });
-    const drafts = await new Promise<Array<{ content: string }>>((resolve, reject) => {
-      const request = db.transaction('drafts', 'readonly').objectStore('drafts').getAll();
-      request.onsuccess = () => resolve(request.result as Array<{ content: string }>);
-      request.onerror = () => reject(request.error);
-    });
-    db.close();
-    return drafts.map(record => record.content);
+    try {
+      const drafts = await new Promise<Array<{ content: string; tabId?: string }>>((resolve, reject) => {
+        const request = db.transaction('drafts', 'readonly').objectStore('drafts').getAll();
+        request.onsuccess = () => resolve(request.result as Array<{ content: string; tabId?: string }>);
+        request.onerror = () => reject(request.error);
+      });
+      return drafts;
+    } finally {
+      db.close();
+    }
   });
-  expect(retainedDrafts).toContain('# Cross-tab Recovery\n\nUnsaved change owned by first tab');
+  await expect.poll(async () => {
+    const retained = await readRetainedDrafts();
+    return retained.some(record =>
+      record.content === '# Cross-tab Recovery\n\nUnsaved change owned by first tab' &&
+      record.tabId === sourceJournal.tabId
+    );
+  }, { timeout: 5000, message: 'Declining cross-tab recovery must preserve the source tab journal record' }).toBe(true);
 });
 
 test('Markdown preview renders GFM tables, task lists, footnotes and safe alert callouts', async ({ page }) => {
