@@ -43,6 +43,7 @@ This directory contains the maintained product specifications, engineering refer
 - [Project wiki](../WIKI.md)
 - [Contributor handbook](../howto/README.md)
 - [User-facing overview](../README.md)
+- [Project license](../LICENSE) — canonical MIT License text
 
 ## Production documentation standard
 
