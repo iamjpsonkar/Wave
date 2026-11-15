@@ -48,3 +48,11 @@ To debug one scenario, pass Node's `--test-name-pattern` option through `node --
 - Root React render failures, uncaught browser errors/rejections and critical workspace operations (open/reopen, document open/save/reload, Trash, backup/restore and asset add) emit structured events with operation IDs and error class only; raw error messages and workspace paths are not copied into diagnostic fields.
 - Add `?waveDebug=1` to the app URL to enable info/debug console output. In Settings → Diagnostics, inspect the sanitized report preview, copy it explicitly, or clear the in-memory history. No remote telemetry or persistent diagnostic storage is used.
 - Playwright retains traces, screenshots and video on failure, plus an HTML report. CI uploads `test-results/` and `playwright-report/` as `wave-playwright-diagnostics` for 14 days. The trace includes browser console and network activity; inspect it alongside the failing file/scenario name.
+
+
+## Layering rationale and review follow-up
+
+- The Node tests are storage contract tests: workspace/document/assets, Trash/backup/restore, plus concurrency/recovery primitives. They share the in-memory File System Access adapter, so a distinct Node integration layer would currently duplicate setup without representing an independent runtime boundary. Browser-visible cross-module journeys remain in Playwright E2E.
+- Storage files split by behavior: workspace/document/assets versus Trash/backup/restore. Further splits should follow a cohesive scenario inventory, not file length alone.
+- Each browser context receives a unique OPFS directory. Separate tests/retries cannot encounter stale files; multi-tab scenarios reopen the same workspace through the app's remembered folder handle.
+- Diagnostic metadata has strict key-specific value vocabularies. Unknown strings redact regardless of field name. Error messages and bounded causes are sanitized; raw stack frames are intentionally omitted to avoid leaking filesystem paths, URLs or user content.
