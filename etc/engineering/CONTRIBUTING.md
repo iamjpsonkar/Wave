@@ -80,3 +80,15 @@ See [the documentation index](docs/README.md) for the full map.
 Wave is distributed under the [MIT License](../../LICENSE) (SPDX identifier: `MIT`). The license permits use, modification and redistribution, including commercial use, subject to retaining the copyright and license notices. The complete terms are in the repository-root [LICENSE](../../LICENSE) file.
 
 By submitting a contribution for inclusion in Wave, you agree that the contribution is made available under the project's MIT License. You retain copyright in your contribution; this statement does not assign copyright to the project owner. No Contributor License Agreement (CLA) or Developer Certificate of Origin (DCO) is currently required. Do not add either requirement without an explicit project-owner decision.
+
+## Third-party dependency and asset changes
+
+Any dependency, font, icon, image, logo, copied snippet, documentation excerpt, sample, or media asset added or updated in Wave must have a traceable source and license. Before submitting the change:
+
+1. Update `package-lock.json` through npm and run `npm run license:audit`.
+2. Inspect the exact upstream LICENSE and applicable NOTICE/attribution records for changed packages; package metadata alone is not proof of compliance.
+3. Record new/changed packages and assets, exact versions or source revisions, license identifiers, source links, attribution and redistribution requirements in [THIRD_PARTY_NOTICES.md](../../THIRD_PARTY_NOTICES.md).
+4. Preserve upstream notices and escalate missing, custom, conflicting or unclear terms to the project owner. Do not silently relicense, remove, or substitute third-party material.
+5. Include the audit result and any remaining legal/attribution questions in the PR.
+
+CI runs the metadata audit for every pull request. A passing check is not a legal compatibility opinion and does not replace manual review.
