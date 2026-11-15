@@ -50,18 +50,35 @@ The repository inventory inspected for this audit did not identify any checked-i
 
 This is a source-tree inspection result, not a guarantee for future changes. Any added third-party image, logo, font, sound, video, documentation excerpt, sample, code snippet or other asset must be recorded here before it is committed.
 
+## Audit baseline update — attribution findings verified 2026-11-15
+
+The npm lockfile metadata check is passing, but it is not a substitute for inspecting package distribution contents. This update records source-backed attribution facts found during follow-up review; it does not assert that every package tarball in the 221-entry inventory has been unpacked and reviewed.
+
+### Confirmed attribution detail
+
+- `caniuse-lite@1.0.30001826` is distributed under CC-BY-4.0. The upstream caniuse project states that attribution can be satisfied by mentioning `caniuse.com`. When redistributing the licensed database material, credit **caniuse.com**, link the [CC-BY-4.0 license](https://creativecommons.org/licenses/by/4.0/), identify modifications where applicable, and retain any upstream-supplied creator/copyright/license/disclaimer information. See the [versioned npm package](https://www.npmjs.com/package/caniuse-lite/v/1.0.30001826) and [upstream license](https://github.com/browserslist/caniuse-lite/blob/main/LICENSE).
+- `baseline-browser-mapping@2.11.37` declares Apache-2.0. The package version and declared license are corroborated by the [versioned npm package](https://www.npmjs.com/package/baseline-browser-mapping/v/2.11.37). The exact tarball's included LICENSE/NOTICE files still need inspection before a release artifact is approved.
+- `typescript@5.7.3` declares Apache-2.0 and is development-only in this lockfile. Its upstream package manifest identifies distribution files including `LICENSE.txt` and `ThirdPartyNoticeText.txt`; see the [version-pinned package manifest](https://unpkg.com/typescript@5.7.3/package.json). Verify the exact installed tarball contents if TypeScript is ever included in a distributed artifact.
+- `lucide-react@0.468.0` is declared ISC. Lucide's icon collection includes Feather-derived icons that retain the applicable Feather MIT attribution; inspect the exact package's bundled LICENSE when preparing redistribution. See the [Lucide React package](https://github.com/lucide-icons/lucide/tree/main/packages/lucide-react) and [upstream license source](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
+
+### Audit disposition (do not overstate)
+
+The repository/lockfile metadata inventory is complete for the captured baseline (221 entries); it is not a package-file-content audit. Public source records above corroborate license identifiers and the caniuse attribution instruction, but the exact npm tarballs were not unpacked in this review environment. In particular, exact package-level NOTICE inclusion for the Apache-2.0 dependencies and complete license-file inspection for all 221 packages remain release-review work. Do not report this issue as legally certified or all acceptance items complete until the actual locked tarballs and any applicable distribution artifact are inspected and required notices are reproduced.
+
+Runtime Google Fonts remain remotely requested and unpinned; no font binaries are checked in. Pinning or self-hosting them is a separate product/distribution decision, not silently performed by this audit.
+
 ## Notice and redistribution requirements
 
 - Preserve each package's upstream license and copyright notices in source and production distributions as required by that license.
 - Include applicable Apache-2.0 NOTICE files and other upstream attribution material. Do not assume npm lock metadata includes the notice contents.
-- Include CC-BY-4.0 attribution for caniuse-lite when distributing the database or derivative material in a way covered by CC-BY-4.0. The exact required attribution should be copied from authoritative package/source attribution information, not invented.
+- Include CC-BY-4.0 attribution for caniuse-lite when distributing the database or derivative material in a way covered by CC-BY-4.0. The upstream project specifically permits attribution by mentioning **caniuse.com**; include the license link and required change indication where applicable.
 - Do not copy third-party code, text, examples, graphics, fonts or brand assets without tracing their origin and license.
 - Wave's MIT license applies to Wave-authored project code; it does not supersede third-party licenses or convert third-party assets to MIT.
 
 ## Known audit limitations and owner follow-up
 
 - The dependency audit is based on package metadata from the checked-in lockfile. It has not independently opened and compared every one of the 221 package tarball LICENSE files.
-- The single CC-BY-4.0 entry needs release-distribution attribution review, especially when preparing a binary/web distribution that includes Browserslist data. Do not state that this requirement is fully satisfied solely because the package license field was detected.
+- The single CC-BY-4.0 entry's upstream attribution instruction is recorded above. Verify the actual contents included in the final distribution and ensure the attribution is presented in a reasonable accompanying notice.
 - Apache-2.0 packages require package-specific NOTICE inspection and correct reproduction where applicable.
 - Google Fonts runtime family names are recorded, but exact font-file revisions are not pinned by the application. Consider pinning/self-hosting the exact files and bundling their OFL notices for deterministic/offline builds; this is a product decision and is not done by this audit.
 - No custom license, missing license metadata or conflicting SPDX expression was found in the 221 lock entries in the baseline snapshot. Re-run the checker after every dependency update and investigate all new/unknown results.
