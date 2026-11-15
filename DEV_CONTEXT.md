@@ -726,3 +726,11 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Preserved the two distinct Markdown feature-gap audit notes in the development history, with links corrected to the reorganized canonical files.
 - PR [#110](https://github.com/iamjpsonkar/Wave/pull/110) head `f1d49c174279158f1a20a8fc9efb675ab0708b66` passed CI workflow [43693734660](https://github.com/iamjpsonkar/Wave/actions/runs/43693734660). This is GitHub CI evidence for that exact pre-reconciliation head; the documentation commits created by this reconciliation require a fresh workflow before merge.
 - No application source or test code changed. No local tests, typecheck or production build were run. PR #110 remains open and unmerged.
+
+## Automated test organization tracking — 2026-11-15
+
+- New issue [#111 — restructure automated tests into feature-based suites and scenarios](https://github.com/iamjpsonkar/Wave/issues/111) tracks an inventory-first test-layout refactor. Current baseline: Node test script uses flat `tests/*.test.js` discovery; Playwright journeys are concentrated in `tests/e2e/workspace.spec.ts`.
+- Scope includes meaningful unit/integration/E2E directories, feature-oriented files/scenarios, shared fixtures/helpers where justified, recursive/explicit discovery, focused commands, and synchronized `test.sh`/CI execution.
+- Preserve all unique assertions and guarantees. Coordinate with [#100](https://github.com/iamjpsonkar/Wave/issues/100), whose narrower duplicate-test cleanup must not remove unique coverage.
+- Issue index: [github-issues.md](./etc/quality/github-issues.md). Detailed task-creation history: [dev-build.md](./etc/history/dev-build.md).
+- This was issue creation/documentation only; no source/test files changed and no tests/build were run.
