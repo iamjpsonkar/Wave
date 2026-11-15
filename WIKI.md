@@ -754,3 +754,7 @@ On narrow screens the sidebar is a slide-out navigation drawer. The top bar expo
 - Run `43688362527` failed only in the cross-tab recovery E2E scenario (47/48 passed). Node tests, typecheck, production build and container image passed.
 - Removed an unintended first clock installation before workspace setup. The source tab's autosave clock is now frozen only after the baseline page is saved and immediately before the recovery draft is written; the second tab stays on real time. This preserves the test's intended state: baseline Markdown on disk plus a distinct unsaved draft owned by another tab.
 - Fresh CI must verify the correction. No local execution is claimed; WAVE-031 manual/native acceptance criteria remain open.
+
+
+### Cross-tab recovery verification
+The cross-tab recovery browser test validates the persisted IndexedDB record from both tabs before invoking the recovery flow. It checks draft text, tab ownership, shared workspace-handle identity, and distinct session IDs, then retains the existing prompt-source and decline-preservation checks. This prevents treating a missing dialog as an unexplained timing failure.
