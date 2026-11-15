@@ -1140,9 +1140,9 @@ test('workspace settings persist appearance and typography preferences locally',
   await expect(page.locator('.editor')).toHaveAttribute('data-content-width', 'narrow');
   await expect(page.locator('.editor textarea')).toHaveCSS('font-size', '18px');
   await expect(page.locator('.editor textarea')).toHaveCSS('line-height', '34.2px');
+  await dialog.getByRole('button', { name: 'Done' }).click();
   await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview')).toHaveCSS('width', '680px');
-  await dialog.getByRole('button', { name: 'Done' }).click();
   const settings = await page.evaluate(async () => {
     const root = (window as any).__waveTestRoot;
     const wave = await root.getDirectoryHandle('.wave');
@@ -1173,7 +1173,7 @@ test('toolbar code actions have distinct icons and accessible names', async ({ p
   await expect(inlineCode).toHaveAttribute('title', 'Inline code');
   await expect(codeBlock).toHaveAttribute('title', 'Code block');
   await expect(inlineCode.locator('svg')).toHaveClass(/lucide-code-xml/);
-  await expect(codeBlock.locator('svg')).toHaveClass(/lucide-file-code-2/);
+  await expect(codeBlock.locator('svg')).toHaveClass(/lucide-file-code2/);
   const editor = page.locator('.editor textarea');
   await editor.fill('const wave = true;');
   await editor.selectText();
