@@ -760,3 +760,13 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Updated the recovery decline branch to preserve the other tab's journal record without invoking draft cleanup; added content-free ownership diagnostics. Same-tab cleanup and normal autosave remain unchanged.
 - Updated the E2E check to poll for the original record by exact content and source tab ID, avoiding a single-snapshot race while retaining a strict preservation assertion.
 - Commit and fresh CI verification are pending. Do not claim the regression fixed until the full workflow passes on the resulting head SHA.
+
+
+## WAVE-0111 — test extraction repair handoff — 2026-11-15
+
+- PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111`.
+- Repaired the broken test extraction by restoring `tests/storage.test.js` from `main` and deleting the malformed duplicate storage and safety split files. The original regression scenarios remain in the canonical storage suite; do not claim the feature-based split is complete.
+- Corrected `tests/unit/diagnostics/diagnostics.test.js` to valid JavaScript, fixed the test scripts to reference only extant test paths, and updated `tests/unit/README.md` to document the actual transitional layout.
+- Updated `etc/history/dev-build.md` with the corrective work and verification caveats.
+- GitHub Actions runs on intermediate SHAs were queued/in progress; they do not verify this final documentation commit. No local tests, typecheck, build or Playwright run were executed in this GitHub-only session. Verify the latest CI workflow for the exact PR head before claiming success or making the PR ready.
+- Remaining #111 scope: inventory-backed feature/layer split without lost assertions, robust Playwright failure artifacts, app diagnostics integration at critical failure boundaries, focused debug controls, and full local/CI verification. PR #115 remains draft.
