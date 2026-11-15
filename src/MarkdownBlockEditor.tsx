@@ -71,15 +71,16 @@ export default function MarkdownBlockEditor({ content, onChange }: { content: st
   }
   function applyBlockColor(block: Block, color: string) {
     const hex = color.toUpperCase();
-    const lines = block.source.split('\\n');
-    if (/^\\s*>\\s*\\[!COLOR=#[0-9a-f]{6}\\]/i.test(lines[0])) {
-      lines[0] = lines[0].replace(/\\[!COLOR=#[0-9a-f]{6}\\]/i, '[!COLOR=' + hex + ']');
+    const lines = block.source.split('\n');
+    const existing = lines[0].match(/^\s*>\s*\[!COLOR=#[0-9a-f]{6}\]\s*/i);
+    if (existing) {
+      lines[0] = '> [!COLOR=' + hex + ']';
     } else {
       const quoted = lines.map(line => '> ' + line);
       quoted.unshift('> [!COLOR=' + hex + ']');
       lines.splice(0, lines.length, ...quoted);
     }
-    update(block, lines.join('\\n'));
+    onChange(content.slice(0, block.start) + lines.join('\n') + content.slice(block.end));
   }
   function moveTo(index: number, destination: number) {
     if (index < 0 || destination < 0 || index >= blocks.length || destination >= blocks.length || index === destination) return;
@@ -110,7 +111,7 @@ export default function MarkdownBlockEditor({ content, onChange }: { content: st
         <button type="button" className="block-drag-handle" draggable aria-label={'Drag block ' + (index + 1)} title="Drag to reorder" onDragStart={event => { event.dataTransfer.effectAllowed = 'move'; event.dataTransfer.setData('text/plain', String(index)); setDraggingIndex(index); }} onDragEnd={() => setDraggingIndex(null)}>⠿</button>
         <button type="button" aria-label={'Move block ' + (index + 1) + ' up'} title="Move up" disabled={index === 0} onClick={() => moveTo(index, index - 1)}>↑</button>
         <button type="button" aria-label={'Move block ' + (index + 1) + ' down'} title="Move down" disabled={index === blocks.length - 1} onClick={() => moveTo(index, index + 1)}>↓</button>
-        <button type="button" aria-label={'Delete block ' + (index + 1)} title="Delete block" onClick={() => remove(block)}>×</button>\n        <label className="block-color-control" title={'Block background color for block ' + (index + 1)}><span aria-hidden="true">▤</span><input type="color" aria-label={'Block background color for block ' + (index + 1)} defaultValue="#eaf2e8" onChange={event => applyBlockColor(block, event.target.value)}/></label>
+        <button type="button" aria-label={'Delete block ' + (index + 1)} title="Delete block" onClick={() => remove(block)}>×</button>\n        <label className="block-color-control" title={'Block background color for block ' + (index + 1)}><span aria-hidden="true">▤</span><input type="color" aria-label={'Block background color for block ' + (index + 1)} defaultValue="#ffffff" onChange={event => applyBlockColor(block, event.target.value)}/></label>
       </div>
       <textarea aria-label={'Edit ' + block.type + ' block ' + (index + 1)} rows={Math.min(12, Math.max(1, block.source.split('\n').length))} spellCheck value={block.source} onChange={event => update(block, event.target.value)}/>
     </article>) : <div className="block-editor-empty"><p>Your page is empty. Add a block to begin.</p><textarea aria-label="New paragraph block" rows={3} value={content} onChange={event => onChange(event.target.value)} placeholder="Write a paragraph…"/></div>}

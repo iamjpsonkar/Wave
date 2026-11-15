@@ -13,12 +13,10 @@ jobs:
         with:
           node-version: 22
       - run: npm ci
-      - run: npm test
-      - run: npm run typecheck
-      - run: npm run build
       - run: npm install --no-save --package-lock=false @playwright/test@1.55.0
       - run: npx playwright install --with-deps chromium
-      - run: npm run test:e2e
+      - name: Run the same local verification script used by developers
+        run: ./test.sh --skip-install --skip-playwright-install --skip-browser-install
 
   container:
     runs-on: ubuntu-24.04

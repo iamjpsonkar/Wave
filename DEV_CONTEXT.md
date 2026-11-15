@@ -4,7 +4,7 @@
 > Repository: https://github.com/iamjpsonkar/Wave
 > Default branch: `main`
 > Last reviewed: 2026-11-15
-> Latest audited baseline: `d831bf04ac458a888206de4d492830f55958b022` (refresh HEAD before every task)
+> Latest reviewed branch baseline: `561fef34390d6805b30956a1723bbcb0a0edcdad` on `WAVE-0001` (refresh `main` and branch HEAD before every task)
 
 ## 1. Product contract
 
@@ -27,18 +27,14 @@ Non-negotiable principles:
 - Node built-in test runner for storage/safety tests; Playwright Chromium for E2E.
 - GitHub Actions CI runs on push/PR to `main`, using Node 22.
 
-Scripts in `package.json`:
+Primary local commands:
 ```bash
-npm ci
-npm test
-npm run typecheck
-npm run build
-# E2E setup, matching CI:
-npm install --no-save --package-lock=false @playwright/test@1.55.0
-npx playwright install chromium
-npm run test:e2e
+./run.sh       # start Vite; bootstraps npm dependencies if missing
+./test.sh      # Node tests + typecheck + build + Playwright Chromium E2E
+./test.sh --no-e2e
+npm run test:local
 ```
-Check package/CI files for exact current versions and commands before modifying dependencies.
+`test.sh` installs the CI-pinned Playwright runner and Chromium when needed. Pre-provisioned/CI usage: `./test.sh --skip-install --skip-playwright-install --skip-browser-install`. Node.js 22.6+ is required. See the scripts' `--help` output and README for environment variables/options.
 
 ## 3. Architecture and source map
 
@@ -57,7 +53,9 @@ Runtime: `index.html` → `src/main.tsx` → `src/App.tsx`.
 - `config/vite.config.ts`: Vite configuration.
 - `config/playwright.config.ts`: Playwright configuration and Vite test server.
 - `config/tsconfig.app.json`: application TypeScript project configuration; root `tsconfig.json` references it.
-- `.github/workflows/ci.yml`: CI gate.
+- `run.sh`: local Vite development-server launcher.
+- `test.sh`: fail-fast local Node/typecheck/build/Playwright quality gate shared with CI.
+- `.github/workflows/ci.yml`: CI gate using the same test script.
 
 ### Current on-disk workspace format
 
@@ -141,7 +139,7 @@ Don't conflate these trackers. Don't move an issue to fixed until implemented an
 ## 7. Open bug snapshot — refreshed 2026-11-14
 
 The reviewed `bugs.md` reported two partial findings:
-- **WAVE-031 (P1):** remains partial. Current tests simulate permission denial and exercise two-tab editing, but native picker/revocation, external filesystem races during active operations, comprehensive accessibility, and abrupt process termination remain uncovered.
+- **WAVE-031 (P1):** remains open/partial. Branch `WAVE-0001` adds deterministic E2E coverage for prompt-state permission reauthorization and external-edit conflict preservation. Native picker/OS revocation, external-process races during read/save/backup/restore, comprehensive keyboard/screen-reader accessibility and abrupt process termination remain unverified. See `QA_CONTEXT.md` manual plan and `trash/bugs.md`.
 - **WAVE-039 (P1):** remains partial. IndexedDB strict durability and `pagehide`/`visibilitychange` best-effort writes reduce but cannot eliminate the asynchronous pre-commit crash window.
 
 WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `QA_CONTEXT.md`; current bug register is `bugs.md`.
@@ -154,7 +152,7 @@ The checked-in `dev-build.md` reports workflow run [43604242348](https://github.
 - TypeScript typecheck passed.
 - Production build passed.
 
-This remains historical CI evidence and does not verify later commits. The current checked-in test sources define 30 Node tests and 13 Playwright Chromium scenarios; the documented successful CI run covers an earlier 10-scenario browser suite. The 2026-11-14 QA recheck was source-only: no local build/tests or new CI run were performed. Refresh the default-branch HEAD and CI before relying on test status.
+This remains historical CI evidence and does not verify later commits. The current checked-in test sources on `WAVE-0001` define 30 Node tests and 48 Playwright Chromium scenarios; the documented successful CI run covers an earlier 10-scenario browser suite. The 2026-11-14 QA recheck was source-only: no local build/tests or new CI run were performed. WAVE-0001 adds two browser test definitions; PR CI is pending and must be checked before reporting any pass. Refresh the default-branch HEAD and CI before relying on test status.
 
 ## 9. Required workflow for every future task
 
@@ -605,3 +603,104 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Existing open defect, UI, Markdown, export and roadmap tickets were checked before creation; do not open duplicates for the same scope.
 - Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [trash/github-issues.md](./trash/github-issues.md).
 - No source code changed and no tests/build/CI execution is claimed for this audit.
+
+
+## 36. WAVE-0001 — native filesystem and permission QA follow-up — 2026-11-15
+
+- Issue: [#1 — Complete native filesystem, permission and lifecycle verification](https://github.com/iamjpsonkar/Wave/issues/1), internal defect ID WAVE-031.
+- Branch: `WAVE-0001`, created from the refreshed `main` branch.
+- `tests/e2e/workspace.spec.ts`: expanded the OPFS permission fixture to count permission requests; added prompt-state reauthorization and external-file-edit conflict preservation scenarios. Browser test source count is now 48; Node source count remains 30.
+- `trash/bugs.md`: updated WAVE-031 test inventory and recorded branch follow-up. The issue remains open.
+- `QA_CONTEXT.md`: added real-browser native picker/permission, external filesystem, keyboard/focus/screen-reader, and process-termination manual checklists.
+- `trash/dev-fixed.md` and `trash/dev-build.md`: recorded implementation scope and CI-pending status.
+- `WIKI.md`: documented the product-owner-approved issue branch → commit/push → PR → issue-comment workflow. Do not merge PRs or close issues; product owner reviews them.
+- Verification: source and test definitions inspected; no local test/typecheck/build or native/manual browser verification was performed. PR CI is pending. The OPFS tests simulate permission behavior and are not evidence of native OS picker/revocation behavior.
+- Remaining acceptance criteria: real native picker and permission revocation/reauthorization results; external writer races across read/save/backup/restore; comprehensive keyboard/focus/screen-reader/contrast review; actual process-termination fault test. Keep #1 open until these criteria are evidenced.
+
+
+## 37. WAVE-0001 — CI failure remediation — 2026-11-15
+
+- PR: [#101](https://github.com/iamjpsonkar/Wave/pull/101), issue [#1](https://github.com/iamjpsonkar/Wave/issues/1), branch `WAVE-0001`.
+- Initial workflow `43682365587` passed Node tests, typecheck, production build and container build but failed Playwright (33 passed, 15 failed).
+- Remediated invalid newline fixtures, current error class and ambiguous/stale selectors; corrected template preview flow, image/diagram/PDF assertions; fixed empty task-list Enter handling and block-color newline parsing/serialization; preserved selection during color toolbar mouse-down.
+- QA/WIKI/archive logs record exact scope and limitations. Latest CI at initial remediation check: [run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072), still in progress at time of writing. Verify the final run for the latest PR head before claiming success.
+- No local tests/typecheck/build were run. Native OS picker/revocation, real external-process races, full accessibility audit and process-termination checks remain unverified. Issue #1 remains open; PR must not be merged by the agent.
+
+
+## 38. WAVE-0001 — second CI triage pass — 2026-11-15
+
+- Rechecked PR #101, current head at the time of this pass `98f3a77e90ed1819811998d1519d010516c1203d`; latest completed run `43683760674` failed Playwright with 39 passed / 9 failed. Node tests, typecheck, production build and container job passed.
+- Failure categories: settings Escape/focus trap, Lucide icon class expectation, strict selectors for preview code/template/diagrams/PDF color spans, color toolbar not applying background/clear due to selection/state handling, and generated block-color callout classification.
+- Follow-up commits: scoped Playwright selectors and icon expectation; settings Escape support; toolbar color edits now use the controlled editor change path and clear wrapper-aware selection; block color classifier corrected. Updated QA/WIKI/development archive notes.
+- A newer workflow triggered by later commits must be checked against the latest PR head SHA. This remains unverified; no local tests were run. Do not merge. Issue #1 still has open native picker/OS permission, external-process race, accessibility and termination acceptance criteria.
+
+
+## 39. WAVE-0001 — consolidated CI remediation pass — 2026-11-15
+
+- Rechecked PR [#101](https://github.com/iamjpsonkar/Wave/pull/101), issue [#1](https://github.com/iamjpsonkar/Wave/issues/1), branch `WAVE-0001`.
+- Latest inspected run [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184), head `8ff23d414ecf2dc7421fbb7188cf7b56145af419`: failed with 42 Playwright passes / 6 failures. Container passed; Node tests, TypeScript and production build passed.
+- Root causes fixed in source: toolbar color formatting could use a stale `content` closure after editor selection/event timing; block-color actions bypassed the shared recovery-draft handler; block editor color callbacks could preserve stale block offsets after re-render. Updated all mutations to read current content and persist through the controlled change handler; block color updates replace the full current source range.
+- Fixed two verification issues: Settings E2E attempted to interact with Preview behind an open modal; Lucide FileCode2 SVG renders class `lucide-file-code2`, not `lucide-file-code-2`.
+- Changed files: `src/App.tsx`, `src/MarkdownBlockEditor.tsx`, `tests/e2e/workspace.spec.ts`; QA and archive notes updated. Fresh workflow must be checked against the resulting latest head.
+- No local commands or test runs were available through this GitHub-only task. Do not claim the fixes pass until CI completes. Native picker/OS permission changes, external-process read/save/backup/restore races, complete accessibility review and controlled process-termination testing remain open; do not merge PR #101 or close issue #1.
+
+## 40. WAVE-0001 verification handoff — latest code commit and pending CI
+
+- Remediation source commits: `763008201aa6f8112345f6343bb480fbfbd85372`, `43830417f3be88556a4db952789416cc46211916`, `9c1e653e38e3478e7eb9a1e1f0249775f044d768`.
+- Documentation commits followed source changes: QA `487c834d65e0dd1cdb1b187bb6db5a4a2bc37679`, WIKI `19f6ccb0ee492fe3b57ff505cc6e03e996dc5b70`, dev build `75b12146d47c10070c828b6f26afc710ea21b5e4`, dev fixed `af89ee50c770571a258f524e05ade5531545d969`, bug register updated separately.
+- This section is written last as the developer handoff. Check GitHub Actions for the newest commit on `WAVE-0001`; earlier run 43684569184 predates the latest corrections and remains a 42-pass / 6-fail failure, not a pass.
+- The PR is intentionally unmerged; issue #1 remains open. No local test, typecheck or build was executed in this session.
+
+
+## 41. Local developer feedback loop — 2026-11-15
+
+- `./run.sh` now only bootstraps dependencies when needed and starts the Vite server; removed unreachable typecheck/build commands that followed a long-running server process. Supports `--install`, `WAVE_HOST`, and `WAVE_PORT`.
+- Added executable `./test.sh` as the local quality gate: Node tests, TypeScript typecheck, production build and Playwright Chromium E2E. It installs missing dependencies and the pinned Playwright/browser prerequisites; `--no-e2e` provides a fast non-browser pass. CI invokes this same script after provisioning browser system dependencies.
+- Added `npm run test:local` alias. README, QA context, WIKI and development log updated. This task used GitHub repository editing only; no local test execution is claimed. Check the workflow on this final commit for script syntax and behavior.
+
+
+## Workspace UI regression follow-up
+
+- Color picker inputs use a neutral initial selection so choosing the standard highlight or block-background colors fires the change handler and inserts the expected Markdown formatting.
+- Mobile Settings is available from the top bar even when the sidebar is collapsed.
+- Content width preferences are maximum widths bounded by the available editor grid column; tests should assert the configured cap and the rendered width constraint, not force horizontal overflow.
+- See QA_CONTEXT.md and WIKI.md for the regression details. CI verification for the latest commit is authoritative.
+
+
+## Latest CI triage — 2026-11-15
+
+- Workflow `43687589347` on source head `50eebbd975d0a1dfa47e54d23b51a85e62828703` completed with failure: Node tests, typecheck, Vite build and container image passed; Playwright reported 44 passes, two repeatable failures and two flaky tests.
+- The repeatable issues were invalid color directive text being transformed as a wiki link and an E2E style assertion comparing CSS hex text against Chromium's normalized RGB output. Flaky cases involved a frozen second-tab clock during cross-tab recovery and typing before list-editor caret restoration.
+- Follow-up patch: preserve malformed `color:`/`bg:` directives literally; assert computed RGB background color; remove the unnecessary second-tab fake clock and explicitly verify the recovery prompt; wait for list editor focus/caret restoration before subsequent typing.
+- Fresh CI is required. No local tests were run. This handoff is the final documentation action for this remediation pass.
+
+
+## Latest cross-tab recovery test correction — 2026-11-15
+
+- CI `43688050754`: 47/48 E2E passed; 30 Node tests, typecheck, production build and container build passed. The only failure was the recovery prompt assertion: the source tab autosaved its content after 600ms, before the second tab attempted recovery.
+- Updated the E2E setup to freeze only the source page's clock after workspace setup and before editing. The immediate IndexedDB recovery journal write can complete while the delayed Markdown autosave stays pending. The second page is intentionally left on real time.
+- Fresh CI is required. No local browser test is claimed. This is the final documentation update for this pass.
+
+
+## Latest CI handoff — cross-tab recovery fixture correction (2026-11-15)
+
+- Latest inspected run `43688362527` failed at 47/48 Playwright tests; container, 30 Node tests, TypeScript typecheck and production build passed.
+- Corrected `tests/e2e/workspace.spec.ts`: the source page's clock is no longer installed before workspace setup. It is frozen once after the baseline page has been created/saved and before the unsaved cross-tab draft is entered; the second tab remains on real time.
+- Test commit: `a983dc3199264348331a9e172217d6e70ec4d099`. QA evidence and development history are appended in `QA_CONTEXT.md`, `WIKI.md`, `trash/dev-fixed.md` and `trash/dev-build.md`.
+- Fresh CI is required; no local tests were executed. PR #101 remains open/unmerged and issue #1 remains open pending manual native picker/permission, external-process race, accessibility and process-termination acceptance checks.
+
+
+### Current CI investigation — cross-tab recovery
+The repeated recovery-dialog failure is being isolated with direct browser-side IndexedDB checks. The E2E test now verifies the source tab's saved draft text/session/workspace handle and confirms the second tab sees the same record with a different session ID before invoking `open()`. Existing dialog-source and declined-record-retention assertions are preserved. Treat this as diagnostic hardening, not a confirmed production fix, until CI proves the complete flow passes.
+
+
+### Cross-tab recovery — plan and current evidence
+CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was correctly persisted: exact content, source session ID, and workspace-handle identity all matched. The new diagnostic test itself failed because its expected Markdown newline escapes were double-escaped. Corrected those expectations in commit `418e1e5`. Next CI must verify second-tab visibility and the recovery prompt/decline flow. If it fails, inspect the first failing boundary (IndexedDB visibility, handle identity, newest-draft selection, or `open()` decision) and fix that boundary without weakening assertions. Require the full `test.sh` CI gate and container job to pass before declaring completion.
+
+## WAVE-031 verification issue split — 2026-11-15
+
+- Parent reliability issue [#1](https://github.com/iamjpsonkar/Wave/issues/1) remains open pending native/manual acceptance evidence.
+- New child workstreams: [#104 WAVE-031A — native picker and real permission lifecycle](https://github.com/iamjpsonkar/Wave/issues/104); [#105 WAVE-031B — external filesystem races and backup/restore fault handling](https://github.com/iamjpsonkar/Wave/issues/105); [#106 WAVE-031C — abrupt browser termination and recovery drafts](https://github.com/iamjpsonkar/Wave/issues/106).
+- Accessibility remains tracked in existing [#3](https://github.com/iamjpsonkar/Wave/issues/3); do not create a duplicate accessibility ticket.
+- Latest verified PR #101 CI recorded on main: [run 43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), including 48/48 Playwright tests, Node tests, typecheck, production build and container job. This does not replace native/manual checks.
+- Reconciliation preserves the PR branch's implementation history and the base branch's issue split. This GitHub-only operation does not run tests or a build.
