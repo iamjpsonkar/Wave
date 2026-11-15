@@ -793,3 +793,13 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Playwright now creates unique OPFS directories per browser context. Multi-tab scenarios reopen the user-selected workspace through the remembered handle.
 - Test-layer rationale: storage contract cases share one in-memory filesystem adapter; concurrency/recovery primitives are isolated in safety; true UI integration is exercised through Playwright. A separate Node integration layer awaits a genuinely distinct injectable app/storage boundary.
 - GitHub-only edits; local tests/typecheck/build were not run. Verify full CI on the exact resulting SHA.
+
+
+## WAVE-0111 second review follow-up (2026-11-15)
+
+- Second review [5910232936](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910111707) identified recovery trace gating, incomplete operation correlation and unsafe free-form exception text.
+- Removed direct `console.info('[Wave recovery]')` tracing. Recovery stages now use structured `debug` events and share the same operation ID as document-open failure reporting. Default verbosity suppresses those events; `?waveDebug=1` enables them.
+- Diagnostic errors retain the standard error class and a bounded cause chain, but free-form exception messages are replaced with the fixed string `Details omitted for privacy.` This intentionally avoids heuristic text redaction that could miss document-derived prose. Raw stack traces are not stored.
+- Stable operation IDs now span workspace open/reopen and activation, document open, autosave persistence, Trash restore/delete, and backup create/restore. Existing diagnostics use strict string vocabularies and duplicate propagation is suppressed.
+- Unit coverage now checks ordinary unprefixed private prose is omitted. Playwright coverage checks no recovery trace noise by default, debug visibility when enabled, and autosave error privacy/correlation.
+- Full canonical CI must run against the exact latest head after these changes; no local execution is claimed.
