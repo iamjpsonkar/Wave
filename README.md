@@ -127,4 +127,9 @@ Wave's personal core remains local-first and useful without an account. Optional
 
 ## Project context
 
-- [Wave Wiki — complete product, repository and AI-agent context](./wiki.md)
+- [Wave Wiki — complete product, repository and AI-agent context](./WIKI.md)
+
+
+## Project documentation
+
+The canonical product, engineering, quality and implementation-history references are indexed in [etc/README.md](./etc/README.md). Contributor and team procedures are in [howto/README.md](./howto/README.md). Planned capabilities are not shipped claims; consult current source and verification evidence.

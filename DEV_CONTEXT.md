@@ -139,7 +139,7 @@ Don't conflate these trackers. Don't move an issue to fixed until implemented an
 ## 7. Open bug snapshot — refreshed 2026-11-14
 
 The reviewed `bugs.md` reported two partial findings:
-- **WAVE-031 (P1):** remains open/partial. Branch `WAVE-0001` adds deterministic E2E coverage for prompt-state permission reauthorization and external-edit conflict preservation. Native picker/OS revocation, external-process races during read/save/backup/restore, comprehensive keyboard/screen-reader accessibility and abrupt process termination remain unverified. See `QA_CONTEXT.md` manual plan and `trash/bugs.md`.
+- **WAVE-031 (P1):** remains open/partial. Branch `WAVE-0001` adds deterministic E2E coverage for prompt-state permission reauthorization and external-edit conflict preservation. Native picker/OS revocation, external-process races during read/save/backup/restore, comprehensive keyboard/screen-reader accessibility and abrupt process termination remain unverified. See `QA_CONTEXT.md` manual plan and `etc/quality/bugs.md`.
 - **WAVE-039 (P1):** remains partial. IndexedDB strict durability and `pagehide`/`visibilitychange` best-effort writes reduce but cannot eliminate the asynchronous pre-commit crash window.
 
 WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `QA_CONTEXT.md`; current bug register is `bugs.md`.
@@ -573,7 +573,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 ## 2026-11-15 — Comprehensive project wiki and AI-agent onboarding
 
-- Added [wiki.md](./wiki.md) as the comprehensive product, repository and AI-agent orientation guide. It consolidates durable instructions from the available Wave project conversation context, product constitution, current architecture/source map, storage boundaries, engineering invariants, UI/Markdown decisions, QA limitations, roadmap coverage, documentation ownership, Docker boundaries and recommended improvements.
+- Added [wiki.md](./WIKI.md) as the comprehensive product, repository and AI-agent orientation guide. It consolidates durable instructions from the available Wave project conversation context, product constitution, current architecture/source map, storage boundaries, engineering invariants, UI/Markdown decisions, QA limitations, roadmap coverage, documentation ownership, Docker boundaries and recommended improvements.
 - Linked the wiki from [README.md](./README.md) and [docs/README.md](./docs/README.md).
 - Detailed implementation and verification note: [dev-build.md](./dev-build.md).
 - This is a documentation-only change. Repository files were inspected through GitHub; no local tests/build or new CI run was performed.
@@ -589,7 +589,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 ## 2026-11-15 — Markdown documentation consolidation and enforcement policy
 
 - Consolidated overlapping documentation into [FEATURES.md](./FEATURES.md), [UI_BACKLOG.md](./UI_BACKLOG.md) and [QA_CONTEXT.md](./QA_CONTEXT.md). The former seven duplicate source files were removed only after verifying their meaningful content and stable IDs were present in the destinations.
-- Updated [README.md](./README.md), [CONTRIBUTING.md](./CONTRIBUTING.md), [docs/README.md](./docs/README.md), the product/priority/issue references, and the [Wave Wiki](./wiki.md).
+- Updated [README.md](./README.md), [CONTRIBUTING.md](./CONTRIBUTING.md), [docs/README.md](./docs/README.md), the product/priority/issue references, and the [Wave Wiki](./WIKI.md).
 - The wiki now contains a mandatory **Documentation enforcement after every task** section. Every implementation, fix, refactor, QA or configuration task must review Markdown impact, update the authoritative records that changed, validate links and IDs, avoid unnecessary duplicate files, and update this handoff last.
 - The full product blueprint, priority plan, development logs, open/fixed bug registers, Markdown compatibility checklist and diagram research remain separate.
 - Detailed migration record: [dev-build.md](./dev-build.md), entry dated 2026-11-15.
@@ -601,7 +601,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Audited current main baseline `d831bf04ac458a888206de4d492830f55958b022`.
 - New findings are tracked in [#99 — Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99) and [#100 — duplicate storage regression tests](https://github.com/iamjpsonkar/Wave/issues/100).
 - Existing open defect, UI, Markdown, export and roadmap tickets were checked before creation; do not open duplicates for the same scope.
-- Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [trash/github-issues.md](./trash/github-issues.md).
+- Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [etc/quality/github-issues.md](./etc/quality/github-issues.md).
 - No source code changed and no tests/build/CI execution is claimed for this audit.
 
 
@@ -610,9 +610,9 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Issue: [#1 — Complete native filesystem, permission and lifecycle verification](https://github.com/iamjpsonkar/Wave/issues/1), internal defect ID WAVE-031.
 - Branch: `WAVE-0001`, created from the refreshed `main` branch.
 - `tests/e2e/workspace.spec.ts`: expanded the OPFS permission fixture to count permission requests; added prompt-state reauthorization and external-file-edit conflict preservation scenarios. Browser test source count is now 48; Node source count remains 30.
-- `trash/bugs.md`: updated WAVE-031 test inventory and recorded branch follow-up. The issue remains open.
+- `etc/quality/bugs.md`: updated WAVE-031 test inventory and recorded branch follow-up. The issue remains open.
 - `QA_CONTEXT.md`: added real-browser native picker/permission, external filesystem, keyboard/focus/screen-reader, and process-termination manual checklists.
-- `trash/dev-fixed.md` and `trash/dev-build.md`: recorded implementation scope and CI-pending status.
+- `etc/history/dev-fixed.md` and `etc/history/dev-build.md`: recorded implementation scope and CI-pending status.
 - `WIKI.md`: documented the product-owner-approved issue branch → commit/push → PR → issue-comment workflow. Do not merge PRs or close issues; product owner reviews them.
 - Verification: source and test definitions inspected; no local test/typecheck/build or native/manual browser verification was performed. PR CI is pending. The OPFS tests simulate permission behavior and are not evidence of native OS picker/revocation behavior.
 - Remaining acceptance criteria: real native picker and permission revocation/reauthorization results; external writer races across read/save/backup/restore; comprehensive keyboard/focus/screen-reader/contrast review; actual process-termination fault test. Keep #1 open until these criteria are evidenced.
@@ -686,7 +686,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 
 - Latest inspected run `43688362527` failed at 47/48 Playwright tests; container, 30 Node tests, TypeScript typecheck and production build passed.
 - Corrected `tests/e2e/workspace.spec.ts`: the source page's clock is no longer installed before workspace setup. It is frozen once after the baseline page has been created/saved and before the unsaved cross-tab draft is entered; the second tab remains on real time.
-- Test commit: `a983dc3199264348331a9e172217d6e70ec4d099`. QA evidence and development history are appended in `QA_CONTEXT.md`, `WIKI.md`, `trash/dev-fixed.md` and `trash/dev-build.md`.
+- Test commit: `a983dc3199264348331a9e172217d6e70ec4d099`. QA evidence and development history are appended in `QA_CONTEXT.md`, `WIKI.md`, `etc/history/dev-fixed.md` and `etc/history/dev-build.md`.
 - Fresh CI is required; no local tests were executed. PR #101 remains open/unmerged and issue #1 remains open pending manual native picker/permission, external-process race, accessibility and process-termination acceptance checks.
 
 
@@ -713,3 +713,7 @@ CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was cor
 - Future synchronization and conflict resolution are now documented in [etc/howtodev.md](./etc/howtodev.md#main-to-feature-branch-synchronization-required-workflow), linked from [WIKI.md](./WIKI.md#main-to-feature-synchronization-and-conflict-resolution-policy), and recorded in [trash/dev-build.md](./trash/dev-build.md).
 - Verification limits: GitHub refs, commit parents, tree and compare metadata were inspected. No local checkout/status, tests, typecheck, build or CI run was executed in this environment. Check CI for the latest manager commit before claiming runtime validation.
 - This is the final developer-context update for the main-sync documentation batch.
+
+## Documentation reorganization — 2026-11-15
+
+The project documentation library is organized under `etc/product/`, `etc/engineering/`, `etc/quality/` and `etc/history/`; see [etc/README.md](./etc/README.md). Contributor procedures and team governance are under `howto/`. The former `trash/` directory is removed. This reorganization preserves the feature catalogue, tracker IDs and history; it does not change application behavior or imply fresh test/CI verification.
