@@ -633,3 +633,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Added focused Node regression tests for nested unscoped names, nested scoped names and root scoped names. The inventory snapshot was regenerated with corrected package names.
 - Reconciled the audit-start baseline in `THIRD_PARTY_NOTICES.md` to the actual PR base SHA `7e895f26b05288dc8edfebcf03e14efe954950f5`, matching the checker and PR base metadata.
 - These corrections address the two accuracy findings in review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985). Legal release-artifact inspection limitations remain open; green CI is not legal sign-off.
+
+
+## 2026-11-15 — PR #121 test import failure corrected
+
+- Exact-head CI run [43713413195](https://github.com/iamjpsonkar/Wave/actions/runs/43713413195) passed `npm ci`, the license inventory audit and container build, but the unit gate found the new regression test imported the checker from an incorrect relative path.
+- Extracted the lockfile inventory normalization into the side-effect-free `scripts/dependency-license-inventory.mjs` module. The CLI checker imports that helper, and the focused test imports the pure module directly; tests no longer execute the CLI audit as an import side effect.
+- Corrected the test module path and retained nested scoped/unscoped and root scoped package assertions. A new exact-head CI run is required; prior results do not verify this correction.

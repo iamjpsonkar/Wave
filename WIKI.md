@@ -803,3 +803,8 @@ Wave uses **one cohesive commit per task by default**. Code, tests, configuratio
 ## PR #121 review correction
 
 Review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985) identified inaccurate package names for nested lockfile entries and a mismatched audit baseline SHA. Package-name normalization now uses the final `node_modules/` segment (including scoped names), with regression tests; the committed inventory has been regenerated and the notices baseline corrected to the PR base commit. Exact-head CI and outstanding release-artifact legal review remain required.
+
+
+## License inventory regression test implementation note
+
+Keep pure lockfile normalization helpers in `scripts/dependency-license-inventory.mjs` so unit tests can import them without executing the CLI audit. The CLI wrapper `scripts/check-dependency-licenses.mjs` should remain the command entry point. Regression tests cover nested unscoped and scoped package names plus root scoped packages.

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { inventoryFromLock } from '../../scripts/check-dependency-licenses.mjs';
+import { inventoryFromLock } from '../../../scripts/dependency-license-inventory.mjs';
 
 test('inventory records the final nested unscoped package name', () => {
   const inventory = inventoryFromLock({

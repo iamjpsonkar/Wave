@@ -913,3 +913,9 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Addressed review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985): dependency inventory names now derive from the final `node_modules/` path segment, including complete scoped names; regression coverage includes nested unscoped, nested scoped and root scoped packages.
 - Regenerated `etc/legal/dependency-license-inventory.json` with corrected package names and aligned the audit baseline in `THIRD_PARTY_NOTICES.md` to PR base SHA `7e895f26b05288dc8edfebcf03e14efe954950f5`.
 - Full exact-head CI is required before treating the code findings as verified. Previously documented package tarball/LICENSE/NOTICE and final distribution attribution checks remain open and must not be represented as legally complete.
+
+
+## 2026-11-15 — PR #121 CI test import fix
+
+- Run [43713413195](https://github.com/iamjpsonkar/Wave/actions/runs/43713413195) exposed an incorrect relative import in the new license inventory regression test. The npm audit and container build had passed; the full Node unit gate failed before executing that test.
+- Extracted inventory normalization into side-effect-free `scripts/dependency-license-inventory.mjs`; CLI checker imports it, tests import the helper directly, and the relative path is corrected. Exact-head CI is required after this fix.
