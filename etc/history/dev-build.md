@@ -455,8 +455,8 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 
 ## Historical feature-gap audit notes retained during documentation reorganization
 
-- Created [features-gap.md](../product/features-gap.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
-- The gap audit is updated in [features-gap.md](../product/features-gap.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
+- Created [features-gap.md](../product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
+- The gap audit is updated in [features-gap.md](../product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
 
 ## Automated test suite organization issue — 2026-11-15
 

@@ -69,7 +69,7 @@ This document defines the mission, responsibilities, expected outputs and collab
 - Reproducible bug reports and evidence quality.
 - Cross-browser, accessibility, performance and failure-path testing.
 
-**Key areas:** `tests/`, `bugs.md`, `fixed-bugs.md`, `QA_CONTEXT.md` (subject to current repository paths).
+**Key areas:** `tests/`, `etc/quality/bugs.md`, `etc/quality/fixed-bugs.md`, `QA_CONTEXT.md` (subject to current repository paths).
 
 **Outputs:** Reproducers, automated coverage, QA reports, release risk assessments and verified defect records.
 
@@ -122,7 +122,7 @@ This document defines the mission, responsibilities, expected outputs and collab
 - Product, contributor and operator documentation.
 - Feature traceability from proposal through release.
 
-**Key documents:** `upcoming-features.md`, `priority-features.md`, `FEATURES.md`, `docs/ROADMAP.md`, `WIKI.md` (verify current paths before editing).
+**Key documents:** `etc/product/upcoming-features.md`, `etc/product/priority-features.md`, `etc/product/FEATURES.md`, `etc/product/ROADMAP.md`, `WIKI.md` (verify current paths before editing).
 
 **Outputs:** Problem briefs, specifications, prioritization rationale, release notes and accurate documentation.
 

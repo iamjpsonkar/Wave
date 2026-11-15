@@ -4,8 +4,8 @@ Thank you for helping improve Wave. The project is local-first, user-owned and r
 
 ## Before changing code
 
-1. Read [DEV_CONTEXT.md](DEV_CONTEXT.md) for the current source map, invariants and handoff.
-2. Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) and the relevant feature, roadmap or Markdown compatibility documentation.
+1. Read [DEV_CONTEXT.md](../../DEV_CONTEXT.md) for the current source map, invariants and handoff.
+2. Read [architecture](./ARCHITECTURE.md) and the relevant feature, roadmap or Markdown compatibility documentation.
 3. Inspect the current implementation and tests on the target branch. Do not rely on old commit notes as proof that current code behaves the same way.
 4. Keep changes focused and preserve existing product scope and engineering history.
 
@@ -65,12 +65,12 @@ Do not claim a check passed unless it was actually executed. Report any unrun ch
 
 Keep each document's purpose intact:
 
-- `upcoming-features.md` is the complete product blueprint; do not prune agreed scope.
-- `priority-features.md` controls delivery order, not feature retention.
-- `FEATURES.md` contains the shipped-feature overview and detailed feature map.
-- `docs/ROADMAP.md` tracks delivery phases.
-- `dev-fixed.md` and `dev-build.md` record implementation and verification history.
+- `etc/product/upcoming-features.md` is the complete product blueprint; do not prune agreed scope.
+- `etc/product/priority-features.md` controls delivery order, not feature retention.
+- `etc/product/FEATURES.md` contains the shipped-feature overview and detailed feature map.
+- `../product/ROADMAP.md` tracks delivery phases.
+- `etc/history/dev-fixed.md` and `etc/history/dev-build.md` record implementation and verification history.
 - `DEV_CONTEXT.md` is the canonical developer handoff and must be updated at the end of each implementation batch.
 - Existing UI gap IDs and engineering history are append-only unless the product owner explicitly requests otherwise.
 
-See [the documentation index](docs/README.md) for the full map.
+See [the documentation index](../README.md) for the full map.

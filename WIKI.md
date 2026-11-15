@@ -37,8 +37,8 @@ Before making any change:
 - Keep changes scoped, readable, typed and consistent with existing architecture. Avoid unnecessary dependencies and premature abstractions.
 - Update the relevant development log(s): `etc/history/dev-fixed.md` for fixes and regressions; `etc/history/dev-build.md` for features, build/CI and implementation batches. Keep both histories useful and append/update rather than erasing prior entries.
 - **Update `DEV_CONTEXT.md` as the final documentation action of an implementation batch.** It is the concise, current developer handoff and should point to the detailed logs and trackers.
-- **Documentation is part of task completion, not optional cleanup.** After every implementation, bug-fix, refactor, QA audit, dependency/configuration change or user-visible behavior change, review the Markdown documentation affected by that work before reporting completion. Update the relevant feature/status map, bug/UI/QA register, roadmap/priority tracker, user guide, development log and handoff as applicable. If no Markdown file needs a content change, record that conclusion in the appropriate development log; do not make meaningless edits just to touch a file.
-- **Use the smallest authoritative set of Markdown files.** Before creating a new `.md`, search for an existing file with the same responsibility. Prefer updating an existing source of truth. Create a new file only when it has a distinct durable audience/purpose and add it to `docs/README.md` and this wiki's file map.
+- **Documentation is part of task completion, not optional cleanup.** After every implementation, bug-fix, refactor, dependency/configuration change or user-visible behavior change, review the Markdown documentation affected by that work before reporting completion. QA is strictly read-only and must not edit repository files; report findings through GitHub issues and PR review comments. Update the relevant feature/status map, bug/UI/QA register, roadmap/priority tracker, user guide, development log and handoff as applicable. If no Markdown file needs a content change, record that conclusion in the appropriate development log; do not make meaningless edits just to touch a file.
+- **Use the smallest authoritative set of Markdown files.** Before creating a new `.md`, search for an existing file with the same responsibility. Prefer updating an existing source of truth. Create a new file only when it has a distinct durable audience/purpose and add it to `etc/README.md` and this wiki's file map.
 - **No orphan Markdown files.** Every maintained `.md` must have a clear owner, purpose, navigation link (where appropriate), and update rule. Avoid duplicate status tables and competing copies of the same requirements.
 - **Consolidation and deletion are allowed.** Before deleting an `.md`, migrate its meaningful current guidance, unique requirements, IDs, statuses, acceptance criteria, decisions, evidence and useful history into an existing or new authoritative `.md`. Check inbound links and update them, verify the destination contains the material, then delete the old file. Preserve Git history; do not retain empty pointer files unless a compatibility requirement justifies them.
 - **After each task, perform a Markdown hygiene pass:** check changed-file references, links/case-sensitive paths, stale claims, duplicated/conflicting status, feature IDs and tracker cross-links; update navigation indexes. Never delete meaningful history or product scope merely to reduce file count.
@@ -50,20 +50,20 @@ Before making any change:
 
 ## Documentation enforcement after every task
 
-**A task is not complete until its Markdown impact has been reviewed.** This applies to features, bug fixes, refactors, QA audits, dependency/configuration changes, CI/deployment changes and user-visible behavior changes.
+**A task is not complete until its Markdown impact has been reviewed.** This applies to features, bug fixes, refactors, dependency/configuration changes, CI/deployment changes and user-visible behavior changes. QA audits inspect documentation but never edit repository files.
 
 ### Required end-of-task documentation pass
 
 1. Identify the behavior, decision, status or architecture that changed.
 2. Update the existing authoritative Markdown source(s), not every file indiscriminately:
-   - Shipped behavior → `FEATURES.md`, relevant user guide and/or `docs/MARKDOWN_SUPPORT.md`.
-   - Product scope or a new idea → `upcoming-features.md`; delivery ordering/dependencies → `etc/product/priority-features.md`.
+   - Shipped behavior → `etc/product/FEATURES.md`, relevant user guide and/or `etc/engineering/MARKDOWN_SUPPORT.md`.
+   - Product scope or a new idea → `etc/product/upcoming-features.md`; delivery ordering/dependencies → `etc/product/priority-features.md`.
    - UI defects/gaps/proposals → `etc/product/UI_BACKLOG.md`, preserving UIB/UI/UIF IDs.
    - Open/fixed defect status → `etc/quality/bugs.md` / `etc/quality/fixed-bugs.md` only when a genuine QA register change is required.
-   - QA evidence and limitations → `QA_CONTEXT.md`.
+   - QA evidence and limitations are reported in GitHub issues/PR review comments. Do not edit `QA_CONTEXT.md` or any repository file during QA.
    - Fix/regression history → `etc/history/dev-fixed.md`; features/build/CI/deployment history → `etc/history/dev-build.md`.
-   - Architecture/deployment/contributor guidance → relevant file under `docs/` or `CONTRIBUTING.md`.
-3. Update cross-links and navigation indexes (`README.md`, `docs/README.md`, `WIKI.md`) when the file map, onboarding or durable project rules change.
+   - Architecture/deployment/contributor guidance → relevant file under `etc/engineering/`.
+3. Update cross-links and navigation indexes (`README.md`, `etc/README.md`, `WIKI.md`) when the file map, onboarding or durable project rules change.
 4. Update `DEV_CONTEXT.md` **last** with the current baseline, changed areas, verification state and links to the detailed records.
 5. If no existing Markdown needs a content change, record in the appropriate development log why documentation was not applicable. Never create filler edits.
 
@@ -71,6 +71,7 @@ Before making any change:
 
 - One authoritative location per type of information; link to it rather than copy/paste competing status tables.
 - Keep current status separate from dated history. Label historical counts, CI results and implementation snapshots with their commit/date.
+- QA is strictly read-only: no repository file edits or commits. Search for duplicate issues before creating a finding; review complete PR diffs and report actionable findings as PR review comments. Developers own fixes.
 - Preserve stable IDs, acceptance criteria, meaningful owner decisions, rationale and evidence. Do not mark work shipped/fixed without verification.
 - Use relative, case-correct links and verify every renamed/moved/deleted path.
 - New Markdown files require a unique purpose, an owner/update rule and a navigation link. Search for an existing destination first.

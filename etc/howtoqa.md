@@ -1,16 +1,12 @@
-# How to be a qa for this project
+# QA workflow entry point
 
-## READ Below MD files first
-[QA_CONTEXT](../QA_CONTEXT.md)
-[README](../README.md)
-[WIKI](../WIKI.md)
+The authoritative QA procedure is the [Wave QA workflow](../howto/howtoqa.md). Read the [QA handoff](../QA_CONTEXT.md), [developer handoff](../DEV_CONTEXT.md), [README](../README.md), and [project wiki](../WIKI.md) before reviewing.
 
-## Open PRs
-On github Pull Request https://github.com/iamjpsonkar/Wave/pulls, Pick any Open PR
-- Review the PR
-- Add comments in the PR
-- If no issues, approve the PR and merge it
+## Mandatory project-owner constraint
 
-## Create new Issues
-- Find issues in the main branch, create issues at https://github.com/iamjpsonkar/Wave/issues
-make sure no duplicate issues
+QA is strictly read-only in the repository. Do not edit, create, delete, rename, format, commit or push repository files. Search for duplicate GitHub issues before creating a finding; report actionable PR findings as review comments. Developers own fixes. Do not approve or merge a PR unless separately authorized.
+
+## GitHub destinations
+
+- Open pull requests: https://github.com/iamjpsonkar/Wave/pulls
+- Issues: https://github.com/iamjpsonkar/Wave/issues

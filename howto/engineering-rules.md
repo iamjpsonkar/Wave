@@ -61,14 +61,14 @@ These rules apply to human contributors, contractors and AI agents. More specifi
 
 ## 7. Documentation after every task
 
-At the end of every implementation, bug fix, refactor, QA, configuration or documentation task:
+At the end of every implementation, bug fix, refactor, configuration or documentation task:
 
 1. Identify the authoritative Markdown files affected.
 2. Update the relevant feature, bug, QA, architecture, roadmap or operational record.
 3. Preserve stable IDs, history and the complete product scope.
 4. Check relative links, filenames, case and stale references.
 5. Update development/QA logs with exact files, commit and verification evidence.
-6. Update `DEV_CONTEXT.md` last for implementation handoff changes; update `QA_CONTEXT.md` after QA work.
+6. Update `DEV_CONTEXT.md` last for implementation handoff changes. QA is strictly read-only and must not update `QA_CONTEXT.md` or any repository file; report findings through GitHub issues and PR review comments.
 7. Do not create a second source of truth for information already owned by another file.
 
 Not every task changes every document. Update only the records whose facts or status changed, but always perform the documentation-impact review.

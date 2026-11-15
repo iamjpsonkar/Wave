@@ -4,7 +4,7 @@
 
 Wave is a local-first workspace for notes, documents and ideas. Choose a folder and Wave creates a portable `.wave/` workspace inside it. Your Markdown pages and attachments remain ordinary files you own.
 
-[Features](./FEATURES.md) · [Roadmap](docs/ROADMAP.md) · [Architecture](docs/ARCHITECTURE.md) · [Documentation index](docs/README.md) · [Docker guide](docs/DOCKER.md)
+[Features](./etc/product/FEATURES.md) · [Roadmap](etc/product/ROADMAP.md) · [Architecture](etc/engineering/ARCHITECTURE.md) · [Documentation index](etc/README.md) · [Docker guide](etc/engineering/DOCKER.md)
 
 ## What Wave includes today
 
@@ -15,7 +15,7 @@ Wave is a local-first workspace for notes, documents and ideas. Choose a folder 
 - **Data safety:** autosave, external-edit conflict checks, unsaved-draft recovery, recoverable Trash, verified backups and restore to a separate workspace.
 - **Responsive workspace:** full-window editor, mobile navigation and keyboard-oriented workflows.
 
-See [FEATURES.md](./FEATURES.md) for the combined shipped-feature overview and detailed feature map. The [complete product blueprint](upcoming-features.md) and [priority plan](priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
+See [FEATURES.md](./etc/product/FEATURES.md) for the combined shipped-feature overview and detailed feature map. The [complete product blueprint](etc/product/upcoming-features.md) and [priority plan](etc/product/priority-features.md) retain the wider agreed scope; planned items are not represented as shipped.
 
 ## Choose how to run Wave
 
@@ -59,7 +59,7 @@ Open [http://localhost:8080](http://localhost:8080). To choose another host port
 docker compose down
 ```
 
-The container builds the frontend and serves static files through an unprivileged Nginx process. It uses a read-only root filesystem, drops Linux capabilities and exposes an HTTP health check. See the [Docker deployment guide](docs/DOCKER.md) for standalone Docker, HTTPS/reverse-proxy and troubleshooting instructions.
+The container builds the frontend and serves static files through an unprivileged Nginx process. It uses a read-only root filesystem, drops Linux capabilities and exposes an HTTP health check. See the [Docker deployment guide](etc/engineering/DOCKER.md) for standalone Docker, HTTPS/reverse-proxy and troubleshooting instructions.
 
 **Important:** Docker currently hosts the browser application only. It does not add a backend, database, user accounts, shared server-side workspace or collaboration service. When a user opens Wave, the browser still accesses a folder on that user's own device through the File System Access API. For remote access, serve the site over HTTPS; browser filesystem access and supported-browser requirements still apply.
 
@@ -112,17 +112,17 @@ Markdown documents and ordinary assets are the current workspace source of truth
 ```text
 src/                  React application, Markdown and storage adapters
 tests/                Node storage tests and Playwright browser tests
-docs/                 Architecture, feature map, roadmap and deployment docs
+etc/                 Product, engineering, quality and history documentation
 docker/               Nginx static hosting configuration
 .github/workflows/    CI automation
 *.md                  Product blueprints and engineering registers
 ```
 
-The consolidated feature, UI and QA registers reduce duplicate files while preserving their meaningful requirements, stable IDs and historical evidence. The complete product blueprint, priority plan, development logs and open/fixed bug registers remain separate because they serve distinct purposes. Start with the [documentation index](docs/README.md) to find the right one.
+The consolidated feature, UI and QA registers reduce duplicate files while preserving their meaningful requirements, stable IDs and historical evidence. The complete product blueprint, priority plan, development logs and open/fixed bug registers remain separate because they serve distinct purposes. Start with the [documentation index](etc/README.md) to find the right one.
 
 ## Product direction
 
-Wave's personal core remains local-first and useful without an account. Optional collaboration, connected services, richer database capabilities and a desktop application remain planned work. A versioned SQLite store and server-side services require explicit migration, authorization, integrity, export and recovery design; static Docker hosting does not imply those capabilities. See [the product constitution](upcoming-features.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers).
+Wave's personal core remains local-first and useful without an account. Optional collaboration, connected services, richer database capabilities and a desktop application remain planned work. A versioned SQLite store and server-side services require explicit migration, authorization, integrity, export and recovery design; static Docker hosting does not imply those capabilities. See [the product constitution](etc/product/upcoming-features.md#20-wave-product-constitution--decisions-based-on-the-product-owners-answers).
 
 
 ## Project context
