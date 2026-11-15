@@ -876,3 +876,9 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - The integration test checks all maintained Markdown files in the checkout. Reference-style links and heading-anchor validity are not checked automatically.
 - Verification pending on the exact PR head. Do not claim the checker passes until GitHub Actions reports success.
 
+## 2026-11-15 — Markdown navigation audit update
+
+- The first CI run `43738234294` correctly exposed additional stale links in current documentation beyond the initial manual audit. Corrected current Wiki, documentation index, feature catalogue, priority plan, product blueprint, QA bug register and QA how-to links.
+- Historical `etc/history/` logs are intentionally excluded from link enforcement because their path references document prior repository layouts and must remain historical records.
+- README documents `npm run test:links`. Exact-head CI is pending after these fixes; the initial integration run failed on the stale paths and must not be reported as passing.
+
