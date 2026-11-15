@@ -1596,7 +1596,7 @@ test('PDF export uses a readable print palette and preserves Markdown content', 
     '$$',
     '\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}',
     '$$'
-  ].join('\\n');
+  ].join('\n');
   await page.locator('textarea').fill(source);
   await page.getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
