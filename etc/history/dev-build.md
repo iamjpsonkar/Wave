@@ -53,7 +53,7 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 ## 2026-11-14 — Markdown showcase gap audit
 
 - Compared the complete user-provided 20-section Markdown Feature Showcase with the current renderer, preview integration, styles, templates, compatibility guide and E2E test source.
-- Created [features-gap.md](./features-gap.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
+- Created [features-gap.md](../product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
 - This was a source/documentation audit. No application code changed and no local test suite was run for this audit. Existing historical CI results do not establish that the Markdown showcase is fully implemented.
 
 
@@ -91,7 +91,7 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
   3. Mermaid flowchart test expects `polygon` and `ellipse` elements, but the current local renderer uses different SVG primitives. Assert the intended labels/edges and actual output shape.
 - The same run passed the supplied math, local DOT/PlantUML/Vega-Lite/D2/AsciiDoc, local audio/video, and additional Mermaid-family fixtures. These tests validate only their examples, not full spec compatibility.
 - Browser suite source contains **23 unique scenarios** (the run executed 20 successfully and 3 failed). Node suite contains **30 tests**.
-- The gap audit is updated in [features-gap.md](./features-gap.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](./docs/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
+- The gap audit is updated in [features-gap.md](../product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
 - Do not call the Markdown showcase complete. Remaining work includes fixing the three E2E failures, expanding accessibility/conformance/round-trip/browser coverage, and documenting the strict limits of the local TeX/Mermaid/other-format renderers.
 
 
@@ -347,99 +347,3 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Updated the wiki, README, contributor guidance, developer handoff, roadmap/issue references and documentation index. Added a mandatory per-task Markdown review/enforcement section to `wiki.md`: update authoritative docs, preserve IDs/history, avoid duplicate sources, validate links and update `DEV_CONTEXT.md` last.
 - Preserved as separate files: `upcoming-features.md`, `priority-features.md`, `dev-fixed.md`, `dev-build.md`, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `diagram-features.md`, and the architecture/deployment/Markdown/roadmap guides.
 - Verification: fetched and compared source/destination contents before deletion; confirmed UIB-001..006, UI-001..024, UIF-001..021 and WAVE-031/WAVE-039/WAVE-042 are present in the consolidated destinations. Checked navigation and corrected stale links in the consolidated feature guide. No application code changed; no local tests/build or CI run was performed.
-
-
-## 2026-11-15 — WAVE-0001 verification additions (CI pending)
-
-- Branch: `WAVE-0001` (issue #1).
-- Added two Playwright scenarios: recent-workspace permission reauthorization from the prompt state, and editor conflict handling after an external filesystem edit.
-- Current source inventory after the additions: 30 Node test definitions and 48 Playwright E2E scenarios.
-- Existing Node coverage includes conditional-save external-change rejection and backup snapshot mutation/fault checks.
-- CI: pending PR workflow. Record the exact workflow run, commit SHA and each suite outcome after GitHub Actions completes. No new test/build pass is claimed yet.
-- Native OS picker/revocation, external-process race scheduling, full accessibility audit and actual process termination remain manual/platform verification requirements.
-
-
-
-## 2026-11-15 — WAVE-0001 CI remediation (in progress)
-
-- Investigated failed workflow `43682365587`: Node tests, typecheck, production build and container build passed; Playwright had 15 failures / 33 passes.
-- Corrected invalid external-edit fixture newlines and current error-surface selector; repaired ambiguous/stale selectors and template-preview flow; corrected local-image, diagram and PDF fixture expectations.
-- Fixed application defects discovered during triage: empty task-list item continuation, block-color newline parsing/serialization, and editor selection preservation for color actions.
-- Branch `WAVE-0001`, PR [#101](https://github.com/iamjpsonkar/Wave/pull/101). Remediation CI [run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072) was still running when this entry was written. Do not claim pass until its final result is checked.
-- No local execution was available; use CI logs to identify and fix remaining failures. Keep #1 open for native picker, external-process race, accessibility and lifecycle acceptance evidence.
-
-
-## 2026-11-15 — second WAVE-0001 CI triage pass
-
-- Rechecked latest completed workflow [43683760674](https://github.com/iamjpsonkar/Wave/actions/runs/43683760674): Playwright 39 passed / 9 failed; Node tests, typecheck, production build and container job passed.
-- Remaining categories: settings dialog Escape handling; icon class expectation; strict locators for code/diagram/template/color spans; color-toolbar event/state application; block-callout classification.
-- Follow-up changes pushed: allow Escape to close settings, align icon expectation with rendered Lucide class, scope template search and narrow code/diagram/color selectors, route color edits through controlled content change, and correct block-color callout classifier. Verify current PR head's next CI run before marking complete.
-
-
-## 2026-11-15 — WAVE-0001 consolidated CI remediation
-
-- Rechecked latest head run [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184): Playwright 42 passed / 6 failed; container passed. Node tests, typecheck and production build passed.
-- Fixed stale editor content usage in inline/background color actions by reading `contentRef.current`; route mutations through `handleEditorChange` to update recovery journal and visible state.
-- Fixed block background updates to replace the source range from the current block editor render, not rely on outdated offsets or bypass the draft update path.
-- Fixed Settings test modal ordering and Lucide file-code SVG class assertion.
-- Fresh CI required. No local test/build is claimed. WAVE-031 manual/native checks remain open.
-
-## 2026-11-15 — Local run/test scripts and CI parity
-
-- Replaced the misleading `run.sh` sequence (which attempted typecheck/build only after the long-running dev server had already started) with a fail-fast development launcher. It validates Node.js 22.6+, installs locked dependencies only when needed, supports `--install`, and exposes host/port through `WAVE_HOST` / `WAVE_PORT`.
-- Added executable `test.sh`: Node tests, typecheck, production build and Playwright Chromium E2E in one local command. It bootstraps missing npm dependencies, the same pinned Playwright version used by CI, and Chromium; supports no-E2E and pre-provisioned dependency flags.
-- Added `npm run test:local` alias. CI now provisions Chromium with OS dependencies and invokes the same script with setup skipped, keeping the actual check sequence shared.
-- Updated README, QA context, WIKI and developer handoff. No local execution was available through the GitHub-only editing workflow; the new CI run must validate shell syntax/behavior and test suite outcome. Developers can immediately run `./test.sh` after pulling the branch.
-
-
-## 2026-11-15 — Workspace UI regression follow-up
-
-- Corrected color-picker initial values so applying the toolbar's default highlight/block colors is an actual color change and triggers formatting.
-- Exposed Settings directly in the mobile top bar.
-- Aligned the narrow-width E2E check with the product contract: configured width is a maximum, not a promise to overflow its available editor column.
-- CI verification pending; no local run claimed.
-
-
-## 2026-11-15 — CI follow-up: Markdown directives and E2E stability
-
-- Run `43687589347` failed only in Playwright; Node tests, typecheck, production build and container build passed. The suite reported 44 passes, two deterministic failures and two flaky scenarios (cross-tab recovery and list typing).
-- Fixed malformed `[[color:red|...]]`-style directives being mistaken for unresolved wiki links: invalid `color:`/`bg:` directives now remain literal text, while valid six-digit hex directives retain their existing rendering path.
-- Corrected the block-background E2E assertion to compare the browser-computed RGB CSS value rather than expecting the source hex serialization. Removed an unnecessary frozen clock from the second cross-tab page, asserted the dialog source before checking the declined-recovery result, and made list continuation tests wait for focus/caret restoration before typing the next item.
-- Verification is pending on the new commit. No local browser run is claimed. Native OS picker/permission, external-process race, accessibility and process-termination checks remain outstanding; issue #1 stays open and PR #101 stays unmerged.
-
-
-## 2026-11-15 — Cross-tab recovery CI follow-up
-
-- Workflow `43688050754` passed 47 of 48 Playwright tests; Node tests (30), typecheck, production build and container image passed. The remaining failure was the cross-tab recovery test: after removing the fake clock from both pages, the source tab's 600ms autosave committed the changed Markdown before the second tab opened it, so no recovery dialog was expected and the prompt assertion received an empty string.
-- Corrected the test to freeze only the source tab's clock after workspace/page setup and before editing. Draft-journal writes remain immediate; only the delayed Markdown autosave is held. The second tab remains on real time so navigation and recovery interaction are not blocked.
-- Fresh CI is pending. No local browser execution is claimed. Outstanding manual OS picker/permission, external-process race, accessibility, and process-termination criteria remain tracked; issue #1 and PR #101 remain open.
-
-
-## 2026-11-15 — Cross-tab recovery E2E clock lifecycle
-
-- Run `43688362527` completed with container success and 47/48 Playwright tests passing; 30 Node tests, typecheck and production build passed. The remaining test did not observe the cross-tab recovery prompt.
-- Corrected the E2E fixture to install the source page's clock only after workspace setup and baseline page save, immediately before creating the unsaved recovery draft. Removed the earlier duplicate installation before setup; the second tab remains on real time.
-- The change is limited to regression-test setup. A new PR workflow must confirm the outcome. No local tests are claimed.
-
-
-## Cross-tab recovery diagnostics
-- Added source-tab and second-tab IndexedDB inspections before recovery is attempted.
-- Assertions cover exact unsaved text, matching workspace handle identity, source tab ownership, and distinct tab session IDs.
-- Kept the actual cross-tab prompt assertion and the declined-draft-retention assertion unchanged.
-- Next CI result should identify whether the draft is absent at write time, invisible/mismatched in the second tab, or lost later in `open()`.
-
-
-## Cross-tab recovery — CI #918 diagnosis
-- Confirmed source tab journal record is present with exact draft text, source session ID, and matching workspace handle.
-- The diagnostic test failed because expected content encoded `\\n` rather than newline characters. Corrected both diagnostic expectations.
-- Next gate checks second-tab journal visibility and the actual recovery prompt/decline behavior. No production fix is claimed from this run.
-- Completion plan: isolate the first failing boundary, fix only that boundary, preserve strong assertions, then require the complete local/CI script and container job to pass.
-
-## WAVE-031 follow-up issue decomposition — 2026-11-15
-
-- Created [#104 — WAVE-031A](https://github.com/iamjpsonkar/Wave/issues/104) for native folder picker, cancellation, real browser/OS permission revocation and reauthorization verification.
-- Created [#105 — WAVE-031B](https://github.com/iamjpsonkar/Wave/issues/105) for external filesystem read/save races and backup/restore fault injection.
-- Created [#106 — WAVE-031C](https://github.com/iamjpsonkar/Wave/issues/106) for controlled browser-process termination and IndexedDB recovery-draft commit-boundary verification.
-- Reused existing [#3](https://github.com/iamjpsonkar/Wave/issues/3) for keyboard/focus, screen-reader and contrast audit; linked that scope to parent #1 rather than creating a duplicate.
-- Parent #1 remains open. The latest previously verified PR CI recorded on main is run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), 48/48 Playwright plus all other workflow jobs passing.
-- This reconciliation does not run tests.

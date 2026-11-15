@@ -433,9 +433,9 @@ Important documentation drift observed at the same HEAD:
 
 - Audited current `main` at commit `d831bf04ac458a888206de4d492830f55958b022`, including repository orientation/developer handoff, QA and bug registers, issue index, package scripts, CI workflow, configuration relocation, storage tests and Playwright E2E test source.
 - Reconciled against all **98 existing GitHub issues** (92 open, 6 closed) before creating new tickets. Existing WAVE-031/WAVE-039, UI/Markdown/export issues and roadmap/coverage epics were treated as canonical; no duplicate issue was opened for their scope.
-- Created [#99 — repair case-sensitive and stale Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99). Confirmed examples include README's `./wiki.md` versus maintained `WIKI.md`, missing `docs/README.md`, and root-level tracker links where the maintained files live under `trash/`.
+- Created [#99 — repair case-sensitive and stale Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99). Confirmed examples include README's `./WIKI.md` versus maintained `WIKI.md`, missing `docs/README.md`, and root-level tracker links where the maintained files live under `trash/`.
 - Created [#100 — remove duplicate storage regression scenarios](https://github.com/iamjpsonkar/Wave/issues/100). `tests/storage.test.js` repeats the backup-lock interleaving scenario at lines 300–321 and 334–355, and repeats the copied-file mutation scenario at lines 322–333 and 356 onward. The issue requires preserving distinct locking and integrity guarantees while removing redundant tests.
-- Updated `trash/github-issues.md` to include both issues and the verified open-issue count.
+- Updated `etc/quality/github-issues.md` to include both issues and the verified open-issue count.
 - This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
 
 
@@ -523,3 +523,8 @@ The remaining acceptance work from parent issue [#1](https://github.com/iamjpson
 - [#106 — WAVE-031C: recovery drafts under abrupt browser process termination](https://github.com/iamjpsonkar/Wave/issues/106). Normal journal and cross-tab recovery tests do not establish behavior under actual process termination; measure the commit boundary and document the pre-commit loss window.
 - Accessibility remains in existing [#3 — theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3), avoiding a duplicate issue. Parent #1 remains open until all workstreams have evidence.
 - Main recorded PR #101 CI run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741) passed (48/48 Playwright, Node tests, typecheck, build and container). This automated result does not satisfy native/manual acceptance criteria.
+
+
+## Documentation reorganization — 2026-11-15
+
+QA registers and issue traceability now live under `etc/quality/`; product/UI and Markdown coverage records live under `etc/product/`. See [etc/README.md](./etc/README.md). The move is documentation-only and does not alter QA evidence or test execution status.
