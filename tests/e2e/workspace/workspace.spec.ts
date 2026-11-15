@@ -156,7 +156,8 @@ test('two tabs editing the same workspace do not silently overwrite each other',
   const firstEditor = page.locator('textarea');
 
   const second = await context.newPage();
-  await installWorkspaceFixture(second);
+  const sharedFixtureId = await page.evaluate(() => (window as any).__waveTestFixtureId as string);
+  await installWorkspaceFixture(second, sharedFixtureId);
   await second.goto('/');
   await second.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(second.getByRole('button', { name: /Concurrent Editing/ })).toBeVisible();
@@ -229,7 +230,8 @@ test('recovery prompt identifies a draft created in another tab and preserves it
   })]);
 
   const second = await context.newPage();
-  await installWorkspaceFixture(second);
+  const sharedFixtureId = await page.evaluate(() => (window as any).__waveTestFixtureId as string);
+  await installWorkspaceFixture(second, sharedFixtureId);
   await second.goto('/');
   await second.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(second.getByRole('button', { name: /Cross-tab Recovery/ })).toBeVisible();
@@ -461,4 +463,35 @@ test('Wave Complete Feature Test template is available and previews its feature 
   await expect(preview.locator('svg[aria-label="Mermaid flowchart"]').first()).toBeVisible();
   await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await expect(editor).toHaveValue(markdown);
+});
+
+test('autosave write failures are visible and create a sanitized diagnostic event', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Autosave Failure Diagnostics');
+  await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot as FileSystemDirectoryHandle;
+    const documents = await (await root.getDirectoryHandle('.wave')).getDirectoryHandle('documents');
+    const handle = await documents.getFileHandle('untitled.md');
+    const prototype = Object.getPrototypeOf(handle);
+    (window as any).__waveOriginalCreateWritable = prototype.createWritable;
+    Object.defineProperty(prototype, 'createWritable', { configurable: true, value: async () => { throw new DOMException('Write failed for /Users/private/notes.md', 'NotAllowedError'); } });
+  });
+  await editor.fill('# Autosave Failure Diagnostics\\n\\nThe write must fail visibly.');
+  await expect(page.locator('.topright small')).toContainText('Save failed', { timeout: 8000 });
+  await expect(page.locator('.app-error')).toContainText('Write failed', { timeout: 5000 });
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
+  const diagnostics = page.locator('.settings-diagnostics');
+  await diagnostics.locator('summary').click();
+  const report = diagnostics.locator('.diagnostic-report');
+  await expect(report).toContainText('workspace:document-save:failed');
+  await expect(report).toContainText('NotAllowedError');
+  await expect(report).not.toContainText('/Users/private/notes.md');
+  await page.evaluate(() => {
+    const prototype = Object.getPrototypeOf((window as any).__waveTestRoot);
+    // The FileSystemDirectoryHandle prototype is not the file-handle prototype
+    // patched above; restore is performed on the saved file-handle prototype.
+    const root = (window as any).__waveTestRoot as FileSystemDirectoryHandle;
+    void root.getDirectoryHandle('.wave').then(wave => wave.getDirectoryHandle('documents')).then(docs => docs.getFileHandle('untitled.md')).then(file => Object.defineProperty(Object.getPrototypeOf(file), 'createWritable', { configurable: true, value: (window as any).__waveOriginalCreateWritable }));
+    void prototype;
+  });
 });
