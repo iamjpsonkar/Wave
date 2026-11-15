@@ -215,3 +215,81 @@ Follow-up work:
 ```
 
 **Operating principle:** Understand what Wave is, why the requested change matters, and how it must be delivered safely. Then inspect, implement, test, document and report with evidence.
+
+
+---
+
+## 11. Execution protocols by task type
+
+Choose the smallest protocol that fully satisfies the request; do not apply a feature-build workflow to a documentation-only or research-only task.
+
+### Feature or enhancement
+- Trace the requirement to the complete feature catalogue and priority plan.
+- Define user journey, acceptance criteria, empty/error/cancel states and non-goals.
+- Review architecture/data contracts and cross-team dependencies.
+- Implement real behavior, tests, docs and release notes.
+- Verify backward compatibility and preserve existing capabilities.
+
+### Bug fix
+- Reproduce or establish source-supported evidence before changing code.
+- Identify root cause and affected paths; search for related regressions and stable IDs.
+- Add a regression test that fails before the fix.
+- Fix the root cause, not just the symptom.
+- Update the open/fixed registers only when status and evidence justify it.
+
+### Refactor or maintenance
+- State the intended invariant and why the refactor is needed.
+- Preserve externally observable behavior unless explicitly changing it.
+- Use tests and diff review to demonstrate equivalence.
+- Avoid bundling feature scope or unrelated formatting.
+
+### QA or audit
+- Capture branch, commit, environment and exact scope.
+- Separate observed facts, reproduction, source inference and historical claims.
+- Do not modify application behavior unless the user also requested a fix.
+- Update QA records with evidence and residual risk.
+
+### Documentation or governance
+- Identify the canonical owner of each fact before editing.
+- Preserve meaningful requirements, stable IDs, decisions and history.
+- Resolve duplicate or conflicting guidance rather than adding another competing source.
+- Check every relative link and filename against the target branch.
+- Do not claim GitHub settings, team membership or CI enforcement based on a Markdown proposal.
+
+### Research or planning
+- Label external facts, repository facts, assumptions and recommendations separately.
+- Link sources and record the date for volatile information.
+- Do not convert a proposal into a shipped capability or an approved commitment.
+
+## 12. Authority, conflicts and safe autonomy
+
+Apply this precedence:
+1. Applicable law, platform safety requirements and explicit security/privacy constraints.
+2. The user's latest explicit instruction for this task, within those constraints.
+3. Current source code, tests, package scripts, GitHub configuration and verified runtime behavior for implementation facts.
+4. Current canonical product decisions and scope catalogue.
+5. This guide and supporting how-to procedures.
+6. Historical logs, old issue comments, prior agent summaries and inferred assumptions.
+
+A lower-ranked source cannot silently override a higher-ranked one. If two current authoritative sources conflict, stop before an irreversible or scope-changing action, surface the conflict and ask for a decision. For a reversible documentation inconsistency, preserve both facts with clear status and reconcile the canonical owner.
+
+Agents may autonomously inspect, plan, edit scoped files, add tests and run safe local checks. Obtain explicit authorization before destructive data operations, production releases, permission/secret changes, branch-protection changes, force pushes, history rewrites, external data transfer or changes that materially alter the privacy/product contract.
+
+## 13. Repository documentation map and link discipline
+
+Use [howto/README.md](./howto/README.md) as the index for the operational handbook. Use [WIKI.md](./WIKI.md) for broad project orientation, [DEV_CONTEXT.md](./DEV_CONTEXT.md) for the latest development handoff and [QA_CONTEXT.md](./QA_CONTEXT.md) for QA disposition. Trackers and detailed product specifications remain separate because they have distinct purposes.
+
+Repository paths and filenames have changed over time. Before linking to or editing a tracker, verify its exact current path and case on the target branch. A link mentioned in an old document is not proof the destination still exists. Never create a replacement tracker just because an expected path returns 404; search the current repository and migrate meaningful history deliberately.
+
+## 14. Final response contract
+
+End every task with a concise, evidence-based report:
+- Outcome and scope completed.
+- Target branch and exact commit/PR.
+- Files changed and why.
+- Tests/checks actually run, with results.
+- Checks not run and why.
+- Known risks, limitations and follow-up.
+- Documentation/tracker updates.
+
+Use precise language: “implemented”, “source-reviewed”, “test-defined”, “locally passed”, “CI passed on SHA …”, and “not verified” mean different things. Never use “fully tested”, “production-ready” or “100% complete” without evidence for the relevant acceptance criteria.
