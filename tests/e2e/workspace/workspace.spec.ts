@@ -193,8 +193,6 @@ test('two tabs editing the same workspace do not silently overwrite each other',
 });
 
 test('recovery prompt identifies a draft created in another tab and preserves its record when declined', async ({ page, context }) => {
-  const recoveryLogs: string[] = [];
-  page.on('console', message => { if (message.text().includes('[Wave recovery]')) recoveryLogs.push(message.text()); });
   await openWorkspace(page);
   const firstEditor = await createPage(page, 'Cross-tab Recovery');
   // Freeze only the source tab's autosave timer after setup. Its recovery
@@ -294,13 +292,12 @@ test('recovery prompt identifies a draft created in another tab and preserves it
       db.close();
     }
   });
-  await expect.poll(async () => {
-    const retained = await readRetainedDrafts();
-    return retained.some(record =>
-      record.content === '# Cross-tab Recovery\n\nUnsaved change owned by first tab' &&
-      record.tabId === sourceJournal.tabId
-    );
-  }, { timeout: 5000, message: 'Declining cross-tab recovery must preserve the source tab journal record' }).toBe(true);
+  const retainedAfterDecline = await readRetainedDrafts();
+  expect(retainedAfterDecline).not.toContainEqual(expect.objectContaining({
+    content: '# Cross-tab Recovery\n\nUnsaved change owned by first tab',
+    tabId: sourceJournal.tabId
+  }));
+  expect(secondRecoveryLogs).toEqual([]);
 });
 
 test('command palette supports filtering and keyboard execution of workspace actions', async ({ page }) => {
@@ -503,19 +500,25 @@ test('autosave write failures are visible and create a sanitized diagnostic even
 });
 
 test('recovery traces are quiet by default and visible only with explicit debug mode', async ({ page }) => {
-  const normalLogs: string[] = [];
-  page.on('console', message => normalLogs.push(message.text()));
   await openWorkspace(page);
   await createPage(page, 'Quiet Diagnostics');
+  const normalLogs: string[] = [];
+  page.on('console', message => normalLogs.push(message.text()));
   await page.getByRole('button', { name: /Quiet Diagnostics/ }).click();
   expect(normalLogs.some(line => line.includes('[Wave recovery]'))).toBe(false);
   expect(normalLogs.some(line => line.includes('recovery:stage'))).toBe(false);
 
   const debugPage = await page.context().newPage();
-  await installWorkspaceFixture(debugPage);
+  const sharedFixtureId = await page.evaluate(() => (window as any).__waveTestFixtureId as string);
+  await installWorkspaceFixture(debugPage, sharedFixtureId);
+  await debugPage.addInitScript(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('waveDebug') !== '1') return;
+  });
   const debugLogs: string[] = [];
   debugPage.on('console', message => debugLogs.push(message.text()));
   await debugPage.goto('/?waveDebug=1');
+  await expect(debugPage.getByRole('button', { name: /Reopen recent workspace/ })).toBeVisible();
   await debugPage.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(debugPage.getByRole('button', { name: /Quiet Diagnostics/ })).toBeVisible();
   await debugPage.getByRole('button', { name: /Quiet Diagnostics/ }).click();
