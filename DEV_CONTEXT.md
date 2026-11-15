@@ -823,3 +823,6 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Defined separate edition build/import boundaries, Personal network-egress requirements, Full trust boundaries, client-held encryption keys, optional ciphertext relay disclosure, device/key lifecycle requirements, offline/conflict/replay/deletion requirements and staged implementation dependencies.
 - Added `etc/engineering/EDITIONS.md`, updated architecture, threat model, complete product blueprint, priority plan, documentation index and WIKI.
 - Scope of this tranche is architecture/documentation only. No app code, backend, SQLite engine, auth, encryption, sync, collaboration or edition build target was implemented. No local tests or CI were run.
+
+
+- Documentation follow-up: corrected the WIKI handoff section and removed a stray literal token; exact branch content re-fetched and checked.
