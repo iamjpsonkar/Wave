@@ -728,3 +728,10 @@ The initial Trivy attempt found a HIGH Dockerfile non-root configuration issue a
 ### OSV reporter CLI correction — 2026-11-15
 
 - Exact follow-up CI run [43723343889](https://github.com/iamjpsonkar/Wave/actions/runs/43723343889) confirmed the scanner command accepts `--output-file`, but reporter CLI v2.7.1 does not. Reporter requires `--output-files=sarif:<path>` and PR annotations use `--output-files=gh-annotations:#stderr`; `--gh-annotations` is deprecated. Corrected the workflow from the job's own usage output. The subsequent current-head CI must verify this correction.
+
+
+### CI failure 43723476897 remediation
+
+- Job [132840278700](https://github.com/iamjpsonkar/Wave/actions/runs/43723476897/job/132840278700) failed in unit tests (36 passed, 3 failed), before E2E. The new byte-signature gate was too strict for existing fake image fixtures and caused the permission test to fail before reaching the permission check.
+- Refined checks to catch active SVG/HTML payload masquerading and known archive/container signature mismatches, while preserving legacy benign attachment behavior. Updated the permission fixture with valid PNG header bytes and changed spoof tests to use signatures that are genuinely detected.
+- Changes are on `WAVE-0120`; fresh exact-head CI is required. No local execution is claimed.
