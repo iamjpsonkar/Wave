@@ -51,3 +51,21 @@ When a file or capability moves:
 5. Record the decision and effective commit.
 
 Do not claim GitHub teams, CODEOWNERS, branch protection or permissions are active until they have actually been configured and verified.
+
+
+## 6. Ownership is not access control
+
+This document assigns logical responsibility only. GitHub repository permissions, teams, branch protection, required reviewers, CODEOWNERS and secrets access are separate controls. Configure the least privilege needed and verify each setting in GitHub before describing it as active.
+
+## 7. Review matrix for high-risk changes
+
+| Change type | Minimum technical consultation | Verification expectation |
+|---|---|---|
+| Workspace format/schema/migration | Core Platform + Product | Migration fixtures, backward compatibility, backup/restore |
+| File write/delete/Trash/restore | Core Platform + QA | Collision, interruption, recovery and data-integrity tests |
+| Markdown parser/rendering/URLs | Product Experience + Core Platform + QA | Sanitization, unsafe URL, malformed input and round-trip tests |
+| Authentication/network/third-party integration | Product Owner + Core Platform + QA | Threat model, consent, data-flow and revocation review |
+| CI/build/release/deployment | DevOps + QA | Exact pipeline run and rollback/recovery evidence |
+| Accessibility/interaction changes | Product Experience + QA | Keyboard, focus, semantic and responsive verification |
+
+A reviewer should be selected for relevant expertise, not merely because a path appears in a table.
