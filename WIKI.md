@@ -747,3 +747,10 @@ On narrow screens the sidebar is a slide-out navigation drawer. The top bar expo
 - Workflow `43688050754` passed 47 of 48 Playwright tests; Node tests (30), typecheck, production build and container image passed. The remaining failure was the cross-tab recovery test: after removing the fake clock from both pages, the source tab's 600ms autosave committed the changed Markdown before the second tab opened it, so no recovery dialog was expected and the prompt assertion received an empty string.
 - Corrected the test to freeze only the source tab's clock after workspace/page setup and before editing. Draft-journal writes remain immediate; only the delayed Markdown autosave is held. The second tab remains on real time so navigation and recovery interaction are not blocked.
 - Fresh CI is pending. No local browser execution is claimed. Outstanding manual OS picker/permission, external-process race, accessibility, and process-termination criteria remain tracked; issue #1 and PR #101 remain open.
+
+
+## 2026-11-15 — Cross-tab recovery test clock isolation correction
+
+- Run `43688362527` failed only in the cross-tab recovery E2E scenario (47/48 passed). Node tests, typecheck, production build and container image passed.
+- Removed an unintended first clock installation before workspace setup. The source tab's autosave clock is now frozen only after the baseline page is saved and immediately before the recovery draft is written; the second tab stays on real time. This preserves the test's intended state: baseline Markdown on disk plus a distinct unsaved draft owned by another tab.
+- Fresh CI must verify the correction. No local execution is claimed; WAVE-031 manual/native acceptance criteria remain open.
