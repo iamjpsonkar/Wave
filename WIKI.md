@@ -674,3 +674,20 @@ Before finishing:
 - [ ] Report evidence and limitations honestly.
 
 **If two documents appear to conflict:** follow the most recent explicit product-owner instruction for workflow, the product constitution and complete catalogue for scope, `DEV_CONTEXT.md` for current implementation facts, source/tests for actual behavior, and the latest successful CI evidence for verification. Record and resolve material conflicts rather than silently choosing the convenient interpretation.
+
+
+## 18. GitHub issue implementation and review workflow
+
+For every issue selected by the product owner, work on an isolated issue branch and leave final integration to the product owner.
+
+1. Refresh the latest `main` branch and read the issue body, acceptance criteria, relevant source, tests and project handoff files.
+2. Create a branch from the latest `main` using the GitHub issue number padded to four digits: issue #1 → `WAVE-0001`, issue #42 → `WAVE-0042`. The branch name uses the GitHub issue number, not a similarly named internal WAVE defect ID.
+3. Implement the issue in that branch. Keep the change cohesive; preserve existing features and scope.
+4. Add regression coverage and run relevant checks. If local execution is unavailable, rely on the PR CI workflow and report its exact status; never infer a pass from test definitions.
+5. Commit the changes to the issue branch and push through the GitHub integration.
+6. Open a pull request targeting `main`, link the originating issue (for example, `Closes #1` only when all acceptance criteria are truly complete), and include a concise summary, tests, CI status and remaining limitations.
+7. Add a comment to the GitHub issue describing what changed, the branch, commit/PR links, verification performed and unresolved criteria.
+8. Do not merge the PR or close the issue. The product owner reviews and decides when to merge. If only part of an issue is completed, do not use an auto-closing PR keyword and keep the issue open with the remaining acceptance criteria explicit.
+
+Branch naming is case-sensitive and zero-padded to exactly four digits. Do not reuse an issue branch for a different issue. If the branch already exists, inspect it and its PR before proceeding rather than overwriting it.
+
