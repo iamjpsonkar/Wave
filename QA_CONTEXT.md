@@ -407,3 +407,17 @@ Important documentation drift observed at the same HEAD:
 - Created [#100 — remove duplicate storage regression scenarios](https://github.com/iamjpsonkar/Wave/issues/100). `tests/storage.test.js` repeats the backup-lock interleaving scenario at lines 300–321 and 334–355, and repeats the copied-file mutation scenario at lines 322–333 and 356 onward. The issue requires preserving distinct locking and integrity guarantees while removing redundant tests.
 - Updated `trash/github-issues.md` to include both issues and the verified open-issue count.
 - This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
+
+
+---
+
+## WAVE-031 verification workstream split — 2026-11-15
+
+The remaining acceptance work from parent issue [#1](https://github.com/iamjpsonkar/Wave/issues/1) is now split into focused GitHub issues:
+
+- [#104 — WAVE-031A: native folder picker and real filesystem permission lifecycle](https://github.com/iamjpsonkar/Wave/issues/104). Existing OPFS/Playwright permission behavior is simulated; native picker, cancellation, browser/OS revocation and real reauthorization remain to be verified.
+- [#105 — WAVE-031B: external filesystem races and backup/restore fault handling](https://github.com/iamjpsonkar/Wave/issues/105). Existing E2E coverage verifies one editor-save external-edit conflict; broader read/save/backup/restore race boundaries and fault injection remain.
+- [#106 — WAVE-031C: recovery drafts under abrupt browser process termination](https://github.com/iamjpsonkar/Wave/issues/106). Normal journal and cross-tab recovery tests do not establish behavior under actual process termination; measure the commit boundary and document the pre-commit loss window.
+- Accessibility remains in existing [#3 — theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3), avoiding a duplicate issue. Its WAVE-031 linkage and keyboard/focus/screen-reader checks are documented in an issue comment.
+
+Parent #1 remains open until all four workstreams have evidence. PR #101's latest CI run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741) passed (48/48 Playwright, Node tests, typecheck, build and container), but this automated result does not satisfy native/manual acceptance criteria. No source code or test implementation changed in this issue-splitting task.
