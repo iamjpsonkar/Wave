@@ -773,3 +773,7 @@ The latest CI failure was caused by incorrectly double-escaped regex literals in
 ### 2026-11-15 — Attachment signature verification follow-up
 
 The latest functional CI job [132847238237](https://github.com/iamjpsonkar/Wave/actions/runs/43725766392/job/132847238237) failed because a PDF containing plain text passed content validation. The validator now requires a matching signature for every supported signature-bearing MIME type, while continuing to allow unknown formats such as ordinary text. Regression coverage includes malformed and valid PDF fixtures. Local test execution was unavailable; exact-head CI is pending.
+
+### 2026-11-15 — Attachment signature policy regression correction
+
+CI run [43726027375](https://github.com/iamjpsonkar/Wave/actions/runs/43726027375) exposed compatibility regressions from requiring signatures for every image MIME: existing generic attachment fixtures deliberately contain opaque payloads. Signature-required enforcement is now limited to PDF/ZIP/gzip/WASM; recognized image signatures still reject MIME mismatches. The PNG signature test now isolates content recognition from fake-filesystem persistence. Exact-head CI pending.

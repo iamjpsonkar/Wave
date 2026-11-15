@@ -1038,3 +1038,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Root cause: the validator rejected recognized signatures with a mismatched MIME, but did not require a signature when the declared MIME itself represented a supported signature-bearing format.
 - Added the reciprocal check for every supported signature-bearing MIME type. Unknown formats remain compatible, and a valid PDF signature has positive regression coverage.
 - Local `./test.sh` remains unrun because repository checkout access is unavailable here. Exact-head CI must verify the change; no pass is claimed before that run completes.
+
+### 2026-11-15 — Narrow signature-required policy after regression run
+
+- Follow-up run [43726027375](https://github.com/iamjpsonkar/Wave/actions/runs/43726027375), job [132848030853](https://github.com/iamjpsonkar/Wave/actions/runs/43726027375/job/132848030853) confirmed malformed PDF rejection, but exposed two unintended regressions: existing generic PNG upload fixtures use arbitrary small payloads, and the minimal PNG fixture is not a valid size-preserving storage fixture.
+- Narrowed mandatory signature presence to the supported document/container formats explicitly covered by this check (PDF, ZIP, gzip and WASM). Image signature mismatch detection remains active when a known signature is present, but metadata-only legacy image fixtures remain compatible.
+- Changed the PNG regression to directly verify signature recognition in `validateAttachmentContent`, keeping it independent from the fake storage writer's size-verification contract.
+- New exact-head CI is pending; no success is claimed yet.

@@ -83,6 +83,6 @@ test('attachment validation rejects active content, metadata mismatches, spoofed
   await expectReject('ZIP payload declared as text/plain',()=>addAsset(workspace.assets,new File([zipBytes],'notes.txt',{type:'text/plain'})),/content does not match/);
   await expectAccept('ZIP payload declared as application/zip',()=>addAsset(workspace.assets,new File([zipBytes],'archive.zip',{type:'application/zip'})));
   const genuinePng=new Uint8Array([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0,0,0,0]);
-  await expectAccept('valid PNG signature',()=>addAsset(workspace.assets,new File([genuinePng],'valid.png',{type:'image/png'})));
+  await expectAccept('valid PNG signature detection',()=>validateAttachmentContent(new File([genuinePng],'valid.png',{type:'image/png'})));
   await expectAccept('unrecognized benign text payload',()=>addAsset(workspace.assets,new File(['safe text'],'notes.txt',{type:'text/plain'})));
 });
