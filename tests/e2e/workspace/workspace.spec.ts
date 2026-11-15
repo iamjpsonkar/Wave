@@ -201,6 +201,7 @@ test('recovery prompt identifies a draft created in another tab and preserves it
   // journal writes are immediate, but the 600ms Markdown save must not
   // commit the draft before the second tab attempts recovery.
   await page.clock.install();
+  await page.clock.pauseAt(new Date());
   await firstEditor.fill('# Cross-tab Recovery\n\nUnsaved change owned by first tab');
   await expect(page.locator('.topright small')).toContainText('Recovery draft saved', { timeout: 5000 });
   const sourceJournal = await page.evaluate(async () => {
