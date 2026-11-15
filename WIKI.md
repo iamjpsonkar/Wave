@@ -674,3 +674,13 @@ Before finishing:
 - [ ] Report evidence and limitations honestly.
 
 **If two documents appear to conflict:** follow the most recent explicit product-owner instruction for workflow, the product constitution and complete catalogue for scope, `DEV_CONTEXT.md` for current implementation facts, source/tests for actual behavior, and the latest successful CI evidence for verification. Record and resolve material conflicts rather than silently choosing the convenient interpretation.
+
+
+## 19. Markdown link integrity
+
+- The canonical project navigation documents are root `README.md`, `WIKI.md`, `DEV_CONTEXT.md`, and `QA_CONTEXT.md`.
+- Detailed feature, tracker, contributor and technical guides retained from the documentation consolidation live under `trash/` and `trash/docs/`; these paths are intentionally preserved archives/source registers, not deleted content.
+- Link targets must use exact repository path casing. On case-sensitive GitHub paths, `WIKI.md` and `wiki.md` are different files.
+- `tests/markdown-links.test.js` checks local Markdown links across the repository and verifies exact path casing. It runs automatically under `npm test`; use `npm run test:links` for a focused check.
+- When moving or renaming a Markdown file, update all inbound links in the same change. Do not fix a broken link by recreating a duplicate root file; point to the canonical retained file.
+- Keep links to archive files explicit (for example, `./trash/bugs.md`) so readers understand where the detailed tracker is maintained.
