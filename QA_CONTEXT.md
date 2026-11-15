@@ -160,8 +160,8 @@ The OPFS fixture is not equivalent to a real user-picked folder. Permission deni
 ## Active bug register and fixed-bug baseline
 
 Canonical registers:
-- Open findings: [bugs.md](./bugs.md)
-- Fixed findings and mandatory regression scenarios: [fixed-bugs.md](./fixed-bugs.md)
+- Open findings: [bugs.md](./etc/quality/bugs.md)
+- Fixed findings and mandatory regression scenarios: [fixed-bugs.md](./etc/quality/fixed-bugs.md)
 
 At the last inspection:
 - `bugs.md` listed **WAVE-031** and **WAVE-039** as open.
@@ -285,7 +285,7 @@ Important documentation drift observed at the same HEAD:
 
 ### Current implementation and verification
 
-- The current browser suite defines **28 Playwright Chromium scenarios**; the Node suite defines **30 tests**.
+- At this historical QA checkpoint, the browser suite defined **28 Playwright Chromium scenarios** and the Node suite defined **30 tests**; the later source inventory is recorded in the reconciliation section below.
 - CI run [43618423075](https://github.com/iamjpsonkar/Wave/actions/runs/43618423075) completed successfully for the corrected template/selector baseline: Node tests, TypeScript typecheck, production build and all 28 Playwright scenarios passed.
 - The later diagram-accessibility change (commit `052840f834f879e54ac32567aecc3e4c7a0cad13`, test extension `ed34c50b6f21c134d762786f869801785b2452d3`) is present in current main. It moves image semantics to SVG elements so the source disclosure remains outside the image role. Its own CI result was not available during this review; do not infer that the patch is verified from the earlier green run.
 - No local test execution, native OS folder picker/revocation test, real browser-process termination test, screen-reader certification or cross-browser run was performed during this review.
@@ -433,7 +433,7 @@ Important documentation drift observed at the same HEAD:
 
 - Audited current `main` at commit `d831bf04ac458a888206de4d492830f55958b022`, including repository orientation/developer handoff, QA and bug registers, issue index, package scripts, CI workflow, configuration relocation, storage tests and Playwright E2E test source.
 - Reconciled against all **98 existing GitHub issues** (92 open, 6 closed) before creating new tickets. Existing WAVE-031/WAVE-039, UI/Markdown/export issues and roadmap/coverage epics were treated as canonical; no duplicate issue was opened for their scope.
-- Created [#99 — repair case-sensitive and stale Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99). Confirmed examples include README's `./WIKI.md` versus maintained `WIKI.md`, missing `docs/README.md`, and root-level tracker links where the maintained files live under `trash/`.
+- Created [#99 — repair case-sensitive and stale Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99). Confirmed examples include README's `./WIKI.md` versus maintained `WIKI.md`, missing `docs/README.md`, and root-level tracker links where the maintained files now live under `etc/`.
 - Created [#100 — remove duplicate storage regression scenarios](https://github.com/iamjpsonkar/Wave/issues/100). `tests/storage.test.js` repeats the backup-lock interleaving scenario at lines 300–321 and 334–355, and repeats the copied-file mutation scenario at lines 322–333 and 356 onward. The issue requires preserving distinct locking and integrity guarantees while removing redundant tests.
 - Updated `etc/quality/github-issues.md` to include both issues and the verified open-issue count.
 - This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
