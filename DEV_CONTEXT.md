@@ -837,3 +837,12 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Strengthened E2E coverage to assert that ordinary app bootstrap/open generates no [Wave] console diagnostics, while the same document-open flow with ?waveDebug=1 emits structured recovery debug events sharing one operation ID.
 - refresh() intentionally represents an independent listing/settings-prune operation and creates its own ID; it can run outside any parent action and does not share a persistence transaction.
 - CI verification on the resulting exact SHA is pending; earlier green CI does not verify these changes.
+
+## Issue #117 — explicit MIT licensing published on WAVE-0117 (2026-11-15)
+
+- Owner explicitly selected the MIT License; the follow-up "go ahead" approved the proposed notice `Copyright (c) 2026 Jay Prakash Sonkar`.
+- Added root `LICENSE` using the canonical ChooseALicense MIT text, with only the year and copyright-holder placeholders replaced by the approved values.
+- Added README license summary and rationale; declared SPDX identifier `MIT` in root `package.json` and the root package entry of `package-lock.json`.
+- Added contributor licensing expectations to `etc/engineering/CONTRIBUTING.md`: contributions submitted for inclusion are offered under MIT, contributors retain their copyright, and no CLA/DCO requirement is introduced.
+- Updated `WIKI.md` to use the actual canonical contributor-guide path and to index the license; updated `etc/README.md` and README contributor links.
+- Branch: `WAVE-0117`. This is a GitHub API-only documentation/metadata change; no local tests, typecheck or build were run. Exact-head GitHub Actions verification is pending. GitHub's detected-license metadata is tied to the default branch and cannot be considered complete until this PR is merged.
