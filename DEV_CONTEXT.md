@@ -6,6 +6,15 @@
 > Last reviewed: 2026-11-15
 > Latest reviewed branch baseline: `561fef34390d6805b30956a1723bbcb0a0edcdad` on `WAVE-0001` (refresh `main` and branch HEAD before every task)
 
+## Current documentation audit — 2026-11-15
+
+- Audited all 33 Markdown files on `manager`; final relative-link scan found zero missing case-sensitive repository paths.
+- Repaired migrated links and path references across product, engineering, quality, history and contributor documentation without removing planned scope or historical evidence.
+- Enforced the project-owner QA rule in the operating guide and how-to procedures: QA is read-only; findings go to GitHub issues and PR review comments; developers own fixes.
+- Current test-source inventory on this branch: 30 Node test definitions and 48 Playwright Chromium test definitions. These are source counts, not test execution or CI pass claims.
+- Documentation-only verification used GitHub tree/content inspection. No local tests, typecheck, build, browser run or CI result is claimed.
+- Audit history: `etc/history/dev-build.md`. The documentation audit was based on manager commit `81ce45825044fc7c6dea63e6186280ef28abb13f`; this handoff update is the final documentation action.
+
 ## 1. Product contract
 
 Wave is a local-first workspace for notes, documents, and ideas. The user chooses a directory; Wave manages a `.wave/` directory inside it. The MVP needs no account and has no application backend.
@@ -121,28 +130,28 @@ Preserve all of the following:
 
 ## 6. Project documents and their responsibilities
 
-- `upcoming-features.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
-- `priority-features.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
-- `FEATURES.md`: combined shipped-feature overview and detailed shipped/planned feature map.
-- `docs/ROADMAP.md`: release sequencing.
-- `docs/ARCHITECTURE.md`: architecture and reliability/security rationale.
-- `bugs.md`: only current reproducible/source-supported bugs and material QA gaps.
-- `fixed-bugs.md`: resolved bug history and regression baseline; recheck on every QA task.
-- `dev-fixed.md`: implementation/fix log (problem, code changes, tests, commit, limitations).
-- `dev-build.md`: build/test/CI and feature implementation history (exact commit, workflow run, per-suite outcome).
-- `UI_BACKLOG.md`: consolidated UIB/UI/UIF export bugs, UI gaps and UI feature proposals.
+- `etc/product/upcoming-features.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
+- `etc/product/priority-features.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
+- `etc/product/FEATURES.md`: combined shipped-feature overview and detailed shipped/planned feature map.
+- `etc/product/ROADMAP.md`: release sequencing.
+- `etc/engineering/ARCHITECTURE.md`: architecture and reliability/security rationale.
+- `etc/quality/bugs.md`: only current reproducible/source-supported bugs and material QA gaps.
+- `etc/quality/fixed-bugs.md`: resolved bug history and regression baseline; recheck on every QA task.
+- `etc/history/dev-fixed.md`: implementation/fix log (problem, code changes, tests, commit, limitations).
+- `etc/history/dev-build.md`: build/test/CI and feature implementation history (exact commit, workflow run, per-suite outcome).
+- `etc/product/UI_BACKLOG.md`: consolidated UIB/UI/UIF export bugs, UI gaps and UI feature proposals.
 - `QA_CONTEXT.md`: current QA disposition, test inventory, limitations and historical QA audit evidence.
-- `DEV_CONTEXT.md` (this file): concise AI handoff; update last after every task. See `wiki.md` for the mandatory per-task Markdown documentation policy.
+- `DEV_CONTEXT.md` (this file): concise AI handoff; update last after every task. See `WIKI.md` for the mandatory per-task Markdown documentation policy.
 
 Don't conflate these trackers. Don't move an issue to fixed until implemented and appropriate regression verification passes. Planned features are not bugs.
 
 ## 7. Open bug snapshot — refreshed 2026-11-14
 
-The reviewed `bugs.md` reported two partial findings:
+The reviewed `etc/quality/bugs.md` reported two partial findings:
 - **WAVE-031 (P1):** remains open/partial. Branch `WAVE-0001` adds deterministic E2E coverage for prompt-state permission reauthorization and external-edit conflict preservation. Native picker/OS revocation, external-process races during read/save/backup/restore, comprehensive keyboard/screen-reader accessibility and abrupt process termination remain unverified. See `QA_CONTEXT.md` manual plan and `etc/quality/bugs.md`.
 - **WAVE-039 (P1):** remains partial. IndexedDB strict durability and `pagehide`/`visibilitychange` best-effort writes reduce but cannot eliminate the asynchronous pre-commit crash window.
 
-WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `QA_CONTEXT.md`; current bug register is `bugs.md`.
+WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `QA_CONTEXT.md`; current bug register is `etc/quality/bugs.md`.
 
 ## 8. Verification snapshot and current QA inventory
 
@@ -160,7 +169,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 1. Read `DEV_CONTEXT.md` first.
 2. Check current branch, HEAD commit, working tree and relevant source files; don't assume this snapshot is current.
 3. Read relevant feature/priority/roadmap docs and tests.
-4. For QA/bug tasks, read both `bugs.md` and matching scenarios in `fixed-bugs.md`.
+4. For QA/bug tasks, inspect `etc/quality/bugs.md` and matching scenarios in `etc/quality/fixed-bugs.md`; QA remains read-only.
 5. Resolve acceptance criteria using existing product decisions; preserve all previously agreed features and constraints.
 
 ### During changes
@@ -172,10 +181,10 @@ This remains historical CI evidence and does not verify later commits. The curre
 6. Keep README/docs/catalogues consistent with actual behavior.
 
 ### At the end of every task
-- Feature work: update `FEATURES.md`, `FEATURES.md`, `priority-features.md`, and/or `docs/ROADMAP.md` as appropriate. Preserve the full `upcoming-features.md` catalogue.
-- Bug work: current findings only in `bugs.md`; move to `fixed-bugs.md` only after verification; retain IDs and regression scenarios.
-- Code fixes: append problem, changes, files, tests, commit/CI and limitations to `dev-fixed.md`.
-- Build/test/CI: append exact commit and suite-level outcome to `dev-build.md`; distinguish not run, queued, failed and passed.
+- Feature work: update `etc/product/FEATURES.md`, `etc/product/priority-features.md`, and/or `etc/product/ROADMAP.md` as appropriate. Preserve the full `etc/product/upcoming-features.md` catalogue.
+- Bug work: developers update `etc/quality/bugs.md` and `etc/quality/fixed-bugs.md` when implementation and regression evidence justify a status change. QA does not edit these files; it reports findings through GitHub.
+- Code fixes: append problem, changes, files, tests, commit/CI and limitations to `etc/history/dev-fixed.md`.
+- Build/test/CI: append exact commit and suite-level outcome to `etc/history/dev-build.md`; distinguish not run, queued, failed and passed.
 - **Always update this `DEV_CONTEXT.md` after every task**, as the final documentation step: date/HEAD, current architecture or contracts affected, changed files, current open bugs, key decisions and latest verified test/CI evidence. Keep concise and link detailed logs instead of copying them.
 - Never claim a test passed unless it actually ran and passed. Never claim a GitHub write/commit succeeded unless the tool confirms it.
 
@@ -187,7 +196,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - [ ] `npm run typecheck` run.
 - [ ] `npm run build` run.
 - [ ] `npm run test:e2e` run when browser behavior is affected.
-- [ ] Open bugs and fixed-bug scenarios rechecked for QA tasks.
+- [ ] Existing GitHub issues and regression scenarios reviewed; QA reports findings without repository edits.
 - [ ] Product docs and separate development logs updated.
 - [ ] `DEV_CONTEXT.md` updated as the final documentation step.
 - [ ] Exact commit/CI evidence and remaining limitations recorded.
