@@ -434,3 +434,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - The diagnostic test failed because expected content encoded `\\n` rather than newline characters. Corrected both diagnostic expectations.
 - Next gate checks second-tab journal visibility and the actual recovery prompt/decline behavior. No production fix is claimed from this run.
 - Completion plan: isolate the first failing boundary, fix only that boundary, preserve strong assertions, then require the complete local/CI script and container job to pass.
+
+## WAVE-031 follow-up issue decomposition — 2026-11-15
+
+- Created [#104 — WAVE-031A](https://github.com/iamjpsonkar/Wave/issues/104) for native folder picker, cancellation, real browser/OS permission revocation and reauthorization verification.
+- Created [#105 — WAVE-031B](https://github.com/iamjpsonkar/Wave/issues/105) for external filesystem read/save races and backup/restore fault injection.
+- Created [#106 — WAVE-031C](https://github.com/iamjpsonkar/Wave/issues/106) for controlled browser-process termination and IndexedDB recovery-draft commit-boundary verification.
+- Reused existing [#3](https://github.com/iamjpsonkar/Wave/issues/3) for keyboard/focus, screen-reader and contrast audit; linked that scope to parent #1 rather than creating a duplicate.
+- Parent #1 remains open. The latest previously verified PR CI recorded on main is run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), 48/48 Playwright plus all other workflow jobs passing.
+- This reconciliation does not run tests.

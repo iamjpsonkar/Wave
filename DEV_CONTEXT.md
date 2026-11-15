@@ -696,3 +696,11 @@ The repeated recovery-dialog failure is being isolated with direct browser-side 
 
 ### Cross-tab recovery — plan and current evidence
 CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was correctly persisted: exact content, source session ID, and workspace-handle identity all matched. The new diagnostic test itself failed because its expected Markdown newline escapes were double-escaped. Corrected those expectations in commit `418e1e5`. Next CI must verify second-tab visibility and the recovery prompt/decline flow. If it fails, inspect the first failing boundary (IndexedDB visibility, handle identity, newest-draft selection, or `open()` decision) and fix that boundary without weakening assertions. Require the full `test.sh` CI gate and container job to pass before declaring completion.
+
+## WAVE-031 verification issue split — 2026-11-15
+
+- Parent reliability issue [#1](https://github.com/iamjpsonkar/Wave/issues/1) remains open pending native/manual acceptance evidence.
+- New child workstreams: [#104 WAVE-031A — native picker and real permission lifecycle](https://github.com/iamjpsonkar/Wave/issues/104); [#105 WAVE-031B — external filesystem races and backup/restore fault handling](https://github.com/iamjpsonkar/Wave/issues/105); [#106 WAVE-031C — abrupt browser termination and recovery drafts](https://github.com/iamjpsonkar/Wave/issues/106).
+- Accessibility remains tracked in existing [#3](https://github.com/iamjpsonkar/Wave/issues/3); do not create a duplicate accessibility ticket.
+- Latest verified PR #101 CI recorded on main: [run 43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), including 48/48 Playwright tests, Node tests, typecheck, production build and container job. This does not replace native/manual checks.
+- Reconciliation preserves the PR branch's implementation history and the base branch's issue split. This GitHub-only operation does not run tests or a build.

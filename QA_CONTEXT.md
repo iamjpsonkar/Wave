@@ -513,3 +513,13 @@ Important documentation drift observed at the same HEAD:
 - Root cause of this run's failure: the test expectation encoded newline escapes twice, so it compared literal `\\n` sequences with actual Markdown line breaks. This was a test assertion defect, not evidence of a failed IndexedDB write or workspace-handle mismatch.
 - Corrected the expected strings to use actual newline escapes. Next verification must proceed through second-tab visibility, distinct session identity, recovery prompt source, and declined-draft retention.
 - Plan: (1) prove the second tab sees the source record; (2) if not, isolate IndexedDB origin/context and workspace-handle identity; (3) if visible, instrument `getDraft()` selection and `open()` decision; (4) fix only the failing production boundary; (5) rerun the complete `test.sh` CI gate and require all Node, typecheck, build, E2E, and container jobs to pass. Do not mask the test with sleeps, retries, or weakened assertions.
+
+## WAVE-031 verification workstream split — 2026-11-15
+
+The remaining acceptance work from parent issue [#1](https://github.com/iamjpsonkar/Wave/issues/1) is split into focused GitHub issues:
+
+- [#104 — WAVE-031A: native folder picker and real filesystem permission lifecycle](https://github.com/iamjpsonkar/Wave/issues/104). OPFS/Playwright permission behavior is simulated; native picker, cancellation, browser/OS revocation and real reauthorization remain to be verified.
+- [#105 — WAVE-031B: external filesystem races and backup/restore fault handling](https://github.com/iamjpsonkar/Wave/issues/105). Existing E2E coverage verifies one editor-save external-edit conflict; broader read/save/backup/restore race boundaries and fault injection remain.
+- [#106 — WAVE-031C: recovery drafts under abrupt browser process termination](https://github.com/iamjpsonkar/Wave/issues/106). Normal journal and cross-tab recovery tests do not establish behavior under actual process termination; measure the commit boundary and document the pre-commit loss window.
+- Accessibility remains in existing [#3 — theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3), avoiding a duplicate issue. Parent #1 remains open until all workstreams have evidence.
+- Main recorded PR #101 CI run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741) passed (48/48 Playwright, Node tests, typecheck, build and container). This automated result does not satisfy native/manual acceptance criteria.
