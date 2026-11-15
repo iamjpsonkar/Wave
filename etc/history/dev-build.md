@@ -452,3 +452,8 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - The compare reports only two files changed relative to main: added `etc/howtodev.md` and `etc/howtoqa.md`. No other file differences were reported by the compare endpoint. The remote tree and commit metadata were inspected; no local checkout or test execution was performed for this verification.
 - Added a mandatory main-to-feature sync procedure to `etc/howtodev.md` and linked the policy from `WIKI.md`. It covers clean-tree checks, fetch, fast-forward-only main update, feature-branch merge, careful conflict resolution, ancestry/diff/test/CI verification, normal push and exceptional force-with-lease safeguards.
 - Verification is repository-metadata/source inspection only. No tests, build, local Git status, or CI run was executed for the manual merge. Check CI on the current manager head before relying on runtime behavior.
+
+## Historical feature-gap audit notes retained during documentation reorganization
+
+- Created [features-gap.md](../product/features-gap.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
+- The gap audit is updated in [features-gap.md](../product/features-gap.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
