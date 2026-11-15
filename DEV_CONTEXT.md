@@ -906,3 +906,9 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Source commit `c136c19924593601420478eb55fc00c5d59bd3ec` passed exact-head workflow [43738815009](https://github.com/iamjpsonkar/Wave/actions/runs/43738815009): 42 Node tests (including the three Markdown-link tests), typecheck, production build, 50/50 Playwright, container build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy.
 - GitHub Pages was skipped as expected on a PR. Local tests/build were not run.
 - This handoff update is documentation-only; require fresh exact-head CI on the resulting branch head before merge.
+
+### Fresh-main port follow-up
+
+- The first CI run on the post-#141 branch found six stale relative paths in the preserved developer handoff. These have been corrected to the current root-relative `etc/product/` and `etc/engineering/` paths.
+- The failure and correction are recorded in `etc/history/dev-build.md`. Exact-head CI is pending for this final handoff update; do not merge until it passes.
+
