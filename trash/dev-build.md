@@ -358,3 +358,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - CI: pending PR workflow. Record the exact workflow run, commit SHA and each suite outcome after GitHub Actions completes. No new test/build pass is claimed yet.
 - Native OS picker/revocation, external-process race scheduling, full accessibility audit and actual process termination remain manual/platform verification requirements.
 
+
+
+## 2026-11-15 — WAVE-0001 CI remediation (in progress)
+
+- Investigated failed workflow `43682365587`: Node tests, typecheck, production build and container build passed; Playwright had 15 failures / 33 passes.
+- Corrected invalid external-edit fixture newlines and current error-surface selector; repaired ambiguous/stale selectors and template-preview flow; corrected local-image, diagram and PDF fixture expectations.
+- Fixed application defects discovered during triage: empty task-list item continuation, block-color newline parsing/serialization, and editor selection preservation for color actions.
+- Branch `WAVE-0001`, PR [#101](https://github.com/iamjpsonkar/Wave/pull/101). Remediation CI [run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072) was still running when this entry was written. Do not claim pass until its final result is checked.
+- No local execution was available; use CI logs to identify and fix remaining failures. Keep #1 open for native picker, external-process race, accessibility and lifecycle acceptance evidence.
