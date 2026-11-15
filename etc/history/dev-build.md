@@ -53,7 +53,7 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 ## 2026-11-14 — Markdown showcase gap audit
 
 - Compared the complete user-provided 20-section Markdown Feature Showcase with the current renderer, preview integration, styles, templates, compatibility guide and E2E test source.
-- Created [features-gap.md](./features-gap.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
+- Created [features-gap.md](../product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
 - This was a source/documentation audit. No application code changed and no local test suite was run for this audit. Existing historical CI results do not establish that the Markdown showcase is fully implemented.
 
 
@@ -91,7 +91,7 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
   3. Mermaid flowchart test expects `polygon` and `ellipse` elements, but the current local renderer uses different SVG primitives. Assert the intended labels/edges and actual output shape.
 - The same run passed the supplied math, local DOT/PlantUML/Vega-Lite/D2/AsciiDoc, local audio/video, and additional Mermaid-family fixtures. These tests validate only their examples, not full spec compatibility.
 - Browser suite source contains **23 unique scenarios** (the run executed 20 successfully and 3 failed). Node suite contains **30 tests**.
-- The gap audit is updated in [features-gap.md](./features-gap.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](./docs/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
+- The gap audit is updated in [features-gap.md](../product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
 - Do not call the Markdown showcase complete. Remaining work includes fixing the three E2E failures, expanding accessibility/conformance/round-trip/browser coverage, and documenting the strict limits of the local TeX/Mermaid/other-format renderers.
 
 
@@ -444,6 +444,19 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Parent #1 remains open. The latest previously verified PR CI recorded on main is run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), 48/48 Playwright plus all other workflow jobs passing.
 - This reconciliation does not run tests.
 
+## 2026-11-15 — Main synchronization verification and future workflow documentation
+
+- The product owner manually synchronized `main` into `manager` and then force-pushed the feature branch. PR [#107](https://github.com/iamjpsonkar/Wave/pull/107) was closed unmerged and is abandoned for main synchronization.
+- Verified GitHub refs after the operation: `main` = `c421f7bcf40ec430eda90fe0a57e98464762e68f`; `manager` = `6747efdf0204c1cded75fd03475a75d0cbdef60b`.
+- GitHub commit metadata shows the manager tip is a merge commit with parents `d87f3e63872dc0f281b29dd37679297e62369660` and the current main SHA. GitHub compare reports `main...manager` as ahead by 2, behind by 0. This confirms the current main history is included in manager; the branch retains two manager-only commits.
+- The compare reports only two files changed relative to main: added `etc/howtodev.md` and `etc/howtoqa.md`. No other file differences were reported by the compare endpoint. The remote tree and commit metadata were inspected; no local checkout or test execution was performed for this verification.
+- Added a mandatory main-to-feature sync procedure to `etc/howtodev.md` and linked the policy from `WIKI.md`. It covers clean-tree checks, fetch, fast-forward-only main update, feature-branch merge, careful conflict resolution, ancestry/diff/test/CI verification, normal push and exceptional force-with-lease safeguards.
+- Verification is repository-metadata/source inspection only. No tests, build, local Git status, or CI run was executed for the manual merge. Check CI on the current manager head before relying on runtime behavior.
+
+## Historical feature-gap audit notes retained during documentation reorganization
+
+- Created [features-gap.md](../product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
+- The gap audit is updated in [features-gap.md](../product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
 
 ## Automated test suite organization issue — 2026-11-15
 
@@ -454,6 +467,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - This was issue creation and documentation only. No test files, application code or test commands were changed/run.
 
 
+## 2026-11-15 — Complete Markdown inventory and navigation audit
+
+- Audited all **33 Markdown files** present on the manager branch against the repository tree. Checked relative Markdown links using exact, case-sensitive repository paths; the final pass found **zero broken relative Markdown links**.
+- Repaired migrated documentation references in the README, wiki, developer handoff, contributor guide, product feature/priority catalogues, open-bug register, development history and team/ownership guides. Kept the full product catalogue and historical implementation records intact.
+- Reconciled the QA operating contract across `AGENTS.md`, `WIKI.md`, `howto/howtoqa.md`, `howto/engineering-rules.md` and the legacy QA entry point: QA is read-only in the repository; actionable findings go to GitHub issues and PR review comments; developers own fixes; QA does not approve or merge without explicit authorization.
+- Source inventory checked against current test files and `package.json`: 30 Node test definitions in `tests/storage.test.js` and 48 Playwright Chromium test definitions in `tests/e2e/workspace.spec.ts`. These are definitions, not a claim that tests were run in this documentation-only task.
+- Verification scope: GitHub repository tree and Markdown content inspection only. No local test, typecheck, production build, browser run or CI result is claimed.
 ### #111 scope extension — diagnostic logging and production failure observability — 2026-11-15
 
 - Expanded [#111](https://github.com/iamjpsonkar/Wave/issues/111) to require actionable diagnostics for both test failures and production failures.
@@ -461,3 +481,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Production requirements include a small typed structured logger, operation/correlation IDs, error-boundary and unhandled-error capture, actionable user-facing failures, and diagnostics around filesystem, permission, autosave, recovery, backup/restore and asset operations.
 - Privacy constraints are explicit: local-first by default, no silent remote telemetry, no workspace content/secrets/raw paths in logs, bounded local diagnostics, and preview/redaction before report export. Logging must never block or mask save/recovery failures.
 - This updates issue scope only; no application logger or test instrumentation has been implemented and no tests were run.
+
+
+## 2026-11-15 — Preserve another tab's recovery draft when recovery is declined
+
+- Investigated PR #110 CI run [43695466439](https://github.com/iamjpsonkar/Wave/actions/runs/43695466439): Node tests (30), typecheck, production build and container job passed; one Playwright scenario failed because the source-tab recovery journal record was absent after the second tab declined recovery.
+- Root cause in the open-page recovery path: declining a cross-tab prompt invoked the generic draft-clear operation asynchronously. That operation is scoped to the current tab, but declining another tab's draft must be a non-destructive action; do not schedule deletion at all for this branch.
+- Changed decline behavior to preserve the source record and emit a structured, content-free `[Wave recovery]` diagnostic with source-tab ownership information. Same-tab save/cleanup behavior is unchanged.
+- Strengthened the E2E assertion to poll IndexedDB for the exact source-tab record and ownership instead of taking a single immediate snapshot; this tolerates legitimate asynchronous journal/visibility events without weakening the preservation guarantee.
+- Verification is pending on the new manager head. No local test/build execution is claimed in this GitHub-only change.
