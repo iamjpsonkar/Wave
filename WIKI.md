@@ -455,7 +455,6 @@ This map is intentionally explicit so an agent knows which file to read/update a
 | `README.md` | Public project overview, setup, deployment and license summary | Update when onboarding, capabilities, run/deploy workflow or public license description changes |
 | `LICENSE` | Canonical MIT License text and copyright notice | Keep exact canonical license wording; change holder/year only with owner approval |
 | `etc/engineering/CONTRIBUTING.md` | Canonical contributor workflow, engineering rules and contribution licensing expectations | Update when contribution, verification or licensing practices change |
-
 | `etc/history/dev-fixed.md` | Append-only-ish implementation fix and regression history | Record bug fixes and regression tests |
 | `etc/history/dev-build.md` | Feature/build/CI implementation and verification history | Record feature batches, CI outcomes, build/deployment changes |
 | `upcoming-features.md` | Canonical complete product blueprint and feature catalogue | Add new agreed product scope; never silently prune |
