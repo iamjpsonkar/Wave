@@ -1092,3 +1092,9 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Added a dedicated deploy job with only `pages: write` and `id-token: write`, targeting the `github-pages` environment. GitHub Pages must be set to **Settings → Pages → Build and deployment → Source → GitHub Actions** once by a repository administrator.
 - Added `docs/GITHUB_PAGES.md` and updated README/documentation indexes and the Docker guide. Hosting remains static and does not upload user documents or introduce a backend.
 - Verification: source-level workflow and path review only. Local `./test.sh` and Vite builds were not run in this environment; exact-main CI and a browser smoke test against the published URL remain required.
+
+## 2026-11-15 — Align reusable GitHub Actions workflows with verified v7 pins
+
+- Audited all eight workflows against the current main branch. The primary CI already used immutable SHAs for checkout v7.0.1, setup-node v7.1.0 and upload-artifact v7.0.2; reusable workflows still contained older v6/v4 references, and the container job still used checkout v4.
+- Updated the remaining checkout references to `3d3c42e5aac5ba805825da76410c181273ba90b1` (v7.0.1), setup-node references to `949feb2413d6458794dcd2491c4babbbce0c15c1` (v7.1.0), and upload-artifact to `cf430e030ddbb5b0abf93d22962f4752f3646cd9` (v7.0.2). All references remain immutable full-SHA pins.
+- No application dependencies or lockfiles changed. Source/configuration review only; exact-head CI is required for verification. Local test/build execution is unavailable in this environment because DNS resolution for github.com fails.
