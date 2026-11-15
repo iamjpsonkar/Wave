@@ -53,7 +53,7 @@ try {
     try {
       committed = JSON.parse(await readFile(INVENTORY_PATH, 'utf8'));
     } catch (error) {
-      throw new Error('Committed dependency inventory is missing or invalid. Run npm run license:audit:update and review the resulting diff. ' + (error instanceof Error ? error.message : String(error)));
+      throw new Error('Committed dependency inventory is missing or invalid. Run npm run license:audit:update and review the resulting diff.', { cause: error });
     }
     const comparable = value => ({
       generatedFrom: value.generatedFrom,

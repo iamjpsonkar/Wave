@@ -335,3 +335,22 @@ This policy minimizes noisy history while keeping every implementation self-cont
 ## Dependency inventory correctness checks
 
 The dependency inventory generator must derive each npm package name from the final `node_modules/` segment of its lockfile install path, not from the full nested path after the first segment. Preserve complete scoped names such as `@types/unist`. Keep regression coverage for root and nested scoped and unscoped packages, and regenerate the committed inventory whenever generator semantics change. Keep the audit baseline SHA identical across the generator, inventory metadata and `THIRD_PARTY_NOTICES.md`; verify it against the actual PR base commit.
+
+### Security automation maintenance
+
+- Keep workflow token permissions at the most restrictive scope; prefer workflow-level `contents: read` and add job-level permissions only for the specific scanner/upload operation that needs them.
+- Pin every third-party GitHub Action to a verified full commit SHA and retain a human-readable version comment. Update pins only after checking the upstream release/tag and immutable commit.
+- Give jobs explicit timeouts and use concurrency groups with cancellation for superseded PR runs. Do not cancel unrelated workflows or scheduled full scans.
+- Never pass secrets to untrusted fork pull requests. Scanner workflows must work without repository secrets where possible; external-service jobs must show an explicit skipped/awaiting-configuration status when credentials are unavailable.
+- Security scanners supplement, never replace, the canonical `./test.sh` functional gate and container checks. Never upload workspace content, secrets, or sensitive scan inputs as artifacts.
+- Record scan scope, skipped tools, severity policy, exceptions (owner, rationale and expiry), and exact CI evidence. A clean automated scan is not proof that Wave is secure.
+
+## Security implementation and verification rules
+
+- Keep issue #120 open until every inherited requirement is implemented or explicitly owner-approved and recorded. Do not label the initial automation tranche as completion of the security program.
+- Read docs/SECURITY_THREAT_MODEL.md and docs/SECURITY_OPERATIONS.md before changing security boundaries, data handling, dependencies, scanners or workflows.
+- Never upload user workspace documents/assets to a remote scanner. Wave's local-first data contract takes precedence; scanner workflows scan repository source, lockfiles and the production container only.
+- Do not enable raw Markdown HTML or unsafe script execution. Preserve rehype-sanitize, path validation, local-only media resolution and safe external-link attributes.
+- Keep attachment type/size policy explicit and tested. Do not add archive extraction, encryption, sync, teams, plugins, sharing or malware scanning without a separate threat model, recovery/privacy design and product-owner approval.
+- Treat scanner findings as evidence to triage, not permission to auto-upgrade or suppress. Exceptions need an owner, rationale, compensating controls and expiry.
+- Owner-only GitHub security settings must be reported as awaiting configuration until actually inspected/configured. OpenGrep and ESLint are credential-free repository checks; do not add paid SaaS credentials to make them run.

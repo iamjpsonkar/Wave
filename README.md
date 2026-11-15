@@ -81,7 +81,7 @@ npm run test:local                # same full local suite
 
 Individual commands remain available: `npm test`, `npm run typecheck`, `npm run build` and `npm run test:e2e`.
 
-GitHub Actions runs Node tests, TypeScript checks, a production build and the Playwright suite. Container image construction is also checked in CI.
+GitHub Actions runs Node tests, TypeScript checks, a production build and the Playwright suite. Separate credential-free workflows run OpenGrep security-pattern analysis and ESLint code-quality checks. Container image construction is also checked in CI.
 
 ## Workspace format
 
@@ -105,7 +105,7 @@ Markdown documents and ordinary assets are the current workspace source of truth
 - The File System Access API requires a secure context (HTTPS or localhost), explicit permission and a supported browser. Chromium-based browsers provide the intended workflow; Firefox and Safari need an alternate storage adapter.
 - Recent workspace handles and temporary unsaved drafts are browser-local. Clearing browser site data can remove them. Keep independent backups of important work.
 - Markdown preview is sanitized; raw HTML/scripts are not enabled and remote images are not fetched as part of preview.
-- The interface currently requests DM Sans, DM Mono and Playfair Display from Google Fonts, with local system fallbacks.
+- The interface uses system font stacks; it does not request remote Google Fonts assets.
 
 ## Project structure
 
@@ -136,6 +136,11 @@ The MIT license was selected to permit broad reuse, forks, modification and redi
 
 Wave's source code is licensed under the [MIT License](./LICENSE). Third-party packages and assets retain their own licenses and attribution conditions; those terms are not replaced by Wave's MIT license. See [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) for the dated dependency and asset inventory, known obligations and maintenance process. Run `npm run license:audit` after changing dependencies. After reviewing upstream license terms, refresh the committed exact-version inventory with `npm run license:audit:update`. CI checks that the inventory matches the lockfile; neither command is a legal compatibility review.
 
+
+## Security program
+
+Wave's security automation and application-security work is tracked in [GitHub issue #120](https://github.com/iamjpsonkar/Wave/issues/120). Automated checks are triage signals, not security certification. Security tooling must not upload user workspace content or introduce telemetry.
+
 ## Project context
 
 - [Wave Wiki — complete product, repository and AI-agent context](./WIKI.md)
@@ -144,3 +149,7 @@ Wave's source code is licensed under the [MIT License](./LICENSE). Third-party p
 ## Project documentation
 
 The canonical product, engineering, quality and implementation-history references are indexed in [etc/README.md](./etc/README.md). Contributor and team procedures are in [howto/README.md](./howto/README.md) and the [contributor guide](./etc/engineering/CONTRIBUTING.md). Planned capabilities are not shipped claims; consult current source and verification evidence.
+
+## Security and privacy
+
+Wave's current security model, known limitations and security-automation procedures are documented in [the threat model](docs/SECURITY_THREAT_MODEL.md) and [security operations guide](docs/SECURITY_OPERATIONS.md). Automated scanners supplement, and do not replace, manual security and legal review. The current application remains local-first; vault encryption, sync, team permissions, plugins and server-side sharing are not implemented.

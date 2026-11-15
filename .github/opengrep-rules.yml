@@ -1,0 +1,21 @@
+rules:
+  - id: wave.javascript.no-eval
+    message: Avoid eval; it executes dynamically constructed code and can turn untrusted input into code.
+    severity: ERROR
+    languages: [javascript, typescript]
+    pattern: eval(...)
+  - id: wave.javascript.no-function-constructor
+    message: Avoid the Function constructor; it dynamically compiles executable code.
+    severity: ERROR
+    languages: [javascript, typescript]
+    pattern: new Function(...)
+  - id: wave.javascript.no-document-write
+    message: Avoid document.write; it can introduce unsafe HTML into the active document.
+    severity: ERROR
+    languages: [javascript, typescript]
+    pattern: document.write(...)
+  - id: wave.react.no-dangerously-set-inner-html
+    message: Avoid dangerouslySetInnerHTML; preserve Wave's sanitized Markdown rendering boundary.
+    severity: ERROR
+    languages: [javascript, typescript]
+    pattern: "dangerouslySetInnerHTML: $VALUE"

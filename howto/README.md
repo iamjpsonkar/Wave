@@ -50,3 +50,7 @@ These are proposed document owners, not assertions that named employees or GitHu
 ## Project reference library
 
 See the canonical [etc documentation index](../etc/README.md) for product scope, engineering architecture, deployment, quality registers, issue traceability and development history. Keep this handbook focused on operating procedures and team governance.
+
+## Security workflow changes
+
+For security automation changes, use [issue #120](https://github.com/iamjpsonkar/Wave/issues/120) as the consolidated acceptance tracker. Apply least-privilege workflow permissions, immutable full-SHA action pins, explicit timeouts and safe concurrency. Never expose secrets to untrusted fork pull requests, and preserve the existing functional and container CI gates. Keep scan outputs free of credentials and user workspace content. Record skips and remaining configuration needs honestly.

@@ -102,3 +102,17 @@ Keep each task's implementation and its documentation together. The default is o
 
 
 When changing the dependency inventory generator, keep the package-name extraction semantics tested for both scoped and unscoped nested install paths. Ensure the audit baseline commit is consistent in all inventory and notice records and matches the actual base commit.
+
+## GitHub Actions security baseline
+
+- Set restrictive workflow/job `permissions`; grant write permissions only to the job that needs them.
+- Pin third-party actions to verified immutable full commit SHAs, with release tags in comments. Verify upstream tags before updating pins.
+- Set explicit job timeouts and concurrency/cancellation behavior. Keep scheduled scans independent from PR-run cancellation.
+- Do not expose secrets to fork pull requests. Keep scanner jobs credential-free unless a trusted-branch-only external service requires a secret.
+- Preserve the canonical `./test.sh` and container CI gates. Security workflows supplement them and must not upload user workspace data or credentials.
+- Run the credential-free OpenGrep and ESLint workflows for static analysis; see [docs/SECURITY_OPERATIONS.md](../../docs/SECURITY_OPERATIONS.md) for tool versions, rule maintenance and enforcement policy.
+- See [#120](https://github.com/iamjpsonkar/Wave/issues/120) for the security automation and application security acceptance checklist.
+
+## Security and privacy changes
+
+Read the Wave threat model (../../docs/SECURITY_THREAT_MODEL.md) and security operations guide (../../docs/SECURITY_OPERATIONS.md) before changing data handling, rendering, attachment validation, dependency/workflow automation or container configuration. Keep workflows read-only by default, pin all third-party actions to verified full commit SHAs, and preserve fork-safe behavior. Never send workspace content to scanners or external services. Do not add encryption, sync, collaboration, plugins, sharing or malware scanning without an approved product design and threat review.
