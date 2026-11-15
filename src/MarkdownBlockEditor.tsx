@@ -80,7 +80,7 @@ export default function MarkdownBlockEditor({ content, onChange }: { content: st
       quoted.unshift('> [!COLOR=' + hex + ']');
       lines.splice(0, lines.length, ...quoted);
     }
-    update(block, lines.join('\n'));
+    onChange(content.slice(0, block.start) + lines.join('\n') + content.slice(block.end));
   }
   function moveTo(index: number, destination: number) {
     if (index < 0 || destination < 0 || index >= blocks.length || destination >= blocks.length || index === destination) return;
