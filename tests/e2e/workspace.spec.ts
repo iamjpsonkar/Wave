@@ -15,7 +15,10 @@ async function installWorkspaceFixture(page: import('@playwright/test').Page) {
     });
     Object.defineProperty(permissionPrototype, 'requestPermission', {
       configurable: true,
-      value: async () => localStorage.getItem('wave-e2e-permission') === 'denied' ? 'denied' : 'granted'
+      value: async () => {
+        (window as any).__wavePermissionRequests = ((window as any).__wavePermissionRequests || 0) + 1;
+        return localStorage.getItem('wave-e2e-request-result') || (localStorage.getItem('wave-e2e-permission') === 'denied' ? 'denied' : 'granted');
+      }
     });
     const originalTransaction = IDBDatabase.prototype.transaction;
     Object.defineProperty(IDBDatabase.prototype, 'transaction', {
@@ -155,6 +158,43 @@ test('recent workspace permission denial is surfaced without opening the workspa
   await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(page.locator('.error')).toContainText('does not have permission', { timeout: 5000 });
   await expect(page.locator('textarea')).toHaveCount(0);
+});
+
+test('a recently used workspace can be reauthorized after permission returns to prompt', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Permission Reauthorization');
+  await page.reload();
+  await page.evaluate(() => {
+    localStorage.setItem('wave-e2e-permission', 'prompt');
+    localStorage.setItem('wave-e2e-request-result', 'granted');
+  });
+  await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(page.getByRole('button', { name: /Permission Reauthorization/ })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (window as any).__wavePermissionRequests)).toBe(1);
+});
+
+test('an external file edit is preserved and the editor reports a save conflict', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'External Conflict');
+  await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const documents = await wave.getDirectoryHandle('documents');
+    const file = await documents.getFileHandle('untitled.md');
+    const writable = await file.createWritable();
+    await writable.write('# External Conflict\\n\\nChanged by another filesystem writer');
+    await writable.close();
+  });
+  await editor.fill('# External Conflict\\n\\nMy local draft must not overwrite the external edit');
+  await expect(page.locator('.error')).toContainText('changed outside Wave', { timeout: 8000 });
+  const diskContent = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const documents = await wave.getDirectoryHandle('documents');
+    return (await (await documents.getFileHandle('untitled.md')).getFile()).text();
+  });
+  expect(diskContent).toContain('Changed by another filesystem writer');
+  expect(diskContent).not.toContain('My local draft must not overwrite');
 });
 
 test('two tabs editing the same workspace do not silently overwrite each other', async ({ page, context }) => {
