@@ -12,7 +12,7 @@ import process from 'node:process';
 const LOCK_PATH = new URL('../package-lock.json', import.meta.url);
 const KNOWN_SIMPLE_LICENSES = new Set([
   'MIT', 'ISC', 'Apache-2.0', 'BSD-2-Clause', 'BSD-3-Clause',
-  '0BSD', 'CC-BY-4.0', 'CC0-1.0', 'OFL-1.1', 'Unlicense',
+  '0BSD', 'CC-BY-4.0', 'CC0-1.0', 'OFL-1.1', 'CC-BY-4.0', 'Unlicense',
   'Artistic-2.0', 'BlueOak-1.0.0', 'Zlib'
 ]);
 
