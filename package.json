@@ -20,7 +20,8 @@
     "test:unit:safety": "node --experimental-strip-types --test tests/unit/safety/*.test.js",
     "license:audit": "node scripts/check-dependency-licenses.mjs",
     "license:audit:json": "node scripts/check-dependency-licenses.mjs --json",
-    "test:license": "npm run license:audit"
+    "test:license": "npm run license:audit",
+    "license:audit:update": "node scripts/check-dependency-licenses.mjs --update-inventory"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
