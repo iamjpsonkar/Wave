@@ -354,3 +354,9 @@ Strengthen deterministic browser coverage for the WAVE-031 reliability/QA gap wi
 - Diagnosed run `43688362527`: 47/48 Playwright passed; the only failure was an empty cross-tab recovery prompt message. Node tests (30), typecheck, production build and container build passed.
 - Removed the premature `page.clock.install()` that ran before workspace/page creation. The test now installs the source tab's fake clock once, after `createPage()` confirms the baseline document is saved, then writes the unsaved draft. The second tab remains on real time.
 - This corrects the test's clock lifecycle; it does not change application behavior. Fresh CI is pending, and no local browser execution is claimed.
+
+
+## Cross-tab recovery investigation (diagnostic hardening)
+- Repeated dialog-only failures showed that prior timer changes did not establish the underlying cause.
+- Added direct journal assertions in both browser tabs before clicking the page in the second tab.
+- No claim of a production fix is made until CI demonstrates the record is shared and the recovery prompt is correctly shown.
