@@ -155,3 +155,5 @@ The retired planning, defect, UI-backlog and development-log Markdown files are 
 - [#105 — [P1][Reliability] External filesystem races and backup/restore fault handling (WAVE-031B)](https://github.com/iamjpsonkar/Wave/issues/105)
 - [#106 — [P1][Reliability] Recovery drafts under abrupt browser process termination (WAVE-031C)](https://github.com/iamjpsonkar/Wave/issues/106)
 - Accessibility verification for WAVE-031 remains in existing [#3 — Theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3) to avoid duplicate tracking.
+
+- [#111 — [P1][Engineering] Restructure automated tests into feature-based suites and scenarios](https://github.com/iamjpsonkar/Wave/issues/111)
