@@ -530,8 +530,18 @@ export async function validateAttachmentContent(file: File): Promise<void> {
   if(svgLike||htmlLike) {
     throw new Error('The attachment content contains active SVG or HTML content.');
   }
-  const signatures=ACTIVE_ATTACHMENT_SIGNATURES.filter(item=>item.mime!== 'image/svg+xml' && item.mime!=='text/html');
-  const matched=signatures.filter(item=>item.matches(bytes));
+  // Reject known file signatures when their declared MIME type does not match.
+  // This includes containers: accepting ZIP bytes as text/plain can bypass the
+  // filename/MIME allowlist and later become dangerous if the asset is handled
+  // by another component. Unknown formats remain compatible.
+  const matched=ACTIVE_ATTACHMENT_SIGNATURES.filter(item=>item.matches(bytes));
+  const activeOrContainer=matched.filter(item=>
+    item.mime==='image/svg+xml'||item.mime==='text/html'||
+    item.mime==='application/zip'||item.mime==='application/gzip'||item.mime==='application/wasm'
+  );
+  if(activeOrContainer.length && !activeOrContainer.some(item=>item.mime===file.type)) {
+    throw new Error('The attachment content does not match its declared file type.');
+  }
   const containerSignatures=matched.filter(item=>item.mime==='application/zip'||item.mime==='application/gzip');
   if(containerSignatures.length && !containerSignatures.some(item=>item.mime===file.type)) {
     throw new Error('The attachment content does not match its declared file type.');

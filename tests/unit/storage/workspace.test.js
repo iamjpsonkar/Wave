@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   addAsset, backUpAndResetWorkspaceSettings, createBackup, createDoc, createFolder, createUniqueDirectory, listBackups,
-  MAX_ATTACHMENT_SIZE_BYTES, validateAttachmentFile,
+  MAX_ATTACHMENT_SIZE_BYTES, validateAttachmentFile, validateAttachmentContent,
   listTrashDetailed, openWorkspace, readDoc, readWorkspaceSettings, restoreBackupToNewWorkspace, restoreTrashItem, moveDocToTrash, listDocs, searchDocs,
   saveDoc, saveDocIfUnchanged, slug
 } from '../../../src/storage.ts';
@@ -63,8 +63,8 @@ test('attachment validation rejects active content, metadata mismatches, spoofed
   const oversized={name:'large.bin',size:MAX_ATTACHMENT_SIZE_BYTES+1,type:'application/octet-stream'};
   assert.throws(()=>validateAttachmentFile(oversized),/25 MiB or smaller/);
   assert.throws(()=>validateAttachmentFile(new File(['not a png'],'photo.png',{type:'text/plain'})),/extension and MIME type do not match/);
-  await assert.rejects(()=>addAsset(workspace.assets,new File(['<svg onload="alert(1)"></svg>'],'spoof.png',{type:'image/png'})),/active SVG or HTML content/);
-  await assert.rejects(()=>addAsset(workspace.assets,new File(['<svg onload="alert(1)"></svg>'],'renamed.png',{type:'image/png'})),/content does not match/);
+  await assert.rejects(()=>addAsset(workspace.assets,new File(['<svg onload="alert(1)"></svg>'],'spoof.png',{type:'image/png'})),/content does not match/);
+  await assert.rejects(()=>validateAttachmentContent(new File(['<svg onload="alert(1)"></svg>'],'renamed.png',{type:'image/png'})),/content does not match/);
   await assert.rejects(()=>addAsset(workspace.assets,new File(['not pdf'],'document.pdf',{type:'application/pdf'})),/content does not match/);
   const zipBytes=new Uint8Array([0x50,0x4b,0x03,0x04,0,0,0,0]);
   await assert.rejects(()=>addAsset(workspace.assets,new File([zipBytes],'notes.txt',{type:'text/plain'})),/content does not match/);

@@ -741,3 +741,10 @@ The initial Trivy attempt found a HIGH Dockerfile non-root configuration issue a
 
 - Run [43723789551](https://github.com/iamjpsonkar/Wave/actions/runs/43723789551) on head `963df45cda13803bb0db52850aabd65863218213`: container build passed; Main CI reached unit tests and failed one attachment-signature assertion (38/39 passed). Exact log points to `tests/unit/storage/workspace.test.js:69`: recognized ZIP bytes declared as text/plain were not rejected.
 - Root cause is a policy gap: ZIP/gzip signatures were detected but not treated as required matching container MIME. The validator change now rejects these known container signatures on MIME mismatch while preserving unknown/opaque payload compatibility. Regression coverage updated. New exact-head workflows must be checked before claiming pass.
+
+
+### 2026-11-15 — Repeat CI root cause and correction
+
+- Run [43724070652](https://github.com/iamjpsonkar/Wave/actions/runs/43724070652) on exact head `d4fd5b1d258c44e4a946daeb50343532cc2594bf` failed only the attachment validation unit test (38/39 passed). Container build passed.
+- The prior patch did not fix the failing SVG spoof path: `validateAttachmentContent` filtered SVG/HTML from signature matching and relied on a separate text-prefix check, while a test also called `addAsset` for a case where `validateAttachmentFile` already rejected the file before content validation. This made the assertions ambiguous and the content signature branch incompletely covered.
+- Unified known active/container signature classification (SVG, HTML, ZIP, gzip, WASM), require declared MIME match for those signatures, and changed the regression to call `validateAttachmentContent` directly for that specific layer. New CI on the resulting branch head remains the required verification.

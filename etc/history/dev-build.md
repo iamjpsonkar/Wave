@@ -998,3 +998,11 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - The signature detector already recognizes ZIP, but the validator intentionally treated unknown/container formats as non-blocking. Since ZIP is a container and no archive extraction is supported, rejecting a recognized ZIP signature when it is not declared as `application/zip` is appropriate; accepting it under `text/plain` is a metadata spoof.
 - Updated the validator to classify ZIP and gzip signatures as container formats requiring a matching declared MIME, preserving unknown/unrecognized payload compatibility. Updated the regression test to expect ZIP under `text/plain` to reject; added positive coverage for a correctly declared ZIP only if that policy remains supported.
 - Exact-head CI is required; no local execution is claimed.
+
+
+### Repeat attachment-signature CI failure — root cause correction — 2026-11-15
+
+- Run [43724070652](https://github.com/iamjpsonkar/Wave/actions/runs/43724070652), job [132842068875](https://github.com/iamjpsonkar/Wave/actions/runs/43724070652/job/132842068875) executed the exact head `d4fd5b1d258c44e4a946daeb50343532cc2594bf`; 38/39 unit tests passed and the attachment validation test failed at the assertion expecting active SVG content disguised as PNG to reject.
+- The previous fix only classified ZIP/gzip signatures as required MIME matches. The active SVG/HTML signatures were filtered out of the signature list, so the content-specific test was exercising a second inconsistent branch. The generic text-prefix check is not an adequate single source of truth for these recognized signatures.
+- Removed that filtering and explicitly treat detected SVG, HTML, ZIP, gzip and WASM signatures as active/container signatures requiring the matching declared MIME. Kept supported benign image/document signature matching and unknown-format compatibility. Updated the test to directly exercise `validateAttachmentContent` for the renamed PNG content case, so the failing layer is tested without relying on `addAsset`'s earlier checks.
+- New exact-head CI is required; no local execution is claimed.
