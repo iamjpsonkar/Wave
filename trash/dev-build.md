@@ -452,3 +452,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Acceptance criteria explicitly preserve all existing assertions and guarantees, maintain complete discovery through `test.sh` and CI, support focused runs, and avoid test-order coupling.
 - Coordinated scope with [#100](https://github.com/iamjpsonkar/Wave/issues/100): duplicate cleanup must retain distinct coverage; #111 is the broader organizational restructuring.
 - This was issue creation and documentation only. No test files, application code or test commands were changed/run.
+
+
+### #111 scope extension — diagnostic logging and production failure observability — 2026-11-15
+
+- Expanded [#111](https://github.com/iamjpsonkar/Wave/issues/111) to require actionable diagnostics for both test failures and production failures.
+- Test requirements now include structured suite/scenario context, focused debug levels, Node failure output, Playwright traces/screenshots/console and request diagnostics, CI artifact retention, and concurrency/recovery identifiers.
+- Production requirements include a small typed structured logger, operation/correlation IDs, error-boundary and unhandled-error capture, actionable user-facing failures, and diagnostics around filesystem, permission, autosave, recovery, backup/restore and asset operations.
+- Privacy constraints are explicit: local-first by default, no silent remote telemetry, no workspace content/secrets/raw paths in logs, bounded local diagnostics, and preview/redaction before report export. Logging must never block or mask save/recovery failures.
+- This updates issue scope only; no application logger or test instrumentation has been implemented and no tests were run.
