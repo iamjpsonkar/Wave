@@ -53,7 +53,7 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 ## 2026-11-14 — Markdown showcase gap audit
 
 - Compared the complete user-provided 20-section Markdown Feature Showcase with the current renderer, preview integration, styles, templates, compatibility guide and E2E test source.
-- Created [features-gap.md](../product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
+- Created [features-gap.md](etc/product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
 - This was a source/documentation audit. No application code changed and no local test suite was run for this audit. Existing historical CI results do not establish that the Markdown showcase is fully implemented.
 
 
@@ -91,7 +91,7 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
   3. Mermaid flowchart test expects `polygon` and `ellipse` elements, but the current local renderer uses different SVG primitives. Assert the intended labels/edges and actual output shape.
 - The same run passed the supplied math, local DOT/PlantUML/Vega-Lite/D2/AsciiDoc, local audio/video, and additional Mermaid-family fixtures. These tests validate only their examples, not full spec compatibility.
 - Browser suite source contains **23 unique scenarios** (the run executed 20 successfully and 3 failed). Node suite contains **30 tests**.
-- The gap audit is updated in [features-gap.md](../product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
+- The gap audit is updated in [features-gap.md](etc/product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](etc/engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
 - Do not call the Markdown showcase complete. Remaining work includes fixing the three E2E failures, expanding accessibility/conformance/round-trip/browser coverage, and documenting the strict limits of the local TeX/Mermaid/other-format renderers.
 
 
@@ -455,8 +455,8 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 
 ## Historical feature-gap audit notes retained during documentation reorganization
 
-- Created [features-gap.md](../product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
-- The gap audit is updated in [features-gap.md](../product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
+- Created [features-gap.md](etc/product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
+- The gap audit is updated in [features-gap.md](etc/product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](etc/engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
 
 ## Automated test suite organization issue — 2026-11-15
 
@@ -881,4 +881,34 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 
 - Exact-head CI for `c1e6eeff71bb57d03d294e343aae0c85a0c35e41` passed: 38 Node tests, TypeScript typecheck, production build, 50/50 Playwright scenarios, container build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy. See [workflow 43737101051](https://github.com/iamjpsonkar/Wave/actions/runs/43737101051) and `etc/history/dev-build.md`.
 - The branch was then updated with this verification record. Require a fresh exact-head CI run for the documentation commit before merge. PR #141 remains open; issue #137 remains open for the other maintenance audits.
+
+## 2026-11-15 — Markdown navigation audit handoff (#102)
+
+- Branch: `WAVE-0099-markdown-link-audit`, based on `main` at `222ce3bf818fde45a15f853f87c4cc368242f663`.
+- Corrected stale links in README, WIKI, DEV_CONTEXT, `howto/howtodev.md` and `etc/engineering/CONTRIBUTING.md` to match the current repository tree.
+- Added `scripts/check-markdown-links.mjs`, `tests/unit/docs/markdown-links.test.js`, and `npm run test:links`. The checker covers inline local Markdown links, exact-case path segments, URL decoding, relative/root paths, and skips code examples and external URLs.
+- The integration test checks all maintained Markdown files in the checkout. Reference-style links and heading-anchor validity are not checked automatically.
+- Verification pending on the exact PR head. Do not claim the checker passes until GitHub Actions reports success.
+
+## 2026-11-15 — Markdown navigation audit update
+
+- The first CI run `43738234294` correctly exposed additional stale links in current documentation beyond the initial manual audit. Corrected current Wiki, documentation index, feature catalogue, priority plan, product blueprint, QA bug register and QA how-to links.
+- Historical `etc/history/` logs are intentionally excluded from link enforcement because their path references document prior repository layouts and must remain historical records.
+- README documents `npm run test:links`. Exact-head CI is pending after these fixes; the initial integration run failed on the stale paths and must not be reported as passing.
+
+### Markdown link audit CI update
+
+- Functional gate on head `51206763337da0027ee8cf9f759439686a322228` passed: 42 Node tests, typecheck, production build and 50/50 Playwright. Container build, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy also passed.
+- ESLint identified one checker lint error (redundant initialization) and an unused import; both were corrected in a subsequent commit. Fresh exact-head CI is pending. Do not report the PR as fully green until that run completes.
+
+### Markdown navigation audit verification
+
+- Source commit `c136c19924593601420478eb55fc00c5d59bd3ec` passed exact-head workflow [43738815009](https://github.com/iamjpsonkar/Wave/actions/runs/43738815009): 42 Node tests (including the three Markdown-link tests), typecheck, production build, 50/50 Playwright, container build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy.
+- GitHub Pages was skipped as expected on a PR. Local tests/build were not run.
+- This handoff update is documentation-only; require fresh exact-head CI on the resulting branch head before merge.
+
+### Fresh-main port follow-up
+
+- The first CI run on the post-#141 branch found six stale relative paths in the preserved developer handoff. These have been corrected to the current root-relative `etc/product/` and `etc/engineering/` paths.
+- The failure and correction are recorded in `etc/history/dev-build.md`. Exact-head CI is pending for this final handoff update; do not merge until it passes.
 

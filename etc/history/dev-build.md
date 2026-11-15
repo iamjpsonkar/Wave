@@ -1151,3 +1151,37 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Container configuration/image build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy filesystem/image scan all passed. GitHub Pages deployment was skipped as expected for a pull request.
 - This verifies exact head `c1e6eeff...`; any subsequent source commit requires a fresh exact-head CI run. No local test/build execution is claimed.
 
+## 2026-11-15 — Markdown navigation and exact-case link audit (#102 / #137)
+
+- Re-audited the closed #102 proposal against current `main`; the old branch was not reused because it targeted a superseded repository layout.
+- Corrected stale links in README, Wiki, developer handoff, developer procedure and contributor guide to match the current `etc/`, `docs/` and `howto/` ownership paths.
+- Added a dependency-free checker for inline local Markdown links. It checks exact path casing, percent-encoded paths, relative and repository-root paths, and missing targets; external URLs, anchor-only links, code examples and reference-style definitions remain outside its stated scope.
+- Added focused parser/path tests and an integration test over maintained repository Markdown. Exposed `npm run test:links`; the existing `npm test` discovery command also includes the integration test.
+- CI is required to reveal any remaining broken links outside the initial manual audit. Reference-style navigation and heading-anchor correctness still need manual review.
+- No application runtime behavior changed.
+
+### Markdown link checker CI refinement — 2026-11-15
+
+- First exact-head CI run `43738234294` executed the checker and reported stale links in active Wiki, project indexes, feature/priority/product docs, QA bug register and QA how-to. Those current navigation references were repaired against the actual tree.
+- The initial scan also found historical path references embedded in dated `etc/history/` development snapshots. These are preserved records of repository state at the time and are now excluded from automated link enforcement; current maintained navigation and tracker documents remain checked.
+- The first run's unit suite reached 41 passes and one expected integration failure due to the findings above. A fresh exact-head run is required after the corrections.
+- README now documents `npm run test:links`.
+
+### Markdown link checker lint follow-up — 2026-11-15
+
+- Exact-head run `43738426652` passed the functional gate: **42 Node tests**, typecheck, production build and **50/50 Playwright scenarios**; container, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy passed.
+- ESLint found one error in the new checker (a redundant initial assignment) and an unused import. Both were removed. The run therefore remains failed overall until fresh exact-head CI confirms lint and the full matrix.
+
+### Exact-head verification — 2026-11-15
+
+- Source commit `c136c19924593601420478eb55fc00c5d59bd3ec`; GitHub Actions [run 43738815009](https://github.com/iamjpsonkar/Wave/actions/runs/43738815009) completed successfully.
+- Functional gate: **42/42 Node tests** (including the three Markdown-link tests), TypeScript typecheck, production build and **50/50 Playwright Chromium scenarios** passed.
+- Container/Compose validation and image build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy filesystem/image scans passed.
+- GitHub Pages deployment was skipped as expected for a pull request.
+- Local tests/build were not run; this evidence is from GitHub Actions. The subsequent handoff-only documentation commit requires its own exact-head CI before merge.
+
+### Current-main port verification correction — 2026-11-15
+
+- After PR #141 merged, the Markdown audit was recreated on fresh main. The first exact-head run `43739976737` correctly caught six stale Markdown-support/coverage links retained in the merged developer handoff.
+- Corrected those references in `DEV_CONTEXT.md` while preserving the PR #141 handoff and history. Fresh exact-head CI is required before merge.
+

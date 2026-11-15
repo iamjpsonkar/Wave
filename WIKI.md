@@ -7,7 +7,7 @@
 > Context reviewed: 2026-11-15  
 > Canonical detailed handoff: [DEV_CONTEXT.md](./DEV_CONTEXT.md)
 > Start here for the complete project/product/agent guide: [WIKI.md](./WIKI.md)  
-> Product scope source of truth: [upcoming-features.md](./upcoming-features.md)
+> Product scope source of truth: [upcoming-features.md](./etc/product/upcoming-features.md)
 
 ---
 
@@ -20,8 +20,8 @@ Before making any change:
 3. Read [etc/engineering/CONTRIBUTING.md](./etc/engineering/CONTRIBUTING.md) for repository contribution conventions and license-maintenance requirements.
 4. Read [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) before changing dependencies or third-party assets.
 5. Read the relevant source files and tests. Never assume that documentation accurately describes current code without checking it.
-6. Read the relevant tracker(s): [bugs.md](./bugs.md), [fixed-bugs.md](./fixed-bugs.md), [consolidated UI backlog](./UI_BACKLOG.md), [Markdown gap checklist](./features-gap.md), [priority plan](./priority-features.md), and/or [GitHub issue index](./github-issues.md).
-7. Read [upcoming-features.md](./upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
+6. Read the relevant tracker(s): [bugs.md](./etc/quality/bugs.md), [fixed-bugs.md](./etc/quality/fixed-bugs.md), [consolidated UI backlog](./etc/product/UI_BACKLOG.md), [Markdown gap checklist](./etc/product/markdown-coverage.md), [priority plan](./etc/product/priority-features.md), and/or [GitHub issue index](./etc/quality/github-issues.md).
+7. Read [upcoming-features.md](./etc/product/upcoming-features.md) before proposing a feature. It is the complete feature inventory; a feature absent from the short priority plan is not permission to drop it.
 8. Check the latest GitHub `main` commit and CI runs before claiming anything is current or verified.
 
 ### Agent operating contract
@@ -108,7 +108,7 @@ Wave is evolving from a local-first Markdown workspace into a complete workspace
 - Build useful end-to-end workflows, not feature parity for its own sake.
 - Reliability, data integrity, accessibility, recovery, portability and security are release gates, not optional polish.
 
-The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./upcoming-features.md). The actionable order is in [priority-features.md](./priority-features.md).
+The full product constitution, feature catalogue, competitive research, dependencies and release sequence remain in [upcoming-features.md](./etc/product/upcoming-features.md). The actionable order is in [priority-features.md](./etc/product/priority-features.md).
 
 ---
 
@@ -218,7 +218,7 @@ This list is an orientation snapshot, not proof that every path is currently reg
 15. Preserve keyboard access, focus behavior, semantic labels, contrast, responsive/mobile behavior and reduced-motion/accessibility.
 16. Never conflate Docker static hosting with server-side workspace storage, collaboration, sync or an API.
 
-For architecture details see [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md).
+For architecture details see [architecture guide](./etc/engineering/ARCHITECTURE.md).
 
 ---
 
@@ -270,9 +270,9 @@ This section consolidates durable directions repeatedly given by the product own
 ## 6. Markdown/editor subsystem
 
 Markdown is a core Wave capability and a major compatibility promise. Consult:
-- [Markdown support guide](./docs/MARKDOWN_SUPPORT.md)
-- [Markdown feature-gap checklist](./features-gap.md)
-- [Consolidated UI backlog — bugs, gaps and feature proposals](./UI_BACKLOG.md)
+- [Markdown support guide](./etc/engineering/MARKDOWN_SUPPORT.md)
+- [Markdown feature-gap checklist](./etc/product/markdown-coverage.md)
+- [Consolidated UI backlog — bugs, gaps and feature proposals](./etc/product/UI_BACKLOG.md)
 
 Key areas to preserve and test:
 - CommonMark inline formatting, paragraphs, headings, anchors, links, images, escaping and literal characters.
@@ -363,7 +363,7 @@ Only report Docker runtime validation if an actual Docker runtime was available 
 
 ## 8. Product roadmap — complete scope, not just immediate work
 
-The full catalogue in [upcoming-features.md](./upcoming-features.md) spans:
+The full catalogue in [upcoming-features.md](./etc/product/upcoming-features.md) spans:
 
 - A. Writing, pages and block editor; CommonMark/GFM and advanced Markdown.
 - B. Knowledge management, wiki and knowledge graph.
@@ -393,7 +393,7 @@ The full catalogue in [upcoming-features.md](./upcoming-features.md) spans:
 - Z. Explicitly opt-in AI knowledge operations.
 - AA. Administration, observability and supportability.
 
-Specialist visual diagram capabilities and architecture are covered in [diagram-features.md](./diagram-features.md). Do not treat the existing Mermaid renderer as equivalent to a native diagrams.net-style canvas editor.
+Specialist visual diagram capabilities and architecture are covered in [diagram-features.md](./etc/product/diagram-features.md). Do not treat the existing Mermaid renderer as equivalent to a native diagrams.net-style canvas editor.
 
 ### Priority model
 
@@ -410,7 +410,7 @@ Dependencies matter. For example:
 - Public publishing requires access control, safe rendering, revocation and export semantics.
 - Plugins require a permission/capability model and sandboxing.
 
-[priority-features.md](./priority-features.md) is the practical execution sequence. [github-issues.md](./github-issues.md) indexes the roadmap issues and defect/gap issues. GitHub issue counts and checklists are snapshots; re-fetch before reporting current status.
+[priority-features.md](./etc/product/priority-features.md) is the practical execution sequence. [github-issues.md](./etc/quality/github-issues.md) indexes the roadmap issues and defect/gap issues. GitHub issue counts and checklists are snapshots; re-fetch before reporting current status.
 
 ---
 
@@ -518,7 +518,7 @@ Important boundary:
 - It does not add an API, database, server-side workspace, user accounts, remote document storage, shared workspace, collaboration or sync.
 - Browser File System Access API selects a directory on the end user's own device. A remote browser cannot use it to select a folder on the Docker host.
 - File System Access requires a supported browser and secure context (HTTPS for remote access; localhost is treated as secure by browsers).
-- Read [docs/DOCKER.md](./docs/DOCKER.md) before changing deployment files.
+- Read [Docker guide](./etc/engineering/DOCKER.md) before changing deployment files.
 
 ---
 

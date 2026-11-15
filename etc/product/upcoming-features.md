@@ -7,9 +7,9 @@
 **Important:** This is a plan, not a claim that unchecked features exist.
 
 - [Current shipped features](FEATURES.md)
-- [Priority features and delivery plan](priority-FEATURES.md)
+- [Priority features and delivery plan](./priority-features.md)
 - [Detailed feature status](FEATURES.md)
-- [Delivery roadmap](docs/ROADMAP.md)
+- [Delivery roadmap](./ROADMAP.md)
 
 ---
 
@@ -1036,7 +1036,7 @@ These official product/help resources informed the comparison. Features and avai
 - This file is the **future product blueprint**, not the shipped-feature list.
 - [FEATURES.md](FEATURES.md) remains the showcase of capabilities that exist today.
 - [FEATURES.md](FEATURES.md) remains the detailed shipped/planned feature-status map.
-- [docs/ROADMAP.md](docs/ROADMAP.md) remains the concise release sequence.
+- [docs/ROADMAP.md](./ROADMAP.md) remains the concise release sequence.
 - When a planned feature ships, update all relevant status documents in the same change.
 - Never mark a feature shipped based only on a plan, mockup or partial UI.
 - Revisit competitor research and priorities periodically; do not let competitor checklists dictate Wave's product direction.

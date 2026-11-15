@@ -67,7 +67,7 @@ Key boundaries:
 - `tests/e2e/workspace.spec.ts`: Playwright browser journeys.
 - `.github/workflows/ci.yml`: continuous integration.
 
-Read [docs/ARCHITECTURE.md](../trash/docs/ARCHITECTURE.md) and [docs/MARKDOWN_SUPPORT.md](../trash/docs/MARKDOWN_SUPPORT.md) when your change touches those areas. Check the current source and `package.json` before relying on this map or on remembered commands.
+Read [docs/ARCHITECTURE.md](../etc/engineering/ARCHITECTURE.md) and [docs/MARKDOWN_SUPPORT.md](../etc/engineering/MARKDOWN_SUPPORT.md) when your change touches those areas. Check the current source and `package.json` before relying on this map or on remembered commands.
 
 ## 4. Engineering principles
 
