@@ -129,6 +129,11 @@ The retired planning, defect, UI-backlog and development-log Markdown files are 
 - [#89 — [P1][Roadmap] 15.6 Security and privacy](https://github.com/iamjpsonkar/Wave/issues/89)
 - [#91 — [P2][Roadmap] 16. Additional competitor coverage checklist](https://github.com/iamjpsonkar/Wave/issues/91)
 
+- [#104 — [P1][Reliability] Native folder picker and real filesystem permission lifecycle (WAVE-031A)](https://github.com/iamjpsonkar/Wave/issues/104)
+- [#105 — [P1][Reliability] External filesystem races and backup/restore fault handling (WAVE-031B)](https://github.com/iamjpsonkar/Wave/issues/105)
+- [#106 — [P1][Reliability] Recovery drafts under abrupt browser process termination (WAVE-031C)](https://github.com/iamjpsonkar/Wave/issues/106)
+- Accessibility verification for WAVE-031 remains in existing [#3 — Theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3) to avoid duplicate tracking.
+
 ## Tracking rules
 
 - Pick work by priority and dependency; P0 foundations precede major feature expansion.
