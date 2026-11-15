@@ -89,3 +89,7 @@ The included Nginx configuration deliberately serves only static files. It does 
 | Browser shows a stale app after deployment | Reload; the app shell is revalidated and hashed assets are immutable |
 | Container is unhealthy | Check `docker compose logs wave` and confirm port 8080 is reachable inside the container |
 | Remote browser cannot access a local folder | This is expected: browser folder access is to the remote user's own device, not the Docker host |
+
+## GitHub Pages alternative
+
+For the public static site deployed automatically from the repository's `main` branch, see the [GitHub Pages deployment guide](../../docs/GITHUB_PAGES.md). The Vite base path is enabled only for that Pages build; Docker continues to serve the application from `/`.

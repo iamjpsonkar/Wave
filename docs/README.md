@@ -1,4 +1,10 @@
-# Security documentation
+# Wave documentation
+
+## Deployment
+
+- [GitHub Pages deployment](GITHUB_PAGES.md)
+
+## Security
 
 - [Security threat model](SECURITY_THREAT_MODEL.md)
 - [Security automation and operations](SECURITY_OPERATIONS.md)

@@ -25,6 +25,7 @@ This directory contains the maintained product specifications, engineering refer
 - [Architecture](./engineering/ARCHITECTURE.md)
 - [Markdown support](./engineering/MARKDOWN_SUPPORT.md)
 - [Docker deployment](./engineering/DOCKER.md)
+- [GitHub Pages deployment](../docs/GITHUB_PAGES.md)
 - [Contributing](./engineering/CONTRIBUTING.md)
 
 ## Quality and issue tracking

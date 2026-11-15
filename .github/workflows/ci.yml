@@ -44,6 +44,27 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run the same local verification script used by developers
         run: ./test.sh --skip-install --skip-playwright-install --skip-browser-install
+      - name: Build GitHub Pages site
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: npm run build
+        env:
+          GITHUB_PAGES: 'true'
+      - name: Verify GitHub Pages asset paths
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const html = readFileSync('dist/index.html', 'utf8');
+          if (!/src="\/Wave\/assets\//.test(html) || !/href="\/Wave\/assets\//.test(html)) {
+            throw new Error('GitHub Pages build does not reference assets under /Wave/.');
+          }
+          console.log('GitHub Pages asset paths use the /Wave/ project-site prefix.');
+          NODE
+      - name: Upload GitHub Pages artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
+        with:
+          path: dist
       - name: Upload browser test diagnostics
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -128,3 +149,20 @@ jobs:
       contents: read
       pull-requests: read
     uses: ./.github/workflows/secret-scan.yml
+
+  deploy-pages:
+    name: Deploy GitHub Pages
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy site
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

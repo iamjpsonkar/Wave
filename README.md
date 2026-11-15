@@ -4,7 +4,7 @@
 
 Wave is a local-first workspace for notes, documents and ideas. Choose a folder and Wave creates a portable `.wave/` workspace inside it. Your Markdown pages and attachments remain ordinary files you own.
 
-[Features](./FEATURES.md) · [Roadmap](docs/ROADMAP.md) · [Architecture](docs/ARCHITECTURE.md) · [Documentation index](docs/README.md) · [Docker guide](docs/DOCKER.md)
+[Features](./FEATURES.md) · [Roadmap](docs/ROADMAP.md) · [Architecture](docs/ARCHITECTURE.md) · [Documentation index](docs/README.md) · [GitHub Pages guide](docs/GITHUB_PAGES.md) · [Docker guide](etc/engineering/DOCKER.md)
 
 ## What Wave includes today
 
@@ -45,7 +45,13 @@ npm run preview
 
 The production site is generated in `dist/` and can be served by any static web host that supports SPA fallback to `index.html`.
 
-### 3. Docker / self-hosted static web hosting
+### 3. GitHub Pages (automatic from `main`)
+
+Wave is configured to deploy to [https://iamjpsonkar.github.io/Wave/](https://iamjpsonkar.github.io/Wave/) after the main-branch functional CI checks pass. The workflow builds the Vite app with the `/Wave/` project-site prefix, uploads `dist/`, and deploys it through GitHub Pages. On first setup, open **Repository Settings → Pages → Build and deployment** and select **GitHub Actions** as the source. Later pushes to `main` deploy automatically. Pull requests run CI but do not publish the site.
+
+The Pages build uses a repository-specific asset base path. Local development and Docker builds keep the normal `/` path. GitHub Pages hosts only the frontend; each visitor still selects a local folder in their own supported browser. See the [GitHub Pages deployment guide](docs/GITHUB_PAGES.md).
+
+### 4. Docker / self-hosted static web hosting
 
 Requirements: Docker Engine and Compose v2.
 
@@ -59,7 +65,7 @@ Open [http://localhost:8080](http://localhost:8080). To choose another host port
 docker compose down
 ```
 
-The container builds the frontend and serves static files through an unprivileged Nginx process. It uses a read-only root filesystem, drops Linux capabilities and exposes an HTTP health check. See the [Docker deployment guide](docs/DOCKER.md) for standalone Docker, HTTPS/reverse-proxy and troubleshooting instructions.
+The container builds the frontend and serves static files through an unprivileged Nginx process. It uses a read-only root filesystem, drops Linux capabilities and exposes an HTTP health check. See the [Docker deployment guide](etc/engineering/DOCKER.md) for standalone Docker, HTTPS/reverse-proxy and troubleshooting instructions.
 
 **Important:** Docker currently hosts the browser application only. It does not add a backend, database, user accounts, shared server-side workspace or collaboration service. When a user opens Wave, the browser still accesses a folder on that user's own device through the File System Access API. For remote access, serve the site over HTTPS; browser filesystem access and supported-browser requirements still apply.
 
