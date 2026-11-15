@@ -347,3 +347,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Updated the wiki, README, contributor guidance, developer handoff, roadmap/issue references and documentation index. Added a mandatory per-task Markdown review/enforcement section to `wiki.md`: update authoritative docs, preserve IDs/history, avoid duplicate sources, validate links and update `DEV_CONTEXT.md` last.
 - Preserved as separate files: `upcoming-features.md`, `priority-features.md`, `dev-fixed.md`, `dev-build.md`, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `diagram-features.md`, and the architecture/deployment/Markdown/roadmap guides.
 - Verification: fetched and compared source/destination contents before deletion; confirmed UIB-001..006, UI-001..024, UIF-001..021 and WAVE-031/WAVE-039/WAVE-042 are present in the consolidated destinations. Checked navigation and corrected stale links in the consolidated feature guide. No application code changed; no local tests/build or CI run was performed.
+
+
+## 2026-11-15 — WAVE-0099 Markdown navigation repair (CI pending)
+
+- Branch: `WAVE-0099`, based on the current `main` commit.
+- Repaired case-sensitive and stale links in `README.md`, `WIKI.md`, `DEV_CONTEXT.md`, `QA_CONTEXT.md`, `trash/CONTRIBUTING.md`, `trash/docs/README.md`, and `trash/upcoming-features.md`.
+- Updated links to the actual retained paths under `trash/` and `trash/docs/`; corrected `wiki.md` to `WIKI.md` and `priority-FEATURES.md` to `priority-features.md`.
+- Added `tests/markdown-links.test.js`, which walks repository Markdown files, ignores code examples/external links, and verifies local target paths segment-by-segment with exact casing. The check is included in `npm test` and exposed as `npm run test:links`.
+- README now documents the focused link-check command. WIKI records the path/casing policy.
+- CI pending on the WAVE-0099 PR. No local test/build or CI pass is claimed. Acceptance remains subject to the new checker passing across all Markdown files.
