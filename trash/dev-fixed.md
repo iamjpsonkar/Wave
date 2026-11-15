@@ -338,3 +338,13 @@ Strengthen deterministic browser coverage for the WAVE-031 reliability/QA gap wi
 - Updated toolbar color insertion/clear to pass through `handleEditorChange` so controlled React content and recovery draft update together; clear action expands selection to include the wrapper delimiters.
 - Updated block-color classification handling so generated `[!COLOR=#...]` callouts remain recognized as callout blocks.
 - New CI is pending for subsequent commits. These fixes are not verified until fresh Playwright results confirm them.
+
+
+## 2026-11-15 — WAVE-0001 consolidated source fixes (CI pending)
+
+- Inline text foreground/background color actions consume the current editor content ref, wrap the current selection, then use the same recovery-aware editor mutation handler as normal typing.
+- Block background action also uses current source and the recovery-aware handler.
+- Markdown Blocks color update replaces the whole live source range with the updated callout text. This avoids composing from stale block offsets after controlled state re-render.
+- Settings modal E2E now closes the modal before clicking Preview; modal backdrop remains intentionally modal. Lucide icon test expects the actual `lucide-file-code2` class.
+- Source commits: App `763008201aa6f8112345f6343bb480fbfbd85372`; block editor `43830417f3be88556a4db952789416cc46211916`; E2E `9c1e653e38e3478e7eb9a1e1f0249775f044d768`.
+- Verification remains pending the new latest-head workflow. No test pass is claimed here.
