@@ -887,3 +887,9 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Functional gate on head `51206763337da0027ee8cf9f759439686a322228` passed: 42 Node tests, typecheck, production build and 50/50 Playwright. Container build, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy also passed.
 - ESLint identified one checker lint error (redundant initialization) and an unused import; both were corrected in a subsequent commit. Fresh exact-head CI is pending. Do not report the PR as fully green until that run completes.
 
+### Markdown navigation audit verification
+
+- Source commit `c136c19924593601420478eb55fc00c5d59bd3ec` passed exact-head workflow [43738815009](https://github.com/iamjpsonkar/Wave/actions/runs/43738815009): 42 Node tests (including the three Markdown-link tests), typecheck, production build, 50/50 Playwright, container build, ESLint, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy.
+- GitHub Pages was skipped as expected on a PR. Local tests/build were not run.
+- This handoff update is documentation-only; require fresh exact-head CI on the resulting branch head before merge.
+
