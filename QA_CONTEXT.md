@@ -463,3 +463,10 @@ Important documentation drift observed at the same HEAD:
 - Remaining failures: Settings test attempted to click Preview while its modal overlay was still open; code-block icon assertion expected `lucide-file-code-2` while the rendered SVG class is `lucide-file-code2`; inline/block color changes still did not reliably consume the current controlled source; block-mode color update did not refresh the block source range.
 - Remediation pushed to `WAVE-0001`: color actions now read `contentRef.current` and pass changes through `handleEditorChange`; block-mode color replacement writes the complete current source range; Settings test closes its modal before switching Preview; icon expectation matches actual Lucide class.
 - Fresh CI is required for these commits. No local test, typecheck, build, native picker, or accessibility pass is claimed. Keep PR #101 and issue #1 open until latest CI and WAVE-031 manual acceptance criteria are met.
+
+## Local test runner and CI parity — 2026-11-15
+
+- Added root `test.sh` as the canonical local verification entry point. By default it runs Node tests, TypeScript typecheck, production build and Playwright Chromium E2E; it installs missing npm dependencies, the pinned Playwright runner and Chromium when needed.
+- `./test.sh --no-e2e` runs the fast non-browser checks. `--skip-install`, `--skip-playwright-install` and `--skip-browser-install` support pre-provisioned/CI environments and fail clearly if a required tool is missing.
+- CI now provisions its Linux browser dependencies and invokes the same script with install steps skipped, reducing local/CI command drift.
+- No local execution is claimed for this repository-edit task; run `./test.sh` from a checkout to verify locally. Chromium system libraries may need OS-specific installation on Linux.

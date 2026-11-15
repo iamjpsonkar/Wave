@@ -27,18 +27,14 @@ Non-negotiable principles:
 - Node built-in test runner for storage/safety tests; Playwright Chromium for E2E.
 - GitHub Actions CI runs on push/PR to `main`, using Node 22.
 
-Scripts in `package.json`:
+Primary local commands:
 ```bash
-npm ci
-npm test
-npm run typecheck
-npm run build
-# E2E setup, matching CI:
-npm install --no-save --package-lock=false @playwright/test@1.55.0
-npx playwright install chromium
-npm run test:e2e
+./run.sh       # start Vite; bootstraps npm dependencies if missing
+./test.sh      # Node tests + typecheck + build + Playwright Chromium E2E
+./test.sh --no-e2e
+npm run test:local
 ```
-Check package/CI files for exact current versions and commands before modifying dependencies.
+`test.sh` installs the CI-pinned Playwright runner and Chromium when needed. Pre-provisioned/CI usage: `./test.sh --skip-install --skip-playwright-install --skip-browser-install`. Node.js 22.6+ is required. See the scripts' `--help` output and README for environment variables/options.
 
 ## 3. Architecture and source map
 
@@ -57,7 +53,9 @@ Runtime: `index.html` → `src/main.tsx` → `src/App.tsx`.
 - `config/vite.config.ts`: Vite configuration.
 - `config/playwright.config.ts`: Playwright configuration and Vite test server.
 - `config/tsconfig.app.json`: application TypeScript project configuration; root `tsconfig.json` references it.
-- `.github/workflows/ci.yml`: CI gate.
+- `run.sh`: local Vite development-server launcher.
+- `test.sh`: fail-fast local Node/typecheck/build/Playwright quality gate shared with CI.
+- `.github/workflows/ci.yml`: CI gate using the same test script.
 
 ### Current on-disk workspace format
 
@@ -652,3 +650,10 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Documentation commits followed source changes: QA `487c834d65e0dd1cdb1b187bb6db5a4a2bc37679`, WIKI `19f6ccb0ee492fe3b57ff505cc6e03e996dc5b70`, dev build `75b12146d47c10070c828b6f26afc710ea21b5e4`, dev fixed `af89ee50c770571a258f524e05ade5531545d969`, bug register updated separately.
 - This section is written last as the developer handoff. Check GitHub Actions for the newest commit on `WAVE-0001`; earlier run 43684569184 predates the latest corrections and remains a 42-pass / 6-fail failure, not a pass.
 - The PR is intentionally unmerged; issue #1 remains open. No local test, typecheck or build was executed in this session.
+
+
+## 41. Local developer feedback loop — 2026-11-15
+
+- `./run.sh` now only bootstraps dependencies when needed and starts the Vite server; removed unreachable typecheck/build commands that followed a long-running server process. Supports `--install`, `WAVE_HOST`, and `WAVE_PORT`.
+- Added executable `./test.sh` as the local quality gate: Node tests, TypeScript typecheck, production build and Playwright Chromium E2E. It installs missing dependencies and the pinned Playwright/browser prerequisites; `--no-e2e` provides a fast non-browser pass. CI invokes this same script after provisioning browser system dependencies.
+- Added `npm run test:local` alias. README, QA context, WIKI and development log updated. This task used GitHub repository editing only; no local test execution is claimed. Check the workflow on this final commit for script syntax and behavior.

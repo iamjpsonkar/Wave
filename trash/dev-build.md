@@ -383,3 +383,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Fixed block background updates to replace the source range from the current block editor render, not rely on outdated offsets or bypass the draft update path.
 - Fixed Settings test modal ordering and Lucide file-code SVG class assertion.
 - Fresh CI required. No local test/build is claimed. WAVE-031 manual/native checks remain open.
+
+## 2026-11-15 — Local run/test scripts and CI parity
+
+- Replaced the misleading `run.sh` sequence (which attempted typecheck/build only after the long-running dev server had already started) with a fail-fast development launcher. It validates Node.js 22.6+, installs locked dependencies only when needed, supports `--install`, and exposes host/port through `WAVE_HOST` / `WAVE_PORT`.
+- Added executable `test.sh`: Node tests, typecheck, production build and Playwright Chromium E2E in one local command. It bootstraps missing npm dependencies, the same pinned Playwright version used by CI, and Chromium; supports no-E2E and pre-provisioned dependency flags.
+- Added `npm run test:local` alias. CI now provisions Chromium with OS dependencies and invokes the same script with setup skipped, keeping the actual check sequence shared.
+- Updated README, QA context, WIKI and developer handoff. No local execution was available through the GitHub-only editing workflow; the new CI run must validate shell syntax/behavior and test suite outcome. Developers can immediately run `./test.sh` after pulling the branch.

@@ -26,9 +26,10 @@ Requirements: Node.js 22.6+ and npm.
 ```bash
 git clone https://github.com/iamjpsonkar/Wave.git
 cd Wave
-npm ci
-npm run dev
+./run.sh
 ```
+
+`run.sh` installs locked dependencies only when they are missing, then starts the Vite development server. It does not run build or test commands before starting (the server is a long-running process). Use `./run.sh --install` to force a clean dependency install. To expose the dev server on your LAN, use `WAVE_HOST=0.0.0.0 ./run.sh`; set `WAVE_PORT` to change the port.
 
 Open the Vite URL (normally [http://localhost:5173](http://localhost:5173)) in a supported Chromium browser and select a folder to create or open a workspace.
 
@@ -65,16 +66,20 @@ The container builds the frontend and serves static files through an unprivilege
 ## Development and quality checks
 
 ```bash
-npm ci
-npm test
-npm run typecheck
-npm run build
-
-# Optional Playwright Chromium browser suite
-npm install --no-save --package-lock=false @playwright/test@1.55.0
-npx playwright install chromium
-npm run test:e2e
+./test.sh
 ```
+
+`test.sh` is the local one-command quality gate and runs the same checks as CI: Node tests, TypeScript typecheck, production build and Playwright Chromium E2E. It installs project dependencies if missing, installs the CI-matched Playwright runner when needed, and downloads Chromium if needed. The first run requires network access. On Linux systems missing Chromium OS libraries, install them with `npx playwright install --with-deps chromium` (or install the required packages through your distribution).
+
+Useful variants:
+
+```bash
+./test.sh --no-e2e                # Node tests + typecheck + production build
+./test.sh --skip-browser-install  # reuse an already-installed Playwright Chromium
+npm run test:local                # same full local suite
+```
+
+Individual commands remain available: `npm test`, `npm run typecheck`, `npm run build` and `npm run test:e2e`.
 
 GitHub Actions runs Node tests, TypeScript checks, a production build and the Playwright suite. Container image construction is also checked in CI.
 

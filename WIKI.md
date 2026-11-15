@@ -716,3 +716,14 @@ When a latest-head E2E run fails, use the failure log and retry trace as the sou
 The follow-up patch reads the latest editor source through `contentRef.current`, sends toolbar color mutations through `handleEditorChange` so recovery drafts/title state are updated, and replaces the current Markdown block range for color updates. Settings tests must close the dialog before clicking editor controls because the modal backdrop intentionally blocks pointer events. Check icon expectations against the installed Lucide version's rendered SVG class (`file-code2`).
 
 **Verification rule:** these are source-level corrections, not verified fixes until a new workflow for the exact current PR head completes. Never mark WAVE-031 closed based on simulated OPFS permission tests; native picker/OS revocation, external-process races, full accessibility review and pre-commit process-kill behavior remain documented acceptance gaps.
+
+## Local development and one-command verification scripts
+
+The root scripts are the supported shortcuts:
+
+- `./run.sh`: checks Node.js 22.6+, installs locked npm dependencies only when missing, then starts the Vite development server. It must not run typecheck/build after launching Vite because the server process is long-running. Configure bind address/port with `WAVE_HOST` and `WAVE_PORT`; use `./run.sh --install` to force `npm ci`.
+- `./test.sh`: local quality gate matching CI: Node tests → TypeScript typecheck → production build → Playwright Chromium E2E. It bootstraps missing project dependencies, the CI-pinned Playwright package and Chromium browser. Use `./test.sh --no-e2e` for the fast non-browser checks.
+- `./test.sh --skip-install --skip-playwright-install --skip-browser-install`: run the checks using pre-provisioned dependencies, as CI does after its setup steps.
+- `npm run test:local`: package-script alias for the full local test script.
+
+The scripts fail fast, print the failing stage, validate the minimum supported Node version, and return a non-zero exit code on failure. A local pass shortens feedback time; GitHub CI remains the shared authoritative run on the pushed commit. Browser E2E requires Chromium and may require OS libraries on Linux.
