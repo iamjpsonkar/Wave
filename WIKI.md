@@ -758,3 +758,7 @@ On narrow screens the sidebar is a slide-out navigation drawer. The top bar expo
 
 ### Cross-tab recovery verification
 The cross-tab recovery browser test validates the persisted IndexedDB record from both tabs before invoking the recovery flow. It checks draft text, tab ownership, shared workspace-handle identity, and distinct session IDs, then retains the existing prompt-source and decline-preservation checks. This prevents treating a missing dialog as an unexplained timing failure.
+
+
+### Cross-tab recovery: diagnosis and completion plan
+CI run #918 showed the source tab successfully committed the expected IndexedDB draft with its own session ID and a matching workspace handle. The failure was in the new diagnostic assertion: its expected Markdown used over-escaped newline sequences, unlike the actual content. The expectation has been corrected. Completion requires proving the second tab reads the same record, the recovery decision labels it as another tab, declining leaves the source record intact, and the full CI gate passes. If the next check fails, isolate the exact boundary (cross-tab IndexedDB visibility, handle matching, draft selection, or `open()` logic) before changing production code.
