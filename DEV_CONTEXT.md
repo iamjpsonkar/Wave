@@ -635,3 +635,13 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Failure categories: settings Escape/focus trap, Lucide icon class expectation, strict selectors for preview code/template/diagrams/PDF color spans, color toolbar not applying background/clear due to selection/state handling, and generated block-color callout classification.
 - Follow-up commits: scoped Playwright selectors and icon expectation; settings Escape support; toolbar color edits now use the controlled editor change path and clear wrapper-aware selection; block color classifier corrected. Updated QA/WIKI/development archive notes.
 - A newer workflow triggered by later commits must be checked against the latest PR head SHA. This remains unverified; no local tests were run. Do not merge. Issue #1 still has open native picker/OS permission, external-process race, accessibility and termination acceptance criteria.
+
+
+## 39. WAVE-0001 — consolidated CI remediation pass — 2026-11-15
+
+- Rechecked PR [#101](https://github.com/iamjpsonkar/Wave/pull/101), issue [#1](https://github.com/iamjpsonkar/Wave/issues/1), branch `WAVE-0001`.
+- Latest inspected run [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184), head `8ff23d414ecf2dc7421fbb7188cf7b56145af419`: failed with 42 Playwright passes / 6 failures. Container passed; Node tests, TypeScript and production build passed.
+- Root causes fixed in source: toolbar color formatting could use a stale `content` closure after editor selection/event timing; block-color actions bypassed the shared recovery-draft handler; block editor color callbacks could preserve stale block offsets after re-render. Updated all mutations to read current content and persist through the controlled change handler; block color updates replace the full current source range.
+- Fixed two verification issues: Settings E2E attempted to interact with Preview behind an open modal; Lucide FileCode2 SVG renders class `lucide-file-code2`, not `lucide-file-code-2`.
+- Changed files: `src/App.tsx`, `src/MarkdownBlockEditor.tsx`, `tests/e2e/workspace.spec.ts`; QA and archive notes updated. Fresh workflow must be checked against the resulting latest head.
+- No local commands or test runs were available through this GitHub-only task. Do not claim the fixes pass until CI completes. Native picker/OS permission changes, external-process read/save/backup/restore races, complete accessibility review and controlled process-termination testing remain open; do not merge PR #101 or close issue #1.
