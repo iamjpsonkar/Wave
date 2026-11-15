@@ -407,3 +407,10 @@ Important documentation drift observed at the same HEAD:
 - Created [#100 — remove duplicate storage regression scenarios](https://github.com/iamjpsonkar/Wave/issues/100). `tests/storage.test.js` repeats the backup-lock interleaving scenario at lines 300–321 and 334–355, and repeats the copied-file mutation scenario at lines 322–333 and 356 onward. The issue requires preserving distinct locking and integrity guarantees while removing redundant tests.
 - Updated `trash/github-issues.md` to include both issues and the verified open-issue count.
 - This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
+
+ 
+## 2026-11-15 — QA handbook alignment (manager branch)
+
+- Expanded `howto/howtoqa.md` with evidence classification, screenshot/mock limitations, test determinism, risk-based release recommendations and a structured QA handoff format.
+- The QA disposition, open findings, test inventory and historical evidence in this file were not changed or reclassified by this documentation task.
+- No QA execution was performed for this handbook update: no tests, browser sessions, native permission checks, accessibility audit or CI run. This entry records process-documentation work only, not a fresh product QA pass.
