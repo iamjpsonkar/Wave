@@ -215,3 +215,26 @@ Keep the PR focused. Do not merge unrelated issues into one PR unless their depe
 - [ ] Required review and CI checks are complete before merge.
 
 A feature is not complete merely because it works on the happy path or appears in the UI. Report evidence honestly and leave unresolved work visible.
+
+
+## 11. Task execution quality
+
+Before implementation, write down (in the issue or PR draft) the observable acceptance criteria and the highest-risk failure modes. For changes to persisted data, define compatibility behavior for existing workspaces and a safe migration/rollback strategy before coding.
+
+During implementation:
+- Keep source changes cohesive and avoid mixing unrelated cleanup into a feature.
+- Preserve public behavior unless the issue explicitly authorizes a change.
+- Validate both the caller and storage boundary; do not rely only on UI validation for data safety.
+- Make asynchronous cancellation, stale results and workspace switching explicit where relevant.
+- Add tests that would fail against the original defect, not only tests that mirror the new implementation.
+- Do not introduce placeholders that appear functional but have no working behavior.
+
+Before PR:
+- Re-read the diff as a reviewer, including generated files and lockfile changes.
+- Search for stale links, dead controls, TODOs introduced by the change and leaked debug output.
+- Confirm no local workspace data, secrets, personal paths or credentials are included.
+- Ensure each acceptance criterion maps to code and verification evidence.
+
+## 12. Task completion report
+
+Report the target branch and exact commit, issue/PR, summary, files changed, relevant design decisions, commands actually executed and their results, CI run/commit if available, documentation updated, and remaining risks. Distinguish partial implementation from complete delivery. Do not claim a task is done merely because commits were created.
