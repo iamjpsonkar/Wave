@@ -267,7 +267,7 @@ test('recovery prompt identifies a draft created in another tab and preserves it
     return { tabId, matching };
   });
   expect(sourceJournal.matching).toEqual([expect.objectContaining({
-    content: '# Cross-tab Recovery\\n\\nUnsaved change owned by first tab',
+    content: '# Cross-tab Recovery\n\nUnsaved change owned by first tab',
     tabId: sourceJournal.tabId,
     sameWorkspace: true
   })]);
@@ -299,7 +299,7 @@ test('recovery prompt identifies a draft created in another tab and preserves it
   });
   expect(secondJournal.tabId).not.toBe(sourceJournal.tabId);
   expect(secondJournal.matching).toContainEqual({
-    content: '# Cross-tab Recovery\\n\\nUnsaved change owned by first tab',
+    content: '# Cross-tab Recovery\n\nUnsaved change owned by first tab',
     tabId: sourceJournal.tabId,
     sameWorkspace: true
   });
