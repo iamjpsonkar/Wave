@@ -301,3 +301,16 @@ End every task with a concise, evidence-based report:
 - Documentation/tracker updates.
 
 Use precise language: “implemented”, “source-reviewed”, “test-defined”, “locally passed”, “CI passed on SHA …”, and “not verified” mean different things. Never use “fully tested”, “production-ready” or “100% complete” without evidence for the relevant acceptance criteria.
+
+## 15. Third-party license and attribution maintenance
+
+The repository's own MIT license does not relicense dependencies, fonts, icons, images, snippets, documentation excerpts, examples or other third-party material. Read [THIRD_PARTY_NOTICES.md](./THIRD_PARTY_NOTICES.md) whenever dependencies or assets are added, upgraded, removed, bundled or redistributed.
+
+For every dependency/asset change:
+- Preserve `package-lock.json` as the exact resolved npm inventory; do not hand-edit package versions or integrity hashes.
+- Run `npm run license:audit` (also enforced by CI). Investigate missing or unrecognized metadata; do not bypass the check to make a build green.
+- Verify exact upstream LICENSE and any NOTICE/attribution requirements for changed packages. For non-code assets, record creator, source, revision/version, license, required notices and modifications in `THIRD_PARTY_NOTICES.md` before merge.
+- Preserve license texts and attribution in source/release distributions as required. Escalate custom, ambiguous, conflicting or potentially incompatible terms to the project owner/legal reviewer; never silently relicense or substitute materials.
+- Treat automated SPDX metadata as a screening signal, not a legal compatibility conclusion.
+
+Keep the notices inventory, README link, dependency-audit script and CI step maintained together. Update `etc/history/dev-build.md` and `DEV_CONTEXT.md` after audit/process changes; update `DEV_CONTEXT.md` last.
