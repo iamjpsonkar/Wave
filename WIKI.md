@@ -691,3 +691,12 @@ For every issue selected by the product owner, work on an isolated issue branch 
 
 Branch naming is case-sensitive and zero-padded to exactly four digits. Do not reuse an issue branch for a different issue. If the branch already exists, inspect it and its PR before proceeding rather than overwriting it.
 
+
+
+## 19. CI failure triage and browser regression tests
+
+- Read the failing job log and classify each failure as a product defect, stale selector, invalid fixture, or infrastructure issue before editing.
+- Keep assertions tied to the current accessible UI contract. Use exact accessible names where labels overlap (for example Edit vs Block editing, Settings vs a page titled Settings, and Preview vs a page titled Preview).
+- Markdown fixtures must contain actual newline characters (`\\n` in TypeScript source), not literal backslash-plus-n text (`\\\\n`). Validate both fixture data and expected values.
+- Preserve meaningful end-to-end coverage. Correct tests to match intended product behavior; do not delete scenarios, broaden locators to hide ambiguity, or weaken expectations just to turn CI green.
+- After changes, inspect the latest PR head SHA and its own workflow run. Report each job's conclusion and keep the issue/PR open until required checks and acceptance criteria are complete.
