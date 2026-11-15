@@ -485,11 +485,29 @@ test('autosave write failures are visible and create a sanitized diagnostic even
   const report = diagnostics.locator('.diagnostic-report');
   await expect(report).toContainText('workspace:document-save:failed');
   await expect(report).toContainText('NotAllowedError');
+  await expect(report).toContainText('Details omitted for privacy.');
   await expect(report).not.toContainText('/Users/private/notes.md');
+  const savedDiagnostic = await page.evaluate(() => {
+    const raw = (document.querySelector('.diagnostic-report')?.textContent || '[]');
+    const records = JSON.parse(raw) as Array<{ operationId: string; event: string; level: string }>;
+    return records.filter(record => record.event === 'workspace:document-save:failed').map(record => record.operationId);
+  });
+  expect(savedDiagnostic).toHaveLength(1);
+  expect(savedDiagnostic[0]).toMatch(/.+/);
   await page.evaluate(async () => {
     const root = (window as any).__waveTestRoot as FileSystemDirectoryHandle;
     const documents = await (await root.getDirectoryHandle('.wave')).getDirectoryHandle('documents');
     const file = await documents.getFileHandle('untitled.md');
     Object.defineProperty(Object.getPrototypeOf(file), 'createWritable', { configurable: true, value: (window as any).__waveOriginalCreateWritable });
   });
+});
+
+test('recovery traces are quiet by default and visible only with explicit debug mode', async ({ page }) => {
+  const normalLogs: string[] = [];
+  page.on('console', message => normalLogs.push(message.text()));
+  await openWorkspace(page);
+  await createPage(page, 'Quiet Diagnostics');
+  await page.getByRole('button', { name: /Quiet Diagnostics/ }).click();
+  expect(normalLogs.some(line => line.includes('[Wave recovery]'))).toBe(false);
+  expect(normalLogs.some(line => line.includes('recovery:stage'))).toBe(false);
 });
