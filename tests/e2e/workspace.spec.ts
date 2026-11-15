@@ -1558,7 +1558,7 @@ test('Wave Complete Feature Test template is available and previews its feature 
   await openWorkspace(page);
   await page.getByRole('button', { name: 'New from template' }).click();
   await page.locator('.sidebar-templates').getByRole('button', { name: /Wave Complete Feature Test/ }).click();
-  await expect(page.getByRole('dialog', { name: 'Template preview' })).toContainText('Comprehensive Markdown');
+  await expect(page.getByRole('dialog', { name: /Wave Complete Feature Test template preview/ })).toContainText('Comprehensive Markdown');
   await page.getByRole('button', { name: 'Create from template' }).click();
   const editor = page.locator('.editor textarea');
   const markdown = await editor.inputValue();
