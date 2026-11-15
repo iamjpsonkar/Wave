@@ -811,3 +811,12 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - The only remaining failure was the cross-tab recovery E2E assertion. Runtime evidence showed the source tab's recovery journal record correctly remains after the second tab declines recovery. The test had been changed to expect deletion; restored the correct preservation assertion and made it poll for the durable source-tab record.
 - The debug-gating E2E test passed in this run, as did all other Playwright cases.
 - A fresh full CI run is required for the updated test commit before considering the PR ready to merge.
+
+
+## WAVE-0111 recovery pipeline diagnostics (2026-11-15)
+
+- Investigated recurring cross-tab recovery failure from runs 43704827319 and 43705311985. The test had treated `page.clock.install()` as a frozen clock, but Playwright continues advancing timers unless explicitly paused. The source document's 600 ms autosave could therefore commit and clear its own journal before the second tab inspected it.
+- Regression test now explicitly pauses the source tab clock with `page.clock.pauseAt(new Date())` after installation and before typing the unsaved source draft.
+- Added privacy-safe structured debug diagnostics to `draftJournal.ts`: lock wait/acquire/release, save plan, read result, clear plan and clear completion. Events include operation/stage and bounded counts only; no document content, path or tab ID. Removed direct recovery `console.info` output.
+- Threaded operation IDs through document-open journal reads/clears and persistence journal cleanup. The cross-tab E2E test enables `?waveDebug=1` in both tabs, captures both tabs' logs, and fixes the undefined failure-handler variable.
+- Node tests passed in the prior run; full E2E verification must pass on the final exact PR head before merge. The nested-breadcrumb timeout was separately observed as flaky and must be monitored in the next full run.
