@@ -6,7 +6,7 @@
 
 ## Summary
 
-- **90 open issues verified:** 10 active bug/gap issues plus 80 roadmap tracking issues.
+- **91 open issues verified:** 10 existing defect/gap issues, 1 detailed UI feature backlog issue, and 80 roadmap tracking issues.
 - **971 unchecked/in-progress checklist entries** from `upcoming-features.md` are represented in the roadmap issue checklists.
 - Entries are grouped by their existing blueprint subsection, with exact source wording and source line comments retained.
 - Release-sequence, product-coverage and competitor-coverage checklists are retained as their own traceability issues; repeated feature requirements are intentionally not deleted.
@@ -27,6 +27,15 @@
 | [#8](https://github.com/iamjpsonkar/Wave/issues/8) | PDF color/math/table/disclosure verification |
 | [#9](https://github.com/iamjpsonkar/Wave/issues/9) | Wave color-extension portability and accessible contrast |
 | [#10](https://github.com/iamjpsonkar/Wave/issues/10) | Native local-first visual diagram editor |
+| [#92](https://github.com/iamjpsonkar/Wave/issues/92) | Remaining UI feature proposals UIF-003–UIF-021; supplements #4, #5, #11, #13 and #32 without duplicating their broad scope |
+
+## Historical archives (closed)
+
+| Issue | Archived source | Coverage |
+|---|---|---|
+| [#93](https://github.com/iamjpsonkar/Wave/issues/93) | `fixed-bugs.md` | 50 source-verified historical findings WAVE-001–WAVE-052; WAVE-031 and WAVE-039 remain open in #1 and #2 |
+| [#94](https://github.com/iamjpsonkar/Wave/issues/94) | `dev-fixed.md` | Completed implementation history, 2026-11-14 through 2026-11-15 |
+| [#95](https://github.com/iamjpsonkar/Wave/issues/95) | `dev-build.md` | CI/build chronology and verification evidence; pending checks remain pending |
 
 ## Complete roadmap issues
 
@@ -119,3 +128,5 @@
 - If an epic is split into child issues, keep the parent open and link the children; do not lose the original checklist.
 - Update `upcoming-features.md`, `FEATURES.md`, `FEATURES.md`, `bugs.md`, `fixed-bugs.md`, `UI_BACKLOG.md` and `QA_CONTEXT.md` as appropriate when work is delivered.
 - Existing bug IDs and historical fixed-bug records remain authoritative. Do not create duplicate defect issues when a roadmap issue overlaps; link the canonical issue instead.
+- `features-gap.md` is tracked by #6 and #9; `priority-features.md` and the complete roadmap are represented by #11–#91. `UI_BACKLOG.md` UI gaps/UIB records are covered by #3–#10; remaining UI feature proposals are tracked in #92.
+- Completed histories are indexed in closed archives #93–#95. Keep detailed evidence in their source registers until an intentional documentation retirement is approved.
