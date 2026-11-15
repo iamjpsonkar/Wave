@@ -447,3 +447,11 @@ Important documentation drift observed at the same HEAD:
 - Fixed block-color parsing/serialization to split/join real newlines and match callout syntax correctly. Preserved editor selection while clicking color preset/clear actions.
 - Re-run workflow for commit `639be32a7060c6d0b4454a611c944eb909c9b353`: [CI run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072). Status was in progress at documentation time; do not record as passing until final job conclusions are checked.
 - No local test/typecheck/build run was performed. The E2E run remains the acceptance gate; inspect any remaining failures rather than loosening assertions.
+
+
+## WAVE-0001 latest CI recheck — 2026-11-15
+
+- Latest completed run checked: [43683760674](https://github.com/iamjpsonkar/Wave/actions/runs/43683760674), head `98f3a77e90ed1819811998d1519d010516c1203d` — **failed**. Container job passed; Node tests, typecheck and production build passed; Playwright reported 39 passed / 9 failed.
+- Remaining failures from that run: settings Escape dismissal/focus trap, Lucide icon class expectation, duplicate `pre`/template/diagram/color-span selectors, color-toolbar operations not applying background/clear due to stale selection/state, and block callout classification.
+- Follow-up pushed after this run: settings dialog Escape handling, scoped/exact locator updates, color-edit operations now flow through the controlled change handler, and block-color callout classification fix. A newer workflow must be checked for the latest head before recording any pass.
+- Do not treat the previous 39/9 result as current CI; inspect latest PR SHA and run.
