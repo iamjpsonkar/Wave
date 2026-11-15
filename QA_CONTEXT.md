@@ -493,3 +493,10 @@ Important documentation drift observed at the same HEAD:
 - Workflow `43688050754` passed 47 of 48 Playwright tests; Node tests (30), typecheck, production build and container image passed. The remaining failure was the cross-tab recovery test: after removing the fake clock from both pages, the source tab's 600ms autosave committed the changed Markdown before the second tab opened it, so no recovery dialog was expected and the prompt assertion received an empty string.
 - Corrected the test to freeze only the source tab's clock after workspace/page setup and before editing. Draft-journal writes remain immediate; only the delayed Markdown autosave is held. The second tab remains on real time so navigation and recovery interaction are not blocked.
 - Fresh CI is pending. No local browser execution is claimed. Outstanding manual OS picker/permission, external-process race, accessibility, and process-termination criteria remain tracked; issue #1 and PR #101 remain open.
+
+
+## 2026-11-15 — Cross-tab recovery test clock isolation correction
+
+- Run `43688362527` failed with 47/48 Playwright tests passing; Node tests (30), TypeScript typecheck, production build and container image passed. The cross-tab recovery test received no prompt message.
+- Inspection found the source page's clock was installed twice: once before workspace/page setup and again after the baseline page had been created. The early installation could freeze the baseline page's own save lifecycle, invalidating the intended setup. Removed the premature installation; the source clock is now frozen exactly once, after the baseline page is saved and immediately before the unsaved edit. The second tab remains on real time.
+- This is a test-fixture correction, not a production recovery implementation change. Fresh CI is required; no local test execution is claimed. Native picker/OS permission, external-process race, accessibility and process-termination criteria remain outstanding; issue #1 and PR #101 remain open.
