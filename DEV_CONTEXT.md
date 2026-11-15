@@ -828,3 +828,12 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Replaced the prior weak debug-gating E2E check with assertions that default-mode opens emit no recovery debug trace, `?waveDebug=1` emits structured debug events, and all events from one open share a single operation ID.
 - Updated `tests/unit/README.md` and `etc/history/dev-build.md` with the implementation and pending verification status.
 - Latest implementation commit before this handoff update: see branch `WAVE-0111` HEAD. The exact-head CI for this follow-up is not yet verified. Do not merge until it passes and review is satisfied.
+
+
+## PR #115 review 5910351108 follow-up
+
+- Fixed operation-ID loss in attachment(): both pre- and post-asset flush calls now receive the ID created at the attachment action boundary.
+- Fixed page-exit draft correlation: savePendingDraft() passes its operation ID into saveDraft() and the failure event.
+- Strengthened E2E coverage to assert that ordinary app bootstrap/open generates no [Wave] console diagnostics, while the same document-open flow with ?waveDebug=1 emits structured recovery debug events sharing one operation ID.
+- refresh() intentionally represents an independent listing/settings-prune operation and creates its own ID; it can run outside any parent action and does not share a persistence transaction.
+- CI verification on the resulting exact SHA is pending; earlier green CI does not verify these changes.
