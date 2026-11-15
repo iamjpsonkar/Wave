@@ -12,7 +12,8 @@
     "test:e2e": "playwright test --config config/playwright.config.ts",
     "docker:build": "docker build -t wave:local .",
     "docker:up": "docker compose up --build -d",
-    "docker:down": "docker compose down"
+    "docker:down": "docker compose down",
+    "test:links": "node --test tests/markdown-links.test.js"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^4.3.4",
