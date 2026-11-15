@@ -427,3 +427,10 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Assertions cover exact unsaved text, matching workspace handle identity, source tab ownership, and distinct tab session IDs.
 - Kept the actual cross-tab prompt assertion and the declined-draft-retention assertion unchanged.
 - Next CI result should identify whether the draft is absent at write time, invisible/mismatched in the second tab, or lost later in `open()`.
+
+
+## Cross-tab recovery — CI #918 diagnosis
+- Confirmed source tab journal record is present with exact draft text, source session ID, and matching workspace handle.
+- The diagnostic test failed because expected content encoded `\\n` rather than newline characters. Corrected both diagnostic expectations.
+- Next gate checks second-tab journal visibility and the actual recovery prompt/decline behavior. No production fix is claimed from this run.
+- Completion plan: isolate the first failing boundary, fix only that boundary, preserve strong assertions, then require the complete local/CI script and container job to pass.
