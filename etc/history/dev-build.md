@@ -541,3 +541,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - The only remaining failure was the cross-tab recovery E2E assertion. Runtime evidence showed the source tab's recovery journal record correctly remains after the second tab declines recovery. The test had been changed to expect deletion; restored the correct preservation assertion and made it poll for the durable source-tab record.
 - The debug-gating E2E test passed in this run, as did all other Playwright cases.
 - A fresh full CI run is required for the updated test commit before considering the PR ready to merge.
+
+
+## WAVE-0111 recovery pipeline diagnostics (2026-11-15)
+
+- Run [43704827319](https://github.com/iamjpsonkar/Wave/actions/runs/43704827319) showed the cross-tab recovery assertion still failing and exposed a test diagnostics bug: the failure handler referenced an undefined `recoveryLogs`.
+- Added structured debug-only draft-journal events for lock wait/acquire/release, save plans, reads, and clear plans/completions. Events record operation/stage and bounded counts only; they do not log document content, paths, or tab IDs. Removed raw `console.info('[Wave recovery]')` journal logging.
+- Passed the document-open operation ID through draft journal read/clear calls and the document persistence operation ID through journal clear, so traces can be correlated.
+- Fixed the failure handler to capture both tabs' logs and enabled `?waveDebug=1` for the cross-tab regression to retain the journal ownership/locking evidence in CI.
+- Root timing issue in the test: `page.clock.install()` alone installs the controllable clock but does not pause time. The test now explicitly calls `page.clock.pauseAt(new Date())` before creating the unsaved draft, preventing the 600 ms autosave timer from committing the source document and clearing its journal before the second tab inspects it.
+- Follow-up full CI is required on the final documentation commit. The nested-breadcrumb timeout remains separately tracked until a fresh run determines whether it reproduces after the recovery test is deterministic.
