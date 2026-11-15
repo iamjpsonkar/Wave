@@ -8,13 +8,7 @@ Dependency source: npm `package-lock.json`, lockfileVersion 3, 221 resolved pack
 
 ## Dependency inventory
 
-The complete exact-version machine-readable inventory is generated from the lockfile:
-
-```bash
-npm run license:audit:json > dependency-license-inventory.json
-```
-
-The committed lockfile is the source of truth for names, versions, resolved tarball URLs, integrity digests and declared license values. The audit script `scripts/check-dependency-licenses.mjs` detects missing license metadata and unrecognized SPDX identifiers. It is a metadata quality check only; it does not determine legal compatibility, validate the contents of package license files, or replace human review.
+The committed exact-version inventory is [`etc/legal/dependency-license-inventory.json`](./etc/legal/dependency-license-inventory.json). It records all 221 package entries, their exact versions, declared licenses, resolved npm tarball URLs, integrity digests and npm's dev-only marker, alongside the root production/development dependency declarations. The root `package-lock.json` remains the canonical source of resolution data. The audit script `scripts/check-dependency-licenses.mjs` compares the committed inventory against the lockfile and detects missing license metadata, unrecognized SPDX identifiers, and stale inventory snapshots. Use `npm run license:audit:update` only after reviewing the dependency changes and upstream license/NOTICE obligations, then inspect and commit the generated JSON diff. The script is a metadata quality check only; it does not determine legal compatibility, validate package license-file contents, or replace human review.
 
 | Declared license | Resolved packages | Treatment |
 |---|---:|---|
@@ -75,11 +69,12 @@ This is a source-tree inspection result, not a guarantee for future changes. Any
 For every dependency or asset change:
 
 1. Update dependencies through npm and commit the changed `package-lock.json`; do not hand-edit resolved versions or integrity hashes.
-2. Run `npm run license:audit` and investigate every missing or unrecognized license.
-3. For new or changed packages, inspect the exact resolved package's upstream LICENSE and NOTICE files, not only the SPDX field.
-4. For added fonts/images/icons/snippets/media, record creator, source URL/repository, exact version or commit, license, required attribution/notices and modification status here.
-5. Update [README](./README.md), package metadata only if the project's own license changes, and this notices file whenever distribution obligations change.
-6. Re-run CI; retain the exact lockfile SHA and audit output in the PR/issue and history.
-7. Escalate ambiguous, custom, missing or potentially incompatible terms to the project owner/legal reviewer; do not relabel or silently replace an asset.
+2. Run `npm run license:audit`. CI compares `etc/legal/dependency-license-inventory.json` with the current lockfile; a mismatch must be reviewed, not bypassed.
+3. After verifying upstream license and NOTICE terms, run `npm run license:audit:update`, inspect the entire generated JSON diff, and commit it with the dependency change.
+4. For new or changed packages, inspect the exact resolved package's upstream LICENSE and NOTICE files, not only the SPDX field.
+5. For added fonts/images/icons/snippets/media, record creator, source URL/repository, exact version or commit, license, required attribution/notices and modification status here.
+6. Update [README](./README.md), package metadata only if the project's own license changes, and this notices file whenever distribution obligations change.
+7. Re-run CI; retain the exact lockfile SHA and audit output in the PR/issue and history.
+8. Escalate ambiguous, custom, missing or potentially incompatible terms to the project owner/legal reviewer; do not relabel or silently replace an asset.
 
 The CI check is intentionally fail-closed for missing or unrecognized package license metadata. A green CI result establishes only that the lockfile contains recognized declarations, not that every license has been legally reviewed.
