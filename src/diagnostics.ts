@@ -7,16 +7,6 @@ const SENSITIVE_KEY = /(content|markdown|document|token|secret|password|credenti
 const sinks = new Set<DiagnosticSink>();
 let configuredLevel: DiagnosticLevel = 'warn';
 const levels: Record<DiagnosticLevel, number> = { error: 0, warn: 1, info: 2, debug: 3 };
-const SESSION_KEY = 'wave-diagnostic-session';
-let fallbackSessionId: string | undefined;
-
-function sessionId(): string {
-  try {
-    let id = sessionStorage.getItem(SESSION_KEY);
-    if (!id) { id = globalThis.crypto?.randomUUID?.() ?? `session-${Date.now().toString(36)}`; sessionStorage.setItem(SESSION_KEY, id); }
-    return id;
-  } catch { return fallbackSessionId ??= globalThis.crypto?.randomUUID?.() ?? `session-${Date.now().toString(36)}`; }
-}
 function safeFields(fields: DiagnosticFields): DiagnosticFields {
   const safe: DiagnosticFields = {};
   for (const [key, value] of Object.entries(fields)) {
