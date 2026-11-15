@@ -1,0 +1,120 @@
+name: OSV vulnerability scan
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  schedule:
+    - cron: "29 2 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: osv-scanner-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan:
+    name: OSV-Scanner lockfile and dependency scan
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - name: Check out complete history for PR baseline comparison
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Scan target branch baseline
+        if: github.event_name == 'pull_request'
+        id: scan-old
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
+        with:
+          scan-args: |-
+            --format=json
+            --output=old-results.json
+            --include-git-root
+            -r
+            ./
+      - name: Check out proposed pull-request commit
+        if: github.event_name == 'pull_request'
+        run: git checkout -f "$GITHUB_SHA"
+      - name: Scan proposed pull-request commit
+        if: github.event_name == 'pull_request'
+        id: scan-new
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
+        with:
+          scan-args: |-
+            --format=json
+            --output=new-results.json
+            --include-git-root
+            -r
+            ./
+      - name: Scan default branch or scheduled source
+        if: github.event_name != 'pull_request'
+        id: scan-full
+        continue-on-error: true
+        uses: google/osv-scanner-action/osv-scanner-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
+        with:
+          scan-args: |-
+            --format=json
+            --output=full-results.json
+            --include-git-root
+            -r
+            ./
+      - name: Verify scanner completed and wrote its report
+        if: always()
+        shell: bash
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            test -s old-results.json || { echo "::error::OSV baseline scan did not produce a report."; exit 1; }
+            test -s new-results.json || { echo "::error::OSV PR scan did not produce a report."; exit 1; }
+          else
+            test -s full-results.json || { echo "::error::OSV full scan did not produce a report."; exit 1; }
+          fi
+      - name: Compare PR findings and create SARIF
+        if: github.event_name == 'pull_request'
+        uses: google/osv-scanner-action/osv-reporter-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
+        with:
+          scan-args: |-
+            --output=osv-results.sarif
+            --old=old-results.json
+            --new=new-results.json
+            --gh-annotations=true
+            --fail-on-vuln=true
+      - name: Report full-scan findings and create SARIF
+        if: github.event_name != 'pull_request'
+        uses: google/osv-scanner-action/osv-reporter-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
+        with:
+          scan-args: |-
+            --output=osv-results.sarif
+            --new=full-results.json
+            --gh-annotations=false
+            --fail-on-vuln=true
+      - name: Upload OSV SARIF to code scanning
+        if: always() && hashFiles('osv-results.sarif') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
+        uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
+        with:
+          sarif_file: osv-results.sarif
+          category: osv-scanner
+        continue-on-error: true
+      - name: Preserve OSV reports
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: osv-scanner-reports
+          path: |
+            old-results.json
+            new-results.json
+            full-results.json
+            osv-results.sarif
+          if-no-files-found: ignore
+          retention-days: 14

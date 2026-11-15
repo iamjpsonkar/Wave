@@ -1,0 +1,6 @@
+title = "Wave Gitleaks allowlist"
+
+[[allowlists]]
+description = "Historical Git commit identifiers in the development log are not credentials."
+paths = ['''etc/history/dev-build\\.md''']
+regexes = ['''Key commits:.*''']

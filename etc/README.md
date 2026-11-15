@@ -32,6 +32,9 @@ This directory contains the maintained product specifications, engineering refer
 - [Fixed bugs](./quality/fixed-bugs.md)
 - [GitHub issue index](./quality/github-issues.md)
 
+## Security and compliance
+- [Security program tracker](https://github.com/iamjpsonkar/Wave/issues/120) — consolidated application security, supply-chain compliance and security automation.
+
 ## Engineering history
 - [Development/build log](./history/dev-build.md)
 - [Development fix log](./history/dev-fixed.md)

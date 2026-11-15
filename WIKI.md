@@ -808,3 +808,24 @@ Review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestrevi
 ## License inventory regression test implementation note
 
 Keep pure lockfile normalization helpers in `scripts/dependency-license-inventory.mjs` so unit tests can import them without executing the CLI audit. The CLI wrapper `scripts/check-dependency-licenses.mjs` should remain the command entry point. Regression tests cover nested unscoped and scoped package names plus root scoped packages.
+
+## 2026-11-15 — Security program kickoff (#120)
+
+Issue [#120](https://github.com/iamjpsonkar/Wave/issues/120) is the active consolidated security tracker. PR [#121](https://github.com/iamjpsonkar/Wave/pull/121) is merged into `main` at `04afcf448e0d45b743fd8324071b1339301904e2`; exact-head CI [43713585404](https://github.com/iamjpsonkar/Wave/actions/runs/43713585404) passed the functional and container jobs. Issue #118 is closed as a duplicate/consolidation pointer, not as a statement that every legal release check is complete.
+
+The first #120 implementation slice is tracked on `WAVE-0120`: secure the existing CI workflow with read-only default/job permissions, full commit-SHA pins for third-party actions, explicit timeouts, and concurrency cancellation. Keep the existing npm license audit, canonical `./test.sh` functional gate, browser diagnostics and container checks intact. Scanner integrations and application security work are not implied complete by this foundation; all remaining #120 checklist items stay open.
+
+The license audit remains a metadata/inventory guard, not a legal compatibility opinion. Exact package tarball LICENSE/NOTICE review, Apache NOTICE obligations and CC-BY attribution in the release artifact remain to be verified or explicitly dispositioned by the owner/legal reviewer.
+
+## Mobile navigation reliability
+
+The mobile drawer must expose a dedicated close control above the open sidebar. Keep the full-screen backdrop behind the sidebar and do not rely on clicking its center to dismiss the drawer: the sidebar intercepts pointer events by design. E2E coverage should open the drawer, activate the visible close control, and verify that the drawer is removed from its open state.
+
+## Security program — issue #120
+
+- Security automation is being added as separate workflows: Dependabot version updates, npm audit, OSV-Scanner, Gitleaks, CodeQL, Trivy and an explicitly configuration-gated Sonar job. All third-party actions/reusable workflows are SHA-pinned, workflows use least privilege, and CI validates workflow YAML/policy.
+- Production static hosting now has a restrictive CSP/security headers; remote Google Fonts loading is removed. Markdown links use noopener noreferrer; attachment ingestion rejects known active/executable content and files larger than 25 MiB.
+- Read docs/SECURITY_THREAT_MODEL.md for verified controls and explicit product limitations; read docs/SECURITY_OPERATIONS.md for scanner policy, triage, owner-side GitHub settings and Sonar configuration.
+- Do not represent unimplemented vault encryption, key recovery, E2E sync, teams/permissions, plugin sandboxing, server-side sharing, audit logs or workspace malware scanning as shipped. No remote content scanning is permitted without product approval and user consent.
+- Dependabot alerts/security updates and secret scanning/push protection require owner-side configuration; workflow files cannot enable these account/repository settings. Static code analysis uses credential-free OpenGrep and ESLint workflows; no Sonar account or token is required. Exact third-party tarball LICENSE/NOTICE and final release attributions still require manual legal review.
+- Keep issue #120 open until each inherited acceptance item is implemented or explicitly owner-approved and documented. Green CI/scanners are evidence, not a security certification.

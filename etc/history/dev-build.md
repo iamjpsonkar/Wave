@@ -1,528 +1,798 @@
-# Wave — Development Build and CI Log
+# Wave — Developer Context
 
-> Branch: `main`  
-> Updated: 2026-11-14  
-> Purpose: track build, typecheck, unit-test, browser-test and CI outcomes for development commits.
+> Canonical handoff document for AI-assisted development. Read this file before making changes, then inspect the referenced source/docs relevant to the task.
+> Repository: https://github.com/iamjpsonkar/Wave
+> Default branch: `main`
+> Last reviewed: 2026-11-15
+> Latest reviewed branch baseline: `561fef34390d6805b30956a1723bbcb0a0edcdad` on `WAVE-0001` (refresh `main` and branch HEAD before every task)
 
-## Latest development verification
+## Current documentation audit — 2026-11-15
 
-<badge>Success</badge>
+- Audited all 33 Markdown files on `manager`; final relative-link scan found zero missing case-sensitive repository paths.
+- Repaired migrated links and path references across product, engineering, quality, history and contributor documentation without removing planned scope or historical evidence.
+- Enforced the project-owner QA rule in the operating guide and how-to procedures: QA is read-only; findings go to GitHub issues and PR review comments; developers own fixes.
+- Current test-source inventory on this branch: 30 Node test definitions and 48 Playwright Chromium test definitions. These are source counts, not test execution or CI pass claims.
+- Documentation-only verification used GitHub tree/content inspection. No local tests, typecheck, build, browser run or CI result is claimed.
+- Audit history: `etc/history/dev-build.md`. The documentation audit was based on manager commit `81ce45825044fc7c6dea63e6186280ef28abb13f`; this handoff update is the final documentation action.
 
-- Commit: `09021ed224f739fd66325bb8f6cc8f1bcca5b142`
-- Change: corrected newline literals in the new cross-tab recovery E2E test.
-- Workflow run: [43604242348](https://github.com/iamjpsonkar/Wave/actions/runs/43604242348)
-- Final result: **success**.
-- The previous run on commit `3fcea5ca05f1bda3894262cc94a9999a6340a0ab` passed install, 30 Node tests, TypeScript typecheck and production build, but failed one of ten Playwright scenarios because the new test expected literal backslash-n text instead of actual newlines.
+## 1. Product contract
 
-## Recent CI history
+Wave is a local-first workspace for notes, documents, and ideas. The user chooses a directory; Wave manages a `.wave/` directory inside it. The MVP needs no account and has no application backend.
 
-| Workflow run | Commit | Result | Evidence |
-|---|---|---|---|
-| [43604242348](https://github.com/iamjpsonkar/Wave/actions/runs/43604242348) | `09021ed224f739fd66325bb8f6cc8f1bcca5b142` | Success | Corrected cross-tab recovery E2E newline expectations; all 10 browser scenarios passed |
-| [43604083783](https://github.com/iamjpsonkar/Wave/actions/runs/43604083783) | `3fcea5ca05f1bda3894262cc94a9999a6340a0ab` | Failed | 30 Node tests, typecheck and production build passed; 9/10 browser tests passed; new test failed on incorrect expected newline escaping |
-| [43604046025](https://github.com/iamjpsonkar/Wave/actions/runs/43604046025) | `ec50e76948ec1c16ea189f8ca9927a6d1fe94749` | Failed | Typecheck caught missing `tabId` in the local recovery-draft TypeScript shape; fixed in a subsequent commit |
-| [43604040043](https://github.com/iamjpsonkar/Wave/actions/runs/43604040043) | `f8812c8b91f9143a718febb7d7b51e19e36542cd` | Failed | Typecheck caught the same recovery-draft TypeScript shape issue; 30 Node tests passed |
-| [43603278555](https://github.com/iamjpsonkar/Wave/actions/runs/43603278555) | `b11b46eebc1558de9910d8523cdaa027817b087d` | Passed | 30 Node tests, 9 Chromium E2E tests, typecheck and production build passed |
+Non-negotiable principles:
+- User-owned local content: saved documents and assets stay in the selected workspace directory.
+- Portable content: Markdown documents and ordinary asset files remain inspectable outside Wave.
+- Privacy by default: don't introduce uploads, analytics, remote processing, or third-party services without an explicit product decision and disclosure.
+- Reliability before breadth: integrity, safe failure, recovery, backup/restore, migration, accessibility and export are release gates.
+- Preserve scope: never silently prune agreed features. `upcoming-features.md` is the complete scope catalogue; `priority-features.md` assigns delivery order, not permission to drop requirements.
 
-## Current automated suite
+## 2. Stack and development commands
 
-Latest successful run (commit `09021ed224f739fd66325bb8f6cc8f1bcca5b142`):
-- Node storage/concurrency tests: **30 passed**.
-- Playwright Chromium E2E: **10 passed**.
-- TypeScript typecheck: passed.
-- Production build: passed.
+- React 18, TypeScript 5.7, Vite 6.
+- Browser File System Access API for user-selected directories; secure context and supported Chromium browser are the intended MVP environment.
+- IndexedDB for recent workspace handle and temporary unsaved recovery drafts only.
+- Markdown: `react-markdown`, `remark-gfm`, `rehype-sanitize`.
+- Icons: `lucide-react`.
+- Node built-in test runner for storage/safety tests; Playwright Chromium for E2E.
+- GitHub Actions CI runs on push/PR to `main`, using Node 22.
 
-The cross-tab recovery prompt scenario brings the browser suite to **10 scenarios**; all 10 passed in run 43604242348.
+Primary local commands:
+```bash
+./run.sh       # start Vite; bootstraps npm dependencies if missing
+./test.sh      # Node tests + typecheck + build + Playwright Chromium E2E
+./test.sh --no-e2e
+npm run test:local
+```
+`test.sh` installs the CI-pinned Playwright runner and Chromium when needed. Pre-provisioned/CI usage: `./test.sh --skip-install --skip-playwright-install --skip-browser-install`. Node.js 22.6+ is required. See the scripts' `--help` output and README for environment variables/options.
 
-## Verification policy
+## 3. Architecture and source map
 
-- Record the exact commit SHA with every CI result.
-- Distinguish queued/in-progress, failed and successful runs.
-- A passing unit suite does not imply browser tests passed.
-- A passing browser suite does not establish native picker, external-editor, accessibility or OS process-termination behavior unless those scenarios are explicitly included.
-- Do not treat an earlier successful run as verification of later commits.
+Runtime: `index.html` → `src/main.tsx` → `src/App.tsx`.
+
+- `src/App.tsx`: main React workspace UI/state, onboarding/reopen, navigation, editor/autosave, Markdown preview, local assets, search, favorites, templates, Trash, backups/restore, command palette/backlinks and recovery prompts.
+- `src/storage.ts`: filesystem/storage adapter. Keep independent of React. Owns workspace initialization, document/folder/asset operations, settings, backups, Trash, integrity checks, path validation, collision handling, queues and locking.
+- `src/workspaceRegistry.ts`: IndexedDB registry for recently used directory handle and permission-aware reopening. Stores a handle reference, not document content.
+- `src/draftJournal.ts`: browser-local IndexedDB journal for temporary unsaved drafts, including per-tab identity and cross-tab-safe behavior.
+- `src/safety.ts`: reliability primitives including task queues, workspace-generation checks, stable revision flush, relative asset paths and newest-draft selection.
+- `src/markdown.tsx`: Markdown preprocessing, wiki-link extraction/resolution, alert blockquotes and code-block copy.
+- `src/templates.ts`: built-in page templates.
+- `src/styles.css`: application styling and responsive behavior.
+- `tests/storage.test.js`: Node storage/concurrency/safety regression tests.
+- `tests/e2e/workspace.spec.ts`: Playwright Chromium journeys.
+- `config/vite.config.ts`: Vite configuration.
+- `config/playwright.config.ts`: Playwright configuration and Vite test server.
+- `config/tsconfig.app.json`: application TypeScript project configuration; root `tsconfig.json` references it.
+- `run.sh`: local Vite development-server launcher.
+- `test.sh`: fail-fast local Node/typecheck/build/Playwright quality gate shared with CI.
+- `.github/workflows/ci.yml`: CI gate using the same test script.
+
+### Current on-disk workspace format
+
+```text
+<chosen-folder>/
+└── .wave/
+    ├── manifest.json
+    ├── settings.json
+    ├── documents/   # Markdown pages and nested folders
+    ├── assets/      # ordinary uploaded files/images
+    ├── backups/     # verified snapshots
+    └── trash/       # recoverable deleted pages and operation metadata
+```
+
+Markdown under `.wave/documents/` is the current document source of truth. Assets are ordinary files under `.wave/assets/`; Markdown references them using relative paths based on document nesting. Manifest holds workspace identity/schema metadata; settings hold preferences such as favorites.
+
+A versioned SQLite canonical store is a future architecture direction, not current implementation. Any migration must be explicit, repeat-safe, verified, and preserve original Markdown until successful verification.
+
+IndexedDB boundaries:
+- Recent folder registry: `wave-local` / `workspaces`.
+- Temporary unsaved draft journal: separate browser-local records, isolated per tab/session.
+- Do not describe IndexedDB as the canonical document store.
+- Browser site-data clearing can remove recovery drafts and remembered handles. Keep independent backups.
+
+## 4. Implemented capabilities at baseline
+
+Verify current source and tests before asserting these remain unchanged:
+- User-selected folder onboarding and `.wave/` initialization.
+- Markdown page create/open/list/autosave, nested and empty folders.
+- Formatting toolbar and sanitized Markdown preview; GFM via configured libraries.
+- Local image/file attachments with collision-safe names and relative links.
+- Search over page titles/content, snippets and keyboard result navigation.
+- Recoverable Trash, restore without overwrite, permanent deletion and interrupted-operation journal/reconciliation.
+- Local backup snapshots, integrity verification, backup browsing and restore to a separate workspace; incomplete snapshots/restores are marked and refused as valid.
+- IndexedDB recovery drafts, per-tab isolation and cross-tab provenance in the recovery prompt.
+- Revision-aware saves, flush-until-stable transitions, workspace-generation guards, serialized writes and Web Locks with in-process fallback.
+- External-edit detection before overwrite, with reload or save-as-copy flow.
+- Case-insensitive collision protection and serialized allocation.
+- Recent workspace reopening with permission-aware reauthorization.
+- Built-in templates: blank, meeting, project brief, task list, weekly plan, research notes, decision record.
+- Favorites, duplicate page, responsive/mobile navigation, command palette and wiki-link/backlink behavior (verify exact current UI before changing).
+
+Implementation does not equal full verification. Check evidence for each affected behavior.
+
+## 5. Reliability, security and UX invariants
+
+Preserve all of the following:
+1. Never silently overwrite documents, assets, backups, or restore destinations.
+2. Validate workspace-relative paths; reject absolute paths, traversal segments, invalid separators and unsafe names.
+3. Close writable streams before reporting success; abort failed writes while preserving the original error.
+4. Serialize operations that mutate the same workspace/resource; use Web Locks when available and safe in-process fallback.
+5. Treat async UI completions as stale when workspace generation changes; never publish old-workspace results into the active workspace.
+6. Editor transitions flush until the latest revision is persisted; never mark a newer revision saved based on an earlier write.
+7. Detect external document changes before overwrite; offer reload or save-as-copy.
+8. Trash: verify recoverable copy before deleting original; journal/reconcile interrupted operations; restore to a unique destination.
+9. Backup: allocate unique destination; mark in-progress/complete/failed; snapshot and copied content hashes; verify before completion.
+10. Restore to a unique separate workspace; refuse incomplete restore destinations.
+11. Recovery status distinguishes pending from committed. IndexedDB is async; never claim crash-proof durability or protection before transaction commit.
+12. Markdown preview stays sanitized; don't execute raw HTML/scripts or fetch remote image content as part of preview.
+13. External links remain safe (for example, noreferrer); treat workspace paths and file names as untrusted input.
+14. New data shapes require schema/version/migration and backup/export/recovery consideration.
+15. Preserve keyboard access, focus behavior, semantic labels, contrast, responsive/mobile behavior and reduced-motion/accessibility.
+
+## 6. Project documents and their responsibilities
+
+- `etc/product/upcoming-features.md`: complete product blueprint/catalogue. Source of truth for preserving full scope. Never delete or compress requirements without explicit owner approval.
+- `etc/product/priority-features.md`: prioritized implementation plan and dependencies. Does not supersede the full catalogue.
+- `etc/product/FEATURES.md`: combined shipped-feature overview and detailed shipped/planned feature map.
+- `etc/product/ROADMAP.md`: release sequencing.
+- `etc/engineering/ARCHITECTURE.md`: architecture and reliability/security rationale.
+- `etc/quality/bugs.md`: only current reproducible/source-supported bugs and material QA gaps.
+- `etc/quality/fixed-bugs.md`: resolved bug history and regression baseline; recheck on every QA task.
+- `etc/history/dev-fixed.md`: implementation/fix log (problem, code changes, tests, commit, limitations).
+- `etc/history/dev-build.md`: build/test/CI and feature implementation history (exact commit, workflow run, per-suite outcome).
+- `etc/product/UI_BACKLOG.md`: consolidated UIB/UI/UIF export bugs, UI gaps and UI feature proposals.
+- `QA_CONTEXT.md`: current QA disposition, test inventory, limitations and historical QA audit evidence.
+- `DEV_CONTEXT.md` (this file): concise AI handoff; update last after every task. See `WIKI.md` for the mandatory per-task Markdown documentation policy.
+
+Don't conflate these trackers. Don't move an issue to fixed until implemented and appropriate regression verification passes. Planned features are not bugs.
+
+## 7. Open bug snapshot — refreshed 2026-11-14
+
+The reviewed `etc/quality/bugs.md` reported two partial findings:
+- **WAVE-031 (P1):** remains open/partial. Branch `WAVE-0001` adds deterministic E2E coverage for prompt-state permission reauthorization and external-edit conflict preservation. Native picker/OS revocation, external-process races during read/save/backup/restore, comprehensive keyboard/screen-reader accessibility and abrupt process termination remain unverified. See `QA_CONTEXT.md` manual plan and `etc/quality/bugs.md`.
+- **WAVE-039 (P1):** remains partial. IndexedDB strict durability and `pagehide`/`visibilitychange` best-effort writes reduce but cannot eliminate the asynchronous pre-commit crash window.
+
+WAVE-042 remains fixed in source and has a cross-tab regression scenario. Latest QA recheck: see `QA_CONTEXT.md`; current bug register is `etc/quality/bugs.md`.
+
+## 8. Verification snapshot and current QA inventory
+
+The checked-in `dev-build.md` reports workflow run [43604242348](https://github.com/iamjpsonkar/Wave/actions/runs/43604242348), for commit `09021ed224f739fd66325bb8f6cc8f1bcca5b142`, successful:
+- 30 Node tests passed.
+- 10 Playwright Chromium scenarios passed.
+- TypeScript typecheck passed.
+- Production build passed.
+
+This remains historical CI evidence and does not verify later commits. The current checked-in test sources on `WAVE-0001` define 30 Node tests and 48 Playwright Chromium scenarios; the documented successful CI run covers an earlier 10-scenario browser suite. The 2026-11-14 QA recheck was source-only: no local build/tests or new CI run were performed. WAVE-0001 adds two browser test definitions; PR CI is pending and must be checked before reporting any pass. Refresh the default-branch HEAD and CI before relying on test status.
+
+## 9. Required workflow for every future task
+
+### Before changes
+1. Read `DEV_CONTEXT.md` first.
+2. Check current branch, HEAD commit, working tree and relevant source files; don't assume this snapshot is current.
+3. Read relevant feature/priority/roadmap docs and tests.
+4. For QA/bug tasks, inspect `etc/quality/bugs.md` and matching scenarios in `etc/quality/fixed-bugs.md`; QA remains read-only.
+5. Resolve acceptance criteria using existing product decisions; preserve all previously agreed features and constraints.
+
+### During changes
+1. Make the smallest cohesive change; preserve existing behavior unless task explicitly changes it.
+2. Respect the storage adapter boundary; keep UI concerns out of `src/storage.ts`.
+3. Add/update regression tests for fixes/features; cover failure paths, concurrency, reload/restore and accessibility where relevant.
+4. Never delete existing features or requirements to simplify implementation.
+5. Avoid unrelated refactors and unrelated file churn.
+6. Keep README/docs/catalogues consistent with actual behavior.
+
+### At the end of every task
+- Feature work: update `etc/product/FEATURES.md`, `etc/product/priority-features.md`, and/or `etc/product/ROADMAP.md` as appropriate. Preserve the full `etc/product/upcoming-features.md` catalogue.
+- Bug work: developers update `etc/quality/bugs.md` and `etc/quality/fixed-bugs.md` when implementation and regression evidence justify a status change. QA does not edit these files; it reports findings through GitHub.
+- Code fixes: append problem, changes, files, tests, commit/CI and limitations to `etc/history/dev-fixed.md`.
+- Build/test/CI: append exact commit and suite-level outcome to `etc/history/dev-build.md`; distinguish not run, queued, failed and passed.
+- **Always update this `DEV_CONTEXT.md` after every task**, as the final documentation step: date/HEAD, current architecture or contracts affected, changed files, current open bugs, key decisions and latest verified test/CI evidence. Keep concise and link detailed logs instead of copying them.
+- Never claim a test passed unless it actually ran and passed. Never claim a GitHub write/commit succeeded unless the tool confirms it.
+
+## 10. Completion checklist
+
+- [ ] Requested behavior implemented without removing previously agreed features.
+- [ ] Regression tests added/updated.
+- [ ] `npm test` run where relevant.
+- [ ] `npm run typecheck` run.
+- [ ] `npm run build` run.
+- [ ] `npm run test:e2e` run when browser behavior is affected.
+- [ ] Existing GitHub issues and regression scenarios reviewed; QA reports findings without repository edits.
+- [ ] Product docs and separate development logs updated.
+- [ ] `DEV_CONTEXT.md` updated as the final documentation step.
+- [ ] Exact commit/CI evidence and remaining limitations recorded.
 
 
-## 2026-11-14 — Markdown preview extension changes (awaiting CI)
+## 11. Latest QA handoff — 2026-11-14
 
-- Source additions: MathML subset, simple Mermaid flowchart SVG, heading anchors, Markdown showcase template and E2E regression scenario.
-- Current test source count: 30 Node tests and 14 Playwright Chromium scenarios.
-- **Latest attempted run:** [43612461372](https://github.com/iamjpsonkar/Wave/actions/runs/43612461372) on `7c901be191fbceb05c0c7458925ed3088bfe660b` passed `npm ci` and all **30 Node tests**, then failed typecheck because the shared Markdown component props omitted `className`. The type definition was corrected in `035e442a90d7e8cb48b88e4e9df93971a1bcaa24`. Follow-up run [43612488927](https://github.com/iamjpsonkar/Wave/actions/runs/43612488927) passed `npm ci`, all 30 Node tests, typecheck and production build; Playwright browser installation/E2E was still in progress at the latest check. The newer run [43612554015](https://github.com/iamjpsonkar/Wave/actions/runs/43612554015), on the documentation/priority checkpoint commit `983055ca882936345a37abbf8de5b9a90a0ea9fc`, had passed install, Node tests and typecheck; build and E2E were still in progress. Do not mark the feature fully verified until the latest run completes successfully.
-
-
-## 2026-11-14 — Markdown showcase gap audit
-
-- Compared the complete user-provided 20-section Markdown Feature Showcase with the current renderer, preview integration, styles, templates, compatibility guide and E2E test source.
-- Created [features-gap.md](../product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
-- This was a source/documentation audit. No application code changed and no local test suite was run for this audit. Existing historical CI results do not establish that the Markdown showcase is fully implemented.
+- Source-only QA recheck recorded in [QA_CONTEXT.md](./QA_CONTEXT.md).
+- Open findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed in source.
+- Current test source defines 30 Node tests and 13 Chromium E2E scenarios. The successful CI result currently documented in `dev-build.md` covers an earlier 10-scenario suite; no fresh execution was performed in this QA task.
+- QA documentation commits: `bugs.md` `453f44268b694ded80109f785054d4e80b0ca5bb` (superseded by inventory correction in this task); `fixed-bugs.md` `c0b7503991190d6a84d3f381136bdd75fe98078a`; `QA_CONTEXT.md` `4f52cbfd016a7419848cf4b2d100266c260cc290`. See current GitHub history for the final corrected `bugs.md` commit.
 
 
-## 2026-11-14 — Markdown preview capability expansion
+## 12. Markdown compatibility implementation — 2026-11-14
 
-- Current source adds unique heading IDs, safe inline formatting shorthands, DETAILS disclosure blocks, common emoji shortcodes, lightweight local syntax coloring, recursive MathML for a limited TeX subset, and local Mermaid sequence/pie rendering.
-- Added two Playwright E2E scenarios. Current browser suite source now contains **17 scenarios**; Node test source remains **30 tests**.
-- Workflow [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208), commit `679b9eef2b14272356d245553abd218612fd92ce`: npm ci, 30 Node tests, TypeScript typecheck and production build passed. Browser dependency install/E2E were still in progress at last inspection.
-- Earlier workflow [43613444479](https://github.com/iamjpsonkar/Wave/actions/runs/43613444479), commit `3ca2155da1f9eb3a9e6419923f9971d05713b9a4`, passed Node tests/typecheck/build but failed 3 E2E scenarios while the inline preprocessing helper was missing from that intermediate commit. The helper was added afterwards; use the newer run for final browser verification.
-- Do not claim E2E passed until a workflow containing the corrected source and the added scenarios completes successfully.
-
-
-### CI follow-up and corrections
-- [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208), commit `679b9eef2b14272356d245553abd218612fd92ce`: Node tests, typecheck and build passed; E2E failed 4 scenarios. Failures exposed heading IDs being applied at the wrong rendering stage, DETAILS summary extraction edge cases, and a sidebar list timing assumption in the existing wiki-link journey. Fixes were made in `3def36d`, `4f9a52f` and `161127f` and await a fresh full run.
-- [43613868330](https://github.com/iamjpsonkar/Wave/actions/runs/43613868330), commit `ec4214d1de13e0f8a8195e5ed9186564db2084a0`: 30 Node tests passed; typecheck caught an incorrectly escaped source newline in the MathML parser. Corrected in `b8c7d550f1b56b66687e7c1b2833386f5f23d179`.
-- [43614011077](https://github.com/iamjpsonkar/Wave/actions/runs/43614011077), commit `4f9a52f275aba0ae70d6add8e89bbeb6e1fcd8d5`: 30 Node tests passed; typecheck caught a duplicate `neq` key in the math command map. Corrected in `1df330599916a9d657e83838b03231bd39296ae5`.
-- The newest full CI run for commit `1df330599916a9d657e83838b03231bd39296ae5` is queued/in progress; do not claim a complete pass until it finishes.
-
-- Added the final Markdown conformance scenario for hard breaks, reference links/images, title/alt retention, escaped table pipes, nested lists and unsafe URL sanitization; browser suite count is now 17.
+- Read the user-provided Markdown Feature Showcase and implemented the practical supported subset in the existing renderer without adding remote services or new npm dependencies.
+- `src/markdown.tsx`: wiki/alert preprocessing remains; added math delimiter preprocessing, MathML subset (basic tokens, Greek commands, simple fractions/roots and one superscript/subscript), simple Mermaid flowchart SVG rendering with readable source fallback for other Mermaid forms, and heading slug IDs.
+- `src/App.tsx`: maps Markdown heading levels to anchor IDs and routes code nodes through the custom renderer.
+- `src/styles.css`: preview styling for math, diagrams and heading levels.
+- `src/templates.ts`: adds the Markdown feature showcase template.
+- `docs/MARKDOWN_SUPPORT.md`: canonical syntax compatibility/security matrix. Raw HTML remains disabled; full LaTeX, advanced Mermaid, PlantUML, Graphviz, Vega, D2, AsciiDoc, syntax highlighting and media embeds are not claimed as supported.
+- E2E test source now contains 14 scenarios, including the new math/flowchart/heading scenario. Run 43612461372 passed `npm ci` and 30 Node tests but failed typecheck because `MarkdownElementProps` lacked `className`; fixed in `035e442a90d7e8cb48b88e4e9df93971a1bcaa24`. Follow-up run 43612488927 passed install, 30 Node tests, typecheck and production build; Playwright install/E2E remained in progress at last check. Latest run 43612554015 on `983055ca882936345a37abbf8de5b9a90a0ea9fc` had passed install, Node tests and typecheck, with build/E2E still in progress. Check `dev-build.md` before claiming a full pass.
+- Always read `docs/MARKDOWN_SUPPORT.md` before extending Markdown support; preserve local-only rendering and sanitization boundaries.
 
 
-### Latest Playwright feedback and follow-up
-- Workflow [43614071812](https://github.com/iamjpsonkar/Wave/actions/runs/43614071812), commit `1df330599916a9d657e83838b03231bd39296ae5`: all 30 Node tests, typecheck and production build passed; **14/17 Playwright scenarios passed**. Three E2E failures were: wiki-link scenario assumed a document title would remain in the sidebar after creating another page; DETAILS summary parsing included the marker/body in the summary; and a reference-link selector matched both the text link and linked image.
-- Follow-up changes: DETAILS now extracts the first line as the disclosure summary; wiki-link E2E uses the page's stable workspace path rather than depending on the transient title label; reference-link assertion selects the first matching link. Commits: `9648f202c23d5771799dd3f59e30800ce20df6c0`, `d3c4da59c8796a42e7e3acc378a5bdac53e99c8b`.
-- These corrections require the latest workflow to complete before the browser suite can be considered passing.
+## 13. Markdown showcase gap audit — 2026-11-14
+
+- Audited the complete user-provided 20-section Markdown Feature Showcase against the current renderer, App preview wiring, styles, templates, `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `FEATURES.md` and E2E test source.
+- Conclusion: Markdown is **not feature-complete** against that showcase. Existing support includes common Markdown/GFM, alert callouts, wiki links/backlinks, local images, heading anchors, a small MathML subset and simple Mermaid flowcharts.
+- Created [markdown-coverage.md](./etc/product/markdown-coverage.md) as the canonical itemized gap/acceptance checklist. Major gaps: full LaTeX/math grammar, advanced Mermaid diagram families and syntax, syntax highlighting/diff coloring, safe HTML-like inline formatting and collapsible sections, emoji shortcodes, GitHub mention/issue references, Graphviz/PlantUML/Vega/D2/AsciiDoc renderers, media embeds, duplicate-heading slugs, and broader accessibility/conformance coverage.
+- Raw HTML and arbitrary media remain deliberately disabled for safety; any future support must use explicit safe components/allowlists rather than enabling unrestricted HTML.
+- Updated `dev-build.md` with the audit record. This was a source/documentation audit only; no application code changed and no tests were run for this audit. Existing CI evidence is historical and must not be described as full Markdown showcase verification.
+- Latest documentation commits: `features-gap.md` `0b85dd6`; `dev-build.md` `69f749a`. This handoff update is the final documentation step for the task.
 
 
-## 2026-11-14 — Markdown gap recheck
+## 14. Markdown implementation follow-up — 2026-11-14
 
-- Source revision audited: `186e7ec3dd817a42a610e51c6a3c4a3d8b3d8f19`.
-- Workflow [43616005399](https://github.com/iamjpsonkar/Wave/actions/runs/43616005399): install passed; **30/30 Node tests passed**; TypeScript typecheck passed; production build passed; Playwright E2E **failed with 20 passed / 3 failed**.
-- Remaining E2E failures:
-  1. Wiki-link journey asserts the serialized `wave.invalid` URL, but the rendered wiki link is a Wave button. Assert the actual accessible button behavior instead.
-  2. Syntax-highlighting test applies a strict assertion to multiple `.syntax-keyword` spans. Narrow the locator to the expected token or assert the collection.
-  3. Mermaid flowchart test expects `polygon` and `ellipse` elements, but the current local renderer uses different SVG primitives. Assert the intended labels/edges and actual output shape.
-- The same run passed the supplied math, local DOT/PlantUML/Vega-Lite/D2/AsciiDoc, local audio/video, and additional Mermaid-family fixtures. These tests validate only their examples, not full spec compatibility.
-- Browser suite source contains **23 unique scenarios** (the run executed 20 successfully and 3 failed). Node suite contains **30 tests**.
-- The gap audit is updated in [features-gap.md](../product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
-- Do not call the Markdown showcase complete. Remaining work includes fixing the three E2E failures, expanding accessibility/conformance/round-trip/browser coverage, and documenting the strict limits of the local TeX/Mermaid/other-format renderers.
-
-
-## 2026-11-14 — Markdown gap remediation CI checkpoint
-
-- Source changes: technical learning-notes template now uses real newline separators; a new template-selection/preview E2E scenario was added; the three known stale/strict Markdown E2E assertions were revised to test rendered user-visible behavior.
-- Browser test source now defines **24 scenarios** (23 existing scenarios plus the new template regression). Node test source remains **30 tests**.
-- Relevant code/test commits: `b8e936b707d9f8c2d78a88991943b7a57c705689`, `65f62060152596d160f66effebcf17a274edc80b`, `f633ccc75c9afb9d3ab7529b489e557d7ae9f8c8`, `5d6b16d18e552c79f11dd6471c47aeab54662f47`.
-- No local test execution was possible in this session. The GitHub workflow run for these commits has not yet been retrieved, so install, Node tests, typecheck, build and all 24 E2E scenarios are **unverified**. Do not infer success from the commits or test definitions.
-- The three old E2E assertion blockers have been corrected in source, but a fresh green browser run is required. WAVE-052 remains in `bugs.md` until the new regression scenario passes.
-- This is an initial remediation checkpoint, not completion of `features-gap.md`. Full TeX/Mermaid/other-language compatibility, accessibility, cross-browser, visual, malformed-input/resource-limit and source-round-trip work remain open.
+- Audited `features-gap.md` and implemented an additional source-supported subset without modifying that file, `bugs.md`, or `fixed-bugs.md`.
+- `src/markdown.tsx`: safe inline formatting shorthands (`==mark==`, `++underline++`, `^sup^`, `~sub~`, `[[kbd:...]]`), common emoji shortcodes, lightweight token coloring for common code languages, recursive MathML groups/fractions/roots/scripts and common commands, local Mermaid sequence and pie renderers, safe DETAILS disclosure blocks, and a rehype heading-ID plugin that runs after sanitization.
+- `src/App.tsx`: the heading-ID plugin is ordered after `rehypeSanitize`; local image fallback retains alt/title and links retain title metadata.
+- `src/styles.css`: styles for syntax tokens, diagrams, inline styles and disclosure.
+- `src/templates.ts`: expanded Markdown showcase examples, including math, sequence/pie charts, inline syntax and details.
+- Added E2E scenarios for extended rendering and CommonMark conformance. Current browser suite source: **17 scenarios**; Node suite source: **30 tests**.
+- Updated `FEATURES.md`, `FEATURES.md`, `docs/MARKDOWN_SUPPORT.md`, `README.md`, `dev-fixed.md` and `dev-build.md`.
+- Verification: workflow [43614071812](https://github.com/iamjpsonkar/Wave/actions/runs/43614071812), code commit `1df330599916a9d657e83838b03231bd39296ae5`: `npm ci`, 30 Node tests, typecheck and production build passed; Playwright E2E was still in progress at last check. Earlier E2E run [43613680208](https://github.com/iamjpsonkar/Wave/actions/runs/43613680208) failed four preview journeys; the heading/disclosure/sidebar timing corrections were added afterwards and need the new E2E result before verification is complete.
+- Still not full parity: complete TeX/LaTeX environments, all Mermaid diagram families and advanced syntax, full grammar-based syntax/diff highlighting, GitHub mention/issue semantics, PlantUML/Graphviz/Vega/D2/AsciiDoc renderers, arbitrary media embeds, cross-browser/visual/accessibility audits and a full conformance fixture suite. Raw HTML remains disabled intentionally.
+- Explicitly untouched in this task: `bugs.md`, `fixed-bugs.md`, and `features-gap.md`.
+- Final documentation handoff commit follows this update; check the current Actions run before relying on browser-test status.
 
 
-## 2026-11-14 — URL and local media security matrix (awaiting CI)
+## 15. Markdown E2E follow-up — 2026-11-14
 
-- Added one Playwright E2E scenario covering allowed HTTPS/mailto links, unsafe URL schemes (including mixed-case JavaScript), and local media path traversal/absolute/Windows/remote path rejection.
-- Browser test source count: **25 scenarios**. Node test source remains **30 tests**.
-- Updated the Markdown compatibility guide with the intended URL sanitization and local-asset resolution contract.
-- No local execution or CI run for this commit has been inspected. Treat the new scenario as defined, not passed. No application runtime code changed in this step.
+- Latest E2E feedback from [43614071812](https://github.com/iamjpsonkar/Wave/actions/runs/43614071812): 14/17 browser scenarios passed. Remaining test failures identified DETAILS summary extraction and two test assertions (stable path targeting for wiki-link navigation and duplicate reference-link matches).
+- Corrected DETAILS to split summary/body on the first line in `9648f202c23d5771799dd3f59e30800ce20df6c0`; updated wiki-link and reference-link E2E assertions in `d3c4da59c8796a42e7e3acc378a5bdac53e99c8b`.
+- The latest code/test workflow [43614377295](https://github.com/iamjpsonkar/Wave/actions/runs/43614377295), commit `d3c4da59c8796a42e7e3acc378a5bdac53e99c8b`, passed npm ci, 30 Node tests, typecheck and production build; Playwright dependency install was in progress at last inspection, so browser verification remains pending.
+- Development log updates are in `dev-build.md` and `dev-fixed.md`. `DEV_CONTEXT.md` is the final handoff update for this task.
+
+## 16. Markdown gap recheck — 2026-11-14 (latest handoff)
+
+- Rechecked current Markdown source at code revision 186e7ec3dd817a42a610e51c6a3c4a3d8b3d8f19; docs and gap tracker were then refreshed in commits 8b9753b, a3d0612, 920a1c2, 47eaf57 and 19046fa. This section supersedes earlier Markdown capability and CI snapshots above where counts/status differ.
+- Source now includes safe inline formatting/emoji/disclosure extensions, duplicate heading IDs, lightweight token and diff coloring, a constrained recursive MathML parser, many constrained Mermaid family renderers, local DOT/PlantUML/Vega-Lite/D2/AsciiDoc subsets, local-only controlled audio/video, and a technical learning-notes template.
+- These are partial local implementations, not full language engines. Full TeX grammar, full Mermaid compatibility/layout/accessibility, grammar-grade syntax highlighting, complete DOT/PlantUML/Vega/D2/AsciiDoc compatibility, broad accessibility/cross-browser/visual/round-trip coverage remain open. Raw HTML and remote media remain deliberately disabled; GitHub @mentions and issue references remain inert plain text.
+- Current test source: **30 Node tests** and **23 unique Playwright scenarios**.
+- Latest workflow [43616005399](https://github.com/iamjpsonkar/Wave/actions/runs/43616005399), code commit 186e7ec3dd817a42a610e51c6a3c4a3d8b3d8f19: install, 30 Node tests, typecheck and production build passed; E2E **failed 20/23**. Three failures remain: wiki-link E2E asserts internal URL instead of rendered button; syntax-keyword assertion is strict against multiple matching spans; Mermaid flowchart E2E expects SVG primitives not emitted by the current renderer. The other new math, other-diagram, local-media and additional Mermaid fixture scenarios passed in that run.
+- features-gap.md now contains the recheck matrix and pending acceptance sequence. docs/MARKDOWN_SUPPORT.md now describes the current constrained renderer subsets and security boundaries. Detailed CI result is in dev-build.md.
+- No app source was changed in this recheck; the three E2E assertions remain unfixed. Open Wave bugs remain WAVE-031 and WAVE-039 partial; WAVE-042 remains fixed.
+- Next task should fix the three browser assertions/behaviors, rerun the full 23-scenario suite, then continue the unverified accessibility, conformance, round-trip and compatibility work. Do not mark Markdown feature-complete yet.
+
+## 17. Markdown gap remediation checkpoint — 2026-11-14
+
+- Initial remediation pass committed to `main`: fixed the technical learning-notes template's literal backslash-n separator in `src/templates.ts`; added a Playwright template-selection/editor-newline/preview-structure scenario; corrected three stale/overly strict E2E assertions for wiki links, syntax-token selection and Mermaid flowchart output.
+- Code/test commits: `b8e936b707d9f8c2d78a88991943b7a57c705689`, `65f62060152596d160f66effebcf17a274edc80b`, `f633ccc75c9afb9d3ab7529b489e557d7ae9f8c8`, `5d6b16d18e552c79f11dd6471c47aeab54662f47`.
+- Updated `dev-fixed.md`, `dev-build.md` and `features-gap.md` with the remediation and explicit verification boundary. This context update is the final documentation step; its parent documentation checkpoint is `88899a31f721a6dadcd5f2174b73e569562ee0a5`.
+- Browser test source now defines 24 scenarios; Node test source remains 30 tests. **No local tests were run and no CI run for these new commits has been verified.** The last inspected CI evidence remains the earlier 20/23 Playwright result; do not claim the corrected suite passes.
+- Keep WAVE-052 in `bugs.md` and do not move it to `fixed-bugs.md` until the new template regression passes in CI. WAVE-031 and WAVE-039 remain partial.
+- Remaining Markdown acceptance scope is still open: complete TeX/LaTeX, Mermaid and external renderer compatibility; grammar-based highlighting and unified diff parsing; broader accessibility, cross-browser and visual checks; malformed/oversized input limits; full preview/source round-trip fixtures; exhaustive showcase coverage. Preserve raw-HTML/remote-media security boundaries and inert GitHub references unless product semantics are explicitly changed.
+- For the next pass, inspect the latest Actions run for the current `main` head, fix any actual failures, then proceed through the remaining `features-gap.md` acceptance groups. Never mark the Markdown feature set complete based on source presence alone.
 
 
-## 2026-11-14 — Preview/source round-trip coverage (awaiting CI)
+## 18. Markdown security regression expansion — 2026-11-14
 
-- Added one Playwright E2E scenario that asserts exact Markdown equality across preview toggling, completed save, on-disk file read and workspace reload/reopen.
-- Fixture covers hard breaks, links/wiki links, inline and fenced code, escaped table pipes, fenced math, callouts and raw-HTML source text.
-- Browser test source count: **26 scenarios**; Node test source remains **30 tests**.
-- No local test execution or CI run for this change has been inspected. Treat the scenario as defined, not passed.
+- Picked the next item from the core compatibility/security coverage group in `features-gap.md`: a URL-scheme and local-media path security regression matrix.
+- Added a Playwright scenario in `tests/e2e/workspace.spec.ts` that verifies HTTPS/mailto links remain available while `javascript:`, `data:`, `vbscript:`, `file:` and mixed-case JavaScript URLs do not become anchors.
+- The same test creates a sentinel `secret.mp3` in the local assets directory and checks that parent traversal, percent-encoded traversal, absolute paths, Windows-style paths and remote media references do not produce playable audio/video elements.
+- Updated `docs/MARKDOWN_SUPPORT.md` with the intended sanitized URL and local single-filename media resolution contract. Updated `features-gap.md`, `dev-fixed.md` and `dev-build.md` with scope and verification status.
+- Test source now defines **25 Playwright scenarios** and **30 Node tests**. No local test execution or CI run for this scenario has been verified; do not report it as passing. This step adds regression coverage and documentation only; it is not a source-code security fix and closes no bug.
+- Next: inspect CI for current `main`; fix any real failures exposed by the new security scenario. Then continue with another core conformance item (preview/source round-trip invariance or accessibility coverage) before moving into the larger renderer-compatibility projects.
+
+
+## 19. Markdown preview/source round-trip regression — 2026-11-14
+
+- Picked the next core conformance item from `features-gap.md`: verify preview transformations never rewrite the original Markdown source.
+- Added a Playwright E2E scenario in `tests/e2e/workspace.spec.ts` with hard breaks, ordinary/wiki links, inline and fenced code, escaped table pipes, fenced math, callouts and raw-HTML text.
+- The scenario checks byte-for-byte equality after Preview → Edit, reads the saved Markdown file and compares exact contents, then reloads/reopens the workspace and checks the editor value again.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. No runtime application code changed.
+- Browser test source now defines **26 Playwright scenarios**; Node test source remains **30 tests**. No local test execution or CI result for this scenario has been verified. Treat it as regression coverage defined, not passed.
+- Latest code/test commit for this item: `cf824115ba035c41ecaf1e8c5923310e69599986`; documentation commits follow in `006ec92`, `9d15249`, `dd3a84d` and this handoff update.
+- Next: inspect current CI for the latest `main` head and repair any actual test failures. Then continue with accessibility checks (including keyboard focus, headings, images, tables, task lists, callouts, math and diagram fallbacks). Keep full language compatibility and malformed/oversized-input testing open.
 
 - Follow-up test-fixture correction: the round-trip test's array join now uses an actual newline separator (not a literal backslash-n). Corrected in `031a0e2427a6669312d643e14275a3ebd1ce04db`; fetched source was rechecked to confirm `.join('\n')`.
 
 
-## 2026-11-14 — Multiline code blocks and accessibility tests (awaiting CI)
+## 20. Multiline code blocks and Markdown accessibility smoke coverage — 2026-11-14
 
-- Runtime change: `src/App.tsx` adds an accessible **Insert code block** toolbar action that wraps selected multiline text in fenced Markdown, or inserts a selected placeholder when no text is selected.
-- Added two Playwright scenarios: multiline insertion/render/copy fidelity, and accessibility semantics/keyboard-operable disclosure coverage.
-- Browser test source count: **28 scenarios**; Node test source remains **30 tests**.
-- No local test execution or CI run has been inspected. Treat these scenarios as authored, not passed. The accessibility check is a focused smoke test, not full WCAG conformance.
-
-
-## 2026-11-14 — CI failure triage and Playwright assertion corrections
-
-- Inspected failed Actions run `43617787871` (`91e9ffb8`). Node tests, TypeScript typecheck and production build all passed; the Playwright step failed.
-- Root causes were test-side assumptions/selectors, not build or runtime errors:
-  - Syntax-highlighting assertion matched four keyword spans instead of selecting the exact Python `def` token.
-  - Template picker assertion matched both the sidebar template and a second button; scoped it to `.sidebar-templates`.
-  - Template source assertions expected literal backslash-n text rather than actual newline characters.
-  - Mermaid ER label assertion matched both the CUSTOMER entity label and its attribute-block source label; narrowed to exact text.
-  - Accessibility smoke test now inspects the actual `thead th` header cells rather than relying on Playwright's columnheader role mapping in this environment.
-- Correction commit: `44d78ebc1ba6734caa75cb52d20bbb1ee1a5e6d8`.
-- New CI run: https://github.com/iamjpsonkar/Wave/actions/runs/43618259567. At log update time it was queued; no passing result is claimed.
+- Next picked item: accessibility checks for semantic Markdown output, plus the user's explicit request for multiline code support.
+- Implemented a new editor toolbar action in `src/App.tsx`: **Code block** wraps selected content in triple-backtick fences and selects it; when selection is empty, inserts a selected `Write code here` placeholder.
+- Added two Playwright scenarios:
+  - Multiline code insertion, fenced preview rendering and exact clipboard-copy fidelity.
+  - Accessibility smoke checks for heading levels, accessible link name, table and column headers, task-list checkbox roles, NOTE callout role/name, DETAILS disclosure and keyboard focus/activation.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`.
+- Current test source counts: **28 Playwright scenarios**, **30 Node tests**. No local tests or CI run for these commits have been executed/inspected. Do not claim passing. Accessibility coverage is a focused semantic/keyboard smoke test, not a full WCAG audit or screen-reader certification.
+- Main implementation commit: `2553d24d95ed322a21588a1b02a6cb14107b45ec`; E2E coverage commits: `55e51e1f7d8d8b45a38843248456bf14493c2f98`, `d4f3a375888c033645ab1af07463a011b082926d`.
+- Next: inspect CI on current main and repair any actual failures; then expand accessibility coverage (images/alt text, focus visibility, color contrast, diagram source/fallback semantics) and malformed/oversized input tests. Preserve all outstanding feature scope.
 
 
-- Follow-up run `43618259567` on correction commit `44d78ebc`: Node tests, typecheck and production build passed; Playwright improved to **27/28 passed**. The only remaining failure was another strict-mode locator in the template scenario: the test searched all H2 elements when it meant to find the named Introduction heading.
-- Fixed by selecting level-2 headings by accessible name (Introduction and Open questions) in commit `026b0bdee17d05278dbf616afd4b4a323df264cd`.
-- New verification run: https://github.com/iamjpsonkar/Wave/actions/runs/43618423075 (queued at time of update). Pipeline is not yet confirmed green.
+## 21. CI pipeline failure triage — 2026-11-14
+
+- Inspected failed workflow `43617787871` for commit `91e9ffb8a5a7b73ba6532a0f2e9c54230f280e54`.
+- Node suite, TypeScript typecheck and production build passed. E2E Playwright failed due to strict-mode test locators and a newline fixture mismatch:
+  - keyword selector matched four spans, not just `def`;
+  - template button matched two instances, now scoped to `.sidebar-templates`;
+  - template test expected literal `\\n`, corrected to real newline characters;
+  - ER diagram test matched two CUSTOMER labels, now exact-match;
+  - table header assertion uses `thead th` DOM elements instead of role lookup.
+- Applied corrections in `tests/e2e/workspace.spec.ts`; commit `44d78ebc1ba6734caa75cb52d20bbb1ee1a5e6d8`.
+- Follow-up CI run `43618259567` was queued at handoff: https://github.com/iamjpsonkar/Wave/actions/runs/43618259567. Do not claim pipeline green until that run completes.
 
 
-## Markdown diagram accessibility follow-up — 2026-11-14
-
-- Implementation commit: `052840f834f879e54ac32567aecc3e4c7a0cad13` (15 diagram SVGs now own their image role and accessible name; disclosure controls remain outside the image role).
-- Regression test commit: `ed34c50b6f21c134d762786f869801785b2452d3` (sequence-diagram accessible name plus keyboard-operated source disclosure and source text assertion).
-- Updated `docs/MARKDOWN_SUPPORT.md` and `features-gap.md`; development fix recorded in `dev-fixed.md`.
-- The preceding baseline workflow [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed all CI steps, including Playwright. It predates these changes and is not verification of this patch.
-- **Current patch status:** no local test execution available through the GitHub repository connection; new CI run must pass before this accessibility correction is treated as verified.
+- Additional CI follow-up: run `43618259567` for commit `44d78ebc` reached **27/28 Playwright scenarios**; Node, typecheck and build passed. The sole remaining failure was a strict-mode H2 locator in the Technical Learning Notes test. Corrected by targeting level-2 headings by accessible name in commit `026b0bdee17d05278dbf616afd4b4a323df264cd`. New Actions run `43618423075` is queued: https://github.com/iamjpsonkar/Wave/actions/runs/43618423075. Pipeline green status remains pending.
 
 
-## QA register reconciliation and diagram accessibility CI — 2026-11-14
+## 22. Markdown diagram accessibility and multiline code — 2026-11-14
 
-- Reconciled `bugs.md` to only the two remaining open findings: WAVE-031 and WAVE-039. Corrected current suite counts to 30 Node tests and 28 Playwright scenarios; separated native permission/lifecycle coverage gaps from completed simulated coverage.
-- Reconciled `fixed-bugs.md`: retained all 50 historical WAVE IDs and their recheck scenarios; added an authoritative current verification addendum. WAVE-052 remains fixed based on the successful 28-scenario baseline.
-- Rebuilt `features-gap.md` as one current Markdown acceptance checklist. All 16 topic groups and original requirement families remain; stale contradictory audit snapshots were consolidated, not used to drop scope.
-- Diagram accessibility CI runs [43618788566](https://github.com/iamjpsonkar/Wave/actions/runs/43618788566) and [43618840380](https://github.com/iamjpsonkar/Wave/actions/runs/43618840380) failed the newly added accessibility assertion: sequence SVG accessible name was generic rather than using its Mermaid title.
-- Corrected in source commit `268de12338bce554f18e5feef27acbb5e9ea45fe` by using the sequence diagram's `title` directive as its SVG accessible name.
-- Verification run [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) is in progress; Node tests, typecheck and production build have passed, while Playwright was still running at the time of this log. Do not mark the accessibility correction fully verified until E2E and the current-main workflow pass.
-- Tracker commits: bugs `5e8e6963c49d3163405ffc267a1504b04bb5a7eb`; fixed bugs `54fb999bc97a784d13dbecdc8ff3981f1684ba02`; features gap `13aecf6eec05fc62710bbe338204f35c5114d558`.
+- Picked the next accessibility item from the Markdown gap work: diagram source disclosures must remain independently available to keyboard and assistive-technology users.
+- `src/markdown.tsx`: moved accessible image roles/names from the 15 diagram wrapper containers onto their SVG elements. Wrappers now remain normal document containers so the nested **View diagram source** disclosure is not flattened by an image role.
+- `tests/e2e/workspace.spec.ts`: extended the accessibility smoke scenario to assert a named sequence-diagram image, keyboard focus/Enter activation of its source disclosure, and readable diagram source.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`.
+- Multiline code support remains implemented: the Code block toolbar wraps selected multiline text in a fenced block, retains the selection, supports an empty-selection placeholder, and has a preview/copy fidelity E2E scenario.
+- Baseline CI run [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, build and all Playwright scenarios before this patch. The accessibility patch itself is **pending CI**; do not claim it passed until a workflow for the updated source completes.
+- Implementation commit: `052840f834f879e54ac32567aecc3e4c7a0cad13`; regression test commit: `ed34c50b6f21c134d762786f869801785b2452d3`. Latest main before this handoff update: `c2c470d1d2ebc04283eea4646704e20292fea155`.
+- Open reliability findings remain WAVE-031 and WAVE-039 partial; WAVE-042 remains fixed. No bug trackers were changed.
+
+
+## 23. QA tracker reconciliation — 2026-11-14
+
+- Refreshed repository source baseline to `268de12338bce554f18e5feef27acbb5e9ea45fe`.
+- `bugs.md` now contains only the two current open findings: WAVE-031 (native picker/external filesystem/lifecycle and comprehensive accessibility QA coverage) and WAVE-039 (residual IndexedDB pre-commit crash window). WAVE-042 and WAVE-052 remain in the fixed-history register.
+- `fixed-bugs.md` retains all **50** historical finding IDs and their regression scenarios. Its latest addendum distinguishes the successful 30-Node/28-Playwright baseline from the later diagram-accessibility patch.
+- `features-gap.md` has been consolidated into one current 16-section Markdown acceptance checklist. The original requirement families remain preserved; repeated contradictory status snapshots were removed, not scope.
+- At this historical checkpoint, source defined **30 Node tests** and **28 Playwright Chromium scenarios**; the reconciled current inventory is **30 Node tests and 48 Playwright Chromium scenarios**.
+- Baseline workflow [43618454015](https://github.com/iamjpsonkar/Wave/actions/runs/43618454015) passed Node tests, typecheck, production build and all 28 Playwright scenarios.
+- The diagram accessibility follow-up initially failed because the sequence SVG used a generic accessible name. Fixed in `268de12338bce554f18e5feef27acbb5e9ea45fe`; workflow [43619577306](https://github.com/iamjpsonkar/Wave/actions/runs/43619577306) was still running at this handoff. Verify latest-main CI before claiming the accessibility correction fully passed.
+- Detailed current state: [bugs.md](./etc/quality/bugs.md), [fixed-bugs.md](./etc/quality/fixed-bugs.md), [markdown-coverage.md](./etc/product/markdown-coverage.md), [dev-build.md](./etc/history/dev-build.md) and [dev-fixed.md](./etc/history/dev-fixed.md).
+
+
+## 24. Markdown image accessibility and fallback behavior — 2026-11-14
+
+- Picked the next core compatibility/accessibility item from `features-gap.md`: image alt semantics, decorative empty-alt handling, broken-image fallback, and reference-style linked images.
+- `src/App.tsx` / `LocalMarkdownImage`: loaded images preserve explicit Markdown alt text and title; when alt is omitted, the title (or a neutral unavailable label) supplies a fallback name. Missing informative images render a visible `role="img"` fallback with an accessible name. Explicit empty-alt images remain decorative, including when the asset is missing (`role="presentation"`, `aria-hidden="true"`).
+- `tests/e2e/workspace.spec.ts`: added a browser scenario for a local image, decorative image, missing informative/decorative assets, reference-style linked image metadata, and keyboard focus on the wrapping link. Corrected the previous accessibility smoke test's broad DETAILS-summary selector, which CI showed also matched the Mermaid source disclosure.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. Full WCAG/screen-reader certification remains open.
+- Current source inventory: 30 Node tests and 29 Playwright E2E scenarios. CI run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed install, Node tests, typecheck and build but failed one existing Playwright selector assertion (27/28 passed). That selector and the new image scenario are in commits `211a19dfca41096cc9617c1124cf439a1313a5cc` and `f5dc998b77176af54d46db22e28034f137328470`; CI is pending for the updated source. Do not report the new scenario as passed until the workflow finishes.
+- Open reliability findings remain WAVE-031 and WAVE-039. No bug trackers were changed.
+
+
+## 25. Math parser malformed-input and complexity limits — 2026-11-14
+
+- Picked the next open math item in `features-gap.md`: malformed grouping, oversized expressions and parser resource bounds.
+- `src/markdown.tsx`: added preflight brace-balance validation and explicit bounds of 8192 source characters, 48 recursive nesting levels and 2048 parser steps. Invalid/over-limit expressions return a readable `.markdown-math-fallback` note with a bounded source preview; no TeX execution or remote renderer is introduced.
+- `src/styles.css`: added a readable fallback style for rejected expressions.
+- `tests/e2e/workspace.spec.ts`: added a scenario for an unbalanced fraction, 60 nested groups and an 8200-character expression. Current E2E source count: 30; Node test source count: 30.
+- Updated `features-gap.md` and `docs/MARKDOWN_SUPPORT.md`. General parser fuzzing, delimiter conflicts and full TeX grammar remain open.
+- The previous image-accessibility CI exposed a second broad DETAILS-summary selector and a linked-image fallback assertion mismatch; both assertions were narrowed to Wave's disclosure/fallback elements in the current commit. The previous CI also showed the new image scenario itself passing on one run. Current combined source CI is [43620567676](https://github.com/iamjpsonkar/Wave/actions/runs/43620567676); at handoff it is running. Do not claim all 30 E2E scenarios pass until CI completes.
+- Implementation commit: `c8ad5066f24333e7777e910378c49b206e65d71a`. The latest source follow-up corrects the budget label to parser steps for accuracy.
+- Open reliability findings remain WAVE-031 and WAVE-039. No bug trackers were changed.
+
+
+## 26. Workspace Settings UI implementation — 2026-11-14
+
+- Picked the first UI gap priority group: UI-001 (Settings unavailable) and UI-012 (appearance/typography controls).
+- `src/App.tsx`: added an accessible Settings dialog, validated preference defaults, workspace-specific preference loading, serialized writes through the existing settings queue, and preference reset that leaves documents/recovery untouched. Dialog explains local storage/recovery and shows current save status plus page/folder counts.
+- `src/styles.css`: added dialog layout, responsive writing measure and typography variables, core dark/system-dark workspace styling, and reduced-motion behavior.
+- `tests/e2e/workspace.spec.ts`: added persistence/application/reopen regression; browser suite source is now 31 scenarios, Node suite remains 30 tests.
+- `UI_BACKLOG.md` now records UI-001/UI-012 as **Implemented — CI pending**; all other IDs and acceptance scope remain open. `FEATURES.md` reflects the partial settings capability.
+- No test pass is claimed until the new main-branch workflow completes. Full contrast/accessibility review and broader diagnostics remain open.
+
+- Follow-up: dialog focus is contained (Shift+Tab/Tab wrap) and Escape dismisses it; preference writes expose saving/saved/failure status. UI-003 is now **Partially implemented — CI pending** due to the centered 860px default and width choices; responsive/wide-code/table verification remains open.
+
+- Final UI-gap wording was reconciled so implemented settings are not still described as wholly unavailable; UI-003 remains partial and all other IDs remain open. E2E now checks Escape dismissal as well as focus wrapping.
+
+
+## 27. UI toolbar icon distinction and dark-theme parity — 2026-11-14
+
+- Re-read `DEV_CONTEXT.md`, `UI_BACKLOG.md`, current `src/App.tsx`, `src/styles.css`, `tests/e2e/workspace.spec.ts`, package dependencies and the latest source history before implementation.
+- `src/App.tsx`: replaced duplicate code action icons. Inline code remains `Code2` and is named `Inline code`; fenced code now uses Lucide `FileCode2` and is named `Code block`.
+- `src/styles.css`: added explicit dark and system-dark styles for Markdown heading/body, fenced/inline code, links, blockquotes, tables, dividers, toolbar, Edit/Preview segmented control, Backup and sidebar wordmark.
+- `tests/e2e/workspace.spec.ts`: added 2 Playwright scenarios for unique toolbar icon/label/insertion behavior and system-dark Preview colors. E2E source count 33; Node source count 30.
+- `UI_BACKLOG.md`: reconciled source evidence to current HEAD `4713725f0e09efae0d0b8e6c9da880f5513e18ca`; UI-004 is partially implemented pending regression, UI-016/017 source mitigations await visual regression, UI-018/019 partial, UI-020 partial. UI-001/012 source implementation awaits QA; UI-003 responsive QA remains open. All 20 IDs preserved.
+- No tests or build are claimed to pass until the latest main workflow reports success.
+
+- Test review follow-up: toolbar insertion regression now selects actual text before wrapping it in inline/fenced code, matching the current selection-based implementation. UI gap headings/order were rewritten to reflect implemented source behavior and the remaining verification work without dropping IDs.
+
+
+## 28. UI feature backlog from spreadsheet-toolbar reference — 2026-11-14
+
+- Created `UI_BACKLOG.md` as an additive UI proposal backlog based on the supplied spreadsheet-toolbar screenshot and inspection of current Wave editor source.
+- Captures Markdown-editor improvements (undo/redo verification, document-local find, responsive toolbar grouping/overflow, heading styles, shortcut hints, safe insertion/table/link workflows, document statistics, zoom/focus mode and contextual formatting state).
+- Separates spreadsheet-only controls (number formats, cell formatting, grid controls, formulas/sort/filter/charts) into a future dedicated sheet UI, aligned with `priority-features.md` P2.3; these are not proposed for the Markdown editor toolbar.
+- Includes stable UIF-001–UIF-021 IDs, priorities, current-state notes, acceptance criteria, dependencies, delivery order and relationships to existing planning documents. All are proposals, not shipped features.
+- No application code, existing gap tracker, product catalogue or tests were changed. No test/build/CI result is claimed for this documentation-only task.
+- Backlog commit: `d9211992d04fd3510f93cc546b814c5a067798d5`.
+
+## 29. UI-020 theme and responsive regression foundation — 2026-11-14
+
+- Re-read this handoff, `UI_BACKLOG.md`, `dev-fixed.md`, `dev-build.md`, current source, Markdown renderer and Playwright suite before implementation.
+- Latest main documentation HEAD before this handoff update: `6084b20582eab22b4a2ecc5dea27d14b0dfefa73`. UI styles commit: `cfb73c72ae17671e893e564688a2324180cbbb6e`; E2E matrix commit: `b729eea18aa7f9297bd977110837c58c6a6ef03f`.
+- `src/styles.css`: added explicit dark/system-dark surfaces and text colors for Markdown alerts, DETAILS disclosures, math and fallback panels, Mermaid diagrams, syntax/diff tokens, missing-image fallbacks, copy controls and Settings dialog controls. Explicit Light mode remains independent of OS dark preference.
+- `tests/e2e/workspace.spec.ts`: added UI-020 matrix for Light/Dark/System × Edit/Preview × desktop/mobile (12 states), covering headings, links, inline/fenced code, tables, alerts, disclosures, math, Mermaid and missing-image fallback. Checks computed styles and horizontal overflow at 1440px and 390px.
+- E2E source inventory is now **34 scenarios**; Node source remains **30 tests**. No local runner is available through the repository connector; no tests, typecheck or production build are claimed to have passed. Check Actions for the latest code commit before asserting verification.
+- `UI_BACKLOG.md`, `dev-fixed.md` and `dev-build.md` record the implementation and pending status. UI-020 remains open pending CI and visual review; UI-005 contrast/WCAG audit, UI-014 broader breakpoints, UI-018/UI-019 full dialogs/popovers/navigation audit and screenshot-diff baselines remain open. All existing UI IDs and the complete product catalogue are preserved.
+- Open reliability findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed. No bug trackers were changed.
+- UI-020 test-source follow-up: simplified the horizontal-overflow assertion in commit `5b110945a45596de28c13f34435816a87907089f`; `dev-build.md` records this follow-up. The repository connector did not expose a push-triggered workflow run or combined status for this commit, so CI remains unverified.
+- Latest developer handoff update follows the UI-020 implementation: styles `cfb73c72ae17671e893e564688a2324180cbbb6e`, initial matrix `b729eea18aa7f9297bd977110837c58c6a6ef03f`, assertion follow-up `5b110945a45596de28c13f34435816a87907089f`. UI-020 remains open pending actual CI and visual review.
+ 
+## 30. Remaining UI implementation batch — 2026-11-14
+
+- Re-read the current `DEV_CONTEXT.md`, `UI_BACKLOG.md`, `dev-fixed.md`, `dev-build.md`, `FEATURES.md`, current App/styles/Markdown source and the E2E suite before continuing. Existing IDs, feature inventory and reliability findings were preserved.
+- Latest documentation HEAD after this batch: `f16e7120f63a55b2d18cd6ef875270595e8fe176`. UI register commit: `82117c34564e1c40365ba6fffb9947f4b3dfef37`; dev fix log: `6eef51e741a24ee8ec972696effb604411b66e9b`; build log: `3fd818f18d277cdd56aacf5949d6e21998d1965e`.
+- `src/EditorEnhancements.tsx` adds bounded in-memory per-page undo/redo, editor-local find/case-sensitive navigation/replace/replace-all, heading outline with Edit/Preview jump, and live word/character/reading-time statistics. History and literal replacement follow-ups: `eec6dda2a2684734b59b34b26073f20bcfffdd78`, `91f52d341feec3274551fba0ab122affcf4e70c1`.
+- `src/App.tsx` integrates the tools through `handleEditorChange` so existing recovery/autosave behavior is retained; adds clickable folder breadcrumbs, polite live save status, searchable/preview-first template gallery, Escape dismissal and accessible names for all primary formatting toolbar actions. Key commits: `0e4bc6b89344f1a09c880322797eff8d9ff60f28`, `2913af688afc024af3739b3980284e5476547273`, `cb278bce391d0c3a116724496bde88f385ef3a0c`, `ee9ba2c16d0c65e136b2e081c5545c75a0424d21`, `e753495c0d44f35c1a8bdbef5d19b5be59694454`, `4ec982c5e64bb93e224017ab2d6036a4a8169629`.
+- `src/styles.css` improves functional text sizing/focus rings, narrow responsive layout, template preview, editor tools, dark secondary surfaces and System-light color handling. Relevant latest CSS commits: `48a1ec34f15598295936e0b01abe535224645fbd`, `13b43c119c9bf20a15dddbe9a097c8178759050b`, `6dab14ef3cc0014d0eb08389c88b14738d19e6b3`, `f9cc770fb54e7165e1f37103bfee9148bb26b3d5`, `bda620165c5264fab0ccda1999aa568690963b87`.
+- `tests/e2e/workspace.spec.ts` adds editor productivity, searchable template preview and nested breadcrumb scenarios. UI-020 now has 3 appearance modes × 2 editor modes × 5 viewport widths (320, 390, 768, 1024, 1440) = **30 states**, computed body/heading contrast assertions at 4.5:1, and page-overflow checks. E2E inventory is **37 scenarios**; Node suite source remains **30 tests**. Regression commits include `632cb75a5693e851937a59ad5958e9c9117f88b5`, `c26e88ec26dfb0e24f84b0c90e4eb525f7cc62b8`, `a1ca18cbb2e987e2725de241e4807a7e01627bf8`, `63de70f23a9379018e22a3107a25db38fce1fff8`.
+- `UI_BACKLOG.md` now includes an authoritative 20-ID implementation status table; `dev-fixed.md`, `dev-build.md` and `FEATURES.md` were updated. UI-002 remains open because a genuine optional rich block editor and lossless Markdown round-trip are not delivered. UI-005, UI-018/UI-019 and other named QA items remain partial pending CI/manual review.
+- The repository connection did not expose a current push-triggered Actions run or combined status, and no local dependency install/test runner is available in this GitHub-only path. **Do not claim tests, typecheck, production build, screenshot review or CI passed.** All new source and tests are committed; verification is pending.
+- Open reliability findings remain WAVE-031 and WAVE-039; WAVE-042 remains fixed. No bug trackers were changed.
 
  
-## 2026-11-14 — Image accessibility implementation and CI repair
+## 31. UI-002 optional source-preserving block mode — 2026-11-14
 
-- Latest-main CI run [43619707243](https://github.com/iamjpsonkar/Wave/actions/runs/43619707243) passed install, all 30 Node tests, TypeScript typecheck and production build, but Playwright failed **27/28** because the accessibility smoke test used a broad `details summary` selector that matched both the DETAILS block and Mermaid source disclosure. This was a test-selector issue, not an application runtime failure.
-- The selector now targets `.markdown-details > summary`. The same change adds image accessibility behavior and regression coverage: meaningful missing images expose a named image fallback; explicit empty alt text remains decorative; reference-style linked images retain their accessible name/title and keyboard focus.
-- New E2E source count: **29 scenarios**; Node source remains **30 tests**. CI for this commit is pending; no pass is claimed.
-
-
-## 2026-11-14 — Math parser input and complexity hardening
-
-- Added explicit math-renderer limits: 8192 source characters, 48 recursive nesting levels and 2048 parser steps; unbalanced braces now return an accessible readable source fallback.
-- Added Playwright regression coverage for malformed, deeply nested and oversized expressions.
-- Fixed the remaining broad DETAILS-summary selector in the accessibility smoke test. Latest image-accessibility CI exposed this second occurrence after the first selector had been narrowed; it now targets `.markdown-details`.
-- Current source inventory: 30 Node tests and 30 Playwright Chromium scenarios. The image-accessibility and math-hardening changes are awaiting CI; no passing result is claimed.
-
-
-## 2026-11-14 — UI Settings implementation (UI-001 / UI-012)
-
-- Added one Playwright scenario covering Settings dialog, theme/font/size/line-height/content-width/reduced-motion controls, `.wave/settings.json` persistence and recent-workspace reopen.
-- E2E source inventory increases from 30 to 31 scenarios; Node suite source remains 30 tests.
-- Implementation and regression are committed together; CI is pending. No local test runner was available through the repository connector. Do not report browser, typecheck or production-build success until Actions completes.
-
-- Follow-up regression also checks focus wrapping, applied editor font size/line height and shared preview content width. The test waits for the persisted-preference completion state before reading `settings.json` to avoid an asynchronous-write race.
-
-- Added the final keyboard regression for Escape dismissal; UI-001/012 are recorded as implemented pending CI, while UI-003 remains partial pending responsive/wide-content verification.
-
-
-## 2026-11-14 — UI-004 code toolbar and dark-theme regressions
-
-- Added two Playwright scenarios: distinct inline/fenced code icon, accessible name, tooltip and insertion behavior; system-dark Markdown Preview heading, fenced/inline code, segmented controls, wordmark and Backup surface colors.
-- Source E2E inventory increases from 31 to 33 scenarios; Node suite remains 30 tests.
-- Full Light/Dark/System × Edit/Preview × desktop/mobile visual regression matrix remains unimplemented. CI verification pending.
-
-- Test review follow-up: toolbar regression selects text before invoking the two wrapping actions, so it verifies actual inline/fenced wrapping rather than an empty-selection placeholder.
-
-
-## 2026-11-14 — UI-020 theme and responsive regression foundation
-
-- Current-main implementation commits: styles `cfb73c72ae17671e893e564688a2324180cbbb6e`; Playwright matrix `b729eea18aa7f9297bd977110837c58c6a6ef03f`.
-- Added dark/system-dark styles for Markdown alerts, disclosures, math/fallback surfaces, diagram surfaces, syntax/diff tokens, missing-image fallbacks, copy controls and Settings dialog controls.
-- Added one Playwright test that exercises 12 combinations: Light/Dark/System × Edit/Preview × desktop/mobile. It verifies representative Markdown rendering, computed styles and horizontal overflow.
-- E2E source inventory: **34 scenarios** (previously 33); Node test source remains **30 tests**.
-- No local test runner is available through this repository connection. No test, typecheck or production-build pass is claimed. Check the workflow for the latest main commit before marking UI-020 verified.
-- Scope limitations: computed-style and interaction assertions are included; screenshot baseline/diff review, a full WCAG contrast audit, tablet/320px breakpoints, and broader dialog/popover/navigation review remain open.
-
-- Test-source follow-up commit: `5b110945a45596de28c13f34435816a87907089f` simplifies the overflow assertion in the UI-020 matrix. Latest combined status was not exposed by the repository connector; no CI pass is claimed. Recheck the Actions run on this commit.
- 
-## 2026-11-14 — Remaining UI implementation batch
-
-- Added a new editor enhancement component with undo/redo, find/replace, heading outline and document statistics; wired changes through the existing recovery-aware editor change handler.
-- Added folder breadcrumbs, live save-status semantics, searchable template gallery and a preview-before-create dialog; toolbar actions now have explicit accessible names.
-- Improved functional text sizing, focus visibility, mobile layout, dark/system-dark secondary surfaces and System-light color corrections.
-- E2E additions: editor productivity workflow, searchable template preview, nested folder breadcrumbs. UI-020 now exercises 3 themes × 2 modes × 5 viewport widths = **30 states**, with body/heading contrast ratio checks and horizontal page-overflow assertions.
-- Source inventory: **37 Playwright scenarios**, **30 Node tests**. This is a source count, not a run result.
-- No local project dependencies/test runner are available through this repository connection. The GitHub connection did not expose a push-triggered Actions run or combined status for these commits. **No tests, typecheck, production build or CI pass is claimed.**
-- UI-002 remains open for a real optional block editor. Full WCAG review, screenshot-diff baselines, focus-return audit, long-content/table/diagram review and Settings/backup failure-state visual QA remain open. Do not close UI gaps before CI and evidence review.
+- Continued the remaining UI backlog after re-reading this context and the authoritative UI register. Added a separate optional Blocks mode without replacing the Markdown source editor or Preview.
+- `src/MarkdownBlockEditor.tsx`: classifies headings, paragraphs, lists, quotes, callouts, fenced code, tables, dividers, image lines and attachment links. Each block textarea edits only its original source range; unedited Markdown and blank-line separators remain intact.
+- `src/EditorEnhancements.tsx`: added a distinct Blocks icon/control and extended undo/redo shortcuts to block textareas. `src/App.tsx` integrates the mode through the existing recovery-aware handler. `src/styles.css` adds responsive and theme-aware block surfaces, including System-light legibility.
+- E2E regression edits a paragraph block then verifies exact source preservation for the rest of the document, including heading, list, callout and fenced code. E2E source inventory is now **38 scenarios**; Node suite source remains **30 tests**.
+- Implementation/test commits: component `78e2887d069b6471610b23f341d5178a02c3e12b`; App integration `15928f7956e2fae4934e730a4c99e0eee3cf97ea`; CSS `5ff104ba9f1315b13cc5b40f4dad59f47ea4fcbe`; E2E `2c95631c21f27faad50f4f49bb038a4c7bdb1b1d`; source/test follow-ups `cc6809086922947ae4f32e4eaf47257f93c66073`, `e0d901711430355b06f7c870453484d88099a886`, `760ec73b51361826be00ee653c441d72bca65e28`, `6c9cb3f7b0862fd20253da75a10c263fe215add3`, `41c8adefd98ef00d5ba38867a0e828cd626554a8`.
+- UI-002 is now partially implemented, not complete: block reordering/drag-drop, handles, slash menu, bookmarks/embeds and rich inline formatting remain. UI register and development logs record this honestly.
+- `UI_BACKLOG.md`, `dev-fixed.md`, `dev-build.md` and `FEATURES.md` are updated. Latest dev logs: `54e81395ec9fd0f67e1907254c73e58420a5bc6f` and `8ae1d16d15034fd495b110cdf8449ef5fc74554a`.
+- No current GitHub Actions result or combined status was exposed. No test/typecheck/production build/visual audit pass is claimed; CI and manual QA remain pending.
 
  
-## 2026-11-14 — UI-002 optional block mode follow-up
-
-- Added an optional source-preserving Markdown block editor for headings, paragraphs, lists, quotes/callouts, fenced code, tables, dividers, image lines and attachment links.
-- Each block edits its original Markdown source slice; the existing source textarea and Preview remain available. Added a regression that edits one paragraph and asserts exact full-source preservation for untouched list/callout/code blocks.
-- Latest source/test commits: block parser `cc6809086922947ae4f32e4eaf47257f93c66073`; E2E `e0d901711430355b06f7c870453484d88099a886`; block-mode history shortcut follow-up `760ec73b51361826be00ee653c441d72bca65e28`.
-- E2E source inventory is now **38 scenarios**; Node test source remains **30 tests**. No execution result is available; no test/typecheck/build/CI pass is claimed.
-- Remaining UI-002 scope: block reordering/drag-drop, handles, slash menu, bookmarks/embeds and rich inline editing. The full UI register remains open for its stated CI/manual QA items.
+- Block-mode follow-up: `src/EditorEnhancements.tsx` now jumps from the outline into the corresponding block textarea and uses a distinct Blocks icon; `src/MarkdownBlockEditor.tsx` keeps list and quote/callout grouping separate; `src/styles.css` corrects System-light block labels. Undo/Redo keyboard shortcuts work while a block textarea is focused.
+- The block-mode Playwright scenario now verifies Undo and Redo before exact-source round-trip. E2E source remains **38 scenarios**; Node source remains **30 tests**. Follow-up commits: `03c572edd64fb6924d0bbda706dbf840f44bef26`, `30be50f3afae887386eba1f86faf2d855207c925`, `6c9cb3f7b0862fd20253da75a10c263fe215add3`, `41c8adefd98ef00d5ba38867a0e828cd626554a8`.
+- Development logs updated again: `dev-fixed.md` commit `e8a262b50b92c6399e8a7e0f765ce2bfc4a1c3d6`; `dev-build.md` commit `9ec508729ee56d23b63c9a3e7ecbad731b9aea8b`. No current CI result is exposed; all verification remains pending.
 
  
-- Block-mode follow-up added Undo/Redo assertions to the block editor scenario and improved outline navigation within block mode. E2E source remains **38 scenarios**; CI still not exposed and no test pass is claimed. Latest regression commit: `30be50f3afae887386eba1f86faf2d855207c925`.
+- UI-020 test-helper correction: fixed the CSS RGB numeric-channel matcher used by the computed contrast ratio assertions. This ensures the helper can parse RGB channel values; it does not establish that any contrast assertion or browser test passed. Test commit: `ffc3be4ae9026ce76148ce3fbcaa86b4be0e0f73`. E2E source inventory remains 38.
+- Logs updated: `dev-fixed.md` `bf33131eec965ce0373c5dfd2967b5f6b88420e6`; `dev-build.md` `8871fb213f823b65685688ad1a65521e95424a27`. CI remains unavailable/unverified.
+
+
+## 32. UI continuation — block controls and dialog focus — 2026-11-14
+
+- Continued the UI-002/UI-018 work after re-reading this handoff and the UI register. Existing Markdown remains the portable source of truth; the original source editor and Preview are retained.
+- src/MarkdownBlockEditor.tsx: optional block mode now supports keyboard up/down reorder, draggable block handles, delete, and common-block insertion (paragraph, heading, list, quote, callout, fenced code, divider). Reordering moves source blocks while retaining whitespace separators.
+- src/App.tsx: template preview and command palette now trap Tab/Shift+Tab focus; template preview focuses its close control on open.
+- src/styles.css: theme-aware block control, drag and focus-visible styling.
+- tests/e2e/workspace.spec.ts: added block keyboard reorder, drag/drop, insertion and exact-source assertion; template preview focus-wrap assertions. E2E source inventory: **39 scenarios**; Node test source: **30 tests**.
+- FEATURES.md records block mode as partial. UI_BACKLOG.md updates UI-002 and UI-018 while retaining every original ID and remaining acceptance criterion. dev-fixed.md and dev-build.md contain implementation and verification notes.
+- Source commits: block insertion/reorder 9e4f29390447dcdbd43f80098da522385a270448; drag handle 7057ce25861bffce43ee05ce5f8afb305ae1d0e8; dialog focus 290f926c92caffe64d2ac34f1eea483df015f464; tests 8bb74c69ec4c9adad7d59c0e34e869224742fa42, f292e32e853fce640d44f05f554ee4bce1cbba72, b90369be8ef6ba66ab95f84f5e609b406afd87f7; styles 6bbd015307f55a0e385b6f041d383bdb07e6e87c, 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62.
+- Documentation commits: UI register af7db39acbc456fd3d929dc092f2eabdb2aa9320; dev fix log 6adb102cc0e1d6066e2ad222fcd7c823010d43a5; build log 3f71424b8169aa510a406302a912d9003e5defaf; feature map 9cc459e91e5b1588526c1371084501dea12d3db0.
+- Remaining UI-002 scope: slash-triggered block menu, bookmarks/embeds and rich inline editing. UI-018 still needs focus restoration and complete dialog/popover/disabled/error visual and accessibility review. UI-005/UI-014/UI-020 still need actual browser visual/accessibility verification; no existing UI ID or catalogue requirement was removed.
+- Verification: no local tests, typecheck, production build or screenshot review was run. Combined status and associated workflow-run lookups for latest code commit 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62 returned empty arrays. **No pass is claimed.** Latest test evidence remains the historical CI recorded in dev-build.md; refresh Actions before release decisions.
+- This handoff update is the final documentation step for this task.
+
+- Documentation-reference correction after the UI log update: dev-fixed.md `34a1d666fd1ca924943ea8bffd332ed3ceee873c`; dev-build.md `f052a4a9bb3b4e113b700bb20d9cc809387b4c18`. This context entry is the final documentation update.
+
+- Feature inventory reconciliation: FEATURES.md now consistently records keyboard/drag reorder, handles, deletion and common-block insertion as implemented, with slash menu, bookmarks/embeds and rich inline editing still partial. Commit `0cfb8174e688e31f866ae4d44e2c98cf8cf21393`. This is the final documentation step.
+
+## 33. Inline foreground/background color formatting — 2026-11-15
+
+- Re-read this handoff, current toolbar/Markdown renderer/styles, the E2E suite, UI register and feature backlog before implementing the next editor formatting feature. Existing functionality and UI-001–UI-020 IDs were retained.
+- `src/App.tsx`: added native **Text color** and **Text background color** controls to the Markdown toolbar. When a source selection exists, the picker wraps it in `[[color:#RRGGBB|text]]` or `[[bg:#RRGGBB|text]]`. Pickers are disabled in Preview and optional Blocks mode, where there is no single source selection.
+- `src/markdown.tsx`: added local inline conversion and rendering for the two directives. Only six-digit hexadecimal tokens are accepted; color spans are generated as React elements with a validated color value. Inline-code content is not transformed; malformed color tokens remain literal. Raw HTML and arbitrary style strings remain disabled.
+- `src/styles.css`: added theme-aware color picker controls and a System-light correction.
+- `tests/e2e/workspace.spec.ts`: added one regression for foreground and background application, preview styles, inline-code preservation, invalid-token fallback and returning to Edit. Browser source inventory: **40 scenarios**; Node test source remains **30 tests**. These are definitions, not run results.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `features-gap.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `dev-fixed.md` and `dev-build.md`. New UI-021 records the inline color controls as implemented in source with CI/visual verification pending. Existing UI IDs and the broader product catalogue remain intact.
+- Source commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; styles `3464fd936b96bd280db1794f230a378041945a07` and System-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282`, `48af3998748b51779a0abe75ca5853dd80fa03b1`, `80f7534927fa505f7e7ed00caceb6f0e47066517`, `2d054accda98ec95d32f3ef69decead9d39d789b`, `1da64359dfe02a51e96679fa282b011550f9a4b6`, `81f819653e5f766670e51b783edacb1fa39c41b5`.
+- Documentation commits: Markdown support `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`; feature gap `99007028e8f9c98de8baa5d32d55ce97d346d183`; UI feature backlog `bd27ca629c7556b3f2fbeac75e3b600b976365b9`; UI gap register `a0974f7144ec7e0c9fb68a641e4493aadf11c825`; dev-fixed `2b85f26668d6d4f22fe62dcf7ea1f3646444d920`; dev-build `e42d1beff37a08cb5ec4c57cbe97ed9401ad4891`.
+- Remaining color scope: curated preset swatches, remove/reset formatting, nested color spans, block-level fills, selection in Blocks mode, non-Wave fallback/rendering and visual/contrast verification.
+- Verification: no local tests, typecheck, production build or screenshot review was run. GitHub Actions run `43627300560` was observed in progress for commit `b435eb383d83f092526fa36fc8fc72064c87998d`; it is not a completed verification result. Recheck the latest main-branch Actions run before claiming success.
+- This handoff update is the final documentation step for this task.
+
+## 34. Color formatting expansion — 2026-11-15
+
+- Continued the color feature from section 33 without removing prior controls or Markdown syntax.
+- `src/App.tsx`: added six quick foreground swatches, a remove-color-formatting action for selected inline source, and a block background picker. Block fills wrap the selected source lines in a Markdown blockquote beginning `> [!COLOR=#RRGGBB]`; the blockquote lines remain ordinary Markdown.
+- `src/markdown.tsx`: `MarkdownBlockquote` recognizes only the `[!COLOR=#RRGGBB]` marker with a six-digit hex token, strips the marker from rendered content and creates a blockquote with the validated background color. Existing NOTE/TIP/WARNING/DETAILS blockquotes are unchanged.
+- `src/styles.css`: added swatch, clear action and block-fill styling with focus-visible states and theme-aware block borders.
+- `tests/e2e/workspace.spec.ts`: added one regression covering quick swatch insertion, selection-based removal, block-fill source syntax and preview rendering. E2E source inventory is now **41 scenarios**; Node test source remains **30 tests**. These are source counts, not test execution.
+- Updated `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-021 remains partial/CI pending; nested inline color ranges, Blocks-mode selection, non-Wave reader fallback and contrast/accessibility review remain open.
+- Source commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`; renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`; styles `7020028201eeee4be404a003b4e2c2abc7925c9a`; E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
+- Documentation commits: Markdown support `e71535c61698145ae199a898c9ac6cdf2b910089`; feature inventory `de91a21626ca4fc6bcea07c2e37ee5b8f347e6d2`; UI gap register `8ec018ce51b592282c4e1a0ee91ebe33345b41e8`; UI feature backlog `ece36cd16ecf68c3fd292231bc48034dee6e760a`; renderer feature gap `61213bd311329d75fa2814145847c0f47da6b0a7`; dev-fixed `7a752555c70bb96a17d0ac1bbd7e6187599be7e7`; dev-build `a0aae6b812ecf0a931b77dff41f518b5cad5da89`.
+- Latest observed GitHub Actions run for the documentation commit `a0aae6b812ecf0a931b77dff41f518b5cad5da89` is `43627623167`, queued at the time of inspection. Earlier documentation runs were in progress. No local tests, typecheck, production build or screenshot review were performed; do not claim a pass.
+- Remaining next work: implement safe nested inline color spans (or explicitly disallow overlapping ranges in the editor), enable block fill from the optional Blocks editor where selection semantics are defined, add contrast guidance for arbitrary colors and confirm all Actions results.
+- This handoff update is the final documentation step for this batch.
+
+
+
+## Implementation update — Blocks-mode block background colors — 2026-11-15
+
+- Extended the optional Markdown Blocks editor with an accessible per-block native background color picker. Applying a color wraps the original block source in the safe `> [!COLOR=#RRGGBB]` quote directive; changing a previously colored block updates the marker in place rather than nesting another color wrapper.
+- Updated block classification so Wave color blocks are recognized as callout blocks. Added light/dark theme styling and an E2E source scenario covering first application, changing the color, switching to Preview and checking the rendered block.
+- Fixed a TypeScript error in the existing source-toolbar block-color cursor calculation. CI for the preceding color batch exposed that a concatenated marker expression produced a string cursor argument; the code now computes a single marker string and uses its numeric length.
+- Updated compatibility and feature records: `docs/MARKDOWN_SUPPORT.md`, `FEATURES.md`, `UI_BACKLOG.md`, `UI_BACKLOG.md`, `features-gap.md`, `dev-fixed.md` and `dev-build.md`. UI-001–UI-020 and all previous feature proposals remain preserved; UI-021 is expanded, not replaced.
+- Source commits: Blocks editor `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`; styles `93bf0eb5dc809e373292570d900066161f6e7be3`; E2E `0cf474ff0d0765f882916c04efbb69e49c95cb85`; toolbar TypeScript fix `efd19504e8d44ab16869f6b82482b00da816d162`.
+- Documentation commits: Markdown support `4e895839c50e6f42d5b1e3830de86d0e1a921066`; feature inventory `6fe3fff45580b238d433ed353f5588ecbc9e80ed`; UI gaps `ea0d90b7e96d6d060bab06a5319297f0bc52e208`; UI feature backlog `a07722b61658e6df1008373323da757f18fc1dd3`; renderer feature gaps `f68a9ac601b7b3aeffdeb6b153c5c29a0446bf19`; dev-fixed `9f85560bfcf7cc921fa46084e8b06d9549c2abc7`; dev-build `dce84d4c2f7dd4d236f8f8676f8676c692bcf730`.
+- Regression source inventory: **42 Playwright E2E scenarios** and **30 Node test definitions**. These are source counts only. The CI run for the preceding docs commit failed at TypeScript because of the cursor expression; Node tests passed 30/30, while build and E2E steps were skipped. The fix is committed; CI run `43627887363` for `efd19504e8d44ab16869f6b82482b00da816d162` was **in progress** at handoff. No pass is claimed yet.
+- Remaining color scope: nested inline color ranges, portable non-Wave fallback rendering, custom-color contrast guidance and theme/visual review. The color controls remain Wave-specific Markdown and do not enable arbitrary HTML or CSS.
+- This handoff update is the final documentation action for this batch.
+
+
+## Implementation update — Wave Complete Feature Test template — 2026-11-15
+
+- Added a new **Wave Complete Feature Test** entry to the existing searchable template gallery in `src/templates.ts`. It is separate from and does not replace the original Markdown feature showcase or any existing template. It includes heading/inline formatting examples, nested lists, GFM tables/tasks/footnotes, reference and wiki links, alert/disclosure blocks, foreground/inline/block colors, code and diff blocks, math, Mermaid and local diagram subsets, local image/file/audio/video references, emoji, search/navigation/backlink prompts, an editor/workspace QA checklist and safe-rendering checks.
+- Existing template preview and create flow is reused; no new storage format, service, or data migration was introduced. Added a Playwright E2E scenario covering template discovery, preview/create, source sections, color and diagram preview, and Edit/Preview source round-trip.
+- Updated `FEATURES.md`, `FEATURES.md` and `dev-build.md`. All previous templates, feature ideas and UI gap IDs remain preserved.
+- Commits: template `f7a11993e821cf8cac77b34bc2f593217f8979b7`; template color-marker correction `b1c65d2f0d2893056ae7e75483023eae657bcf74`; E2E scenario `1e7558de59c360532101004695d12b12c1ea1155`; feature showcase `FEATURES.md` `759ee2165cb878949e77fecd9daa97527ae48217`; feature map `FEATURES.md` `fe7855acd31cfd20eb5526b02e0e107569764392`; build log `dev-build.md` `92ddcbdb179421d3ef761dde0fb64207c0489b8b`.
+- Browser E2E source inventory is **43 scenarios** and Node test source remains **30 definitions**; these are source counts, not executed results. No local test, typecheck, production build or screenshot review was performed. GitHub Actions run [43628949071](https://github.com/iamjpsonkar/Wave/actions/runs/43628949071) for main commit `92ddcbdb179421d3ef761dde0fb64207c0489b8b` was **queued** at the time of this update. No pass is claimed.
+- Known test limitation: image, file, audio and video examples are placeholders and require matching local files in the user's workspace before those individual asset examples can render. The renderer compatibility remains the documented local subset; this template does not claim full TeX/diagram specification support.
+- This handoff update is the final documentation action for this batch.
+
+
+## Implementation update — Export rendered Preview as PDF — 2026-11-15
+
+- Added a Preview-only **Export PDF** action in `src/App.tsx`. It temporarily sets the active document title as the suggested print/PDF filename, invokes `window.print()`, and restores the original tab title on `afterprint`.
+- Added `@media print` and `@page` rules in `src/styles.css` so only `.markdown-preview` is visible in print output. Wave navigation, workspace chrome, editor toolbar, metadata, backlinks and status controls are hidden. Print rules preserve colors where supported, avoid splitting common content blocks, keep headings with following content and wrap long code lines. Audio/video controls are omitted.
+- Added Playwright E2E regression coverage for print invocation, title restoration and print-media visibility. Browser E2E source inventory is now **44 scenarios**; Node test source remains **30 definitions**. These are source counts, not executed results.
+- Updated `FEATURES.md`, `FEATURES.md`, `UI_BACKLOG.md` (new UI-022; UI-001–UI-021 retained) and `dev-build.md`.
+- Commits: App `e6800b1725f1471fcd56a403e001ff7fa7302cbb`; print CSS `26dc983d85a531e4a1431624ec7558b5b5dcb2b2`; E2E `8608f04f7c4347d4f59dff4016d45b52db15219b`; feature showcase `0981adaac8c88ee92b7c5e6dc418734b577dfaab`; feature map `f1da436367824bd726b8e63e5fccfa7c73a82359`; UI gap record `623d7ccab194baa3096a07d18ce5b1eb9340b167`; build log `456f4ba2f61a2a4e6c5cf65bf2544e3fc0f07ad3`.
+- Scope limitation: this uses the browser's print dialog and its **Save as PDF** destination; it does not yet generate/download a PDF file directly. Page size, pagination, headers/footers and background printing remain controlled by browser print settings.
+- No local test, typecheck, production build or screenshot review has been performed. Verify the latest GitHub Actions run before claiming success. This developer-context update is the final documentation action for this batch.
+
+## Implementation update — PDF export UI bug remediation — 2026-11-15
 
- 
-- Contrast-test follow-up: corrected the RGB channel matcher in the UI-020 computed-contrast helper to parse numeric CSS channels. Test-source commit: `ffc3be4ae9026ce76148ce3fbcaa86b4be0e0f73`. The 38-scenario source inventory is unchanged; execution and CI remain unverified.
+- Re-read the six findings in `UI_BACKLOG.md` and targeted the PDF print path rather than changing the general screen theme. `src/styles.css` now applies a deterministic white-page print palette with dark text across Markdown descendants, normalizes code/table/alert/quote/disclosure surfaces, preserves validated custom foreground colors through a dedicated CSS token, forces table cells visible, and exposes initially collapsed DETAILS bodies only for print.
+- `src/markdown.tsx`: fixed the Wave inline-color serialization matcher so it captures the complete text payload after the six-digit HEX token. Rendered foreground/background spans now have dedicated classes; the print palette keeps custom foreground colors instead of overriding them with generic body text.
+- `src/templates.ts`: corrected the Complete Feature Test summation from a single-dollar marker on separate lines to the documented `$$` display-math delimiters. The Markdown support contract already documents `$$` or fenced `math` for display expressions.
+- `tests/e2e/workspace.spec.ts`: expanded the existing PDF export scenario to check print invocation and title restoration, hidden Wave chrome, white page/dark heading, retained blue custom text, first table-row Priority `1`, rendered MathML and visibility of collapsed DETAILS content. Source inventory remains **44 Playwright scenarios** and **30 Node test definitions**; these counts do not indicate execution.
+- Updated `UI_BACKLOG.md` without removing any UIB-001–UIB-006 finding, `dev-fixed.md` and `dev-build.md`. All six findings now describe their source remediation and pending verification honestly. UIB-005 remains subject to visual confirmation because the supplied PDF's missing first-row value has not yet been reproduced in a fresh PDF.
+- Source commits: Markdown renderer `05275f7c18594918a64e19ab5166300c5cab6424`, follow-up `b68d2a0a43e918fa52f9ebeeb87ef1d3e8676f5b`; print CSS `27678927380002a17400697bb6a6f890032063be`, follow-up `33bbcfdcf00f5200c2f1bd125573d0596d94b188`; showcase fixture `d4049b2e5228b77b8befd7e989252d8b81eed201`, delimiter correction `6f594bab5e4e6e503a77023ca7cac2089e678349`; E2E `2c34b20ad21b930be260f84bcf463075dff4f6d8`, delimiter correction `45c9cd0e2e43a57252f734bb4cfa40a4f085c823`; `UI_BACKLOG.md` `2942b71734064433f9816caca86ab2ba452e749e`; `dev-fixed.md` `fc63a024e74be7ccd39f30d1f89de47595c1e59c`; `dev-build.md` `30061332e4b0aa82d3aacf4830c57cb197599df4`.
+- GitHub Actions run `43630578833` for the defect-register commit was in progress at inspection; later commits triggered additional workflows. No local tests, typecheck, production build or screenshot review were performed. Do not mark any finding fully verified until CI and a fresh light/dark browser-generated PDF are reviewed.
+- This developer-context update is the final documentation action for this batch.
+- PDF export regression follow-up: expanded the existing Playwright fixture to cover all three showcased foreground colors (blue, green, red), the inline yellow background and the normalized print table-header surface. E2E commit `dabe21bcf587f84835b3b5b2a5c90295686ebcf1`; follow-up log commits: `dev-fixed.md` `57a4f23f6f38c939c51115620ad6e60627d35ce3`, `dev-build.md` `58740f0dc87c3f4a055bc7d61c16a50b5b1bcf4b`. Scenario inventory remains 44; execution is still unverified.
+- This handoff update is the final documentation action for the PDF export UI bug remediation batch.
+- CI exposed a pre-existing syntax error in the UI-020 Playwright fixture: the closing code-fence array entry lacked a comma. Fixed the separator only; fixture behavior/content is unchanged. Commit `56e9eb2d638cbe9a8883c3c5cbc16cc3fc40e94e`. The earlier run `43630578833` had passed `npm test`, TypeScript typecheck and production build, then failed at Playwright parse time; the new fix commit requires a fresh CI run. Log commits: `dev-fixed.md` `49cae04bd8cd1f40e25ff88c307e67e296dbbd81`, `dev-build.md` `edb3ffc0269738a4449f95a3c093367f96b47aae`.
+- This is the final handoff update for the PDF export bug remediation and CI syntax correction.
 
+## Implementation update — Contextual Markdown sample library and list Enter behavior — 2026-11-15
 
-## 2026-11-14 — UI block controls and dialog focus regression source
+- Added `src/SnippetLibrary.tsx`, a right-side, searchable Markdown sample library with category filters for Text, Blocks, Lists, Data, Code, Advanced and Media. The 21 examples include headings, emphasis, links, quotes, callouts, DETAILS, dividers, unordered/ordered/nested/task lists, tables, code/diff, math, Mermaid, Wave color directives, wiki links and local media/asset references. Selecting an example shows a rendered preview and its exact Markdown source.
+- Integrated the sample panel into the active editor work area in `src/App.tsx`, with responsive/light/dark styles in `src/styles.css`. The **Insert into document** action inserts Markdown source at the current textarea selection (replacing selected text) and restores the caret after insertion. If Preview or Blocks mode has no source textarea mounted, it appends the sample to the current document so the current view updates through the normal state/autosave path.
+- Added `handleEditorKeyDown` for Enter in the source textarea. Ordered and unordered list markers continue; ordered numbers increment; nested indentation is retained; task-list markers continue as unchecked `[ ]`; and Enter on an empty list item exits the list. Fenced code is deliberately excluded so Enter retains normal code editing behavior.
+- Added Playwright scenarios for sample selection/preview and selection replacement with inserted Markdown, plus ordered/bullet/task list continuation, empty-item exit, nested indentation and fenced-code Enter behavior.
+- Updated `UI_BACKLOG.md` with additive UI-023 (sample discoverability) and UI-024 (list Enter continuation), preserving all existing IDs. Updated `UI_BACKLOG.md`, `FEATURES.md`, `FEATURES.md`, `dev-fixed.md` and `dev-build.md`.
+- Source commits: sample component `65fb14ba86541accb9a36617588dbd80b9c65b99`; App integration `148fc99d14bfbc792e4be0a830938cbf001a791e`, newline/regex correction `40ca59461ae6cab5c2b772f4e11b32d07d55e26f`, event typing `e55a34748dcf02c1ec6ae2c87aa27afadb7aa664`; styles `6ffe152c88fec619cca223871d51086894ebe408`, nav alignment `c1f7265ed48cafe50dc9fab2fb8975c59aa0700b`; E2E `4c616bba1d7c3e37408834b8fdba117918f4e321`, stray suite-closure correction `81261223084692acf14486db9d937cd77238e055`, nested/fenced-code follow-up `757d8edba0925432bf8c5027924074ee8331a1eb`.
+- Documentation commits: UI gaps `4e0fbdfb5b2db775bab0e13e771246909e797cc6`; UI backlog `9ee90e20791c53ca78ca075a36fc87430943279b`; feature showcase `225a700a24ddfef166681c74b2528819465dcbdf`; detailed feature map `d8d4ca732010eb56b1ce54a4d2468ab46922e354`; dev-fixed `950162622719c2117337f5163fd48dcaf1119f5f`, follow-up `cd199d846d5c8069952b40fb657f765c53da5268`; dev-build `10cb85ef32f92c7924c23ebe1b62e2e6ed5a9dfe`, follow-up `746ccb7b1ae7245278c201792087a5ba0d70acc1`.
+- CI run `43633086687` for the suite-closure correction passed `npm test`, TypeScript typecheck and production build; Playwright was still executing at last inspection. The expanded nested/fenced-code test commit `757d8edba0925432bf8c5027924074ee8331a1eb` has run `43633137209`, whose Node tests, typecheck and production build passed and whose E2E step was still in progress at last inspection. No E2E pass or screenshot/manual visual review is claimed. No local test/build was run.
+- This is the final developer-context update for the sample-library and list-continuation batch.
+## Implementation update — Repository navigation and Docker static hosting — 2026-11-15
 
-- Added E2E source coverage for block keyboard reorder, drag-and-drop, common-block insertion and template dialog focus wrapping.
-- Playwright source inventory: **39 scenarios**; Node test source inventory: **30 tests**. Counts do not indicate execution.
-- Latest code/test/style commits: 9e4f29390447dcdbd43f80098da522385a270448, 7057ce25861bffce43ee05ce5f8afb305ae1d0e8, 290f926c92caffe64d2ac34f1eea483df015f464, 8bb74c69ec4c9adad7d59c0e34e869224742fa42, f292e32e853fce640d44f05f554ee4bce1cbba72, b90369be8ef6ba66ab95f84f5e609b406afd87f7, 6bbd015307f55a0e385b6f041d383bdb07e6e87c, 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62.
-- Checked combined status and commit-associated workflow runs for 93bdd45f2fe17bda2375cb0a41c8f2f7f9e6ca62: both returned empty arrays. No current CI evidence is available. No tests, typecheck or production build are claimed to have passed.
+- Repository documentation is now navigable from docs/README.md. Root-level feature blueprints and engineering registers remain in place and retain their distinct roles; do not move, merge, truncate or replace them just to create a cleaner directory tree.
+- README.md now explains the current app, shipped capabilities, local development, production build, Docker deployment, workspace layout, privacy/browser constraints and repository map. CONTRIBUTING.md documents setup, checks, storage/security invariants and documentation ownership.
+- Docker files: Dockerfile (Node 22 multi-stage build and unprivileged Nginx runtime), .dockerignore, compose.yaml, .env.example, docker/nginx.conf. Nginx listens on 8080, supports Vite SPA fallback, uses immutable caching for hashed assets and no-cache for the app shell, denies dotfiles and emits browser security headers. Compose enables read-only root, bounded /tmp, drops all capabilities and sets no-new-privileges.
+- Commands: docker compose up --build -d, docker compose down; optional port via WAVE_PORT. Npm shortcuts: npm run docker:build, npm run docker:up, npm run docker:down. Full operational notes are in docs/DOCKER.md.
+- Critical deployment boundary: this is static web hosting only. It does not add backend APIs, accounts, server-side workspace persistence, shared folders, collaboration, database or synchronization. Browser File System Access API continues to operate on a directory selected on each browser user's own device; remote access requires HTTPS and browser support.
+- Updated docs/ARCHITECTURE.md, docs/ROADMAP.md, FEATURES.md, FEATURES.md, contributor/docs navigation and the build log. Corrected stale feature wording about wiki links/backlinks. No prior product scope, UI gap IDs, feature ideas or historical engineering records were removed.
+- CI adds a dedicated container job that validates Compose configuration and builds the production image. Run 43634056269 successfully built the container and passed Node tests, TypeScript and Vite build, while Playwright installation remained in progress at inspection. Runs 43634100390 and the latest Compose-validation workflow are pending final verification; check them before claiming complete CI.
+- Important implementation commits are catalogued in dev-build.md. No local Docker/Compose run, browser E2E completion or manual visual review was performed in this environment.
+- This is the final developer-context update for the repository restructuring and Docker delivery batch.
 
-## 2026-11-15 — Inline color formatting regression (CI pending)
 
-- Added foreground/background toolbar color pickers and safe Markdown preview support; added one Playwright scenario covering both directives, inline-code non-transformation and Edit/Preview source preservation.
-- Browser E2E source inventory: **40 scenarios** (previously 39); Node test source remains **30 tests**. These are source counts, not execution results.
-- Source commits: App `4df616fee1cbdcd80e878e422bc0ecc264c2c02e`; Markdown renderer `4f68b91243e17a2a2642961ec45c01550893aaa4`; CSS `3464fd936b96bd280db1794f230a378041945a07` and system-light follow-up `53779f8f9705c1b78195761c794935e7aa1c6230`; E2E `323f49e33ab59f38cb2790628d83630f934d6282` and locator follow-up `48af3998748b51779a0abe75ca5853dd80fa03b1`.
-- No local test/typecheck/build runner was executed. No CI result or screenshot review is claimed. Wait for the workflow on the latest main commit before treating the regression as passed.
+- CI workflow correction after review: the first attempted Compose-check insertion did not match the workflow text. The final workflow now explicitly runs `docker compose config -q` before `docker build --pull -t wave:ci .`; commit b41adbeb2ea68fd1632975ca1275c01f6e9b87dd. Earlier image-build jobs passed; wait for the run triggered by this final workflow change to verify Compose validation and the final container build. The build log records the correction.
+- This is the final developer-context update after the CI workflow correction.
 
 
-- Color E2E follow-ups now cover native color input change events, invalid hex values remaining literal, and preservation of the inline-code example. Latest test-source commit: `81f819653e5f766670e51b783edacb1fa39c41b5`. The suite count remains **40 E2E scenarios** and **30 Node tests**; execution, typecheck, build and CI are still unverified.
+## 2026-11-15 — Comprehensive project wiki and AI-agent onboarding
 
-- Documentation follow-up aligned the Markdown compatibility contract, feature-gap list and UI color backlog with the shipped six-digit-hex syntax and remaining palette/block-fill work. Commits: `bf5d455c2012fa9750f585eb104a03ecf0b6b9ec`, `99007028e8f9c98de8baa5d32d55ce97d346d183`, `bd27ca629c7556b3f2fbeac75e3b600b976365b9`.
+- Added [wiki.md](./WIKI.md) as the comprehensive product, repository and AI-agent orientation guide. It consolidates durable instructions from the available Wave project conversation context, product constitution, current architecture/source map, storage boundaries, engineering invariants, UI/Markdown decisions, QA limitations, roadmap coverage, documentation ownership, Docker boundaries and recommended improvements.
+- Linked the wiki from [README.md](./README.md) and [docs/README.md](./docs/README.md).
+- Detailed implementation and verification note: [dev-build.md](./etc/history/dev-build.md).
+- This is a documentation-only change. Repository files were inspected through GitHub; no local tests/build or new CI run was performed.
+- Current baseline before this handoff update: wiki commit `8f1ebafc01c44d36230dd45d9030f16236642105`; README commit `1eaa559f158c46afa1beddbaca797ace9de7ce7c`; docs index commit `5a5bc4dabb1a353c61bfba0658eaf42e6119706c`; build log commit `888d54fac0c980a81332286993794a907758f991`. Refresh the repository HEAD before the next task.
 
 
-## 2026-11-15 — Color palette, reset and block fill
+### Wiki instruction formatting correction
 
-- Toolbar now includes six curated text-color swatches, remove-color-formatting, and a block background color picker. Added a Markdown quote directive for block fills and preview rendering with validated six-digit hex.
-- Added one E2E scenario for swatch application, reset, block fill source and preview. E2E source inventory: **41 scenarios**; Node source remains **30 tests**. These are source counts only.
-- Commits: App `25fa032884d8cf6f1356f20ebe0e9ffc0bd5e381`, renderer `08cf36f8b9b29295c52b883b56a0559f85592e4a`, styles `7020028201eeee4be404a003b4e2c2abc7925c9a`, E2E `76a55e006b00513e21a1a5ef406645a55339a762`.
-- CI, typecheck, build and screenshot review have not been confirmed. Nested ranges and Blocks-mode selection remain open.
+- Corrected a malformed inline-code delimiter in the new wiki's instruction for updating `DEV_CONTEXT.md` last. No product/source behavior changed.
+- Wiki correction commit: `aa2de3ad50df17172065717765c0ca50126d479d`. Refresh HEAD before the next task.
 
 
-## 2026-11-15 — Blocks-mode background color controls
+## 2026-11-15 — Markdown documentation consolidation and enforcement policy
 
-- Added an accessible per-block native color picker to every Markdown block in Blocks mode. Applying a color adds the safe quote marker; changing an existing color block updates its marker in place. The block editor classifies color directives as callouts.
-- Added an E2E source scenario for applying, changing and previewing a block fill. E2E source inventory: **42 scenarios**; Node test source remains **30 tests**. Counts describe source definitions, not execution.
-- Commits: `b191a2759ff917c0ab1ed0ebb333b828b035a9b3`, `93bf0eb5dc809e373292570d900066161f6e7be3`, `0cf474ff0d0765f882916c04efbb69e49c95cb85`.
-- Typecheck, build, browser execution, screenshot review and CI are not yet verified.
+- Consolidated overlapping documentation into [FEATURES.md](./FEATURES.md), [UI_BACKLOG.md](./UI_BACKLOG.md) and [QA_CONTEXT.md](./QA_CONTEXT.md). The former seven duplicate source files were removed only after verifying their meaningful content and stable IDs were present in the destinations.
+- Updated [README.md](./README.md), [CONTRIBUTING.md](./CONTRIBUTING.md), [docs/README.md](./docs/README.md), the product/priority/issue references, and the [Wave Wiki](./WIKI.md).
+- The wiki now contains a mandatory **Documentation enforcement after every task** section. Every implementation, fix, refactor, QA or configuration task must review Markdown impact, update the authoritative records that changed, validate links and IDs, avoid unnecessary duplicate files, and update this handoff last.
+- The full product blueprint, priority plan, development logs, open/fixed bug registers, Markdown compatibility checklist and diagram research remain separate.
+- Detailed migration record: [dev-build.md](./etc/history/dev-build.md), entry dated 2026-11-15.
+- Verification: source/destination content comparison and tracker-ID checks completed before source deletion. No application code changed; no local tests/build or CI run was performed. Refresh `main` and CI before the next implementation task.
 
 
-## 2026-11-15 — Wave Complete Feature Test template
+## 9. Latest repository-wide audit — 2026-11-15
 
-- Added a new **Wave Complete Feature Test** entry to the existing template gallery; the original Markdown feature showcase and all existing templates remain unchanged. The template contains practical examples for headings/inline formatting, nested lists, GFM tables/tasks/footnotes, reference and wiki links, alerts/disclosures, foreground/inline/block colors, code/diff blocks, math, Mermaid and local diagram subsets, local image/file/audio/video references, emoji, navigation/search/backlinks, an editor/workspace QA checklist and safe-rendering checks.
-- Added a Playwright E2E scenario covering gallery discovery, template preview/create, source content, color and diagram preview, and Edit/Preview source round-trip. Browser E2E source inventory is now **43 scenarios**; Node test source remains **30 definitions**. These counts do not represent executed tests.
-- Source commits: template `f7a11993e821cf8cac77b34bc2f593217f8979b7`; color marker correction `b1c65d2f0d2893056ae7e75483023eae657bcf74`; E2E `1e7558de59c360532101004695d12b12c1ea1155`.
-- No local tests, typecheck, production build, screenshot review or CI result have been run/confirmed for this batch. Do not claim verification until the latest main-branch workflow completes.
+- Audited current main baseline `d831bf04ac458a888206de4d492830f55958b022`.
+- New findings are tracked in [#99 — Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99) and [#100 — duplicate storage regression tests](https://github.com/iamjpsonkar/Wave/issues/100).
+- Existing open defect, UI, Markdown, export and roadmap tickets were checked before creation; do not open duplicates for the same scope.
+- Full evidence and limitations: [QA_CONTEXT.md](./QA_CONTEXT.md). Issue index: [etc/quality/github-issues.md](./etc/quality/github-issues.md).
+- No source code changed and no tests/build/CI execution is claimed for this audit.
 
 
-## 2026-11-15 — Export rendered Preview as PDF
+## 36. WAVE-0001 — native filesystem and permission QA follow-up — 2026-11-15
 
-- Added a Preview-only **Export PDF** action. It invokes the browser print dialog on the rendered Markdown preview and temporarily sets the document title as the suggested PDF filename. The `afterprint` event restores the Wave tab title.
-- Added print styles so exported pages contain the rendered preview only; workspace navigation, editor toolbar, document metadata, backlinks, status bar and controls are hidden. Print styling preserves colors where supported, keeps headings with following content, avoids splitting common blocks and wraps long code lines. Local audio/video controls are omitted from print output.
-- Added Playwright E2E source coverage for button action, title restoration and print-media visibility. E2E source inventory: **44 scenarios**; Node test source remains **30 definitions**. These are source counts, not executed results.
-- Scope: browser print dialog → Save as PDF; this is not a direct PDF download engine. Pagination, headers/footers and background-color inclusion depend on browser print settings.
-- Commits: App `e6800b1725f1471fcd56a403e001ff7fa7302cbb`; print CSS `26dc983d85a531e4a1431624ec7558b5b5dcb2b2`; E2E `8608f04f7c4347d4f59dff4016d45b52db15219b`.
-- No local tests, typecheck, build or screenshot review have been performed for this batch. CI status must be checked before claiming verification.
-## 2026-11-15 — PDF export UI bug remediation (UIB-001–UIB-006)
+- Issue: [#1 — Complete native filesystem, permission and lifecycle verification](https://github.com/iamjpsonkar/Wave/issues/1), internal defect ID WAVE-031.
+- Branch: `WAVE-0001`, created from the refreshed `main` branch.
+- `tests/e2e/workspace.spec.ts`: expanded the OPFS permission fixture to count permission requests; added prompt-state reauthorization and external-file-edit conflict preservation scenarios. Browser test source count is now 48; Node source count remains 30.
+- `etc/quality/bugs.md`: updated WAVE-031 test inventory and recorded branch follow-up. The issue remains open.
+- `QA_CONTEXT.md`: added real-browser native picker/permission, external filesystem, keyboard/focus/screen-reader, and process-termination manual checklists.
+- `etc/history/dev-fixed.md` and `etc/history/dev-build.md`: recorded implementation scope and CI-pending status.
+- `WIKI.md`: documented the product-owner-approved issue branch → commit/push → PR → issue-comment workflow. Do not merge PRs or close issues; product owner reviews them.
+- Verification: source and test definitions inspected; no local test/typecheck/build or native/manual browser verification was performed. PR CI is pending. The OPFS tests simulate permission behavior and are not evidence of native OS picker/revocation behavior.
+- Remaining acceptance criteria: real native picker and permission revocation/reauthorization results; external writer races across read/save/backup/restore; comprehensive keyboard/focus/screen-reader/contrast review; actual process-termination fault test. Keep #1 open until these criteria are evidenced.
 
-- Print mode now applies a deterministic white-page print palette with dark text, normalized component surfaces, table-cell visibility/layout, and collapsed DETAILS body visibility. Custom validated Wave foreground colors are retained through a dedicated print CSS token.
-- Fixed the inline color renderer regex so the full label after `wave-color:#RRGGBB:` / `wave-bg:#RRGGBB:` is rendered as styled text rather than visible serialization.
-- Updated the Complete Feature Test summation to the documented `$$` display delimiter and added a print E2E fixture for the table Priority value `1`, custom color, rendered MathML and collapsed disclosure content.
-- Expanded the existing PDF export E2E scenario; it remains **44 Playwright scenario definitions** and **30 Node test definitions**. These are source counts, not run results.
-- Commits: renderer `05275f7c18594918a64e19ab5166300c5cab6424`, `b68d2a0a43e918fa52f9ebeeb87ef1d3e8676f5b`; CSS `27678927380002a17400697bb6a6f890032063be`, `33bbcfdcf00f5200c2f1bd125573d0596d94b188`; template `d4049b2e5228b77b8befd7e989252d8b81eed201`, `6f594bab5e4e6e503a77023ca7cac2089e678349`; E2E `2c34b20ad21b930be260f84bcf463075dff4f6d8`, `45c9cd0e2e43a57252f734bb4cfa40a4f085c823`; `UI_BACKLOG.md` `2942b71734064433f9816caca86ab2ba452e749e`.
-- CI run `43630578833` for the defect-register commit was **in progress** at the time of inspection. Subsequent commits trigger their own CI runs. No local test, typecheck, production build or screenshot review was run; do not claim a pass. UIB-005 still requires a fresh PDF visual check to establish whether the missing `1` is fully resolved.
-- Follow-up E2E assertions now cover all three showcase foreground colors (blue/green/red), inline yellow background and normalized print table-header surface. Commit: `dabe21bcf587f84835b3b5b2a5c90295686ebcf1`. Scenario count remains 44; this is source coverage only.
-- CI follow-up: run `43630578833` completed Node tests, TypeScript typecheck and production build successfully, but Playwright could not parse `tests/e2e/workspace.spec.ts` because a pre-existing UI-020 fixture omitted a comma after a closing code fence. Added the missing comma without changing the fixture content. Fix commit: `56e9eb2d638cbe9a8883c3c5cbc16cc3fc40e94e`. The corrected commit's CI is pending.
 
-## 2026-11-15 — Contextual Markdown sample library and list continuation
+## 37. WAVE-0001 — CI failure remediation — 2026-11-15
 
-- Added a right-side **Sample library** with 21 searchable Markdown examples, eight category filters, rendered preview, visible source and insert action. Insertion replaces the current editor selection; with Preview/Blocks active it appends to the current document. Implemented in `src/SnippetLibrary.tsx` and integrated into `src/App.tsx`; responsive light/dark styling in `src/styles.css`.
-- Markdown Enter now continues unordered, ordered and task lists; increments ordered markers; preserves indentation; starts a fresh unchecked task; and exits an empty item on the next Enter. Fenced code is excluded.
-- Added two Playwright scenarios for sample preview/selection insertion and ordered/bullet/task list continuation.
-- Commits: component `65fb14ba86541accb9a36617588dbd80b9c65b99`; App `148fc99d14bfbc792e4be0a830938cbf001a791e`, `40ca59461ae6cab5c2b772f4e11b32d07d55e26f`, `e55a34748dcf02c1ec6ae2c87aa27afadb7aa664`; styles `6ffe152c88fec619cca223871d51086894ebe408`, `c1f7265ed48cafe50dc9fab2fb8975c59aa0700b`; tests `4c616bba1d7c3e37408834b8fdba117918f4e321`, `81261223084692acf14486db9d937cd77238e055`.
-- Documentation commits: `UI_BACKLOG.md` `4e0fbdfb5b2db775bab0e13e771246909e797cc6`; `UI_BACKLOG.md` `9ee90e20791c53ca78ca075a36fc87430943279b`; `features.md` `225a700a24ddfef166681c74b2528819465dcbdf`; `FEATURES.md` `d8d4ca732010eb56b1ce54a4d2468ab46922e354`.
-- CI run `43632920367` completed Node tests, typecheck and production build successfully, but E2E failed to parse the file due to a stray suite-closing token. Removed the token; fresh run `43633086687` is queued. Do not claim E2E pass until this run completes. No local tests or screenshot review were performed.
-- Regression follow-up: expanded the list Enter scenario to verify nested indentation and that Enter inside a fenced code block remains a normal newline. The empty-task-item expectation now explicitly checks the blank line that terminates the list. Test commit `757d8edba0925432bf8c5027924074ee8331a1eb`; CI run `43633137209` is in progress. Earlier run `43633086687` passed Node tests, typecheck and production build; Playwright execution was still running at the last check.
-## 2026-11-15 — Repository navigation, contributor workflow and Docker static hosting
+- PR: [#101](https://github.com/iamjpsonkar/Wave/pull/101), issue [#1](https://github.com/iamjpsonkar/Wave/issues/1), branch `WAVE-0001`.
+- Initial workflow `43682365587` passed Node tests, typecheck, production build and container build but failed Playwright (33 passed, 15 failed).
+- Remediated invalid newline fixtures, current error class and ambiguous/stale selectors; corrected template preview flow, image/diagram/PDF assertions; fixed empty task-list Enter handling and block-color newline parsing/serialization; preserved selection during color toolbar mouse-down.
+- QA/WIKI/archive logs record exact scope and limitations. Latest CI at initial remediation check: [run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072), still in progress at time of writing. Verify the final run for the latest PR head before claiming success.
+- No local tests/typecheck/build were run. Native OS picker/revocation, real external-process races, full accessibility audit and process-termination checks remain unverified. Issue #1 remains open; PR must not be merged by the agent.
 
-- Added a multi-stage Dockerfile: Node 22 builds the existing Vite app and an unprivileged Nginx image serves only the generated static site on port 8080.
-- Added .dockerignore, compose.yaml, .env.example and docker/nginx.conf. Compose uses a read-only root filesystem, a bounded temporary filesystem, dropped capabilities, no-new-privileges, restart policy and HTTP health check. Nginx provides SPA fallback, hashed asset caching, app-shell revalidation, dotfile denial and browser security headers.
-- Added npm run docker:build, npm run docker:up and npm run docker:down shortcuts. Added docs/DOCKER.md, including standalone Docker, Compose, HTTPS/reverse-proxy, storage boundaries and troubleshooting.
-- Rewrote README.md around the current product, capabilities, three run modes, browser/storage requirements and project map. Added docs/README.md as a documentation index and CONTRIBUTING.md for development setup, checks and non-negotiable engineering invariants.
-- Updated architecture and roadmap docs, feature inventory and docs index. Corrected a stale feature-showcase sentence that described wiki links/backlinks as wholly unshipped even though a basic implementation exists. Existing root-level registers and the complete product blueprint were retained; no feature catalogue was deleted or consolidated.
-- Clarification: this Docker image is static frontend hosting only. It does not create an API, account system, shared server-side workspace, collaboration layer, database or remote document storage. Browser folder selection continues to refer to each browser user's own device.
-- Key commits: Dockerfile dd84539048e1940ccbfcc36aed4ac74896f2cf1d; .dockerignore 47480ff31f297a8b21ff2e1d7fc3bd282b8fab95; Compose dd8a768f942a5e4e8c9b837232e08418f4a4d12f; Nginx f92b4e6cd41c1fe29dbc682f928a3a76f57a96ae9, security-header follow-up fd079922cb11afa19bdbcc8cbc2f56f75f4ca8a9; Docker guide bea010588e8b58dd559d0a0caa32d7dd728f270a, command/env follow-up dae8f36383c7bf54210dff33501b0700365baea8; README d84ddc4c68451020ff45364f4910640cb7c4af1e; docs index a2b1d12b9df7fb195d503e890d81e84f7edecb39, contributor link 341780fc9ab00f63baa6f967b3fc86c0e65891fa; contributor guide a3d4e74ed9443310ce8e4cbcd1db0273cfb7b6f3; package scripts 5ba31caa80bf1730ce52c98301e963787d895ce4; architecture 5f67383cef1dd8a535ac7958039113bc233510f5; roadmap 98d0ecde1e2b386d5508d0eb4667f50f1b153f52; CI container job 4040584de2a82005e24ba1619886ff2784f7cc2f, Compose validation follow-up 7406267fe7d09c230df4ae1f3d99b02138204a31; feature inventory f98639a8c5d7f8fd97e38179c7b42ca6c8f84ce0, feature-map update 7bd7ef523b55a6d40785c664fc674ed0eda8fba4, stale wording correction cf0fd17be1ad261b54cad9d08e5067471f6b7995.
-- CI evidence: workflow run 43634056269 completed the dedicated Docker image build successfully; its Node tests, typecheck and Vite build also passed, while Playwright browser installation was still in progress at inspection. A later run 43634100390 was rebuilding the updated Nginx configuration; the final CI workflow after Compose validation still needs to complete. No local Docker build, Compose runtime test, browser E2E pass or manual visual review is claimed.
 
+## 38. WAVE-0001 — second CI triage pass — 2026-11-15
 
-- CI follow-up: the initial container-job edit added image construction; a subsequent review caught that the Compose validation step had not been inserted by the first text update. Corrected the workflow to run `docker compose config -q` before `docker build --pull -t wave:ci .`. Workflow-file correction commit: b41adbeb2ea68fd1632975ca1275c01f6e9b87dd. Verify the new run for both steps; the earlier Docker image builds passed but do not prove Compose validation.
+- Rechecked PR #101, current head at the time of this pass `98f3a77e90ed1819811998d1519d010516c1203d`; latest completed run `43683760674` failed Playwright with 39 passed / 9 failed. Node tests, typecheck, production build and container job passed.
+- Failure categories: settings Escape/focus trap, Lucide icon class expectation, strict selectors for preview code/template/diagrams/PDF color spans, color toolbar not applying background/clear due to selection/state handling, and generated block-color callout classification.
+- Follow-up commits: scoped Playwright selectors and icon expectation; settings Escape support; toolbar color edits now use the controlled editor change path and clear wrapper-aware selection; block color classifier corrected. Updated QA/WIKI/development archive notes.
+- A newer workflow triggered by later commits must be checked against the latest PR head SHA. This remains unverified; no local tests were run. Do not merge. Issue #1 still has open native picker/OS permission, external-process race, accessibility and termination acceptance criteria.
 
 
-## 2026-11-15 — Comprehensive Wave wiki and AI-agent guide
+## 39. WAVE-0001 — consolidated CI remediation pass — 2026-11-15
 
-- Added root `wiki.md` as the main orientation document for developers and AI agents.
-- Consolidated durable product-owner directions from the available Wave project conversation context: preserve all agreed scope, keep the full catalogue separate from priority order, implement requested behavior with regression tests, retain development histories, and update `DEV_CONTEXT.md` last.
-- Documented product constitution, offline/online modes, current stack/source map/workspace layout, reliability invariants, Markdown/editor behavior, UI requests, Docker boundary, QA evidence limits, roadmap coverage, documentation map and recommended improvements.
-- Added direct discovery links from `README.md` and `docs/README.md`.
-- Verification: GitHub repository contents were fetched and reviewed; no local test/build or CI run was performed for this documentation-only change.
+- Rechecked PR [#101](https://github.com/iamjpsonkar/Wave/pull/101), issue [#1](https://github.com/iamjpsonkar/Wave/issues/1), branch `WAVE-0001`.
+- Latest inspected run [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184), head `8ff23d414ecf2dc7421fbb7188cf7b56145af419`: failed with 42 Playwright passes / 6 failures. Container passed; Node tests, TypeScript and production build passed.
+- Root causes fixed in source: toolbar color formatting could use a stale `content` closure after editor selection/event timing; block-color actions bypassed the shared recovery-draft handler; block editor color callbacks could preserve stale block offsets after re-render. Updated all mutations to read current content and persist through the controlled change handler; block color updates replace the full current source range.
+- Fixed two verification issues: Settings E2E attempted to interact with Preview behind an open modal; Lucide FileCode2 SVG renders class `lucide-file-code2`, not `lucide-file-code-2`.
+- Changed files: `src/App.tsx`, `src/MarkdownBlockEditor.tsx`, `tests/e2e/workspace.spec.ts`; QA and archive notes updated. Fresh workflow must be checked against the resulting latest head.
+- No local commands or test runs were available through this GitHub-only task. Do not claim the fixes pass until CI completes. Native picker/OS permission changes, external-process read/save/backup/restore races, complete accessibility review and controlled process-termination testing remain open; do not merge PR #101 or close issue #1.
 
+## 40. WAVE-0001 verification handoff — latest code commit and pending CI
 
-## 2026-11-15 — Markdown documentation consolidation and per-task enforcement
+- Remediation source commits: `763008201aa6f8112345f6343bb480fbfbd85372`, `43830417f3be88556a4db952789416cc46211916`, `9c1e653e38e3478e7eb9a1e1f0249775f044d768`.
+- Documentation commits followed source changes: QA `487c834d65e0dd1cdb1b187bb6db5a4a2bc37679`, WIKI `19f6ccb0ee492fe3b57ff505cc6e03e996dc5b70`, dev build `75b12146d47c10070c828b6f26afc710ea21b5e4`, dev fixed `af89ee50c770571a258f524e05ade5531545d969`, bug register updated separately.
+- This section is written last as the developer handoff. Check GitHub Actions for the newest commit on `WAVE-0001`; earlier run 43684569184 predates the latest corrections and remains a 42-pass / 6-fail failure, not a pass.
+- The PR is intentionally unmerged; issue #1 remains open. No local test, typecheck or build was executed in this session.
 
-- Created `QA_CONTEXT.md` by combining the current QA disposition/test inventory from the former `qa-context.md` with substantive audit history/evidence from `QA-CONTEXT.md`.
-- Created `UI_BACKLOG.md` by combining export/print UI bugs (UIB-001..006), UI gaps (UI-001..024) and UI feature proposals (UIF-001..021). Stable identifiers and source-register content were retained.
-- Created root `FEATURES.md` by combining the shipped-feature showcase and detailed feature map formerly split across `features.md` and `docs/FEATURES.md`.
-- Verified that each consolidated target contains the source documents' meaningful content, including the relevant IDs and QA findings, before deleting the seven redundant source files.
-- Removed: `QA-CONTEXT.md`, `qa-context.md`, `ui-bug.md`, `ui-gaps.md`, `ui-features.md`, `features.md`, `docs/FEATURES.md`.
-- Updated the wiki, README, contributor guidance, developer handoff, roadmap/issue references and documentation index. Added a mandatory per-task Markdown review/enforcement section to `wiki.md`: update authoritative docs, preserve IDs/history, avoid duplicate sources, validate links and update `DEV_CONTEXT.md` last.
-- Preserved as separate files: `upcoming-features.md`, `priority-features.md`, `dev-fixed.md`, `dev-build.md`, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `diagram-features.md`, and the architecture/deployment/Markdown/roadmap guides.
-- Verification: fetched and compared source/destination contents before deletion; confirmed UIB-001..006, UI-001..024, UIF-001..021 and WAVE-031/WAVE-039/WAVE-042 are present in the consolidated destinations. Checked navigation and corrected stale links in the consolidated feature guide. No application code changed; no local tests/build or CI run was performed.
 
+## 41. Local developer feedback loop — 2026-11-15
 
-## 2026-11-15 — WAVE-0001 verification additions (CI pending)
+- `./run.sh` now only bootstraps dependencies when needed and starts the Vite server; removed unreachable typecheck/build commands that followed a long-running server process. Supports `--install`, `WAVE_HOST`, and `WAVE_PORT`.
+- Added executable `./test.sh` as the local quality gate: Node tests, TypeScript typecheck, production build and Playwright Chromium E2E. It installs missing dependencies and the pinned Playwright/browser prerequisites; `--no-e2e` provides a fast non-browser pass. CI invokes this same script after provisioning browser system dependencies.
+- Added `npm run test:local` alias. README, QA context, WIKI and development log updated. This task used GitHub repository editing only; no local test execution is claimed. Check the workflow on this final commit for script syntax and behavior.
 
-- Branch: `WAVE-0001` (issue #1).
-- Added two Playwright scenarios: recent-workspace permission reauthorization from the prompt state, and editor conflict handling after an external filesystem edit.
-- Current source inventory after the additions: 30 Node test definitions and 48 Playwright E2E scenarios.
-- Existing Node coverage includes conditional-save external-change rejection and backup snapshot mutation/fault checks.
-- CI: pending PR workflow. Record the exact workflow run, commit SHA and each suite outcome after GitHub Actions completes. No new test/build pass is claimed yet.
-- Native OS picker/revocation, external-process race scheduling, full accessibility audit and actual process termination remain manual/platform verification requirements.
 
+## Workspace UI regression follow-up
 
+- Color picker inputs use a neutral initial selection so choosing the standard highlight or block-background colors fires the change handler and inserts the expected Markdown formatting.
+- Mobile Settings is available from the top bar even when the sidebar is collapsed.
+- Content width preferences are maximum widths bounded by the available editor grid column; tests should assert the configured cap and the rendered width constraint, not force horizontal overflow.
+- See QA_CONTEXT.md and WIKI.md for the regression details. CI verification for the latest commit is authoritative.
 
-## 2026-11-15 — WAVE-0001 CI remediation (in progress)
 
-- Investigated failed workflow `43682365587`: Node tests, typecheck, production build and container build passed; Playwright had 15 failures / 33 passes.
-- Corrected invalid external-edit fixture newlines and current error-surface selector; repaired ambiguous/stale selectors and template-preview flow; corrected local-image, diagram and PDF fixture expectations.
-- Fixed application defects discovered during triage: empty task-list item continuation, block-color newline parsing/serialization, and editor selection preservation for color actions.
-- Branch `WAVE-0001`, PR [#101](https://github.com/iamjpsonkar/Wave/pull/101). Remediation CI [run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072) was still running when this entry was written. Do not claim pass until its final result is checked.
-- No local execution was available; use CI logs to identify and fix remaining failures. Keep #1 open for native picker, external-process race, accessibility and lifecycle acceptance evidence.
+## Latest CI triage — 2026-11-15
 
+- Workflow `43687589347` on source head `50eebbd975d0a1dfa47e54d23b51a85e62828703` completed with failure: Node tests, typecheck, Vite build and container image passed; Playwright reported 44 passes, two repeatable failures and two flaky tests.
+- The repeatable issues were invalid color directive text being transformed as a wiki link and an E2E style assertion comparing CSS hex text against Chromium's normalized RGB output. Flaky cases involved a frozen second-tab clock during cross-tab recovery and typing before list-editor caret restoration.
+- Follow-up patch: preserve malformed `color:`/`bg:` directives literally; assert computed RGB background color; remove the unnecessary second-tab fake clock and explicitly verify the recovery prompt; wait for list editor focus/caret restoration before subsequent typing.
+- Fresh CI is required. No local tests were run. This handoff is the final documentation action for this remediation pass.
 
-## 2026-11-15 — second WAVE-0001 CI triage pass
 
-- Rechecked latest completed workflow [43683760674](https://github.com/iamjpsonkar/Wave/actions/runs/43683760674): Playwright 39 passed / 9 failed; Node tests, typecheck, production build and container job passed.
-- Remaining categories: settings dialog Escape handling; icon class expectation; strict locators for code/diagram/template/color spans; color-toolbar event/state application; block-callout classification.
-- Follow-up changes pushed: allow Escape to close settings, align icon expectation with rendered Lucide class, scope template search and narrow code/diagram/color selectors, route color edits through controlled content change, and correct block-color callout classifier. Verify current PR head's next CI run before marking complete.
+## Latest cross-tab recovery test correction — 2026-11-15
 
+- CI `43688050754`: 47/48 E2E passed; 30 Node tests, typecheck, production build and container build passed. The only failure was the recovery prompt assertion: the source tab autosaved its content after 600ms, before the second tab attempted recovery.
+- Updated the E2E setup to freeze only the source page's clock after workspace setup and before editing. The immediate IndexedDB recovery journal write can complete while the delayed Markdown autosave stays pending. The second page is intentionally left on real time.
+- Fresh CI is required. No local browser test is claimed. This is the final documentation update for this pass.
 
-## 2026-11-15 — WAVE-0001 consolidated CI remediation
 
-- Rechecked latest head run [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184): Playwright 42 passed / 6 failed; container passed. Node tests, typecheck and production build passed.
-- Fixed stale editor content usage in inline/background color actions by reading `contentRef.current`; route mutations through `handleEditorChange` to update recovery journal and visible state.
-- Fixed block background updates to replace the source range from the current block editor render, not rely on outdated offsets or bypass the draft update path.
-- Fixed Settings test modal ordering and Lucide file-code SVG class assertion.
-- Fresh CI required. No local test/build is claimed. WAVE-031 manual/native checks remain open.
+## Latest CI handoff — cross-tab recovery fixture correction (2026-11-15)
 
-## 2026-11-15 — Local run/test scripts and CI parity
+- Latest inspected run `43688362527` failed at 47/48 Playwright tests; container, 30 Node tests, TypeScript typecheck and production build passed.
+- Corrected `tests/e2e/workspace.spec.ts`: the source page's clock is no longer installed before workspace setup. It is frozen once after the baseline page has been created/saved and before the unsaved cross-tab draft is entered; the second tab remains on real time.
+- Test commit: `a983dc3199264348331a9e172217d6e70ec4d099`. QA evidence and development history are appended in `QA_CONTEXT.md`, `WIKI.md`, `etc/history/dev-fixed.md` and `etc/history/dev-build.md`.
+- Fresh CI is required; no local tests were executed. PR #101 remains open/unmerged and issue #1 remains open pending manual native picker/permission, external-process race, accessibility and process-termination acceptance checks.
 
-- Replaced the misleading `run.sh` sequence (which attempted typecheck/build only after the long-running dev server had already started) with a fail-fast development launcher. It validates Node.js 22.6+, installs locked dependencies only when needed, supports `--install`, and exposes host/port through `WAVE_HOST` / `WAVE_PORT`.
-- Added executable `test.sh`: Node tests, typecheck, production build and Playwright Chromium E2E in one local command. It bootstraps missing npm dependencies, the same pinned Playwright version used by CI, and Chromium; supports no-E2E and pre-provisioned dependency flags.
-- Added `npm run test:local` alias. CI now provisions Chromium with OS dependencies and invokes the same script with setup skipped, keeping the actual check sequence shared.
-- Updated README, QA context, WIKI and developer handoff. No local execution was available through the GitHub-only editing workflow; the new CI run must validate shell syntax/behavior and test suite outcome. Developers can immediately run `./test.sh` after pulling the branch.
 
+### Current CI investigation — cross-tab recovery
+The repeated recovery-dialog failure is being isolated with direct browser-side IndexedDB checks. The E2E test now verifies the source tab's saved draft text/session/workspace handle and confirms the second tab sees the same record with a different session ID before invoking `open()`. Existing dialog-source and declined-record-retention assertions are preserved. Treat this as diagnostic hardening, not a confirmed production fix, until CI proves the complete flow passes.
 
-## 2026-11-15 — Workspace UI regression follow-up
 
-- Corrected color-picker initial values so applying the toolbar's default highlight/block colors is an actual color change and triggers formatting.
-- Exposed Settings directly in the mobile top bar.
-- Aligned the narrow-width E2E check with the product contract: configured width is a maximum, not a promise to overflow its available editor column.
-- CI verification pending; no local run claimed.
+### Cross-tab recovery — plan and current evidence
+CI run `43689421532` (#918) showed that the source tab's IndexedDB draft was correctly persisted: exact content, source session ID, and workspace-handle identity all matched. The new diagnostic test itself failed because its expected Markdown newline escapes were double-escaped. Corrected those expectations in commit `418e1e5`. Next CI must verify second-tab visibility and the recovery prompt/decline flow. If it fails, inspect the first failing boundary (IndexedDB visibility, handle identity, newest-draft selection, or `open()` decision) and fix that boundary without weakening assertions. Require the full `test.sh` CI gate and container job to pass before declaring completion.
 
+## WAVE-031 verification issue split — 2026-11-15
 
-## 2026-11-15 — CI follow-up: Markdown directives and E2E stability
+- Parent reliability issue [#1](https://github.com/iamjpsonkar/Wave/issues/1) remains open pending native/manual acceptance evidence.
+- New child workstreams: [#104 WAVE-031A — native picker and real permission lifecycle](https://github.com/iamjpsonkar/Wave/issues/104); [#105 WAVE-031B — external filesystem races and backup/restore fault handling](https://github.com/iamjpsonkar/Wave/issues/105); [#106 WAVE-031C — abrupt browser termination and recovery drafts](https://github.com/iamjpsonkar/Wave/issues/106).
+- Accessibility remains tracked in existing [#3](https://github.com/iamjpsonkar/Wave/issues/3); do not create a duplicate accessibility ticket.
+- Latest verified PR #101 CI recorded on main: [run 43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), including 48/48 Playwright tests, Node tests, typecheck, production build and container job. This does not replace native/manual checks.
+- Reconciliation preserves the PR branch's implementation history and the base branch's issue split. This GitHub-only operation does not run tests or a build.
 
-- Run `43687589347` failed only in Playwright; Node tests, typecheck, production build and container build passed. The suite reported 44 passes, two deterministic failures and two flaky scenarios (cross-tab recovery and list typing).
-- Fixed malformed `[[color:red|...]]`-style directives being mistaken for unresolved wiki links: invalid `color:`/`bg:` directives now remain literal text, while valid six-digit hex directives retain their existing rendering path.
-- Corrected the block-background E2E assertion to compare the browser-computed RGB CSS value rather than expecting the source hex serialization. Removed an unnecessary frozen clock from the second cross-tab page, asserted the dialog source before checking the declined-recovery result, and made list continuation tests wait for focus/caret restoration before typing the next item.
-- Verification is pending on the new commit. No local browser run is claimed. Native OS picker/permission, external-process race, accessibility and process-termination checks remain outstanding; issue #1 stays open and PR #101 stays unmerged.
+## Main sync verification and operating procedure — 2026-11-15
 
+- Product owner manually merged the latest `main` into `manager` and force-pushed the branch. Main sync PR [#107](https://github.com/iamjpsonkar/Wave/pull/107) is closed unmerged and must remain abandoned for this purpose.
+- Verified refs at the start of this documentation pass: `main` `c421f7bcf40ec430eda90fe0a57e98464762e68f`; `manager` `6747efdf0204c1cded75fd03475a75d0cbdef60b`. Manager's tip is a merge commit whose second parent is the exact current main SHA. Compare reports manager ahead 2 / behind 0, confirming main is fully contained in manager.
+- The compare endpoint reports only two manager-only additions relative to main: `etc/howtodev.md` and `etc/howtoqa.md`. No source/test file differences were reported by that comparison.
+- Future synchronization and conflict resolution are now documented in [etc/howtodev.md](./etc/howtodev.md#main-to-feature-branch-synchronization-required-workflow), linked from [WIKI.md](./WIKI.md#main-to-feature-synchronization-and-conflict-resolution-policy), and recorded in [etc/history/dev-build.md](./etc/history/dev-build.md).
+- Verification limits: GitHub refs, commit parents, tree and compare metadata were inspected. No local checkout/status, tests, typecheck, build or CI run was executed in this environment. Check CI for the latest manager commit before claiming runtime validation.
+- This is the final developer-context update for the main-sync documentation batch.
 
-## 2026-11-15 — Cross-tab recovery CI follow-up
+## Documentation reorganization — 2026-11-15
 
-- Workflow `43688050754` passed 47 of 48 Playwright tests; Node tests (30), typecheck, production build and container image passed. The remaining failure was the cross-tab recovery test: after removing the fake clock from both pages, the source tab's 600ms autosave committed the changed Markdown before the second tab opened it, so no recovery dialog was expected and the prompt assertion received an empty string.
-- Corrected the test to freeze only the source tab's clock after workspace/page setup and before editing. Draft-journal writes remain immediate; only the delayed Markdown autosave is held. The second tab remains on real time so navigation and recovery interaction are not blocked.
-- Fresh CI is pending. No local browser execution is claimed. Outstanding manual OS picker/permission, external-process race, accessibility, and process-termination criteria remain tracked; issue #1 and PR #101 remain open.
+The project documentation library is organized under `etc/product/`, `etc/engineering/`, `etc/quality/` and `etc/history/`; see [etc/README.md](./etc/README.md). Contributor procedures and team governance are under `howto/`. The former `trash/` directory is removed. This reorganization preserves the feature catalogue, tracker IDs and history; it does not change application behavior or imply fresh test/CI verification.
 
+## 2026-11-15 — Manager-to-main documentation integrity reconciliation
 
-## 2026-11-15 — Cross-tab recovery E2E clock lifecycle
+- Reconciled the reorganized canonical registers against the latest main-branch documentation before integrating PR #110.
+- Restored the four WAVE-0001 fix-history sections that were present in main's former `trash/dev-fixed.md` but absent from the reorganized manager copy; retained the 30 Node / 48 Playwright source inventory and permission/external-edit evidence in `etc/quality/bugs.md`.
+- Repaired issue archive references to the reorganized `etc/product/`, `etc/quality/` and `etc/history/` locations and restored missing issue traceability for #104–#106 and the existing accessibility issue #3.
+- Preserved the two distinct Markdown feature-gap audit notes in the development history, with links corrected to the reorganized canonical files.
+- PR [#110](https://github.com/iamjpsonkar/Wave/pull/110) head `f1d49c174279158f1a20a8fc9efb675ab0708b66` passed CI workflow [43693734660](https://github.com/iamjpsonkar/Wave/actions/runs/43693734660). This is GitHub CI evidence for that exact pre-reconciliation head; the documentation commits created by this reconciliation require a fresh workflow before merge.
+- No application source or test code changed. No local tests, typecheck or production build were run. PR #110 remains open and unmerged.
 
-- Run `43688362527` completed with container success and 47/48 Playwright tests passing; 30 Node tests, typecheck and production build passed. The remaining test did not observe the cross-tab recovery prompt.
-- Corrected the E2E fixture to install the source page's clock only after workspace setup and baseline page save, immediately before creating the unsaved recovery draft. Removed the earlier duplicate installation before setup; the second tab remains on real time.
-- The change is limited to regression-test setup. A new PR workflow must confirm the outcome. No local tests are claimed.
+## Automated test organization tracking — 2026-11-15
 
+- New issue [#111 — restructure automated tests into feature-based suites and scenarios](https://github.com/iamjpsonkar/Wave/issues/111) tracks an inventory-first test-layout refactor. Current baseline: Node test script uses flat `tests/*.test.js` discovery; Playwright journeys are concentrated in `tests/e2e/workspace.spec.ts`.
+- Scope includes meaningful unit/integration/E2E directories, feature-oriented files/scenarios, shared fixtures/helpers where justified, recursive/explicit discovery, focused commands, and synchronized `test.sh`/CI execution.
+- Preserve all unique assertions and guarantees. Coordinate with [#100](https://github.com/iamjpsonkar/Wave/issues/100), whose narrower duplicate-test cleanup must not remove unique coverage.
+- Issue index: [github-issues.md](./etc/quality/github-issues.md). Detailed task-creation history: [dev-build.md](./etc/history/dev-build.md).
+- This was issue creation/documentation only; no source/test files changed and no tests/build were run.
 
-## Cross-tab recovery diagnostics
-- Added source-tab and second-tab IndexedDB inspections before recovery is attempted.
-- Assertions cover exact unsaved text, matching workspace handle identity, source tab ownership, and distinct tab session IDs.
-- Kept the actual cross-tab prompt assertion and the declined-draft-retention assertion unchanged.
-- Next CI result should identify whether the draft is absent at write time, invisible/mismatched in the second tab, or lost later in `open()`.
 
+## #111 diagnostic logging scope update — 2026-11-15
 
-## Cross-tab recovery — CI #918 diagnosis
-- Confirmed source tab journal record is present with exact draft text, source session ID, and matching workspace handle.
-- The diagnostic test failed because expected content encoded `\\n` rather than newline characters. Corrected both diagnostic expectations.
-- Next gate checks second-tab journal visibility and the actual recovery prompt/decline behavior. No production fix is claimed from this run.
-- Completion plan: isolate the first failing boundary, fix only that boundary, preserve strong assertions, then require the complete local/CI script and container job to pass.
+- [#111](https://github.com/iamjpsonkar/Wave/issues/111) now includes required test-run diagnostics and production failure observability in addition to test-suite restructuring.
+- Implementation must provide structured/log-level-controlled diagnostics, test failure context and CI artifacts, operation/correlation IDs, and error capture across critical workspace/storage/recovery flows.
+- Preserve Wave's local-first privacy model: redact sensitive data, never log document contents/secrets/raw paths by default, no remote telemetry without separate explicit opt-in, and keep diagnostic sinks bounded and non-blocking.
+- Detailed requirements and checklist live in the GitHub issue; task history is in [trash/dev-build.md](./trash/dev-build.md).
+- No code/test changes or verification were performed for this scope update.
 
-## WAVE-031 follow-up issue decomposition — 2026-11-15
 
-- Created [#104 — WAVE-031A](https://github.com/iamjpsonkar/Wave/issues/104) for native folder picker, cancellation, real browser/OS permission revocation and reauthorization verification.
-- Created [#105 — WAVE-031B](https://github.com/iamjpsonkar/Wave/issues/105) for external filesystem read/save races and backup/restore fault injection.
-- Created [#106 — WAVE-031C](https://github.com/iamjpsonkar/Wave/issues/106) for controlled browser-process termination and IndexedDB recovery-draft commit-boundary verification.
-- Reused existing [#3](https://github.com/iamjpsonkar/Wave/issues/3) for keyboard/focus, screen-reader and contrast audit; linked that scope to parent #1 rather than creating a duplicate.
-- Parent #1 remains open. The latest previously verified PR CI recorded on main is run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), 48/48 Playwright plus all other workflow jobs passing.
-- This reconciliation does not run tests.
+## Cross-tab recovery decline preservation — 2026-11-15
 
-## 2026-11-15 — Main synchronization verification and future workflow documentation
+- PR #110 CI run [43695466439](https://github.com/iamjpsonkar/Wave/actions/runs/43695466439) had one remaining Playwright failure: after declining another tab's recovery prompt, the original source-tab journal record was not present in the final IndexedDB snapshot. Unit tests, typecheck, production build and container build passed in that run.
+- Updated the recovery decline branch to preserve the other tab's journal record without invoking draft cleanup; added content-free ownership diagnostics. Same-tab cleanup and normal autosave remain unchanged.
+- Updated the E2E check to poll for the original record by exact content and source tab ID, avoiding a single-snapshot race while retaining a strict preservation assertion.
+- Commit and fresh CI verification are pending. Do not claim the regression fixed until the full workflow passes on the resulting head SHA.
 
-- The product owner manually synchronized `main` into `manager` and then force-pushed the feature branch. PR [#107](https://github.com/iamjpsonkar/Wave/pull/107) was closed unmerged and is abandoned for main synchronization.
-- Verified GitHub refs after the operation: `main` = `c421f7bcf40ec430eda90fe0a57e98464762e68f`; `manager` = `6747efdf0204c1cded75fd03475a75d0cbdef60b`.
-- GitHub commit metadata shows the manager tip is a merge commit with parents `d87f3e63872dc0f281b29dd37679297e62369660` and the current main SHA. GitHub compare reports `main...manager` as ahead by 2, behind by 0. This confirms the current main history is included in manager; the branch retains two manager-only commits.
-- The compare reports only two files changed relative to main: added `etc/howtodev.md` and `etc/howtoqa.md`. No other file differences were reported by the compare endpoint. The remote tree and commit metadata were inspected; no local checkout or test execution was performed for this verification.
-- Added a mandatory main-to-feature sync procedure to `etc/howtodev.md` and linked the policy from `WIKI.md`. It covers clean-tree checks, fetch, fast-forward-only main update, feature-branch merge, careful conflict resolution, ancestry/diff/test/CI verification, normal push and exceptional force-with-lease safeguards.
-- Verification is repository-metadata/source inspection only. No tests, build, local Git status, or CI run was executed for the manual merge. Check CI on the current manager head before relying on runtime behavior.
 
-## Historical feature-gap audit notes retained during documentation reorganization
-
-- Created [features-gap.md](../product/markdown-coverage.md) as the canonical remaining-scope checklist. It distinguishes shipped syntax, partial support, missing renderer capabilities, deliberate HTML/media security boundaries and missing conformance/accessibility coverage.
-- The gap audit is updated in [features-gap.md](../product/markdown-coverage.md); the compatibility contract is aligned in [docs/MARKDOWN_SUPPORT.md](../engineering/MARKDOWN_SUPPORT.md). No application code or failing E2E assertions were changed in this recheck.
-
-## Automated test suite organization issue — 2026-11-15
-
-- Created [#111 — restructure automated tests into feature-based suites and scenarios](https://github.com/iamjpsonkar/Wave/issues/111).
-- Current source inspection confirmed Node tests are discovered through the flat `tests/*.test.js` package script, while Playwright coverage is concentrated in `tests/e2e/workspace.spec.ts`. The issue requests an inventory-first migration into meaningful unit/integration/E2E feature directories, focused files and scenarios.
-- Acceptance criteria explicitly preserve all existing assertions and guarantees, maintain complete discovery through `test.sh` and CI, support focused runs, and avoid test-order coupling.
-- Coordinated scope with [#100](https://github.com/iamjpsonkar/Wave/issues/100): duplicate cleanup must retain distinct coverage; #111 is the broader organizational restructuring.
-- This was issue creation and documentation only. No test files, application code or test commands were changed/run.
-
-
-## 2026-11-15 — Complete Markdown inventory and navigation audit
-
-- Audited all **33 Markdown files** present on the manager branch against the repository tree. Checked relative Markdown links using exact, case-sensitive repository paths; the final pass found **zero broken relative Markdown links**.
-- Repaired migrated documentation references in the README, wiki, developer handoff, contributor guide, product feature/priority catalogues, open-bug register, development history and team/ownership guides. Kept the full product catalogue and historical implementation records intact.
-- Reconciled the QA operating contract across `AGENTS.md`, `WIKI.md`, `howto/howtoqa.md`, `howto/engineering-rules.md` and the legacy QA entry point: QA is read-only in the repository; actionable findings go to GitHub issues and PR review comments; developers own fixes; QA does not approve or merge without explicit authorization.
-- Source inventory checked against current test files and `package.json`: 30 Node test definitions in `tests/storage.test.js` and 48 Playwright Chromium test definitions in `tests/e2e/workspace.spec.ts`. These are definitions, not a claim that tests were run in this documentation-only task.
-- Verification scope: GitHub repository tree and Markdown content inspection only. No local test, typecheck, production build, browser run or CI result is claimed.
-### #111 scope extension — diagnostic logging and production failure observability — 2026-11-15
-
-- Expanded [#111](https://github.com/iamjpsonkar/Wave/issues/111) to require actionable diagnostics for both test failures and production failures.
-- Test requirements now include structured suite/scenario context, focused debug levels, Node failure output, Playwright traces/screenshots/console and request diagnostics, CI artifact retention, and concurrency/recovery identifiers.
-- Production requirements include a small typed structured logger, operation/correlation IDs, error-boundary and unhandled-error capture, actionable user-facing failures, and diagnostics around filesystem, permission, autosave, recovery, backup/restore and asset operations.
-- Privacy constraints are explicit: local-first by default, no silent remote telemetry, no workspace content/secrets/raw paths in logs, bounded local diagnostics, and preview/redaction before report export. Logging must never block or mask save/recovery failures.
-- This updates issue scope only; no application logger or test instrumentation has been implemented and no tests were run.
-
-
-## 2026-11-15 — Preserve another tab's recovery draft when recovery is declined
-
-- Investigated PR #110 CI run [43695466439](https://github.com/iamjpsonkar/Wave/actions/runs/43695466439): Node tests (30), typecheck, production build and container job passed; one Playwright scenario failed because the source-tab recovery journal record was absent after the second tab declined recovery.
-- Root cause in the open-page recovery path: declining a cross-tab prompt invoked the generic draft-clear operation asynchronously. That operation is scoped to the current tab, but declining another tab's draft must be a non-destructive action; do not schedule deletion at all for this branch.
-- Changed decline behavior to preserve the source record and emit a structured, content-free `[Wave recovery]` diagnostic with source-tab ownership information. Same-tab save/cleanup behavior is unchanged.
-- Strengthened the E2E assertion to poll IndexedDB for the exact source-tab record and ownership instead of taking a single immediate snapshot; this tolerates legitimate asynchronous journal/visibility events without weakening the preservation guarantee.
-- Verification is pending on the new manager head. No local test/build execution is claimed in this GitHub-only change.
-
-
-## WAVE-0111 — repair invalid test extraction and restore regression coverage — 2026-11-15
+## WAVE-0111 — test extraction repair handoff — 2026-11-15
 
 - PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111`.
-- The first extraction attempt produced malformed JavaScript in `tests/storage.test.js` and duplicated/mis-split the original storage scenarios. Restored `tests/storage.test.js` byte-for-byte from the branch base (`main`) rather than attempting another brace-based extraction.
-- Removed the invalid extracted `tests/unit/storage/workspace.test.js` and duplicate `tests/unit/safety/concurrency.test.js`; all original storage/safety scenarios remain in the canonical suite. No original assertions were intentionally removed.
-- Fixed the diagnostics test's invalid TypeScript-only import/type annotations in a `.js` file. Replaced test scripts that targeted now-removed directories with explicit valid suite paths; `npm test` remains the canonical command consumed by `test.sh` and CI.
-- Updated `tests/unit/README.md` to describe the actual layout and explicitly defer storage scenario splitting until an inventory-backed move can be verified. This is a corrective stabilization, not completion of #111's full architecture target.
-- GitHub Actions was observed queued/in progress for earlier intermediate heads; it does not verify the final head after this repair. No local test, typecheck, build or browser execution was available in this GitHub-only session. Check the newest PR workflow against the final documented SHA before claiming a pass.
+- Repaired the broken test extraction by restoring `tests/storage.test.js` from `main` and deleting the malformed duplicate storage and safety split files. The original regression scenarios remain in the canonical storage suite; do not claim the feature-based split is complete.
+- Corrected `tests/unit/diagnostics/diagnostics.test.js` to valid JavaScript, fixed the test scripts to reference only extant test paths, and updated `tests/unit/README.md` to document the actual transitional layout.
+- Updated `etc/history/dev-build.md` with the corrective work and verification caveats.
+- GitHub Actions runs on intermediate SHAs were queued/in progress; they do not verify this final documentation commit. No local tests, typecheck, build or Playwright run were executed in this GitHub-only session. Verify the latest CI workflow for the exact PR head before claiming success or making the PR ready.
+- Remaining #111 scope: inventory-backed feature/layer split without lost assertions, robust Playwright failure artifacts, app diagnostics integration at critical failure boundaries, focused debug controls, and full local/CI verification. PR #115 remains draft.
 
 
-## WAVE-0111 — feature-based test architecture and diagnostics — 2026-11-15
+## WAVE-0111 — completed test architecture and diagnostics handoff — 2026-11-15
 
-- PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111`.
-- Reorganized all 30 original Node scenarios into `tests/unit/storage/workspace.test.js` (6), `tests/unit/storage/trash-backup.test.js` (13), and `tests/unit/safety/concurrency.test.js` (11). Shared in-memory filesystem fixtures now live in `tests/helpers/storage-fixtures.js`.
-- Reorganized all 48 original Playwright scenarios into workspace (18), Markdown (21), and editor (9) suites under `tests/e2e/`; shared workspace setup helpers live in `tests/e2e/fixtures/workspace.ts`.
-- Performed a source-inventory name reconciliation against the branch base: Node tests 30 → 30 (no missing, extra or duplicate names); E2E tests 48 → 48 (no missing, extra or duplicate names). This confirms scenario-name preservation, not assertion equivalence or runtime success by itself.
-- Updated Node discovery and focused scripts, retained `./test.sh` as the canonical full gate, and configured Playwright HTML reporting plus failure trace/screenshot/video. CI uploads `test-results/` and `playwright-report/` for 14 days.
-- Added typed diagnostics with level control, operation IDs, redaction, sink isolation and a bounded 200-event in-memory history. Root render/uncaught runtime failures and critical workspace operations report structured events. Settings exposes a sanitized report preview/copy/clear flow; `?waveDebug=1` opts into info/debug console output. No remote telemetry or persistent diagnostic store was added.
-- CI issue found and corrected during implementation: Node 22 treats a directory path passed directly to `node --test` as a file, so discovery now uses shell-expanded `tests/unit/**/*.test.js` globs and focused one-level globs.
-- Verification is pending for the latest head after the discovery correction and final diagnostics/docs updates. Earlier CI on intermediate commits failed for the invalid directory invocation and must not be counted as final verification. No local checkout/test execution was available in this GitHub-only session.
-- Review current Actions run for the exact final PR SHA before marking the PR ready. Do not close #111 or merge without full Node, typecheck, production build, Playwright and container success.
+- PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111` (base `main`).
+- Node suite: all 30 original storage/safety scenarios moved intact into `tests/unit/storage/` and `tests/unit/safety/`; shared in-memory filesystem fixtures are in `tests/helpers/storage-fixtures.js`. Five diagnostics contract tests bring the current Node total to 35.
+- Browser suite: all 48 original Playwright journeys moved intact into `tests/e2e/workspace/`, `tests/e2e/markdown/` and `tests/e2e/editor/`; shared browser workspace setup is in `tests/e2e/fixtures/workspace.ts`.
+- Source inventory reconciliation against the branch base found no missing, extra or duplicate scenario names: 30/30 Node and 48/48 E2E.
+- `npm test` uses Node's built-in recursive discovery. Focused commands are `npm run test:unit:storage`, `npm run test:unit:safety`, and `npm run test:unit:diagnostics`. `./test.sh` remains the canonical full gate used by CI.
+- Playwright retains HTML reports, traces, screenshots and video on failure. CI uploads diagnostic artifacts with 14-day retention. Runtime diagnostics are structured, level-controlled, redacted and bounded to 200 in-memory events; the user can preview/copy/clear a sanitized report in Settings. `?waveDebug=1` opts into debug output. No remote telemetry or persistent diagnostic storage.
+- Full CI run [43700194483](https://github.com/iamjpsonkar/Wave/actions/runs/43700194483) passed on source head `ada90b58b05247358604a644a3e6902edcbed80f`: 35 Node tests, typecheck, production build, 48 Playwright tests and container job all passed. Artifact `wave-playwright-diagnostics` was uploaded (1.5 MB, 14-day retention).
+- This task used GitHub repository operations only; no local checkout or local test execution is claimed. The final docs commit and workflow artifact-path extension also trigger a fresh CI run; verify the latest PR workflow against the final head before merging.
+- PR #115 is open and should be reviewed/merged by the repository owner; do not merge or close issue #111 automatically.
 
 
-## WAVE-0111 review follow-up — diagnostic privacy and autosave instrumentation
+## PR #115 review follow-up — diagnostic privacy and isolation (2026-11-15)
 
-- Review [5910111707](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910111707) on PR #115.
-- Hardened diagnostics with allowlisted string values and strict event names; unknown strings redact regardless of field key. Added a sanitized bounded cause-chain representation; raw stacks are deliberately omitted due to path/content leakage risk.
-- Autosave persistence failures now emit one event at the central `persistDocument` boundary using an operation ID created by the save timer. The timer catch remains UI-only to prevent duplicate events.
-- Playwright fixture now creates a unique OPFS directory per browser context. Multi-tab tests use the app's recent-workspace handle instead of a fixed global directory.
-- Documented why the present storage/safety split matches the current Node-test inventory and why no standalone integration directory exists without a distinct application/storage seam.
-- GitHub API-only edits: no local checkout/test run. Fresh CI on the exact final SHA is required; review's full UI failure-injection coverage is not yet proven by local execution.
+- Review 5910111707 identified missing failure-boundary events, missing operation correlation, permissive string fields, absent sanitized causes, test-layer rationale, shared fixed OPFS name and missing E2E failure-injection coverage.
+- Follow-up updates strict diagnostic vocabularies and sanitizes error names/messages and bounded cause chains. Raw stacks remain excluded because browser frames may disclose workspace paths or user-derived values.
+- Autosave failure reports once at central `persistDocument` using the save timer's operation ID; timer catch remains for UI state only.
+- Playwright now creates unique OPFS directories per browser context. Multi-tab scenarios reopen the user-selected workspace through the remembered handle.
+- Test-layer rationale: storage contract cases share one in-memory filesystem adapter; concurrency/recovery primitives are isolated in safety; true UI integration is exercised through Playwright. A separate Node integration layer awaits a genuinely distinct injectable app/storage boundary.
+- GitHub-only edits; local tests/typecheck/build were not run. Verify full CI on the exact resulting SHA.
 
 
 ## WAVE-0111 second review follow-up (2026-11-15)
@@ -545,98 +815,156 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 
 ## WAVE-0111 recovery pipeline diagnostics (2026-11-15)
 
-- Run [43704827319](https://github.com/iamjpsonkar/Wave/actions/runs/43704827319) showed the cross-tab recovery assertion still failing and exposed a test diagnostics bug: the failure handler referenced an undefined `recoveryLogs`.
-- Added structured debug-only draft-journal events for lock wait/acquire/release, save plans, reads, and clear plans/completions. Events record operation/stage and bounded counts only; they do not log document content, paths, or tab IDs. Removed raw `console.info('[Wave recovery]')` journal logging.
-- Passed the document-open operation ID through draft journal read/clear calls and the document persistence operation ID through journal clear, so traces can be correlated.
-- Fixed the failure handler to capture both tabs' logs and enabled `?waveDebug=1` for the cross-tab regression to retain the journal ownership/locking evidence in CI.
-- Root timing issue in the test: `page.clock.install()` alone installs the controllable clock but does not pause time. The test now explicitly calls `page.clock.pauseAt(new Date())` before creating the unsaved draft, preventing the 600 ms autosave timer from committing the source document and clearing its journal before the second tab inspects it.
-- Follow-up full CI is required on the final documentation commit. The nested-breadcrumb timeout remains separately tracked until a fresh run determines whether it reproduces after the recovery test is deterministic.
+- Investigated recurring cross-tab recovery failure from runs 43704827319 and 43705311985. The test had treated `page.clock.install()` as a frozen clock, but Playwright continues advancing timers unless explicitly paused. The source document's 600 ms autosave could therefore commit and clear its own journal before the second tab inspected it.
+- Regression test now explicitly pauses the source tab clock with `page.clock.pauseAt(new Date())` after installation and before typing the unsaved source draft.
+- Added privacy-safe structured debug diagnostics to `draftJournal.ts`: lock wait/acquire/release, save plan, read result, clear plan and clear completion. Events include operation/stage and bounded counts only; no document content, path or tab ID. Removed direct recovery `console.info` output.
+- Threaded operation IDs through document-open journal reads/clears and persistence journal cleanup. The cross-tab E2E test enables `?waveDebug=1` in both tabs, captures both tabs' logs, and fixes the undefined failure-handler variable.
+- Node tests passed in the prior run; full E2E verification must pass on the final exact PR head before merge. The nested-breadcrumb timeout was separately observed as flaky and must be monitored in the next full run.
 
-## 2026-11-15 — PR #115 final diagnostics review follow-up
+## PR #115 final diagnostics review follow-up — 2026-11-15
 
-- Addressed the two remaining findings from review [5910312606](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910312606).
-- Operation IDs are now created at the user-action boundary and threaded through `flush`, `persistDocument`, nested copy synchronization, Trash refresh, and failure reporting for document create/template, duplicate, Trash move, backup create, workspace activation, document open, and reload workflows. Independent user actions retain independent IDs.
-- Reworked the recovery diagnostics E2E scenario: a normal-mode document open must emit no recovery debug trace; the same journey with `?waveDebug=1` must emit structured debug events, and all stages from that open must share one operation ID.
-- Source and test changes are committed to `WAVE-0111`. Exact-head CI has not yet been run for this follow-up; verification remains pending.
-
-
-## PR #115 follow-up — review 5910351108 (2026-11-15)
-
-- Threaded the attachment workflow's operation ID through both pre/post asset flush calls so persistence events correlate with attachment failure reporting.
-- Threaded the page-exit recovery operation ID through saveDraft() as well as its failure report.
-- Strengthened the browser-level logging test: it captures normal-bootstrap console output and asserts no [Wave] diagnostics are emitted, then repeats a document open with ?waveDebug=1 and asserts structured recovery debug events share one operation ID.
-- refresh() remains a separate inventory/settings-read sub-operation with its own ID because it is also called independently from user actions; its prune failure is not treated as part of a parent action's persistence transaction.
-- Exact-head full CI is required before considering these review findings closed.
-
-## 2026-11-15 — Issue #117: publish MIT licensing terms
-
-- Owner decision: MIT License (SPDX identifier: `MIT`); copyright notice approved as `Copyright (c) 2026 Jay Prakash Sonkar`.
-- Added the complete canonical MIT license text at the repository root in `LICENSE`, substituting only the approved holder/year line.
-- Added an accurate README license section describing permissive reuse, modification and redistribution, the notice condition, warranty/liability disclaimer, and the rationale for selecting MIT.
-- Declared `"license": "MIT"` in `package.json` and the root package entry in `package-lock.json`.
-- Documented inbound contribution expectations in `etc/engineering/CONTRIBUTING.md`: contributions intended for inclusion are offered under MIT, contributors retain copyright, and no CLA/DCO is introduced.
-- Corrected WIKI.md's stale root CONTRIBUTING.md references to the actual canonical guide at `etc/engineering/CONTRIBUTING.md`; indexed the license in `etc/README.md`.
-- Work is on branch `WAVE-0117`; exact-head CI and GitHub default-branch license detection remain pending. No local tests/build are claimed for this GitHub-only documentation/metadata change.
-
-## 2026-11-15 — Issue #118: third-party dependency and asset license audit
-
-- Audited the default-branch npm lockfile (lockfileVersion 3): 221 resolved package entries, all with declared license metadata — MIT 210, ISC 7, Apache-2.0 2, BSD-3-Clause 1 and CC-BY-4.0 1. The CC-BY-4.0 entry is `caniuse-lite@1.0.30001826`; release attribution must be preserved and reviewed against its upstream LICENSE/source attribution record.
-- Identified Lucide React icons (`lucide-react@0.468.0`, ISC) and runtime Google Fonts families DM Sans, DM Mono and Playfair Display (SIL OFL 1.1). Font binaries are not checked into the repo; exact runtime font bytes are not pinned. Mermaid/Graphviz SVG output and sample templates are authored by Wave. Workspace media is user-provided local content.
-- Added `THIRD_PARTY_NOTICES.md` with the dated inventory, source links, obligations, audit limitations, and repeatable update process. README and `etc/README.md` link to it.
-- Added `scripts/check-dependency-licenses.mjs`, `npm run license:audit`, `npm run license:audit:json`, and `npm run test:license`. CI runs the audit after `npm ci`; the checker fails on missing or unrecognized SPDX declarations.
-- Added ongoing maintenance requirements to `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md`: verify exact upstream license/NOTICE files, inventory new assets, preserve attribution and escalate ambiguous terms. CI's check is metadata screening only, not a legal compatibility opinion.
-- Open follow-up items: inspect each package's actual LICENSE/NOTICE files before release redistribution; verify the exact attribution string and distribution conditions for caniuse-lite; pin or self-host Google Fonts with OFL text/author records if deterministic/offline assets are required. No license terms have been changed and no package/asset has been replaced.
-- Branch `WAVE-0118`. This work was performed through the GitHub API; no local execution or CI result is claimed yet. Exact-head CI and script runtime verification remain pending.
-
-## 2026-11-15 — Issue #118 audit maintenance refinement
-
-- Committed the exact dependency snapshot at `etc/legal/dependency-license-inventory.json`: 221 lockfile packages with each resolved version, declared license, npm source URL, integrity digest and dev-only marker. Snapshot was structurally reconciled against the current lockfile; all 221 records matched.
-- Strengthened `scripts/check-dependency-licenses.mjs` to compare that committed snapshot with current package-lock metadata, fail on stale inventory, missing declarations or unrecognized license identifiers, and provide an explicit reviewed refresh command (`npm run license:audit:update`). This is a lockfile metadata guard, not a per-package legal review.
-- Added package-specific attention to `baseline-browser-mapping@2.11.37` and `typescript@5.7.3` (Apache-2.0), and documented the package-level CC-BY-4.0 item and attribution follow-up for caniuse-lite.
-- The exact inventory refresh removes volatile lockfile blob SHA from the content comparison so regenerating the same package metadata does not create a false stale-inventory failure.
-- Verification remains GitHub source/metadata inspection only. Script runtime, full CI and individual tarball LICENSE/NOTICE review are not yet verified.
-
-## 2026-11-15 — Issue #118 CI follow-up: inventory comparison normalization
-
-- Exact PR #121 workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) showed the new audit command executing successfully through npm but failing its inventory freshness comparison. The container job passed; later build/E2E steps were skipped due to the audit failure.
-- The committed inventory's 221 records were already structurally identical to the package-lock entries. The failure came from JSON serialization differences in property ordering and omitted/optional fields, not a dependency license change.
-- Updated the checker to compare normalized semantic fields, sort package records by install path and license-count keys, and ignore non-content baseline metadata. Re-run CI on the new exact head before claiming the fix.
-
-## 2026-11-15 — Issue #118 exact-head CI passed
-
-- After correcting the inventory snapshot comparator, exact-head PR [#121](https://github.com/iamjpsonkar/Wave/pull/121) workflow [43711329699](https://github.com/iamjpsonkar/Wave/actions/runs/43711329699) passed on `d6a1f49feddfec6bcee930807d779e2390e1c977`.
-- The license audit passed and confirmed the checked-in 221-package inventory matches the lockfile. Node tests, typecheck, production build and Playwright E2E all passed through `./test.sh`; container Compose validation and image build also passed.
-- The first run [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) failed at the new metadata guard due to JSON serialization/order differences; normalized semantic comparison fixed that issue and was verified by the successful exact-head run.
-- Remaining acceptance work is legal-source validation, not CI: inspect actual package LICENSE/NOTICE files as part of release review, verify caniuse-lite's attribution text, and capture/pin font assets/notices if self-hosting or bundling is chosen. The metadata scanner remains a triage control, not a legal compatibility opinion.
+- Branch: `WAVE-0111`; PR: [#115](https://github.com/iamjpsonkar/Wave/pull/115).
+- Completed the outstanding operation-correlation work from review [5910312606](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910312606). `flush(operationId)` now forwards its ID to `persistDocument`; parent IDs are threaded through create/template, duplicate, Trash move and refresh, backup create, workspace activation, document open and reload, including nested copy synchronization.
+- Replaced the prior weak debug-gating E2E check with assertions that default-mode opens emit no recovery debug trace, `?waveDebug=1` emits structured debug events, and all events from one open share a single operation ID.
+- Updated `tests/unit/README.md` and `etc/history/dev-build.md` with the implementation and pending verification status.
+- Latest implementation commit before this handoff update: see branch `WAVE-0111` HEAD. The exact-head CI for this follow-up is not yet verified. Do not merge until it passes and review is satisfied.
 
 
-## 2026-11-15 — Issue #118 / PR #121 license audit follow-up
+## PR #115 review 5910351108 follow-up
 
-- PR: [#121](https://github.com/iamjpsonkar/Wave/pull/121), branch `WAVE-0118`, target `main`.
-- Follow-up commit: `61f7425c44e182780c5d6d97c30b03d41024a8d6`; updates `THIRD_PARTY_NOTICES.md` with the upstream caniuse.com attribution instruction for `caniuse-lite@1.0.30001826`, source/version references for Apache-2.0 packages, Feather-derived Lucide icon attribution caveat, and a strict statement of what has not been inspected.
-- Source evidence: caniuse upstream says attribution may mention caniuse.com; versioned npm metadata confirms baseline-browser-mapping 2.11.37 Apache-2.0 and caniuse-lite 1.0.30001826 CC-BY-4.0; TypeScript 5.7.3 package manifest lists license and third-party notice files. See PR text and THIRD_PARTY_NOTICES.md.
-- CI: historical exact-head run [43711589863](https://github.com/iamjpsonkar/Wave/actions/runs/43711589863) passed for prior PR head `9085b0a5743e13ef86b89bf5187b7b58cea7c5c9`. Follow-up head `61f7425c44e182780c5d6d97c30b03d41024a8d6` triggered run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333); at handoff, both build and container jobs were in progress. The license audit step on this run has passed; full functional/build/E2E and container results remain pending.
-- Environment limitation: GitHub-only connector cannot execute local npm commands or unpack/download npm tarballs. Do not claim local test execution. Exact contents of all 221 package tarballs and exact Apache NOTICE presence remain unverified; release artifact notice inclusion must be checked. The audit is metadata/inventory plus targeted upstream-source review, not legal certification.
-- PR #121 remains open and #118 remains open. Do not merge/close until the updated exact-head CI passes and remaining distribution review is actually completed or explicitly dispositioned by the project owner/legal reviewer.
+- Fixed operation-ID loss in attachment(): both pre- and post-asset flush calls now receive the ID created at the attachment action boundary.
+- Fixed page-exit draft correlation: savePendingDraft() passes its operation ID into saveDraft() and the failure event.
+- Strengthened E2E coverage to assert that ordinary app bootstrap/open generates no [Wave] console diagnostics, while the same document-open flow with ?waveDebug=1 emits structured recovery debug events sharing one operation ID.
+- refresh() intentionally represents an independent listing/settings-prune operation and creates its own ID; it can run outside any parent action and does not share a persistence transaction.
+- CI verification on the resulting exact SHA is pending; earlier green CI does not verify these changes.
 
-## 2026-11-15 — Wave commit and documentation cohesion policy
+## Issue #117 — explicit MIT licensing published on WAVE-0117 (2026-11-15)
 
-- Owner direction: minimize commit count. Documentation updates that describe or track an implementation belong in the same commit as its code, tests and configuration changes; do not make separate documentation-only commits for the same task.
-- Established the default of one cohesive commit per task. Split only genuinely independent, logically reviewable phases; do not combine unrelated tasks merely to reduce the count.
-- Require a complete diff review before push and exact-head CI verification afterward. Amend unshared commits when useful; do not rewrite shared main history. Detailed policy is recorded in AGENTS.md and referenced from WIKI.md and the contributor guide.
+- Owner explicitly selected the MIT License; the follow-up "go ahead" approved the proposed notice `Copyright (c) 2026 Jay Prakash Sonkar`.
+- Added root `LICENSE` using the canonical ChooseALicense MIT text, with only the year and copyright-holder placeholders replaced by the approved values.
+- Added README license summary and rationale; declared SPDX identifier `MIT` in root `package.json` and the root package entry of `package-lock.json`.
+- Added contributor licensing expectations to `etc/engineering/CONTRIBUTING.md`: contributions submitted for inclusion are offered under MIT, contributors retain their copyright, and no CLA/DCO requirement is introduced.
+- Updated `WIKI.md` to use the actual canonical contributor-guide path and to index the license; kept its documentation map table contiguous. Updated `etc/README.md` and README contributor links.
+- Branch: `WAVE-0117`. This is a GitHub API-only documentation/metadata change; no local tests, typecheck or build were run. Exact-head GitHub Actions verification is pending. GitHub's detected-license metadata is tied to the default branch and cannot be considered complete until this PR is merged.
+
+## Issue #118 — third-party license audit and maintenance controls (2026-11-15)
+
+- Default-branch lockfile audit: npm lockfileVersion 3, 221 package entries, all declared license metadata (MIT 210, ISC 7, Apache-2.0 2, BSD-3-Clause 1, CC-BY-4.0 1). The non-MIT data-license item is `caniuse-lite@1.0.30001826` (CC-BY-4.0); exact release attribution remains a manual release-review requirement.
+- Asset/source inventory: runtime Google Fonts DM Sans, DM Mono and Playfair Display (SIL OFL 1.1; font binaries not committed/pinned); Lucide React icons (`lucide-react@0.468.0`, ISC); Mermaid/Graphviz SVGs and Markdown templates are authored by Wave; end-user workspace images/media are user-provided and local. No tracked standalone image/font assets were identified in the repository tree audit.
+- Added `THIRD_PARTY_NOTICES.md` for third-party license/attribution inventory and `scripts/check-dependency-licenses.mjs` for exact lockfile metadata screening. Added npm scripts `license:audit`, `license:audit:json`, and `test:license`; CI now executes the audit after `npm ci`.
+- Ongoing maintenance rules added to `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md`; README and `etc/README.md` link to notices. Recheck exact upstream LICENSE/NOTICE files for modified/added packages; document all external assets, preserve attribution and escalate uncertain/possibly incompatible terms.
+- Limitations: metadata scan is not legal compatibility review and does not prove notice contents were preserved. Each package's exact tarball license/NOTICE has not yet been individually checked. caniuse-lite attribution and package-specific Apache NOTICE requirements need release artifact verification. Google Fonts exact font bytes are not pinned. No material was relicensed or substituted.
+- Branch `WAVE-0118`. GitHub API-only edits; local checker execution and exact-head CI are pending. Update this handoff last after any further documentation corrections.
+
+
+## Issue #118 — exact dependency inventory and ongoing maintenance (2026-11-15)
+
+- Added committed snapshot `etc/legal/dependency-license-inventory.json` with all 221 exact package entries from the lockfile: install path, package name/version, declared license, resolved npm tarball, integrity digest and dev-only marker. Counts: MIT 210, ISC 7, Apache-2.0 2, BSD-3-Clause 1, CC-BY-4.0 1. Snapshot data reconciled against the current branch lockfile; all records matched.
+- Audit metadata identifies Apache-2.0 packages `baseline-browser-mapping@2.11.37` and dev-only `typescript@5.7.3`; `caniuse-lite@1.0.30001826` is CC-BY-4.0. The notices file records Lucide React ISC and runtime Google Fonts DM Sans, DM Mono and Playfair Display under OFL-1.1; fonts are runtime-loaded and unpinned.
+- `scripts/check-dependency-licenses.mjs` now compares the committed exact inventory against `package-lock.json`; it fails on stale inventory, missing license declarations or unrecognized identifiers. Npm commands: `license:audit`, `license:audit:json`, `license:audit:update`, and `test:license`. CI invokes the audit after `npm ci`.
+- `THIRD_PARTY_NOTICES.md`, README, `etc/README.md`, `AGENTS.md`, `WIKI.md`, and `etc/engineering/CONTRIBUTING.md` now prescribe how to record and review future dependency and external-asset updates. Refresh the JSON only after reviewing upstream terms; inspect the full generated diff; preserve NOTICE/attribution material; escalate ambiguous terms.
+- Legal/verification limitations remain explicit: the 221 package tarballs' LICENSE/NOTICE files were not individually compared; Apache package-specific NOTICE presence and CC-BY attribution wording need release-artifact verification; Google Fonts CSS responses and exact font binaries are not pinned. The audit checker is not a legal compatibility opinion. No materials were changed or relicensed.
+- Branch: `WAVE-0118`. GitHub API-only changes; no local script execution or CI result claimed. Exact-head CI pending.
+
+
+### Issue #118 exact-head CI follow-up — 2026-11-15
+
+- The first PR #121 workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) ran `npm ci` successfully and then failed at `npm run license:audit`; the container job passed, while remaining build/browser steps were skipped. Log showed all 221 package counts as expected but the snapshot comparator considered inventory stale.
+- Independently compared all 221 snapshot package records with package-lock entries; exact names, versions, license IDs, registry sources, integrity digests and dev-only flags matched. Root cause was JSON serialization/property ordering and optional-field comparison.
+- Checker now compares normalized semantic fields and stable sorting. This correction is committed on `WAVE-0118`; the new exact-head workflow result is still required. Do not report CI green until it finishes.
+
+
+### Issue #118 exact-head CI final result — 2026-11-15
+
+- PR [#121](https://github.com/iamjpsonkar/Wave/pull/121) exact-head workflow [43711329699](https://github.com/iamjpsonkar/Wave/actions/runs/43711329699) completed successfully on source head `d6a1f49feddfec6bcee930807d779e2390e1c977`.
+- Passed jobs: build and container. The build job passed `npm ci`, the dependency-license inventory audit, Playwright runner setup, Chromium install, and the full `./test.sh --skip-install --skip-playwright-install --skip-browser-install` gate (Node tests, typecheck, production build, E2E); the container job passed Compose config validation and image build.
+- The first workflow [43711176098](https://github.com/iamjpsonkar/Wave/actions/runs/43711176098) failed only at inventory freshness comparison. The checker now normalizes record fields and sorts packages before comparison; the corrected exact-head CI passed.
+- PR description was updated with the exact-head green run. PR #121 remains open and mergeable pending owner review. Issue #118 was reopened because it had been auto/consolidation-closed as duplicate of #120 while this delivery remains under review; a status comment records the reason.
+- Remaining legal source-review gaps: package tarball LICENSE/NOTICE files were not individually compared, Apache NOTICE requirements and caniuse-lite attribution need release-artifact inspection, and the unpinned runtime Google Fonts files require capture/notice work only if the project chooses to self-host or bundle them. Do not imply these legal checks are complete from green CI.
+
+
+## 14. Third-party license audit follow-up — 2026-11-15
+
+- Work is in [PR #121](https://github.com/iamjpsonkar/Wave/pull/121), branch `WAVE-0118`, target `main`; broader consolidated tracking remains in [#120](https://github.com/iamjpsonkar/Wave/issues/120).
+- Follow-up notice correction: commit `61f7425c44e182780c5d6d97c30b03d41024a8d6` documents caniuse.com's CC-BY-4.0 attribution instruction, versioned source references for Apache-2.0 dependencies, Feather-derived Lucide attribution caveat and remaining package artifact review boundaries.
+- Documentation history was appended in `etc/history/dev-build.md` (commit `d76a97d7e8fe3f676561e247807de6bb69b50501`) and `WIKI.md` (commit `9a3c81b6feb58492b94a39cd8d4311459311e099`).
+- CI run [43712184333](https://github.com/iamjpsonkar/Wave/actions/runs/43712184333) was in progress at the last inspection. Its npm ci and metadata license audit steps passed; remaining Playwright/build/container stages had not yet finished. Recheck before reporting.
+- Important limitation: exact LICENSE/NOTICE content across all 221 locked npm tarballs and final distribution artifact inclusion has not been verified. The GitHub-only tool session cannot run local npm or unpack the tarballs. This issue is not legally certified complete; keep #118 and PR #121 open until exact artifact review is completed or explicitly dispositioned by the owner/legal reviewer.
+
+
+## 2026-11-15 — Keep npm lockfile tracked
+
+- Removed `package-lock.json` from `.gitignore` in commit `fa9de6a18305704d7f560086490255238d116726` on `WAVE-0118`.
+- Verified `package-lock.json` remains present and tracked on both `main` and `WAVE-0118` (same blob SHA `0b67bf1a95283010f1aaeb7983f622e7248bebf1`).
+- This is required for reproducible `npm ci` installs and the committed dependency license inventory check.
+
+## 2026-11-15 — Commit discipline for future tasks
+
+- Owner direction: minimize commit count and keep documentation updates with the implementation they describe.
+- Default to one cohesive commit per task containing related code, tests, configuration and relevant Markdown documentation/history. Do not create separate documentation-only commits for the same task.
+- Split commits only for genuinely independent, reviewable phases or technical necessity; do not combine unrelated work just to reduce count.
+- Review the complete diff before pushing, then verify CI against the exact pushed SHA. Amend unshared commits where appropriate; never rewrite shared main history.
+- The authoritative detailed policy is in AGENTS.md; contributor and agent guidance also appears in etc/engineering/CONTRIBUTING.md and WIKI.md.
 
 
 
-## 2026-11-15 — PR #121 review findings corrected
+## 2026-11-15 — PR #121 review remediation
 
-- Corrected npm lockfile package-name extraction to use the final `node_modules/` segment and preserve complete scoped names; nested packages no longer expose ancestor install paths as names.
-- Added focused Node regression tests for nested unscoped names, nested scoped names and root scoped names. The inventory snapshot was regenerated with corrected package names.
-- Reconciled the audit-start baseline in `THIRD_PARTY_NOTICES.md` to the actual PR base SHA `7e895f26b05288dc8edfebcf03e14efe954950f5`, matching the checker and PR base metadata.
-- These corrections address the two accuracy findings in review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985). Legal release-artifact inspection limitations remain open; green CI is not legal sign-off.
+- Addressed review [5910646985](https://github.com/iamjpsonkar/Wave/pull/121#pullrequestreview-5910646985): dependency inventory names now derive from the final `node_modules/` path segment, including complete scoped names; regression coverage includes nested unscoped, nested scoped and root scoped packages.
+- Regenerated `etc/legal/dependency-license-inventory.json` with corrected package names and aligned the audit baseline in `THIRD_PARTY_NOTICES.md` to PR base SHA `7e895f26b05288dc8edfebcf03e14efe954950f5`.
+- Full exact-head CI is required before treating the code findings as verified. Previously documented package tarball/LICENSE/NOTICE and final distribution attribution checks remain open and must not be represented as legally complete.
 
 
-## 2026-11-15 — PR #121 test import failure corrected
+## 2026-11-15 — PR #121 CI test import fix
 
-- Exact-head CI run [43713413195](https://github.com/iamjpsonkar/Wave/actions/runs/43713413195) passed `npm ci`, the license inventory audit and container build, but the unit gate found the new regression test imported the checker from an incorrect relative path.
-- Extracted the lockfile inventory normalization into the side-effect-free `scripts/dependency-license-inventory.mjs` module. The CLI checker imports that helper, and the focused test imports the pure module directly; tests no longer execute the CLI audit as an import side effect.
-- Corrected the test module path and retained nested scoped/unscoped and root scoped package assertions. A new exact-head CI run is required; prior results do not verify this correction.
+- Run [43713413195](https://github.com/iamjpsonkar/Wave/actions/runs/43713413195) exposed an incorrect relative import in the new license inventory regression test. The npm audit and container build had passed; the full Node unit gate failed before executing that test.
+- Extracted inventory normalization into side-effect-free `scripts/dependency-license-inventory.mjs`; CLI checker imports it, tests import the helper directly, and the relative path is corrected. Exact-head CI is required after this fix.
+
+## Issue #120 — security program kickoff (2026-11-15)
+
+- Active tracker: [#120](https://github.com/iamjpsonkar/Wave/issues/120). Consolidated scope from #44, #89 and #118 remains preserved; no inherited checklist scope is considered complete from consolidation alone.
+- PR [#121](https://github.com/iamjpsonkar/Wave/pull/121) merged to `main` at `04afcf448e0d45b743fd8324071b1339301904e2`. Exact-head CI [43713585404](https://github.com/iamjpsonkar/Wave/actions/runs/43713585404) passed both jobs: npm ci, license audit, Playwright setup, `./test.sh` and container Compose/image build.
+- First implementation branch: `WAVE-0120`, based on the merged main commit. Scope is CI workflow hardening: read-only token permissions, immutable action SHA pins, explicit job timeouts and concurrency cancellation. Functional and container gates are retained.
+- Next scanner slices remain open: Dependabot and dependency advisory/CVE coverage (npm audit plus OSV), secret scanning, CodeQL/SARIF, filesystem/container scanning, Sonar configuration/explicit skip behavior, then application threat model and privacy/content/file/permission controls.
+- Legal limitations from #118 remain: individual exact-version npm tarball LICENSE/NOTICE files and final release-artifact attribution have not been exhaustively checked. The automated audit is not legal sign-off.
+- Source was inspected through GitHub. No local test or YAML/Docker validation is claimed; await exact-head CI for this branch.
+
+## Mobile navigation drawer close contract
+
+When the mobile drawer is open, render an explicit close button in a higher stacking layer than the sidebar. The backdrop is behind the sidebar and can be occluded by it; Playwright center-clicks are therefore not a reliable way to activate the backdrop. Keep the close button keyboard accessible and explicitly test it.
+
+## Security automation and application security handoff — 2026-11-15
+
+Current security tranche adds .github/dependabot.yml and dedicated workflows for npm audit, OSV-Scanner, Gitleaks, CodeQL, Trivy and Sonar. CI parses every workflow YAML file and checks for top-level permissions, concurrency, explicit timeouts, no pull_request_target, and full-SHA action/reusable-workflow pins. See docs/SECURITY_OPERATIONS.md for triggers, thresholds, owner configuration and triage; see docs/SECURITY_THREAT_MODEL.md for source-backed controls and limitations.
+
+Application-side changes in this tranche: production Nginx CSP and cross-origin/security headers; removed remote Google Fonts requests; external Markdown links use noopener noreferrer; SVG Markdown image previews are disabled; attachments are limited to 25 MiB and known active/executable extensions/MIME types are rejected before storage. Existing rehype-sanitize and path validation remain in place. New storage tests cover blocked SVG and oversized files.
+
+Important limitations: Wave still stores Markdown/assets as ordinary plaintext; no vault encryption/key recovery, E2E sync, teams/permissions, plugin execution/sandbox, integration secret store, remote sharing, access audit log, archive extraction or malware scanning of user workspace files exists. Sonar is intentionally skipped with a visible awaiting-configuration state until owner variables/secrets are added. Dependabot security alerts/updates and GitHub secret scanning/push protection also need owner-side settings. Automated license scans do not settle exact tarball NOTICE/legal obligations. Keep #120 open.
+
+
+## 2026-11-15 — Replace Sonar with free, credential-free static analysis
+
+- Removed the Sonar workflow because the hosted service required owner credentials and a paid plan was not justified for this project.
+- Added OpenGrep 2.0.0 SAST workflow using the immutable Linux x86 release binary and a pinned SHA-256 digest; local Wave-specific rules are in `.github/opengrep-rules.yml`. Findings and parser/config errors fail the scan; SARIF is retained as a short-lived artifact.
+- Added ESLint 10.15.0, @eslint/js 10.0.1, typescript-eslint 8.72.2 and globals 17.14.0 in a separate CI workflow. Tooling is installed transiently with exact versions after npm ci so Wave's application lockfile/runtime dependencies remain unchanged. JavaScript recommended rules block; TypeScript recommended rules are warnings during initial baseline.
+- Added `eslint.config.mjs`; updated README, WIKI, security operations, documentation index, AGENTS and CONTRIBUTING. Corrected the README's stale Google Fonts statement to match the existing system-font implementation.
+- Exact-head GitHub Actions validation is pending for this branch update. Do not claim OpenGrep or ESLint clean until their new workflows complete successfully; review and disposition TypeScript lint warnings before ratcheting them to blocking.
+
+
+### ESLint first-run remediation — 2026-11-15
+
+- First run identified one blocking `preserve-caught-error` finding in `scripts/check-dependency-licenses.mjs`; the caught file-read error is now attached as `cause` rather than flattened into the message.
+- Initial warning baseline includes unused imports/variables in the legacy tests and app. These remain warnings and are not silently suppressed; review them separately before changing the warning policy.
+
+
+### Gitleaks false-positive triage — 2026-11-15
+
+- Gitleaks reported a historical commit SHA in etc/history/dev-build.md as generic-api-key. Confirmed the value shape and context are Git commit identifiers, not credentials. Added a path- and line-pattern-scoped allowlist in .gitleaks.toml; no broad rule suppression was introduced. Re-run Gitleaks on the exact resulting commit.
+
+
+## 2026-11-15 — Static-analysis verification
+
+- OpenGrep 2.0.0 validation and blocking scan passed after the rules YAML/CLI syntax corrections; release binary checksum verification passed.
+- Gitleaks passed with the narrow historical commit-ID allowlist in .gitleaks.toml.
+- ESLint passed with 0 errors and 161 warning-level unused-variable/import findings. These remain a visible cleanup baseline, not a claim of warning-free lint.
+- All eight workflows passed on pre-consolidation head f645cfacf539645aff6d3b5bc0bbf86b5478ef31, including 50 Playwright tests. A one-commit consolidation follows; rerun all workflows on the final squashed commit.

@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   addAsset, backUpAndResetWorkspaceSettings, createBackup, createDoc, createFolder, createUniqueDirectory, listBackups,
+  MAX_ATTACHMENT_SIZE_BYTES, validateAttachmentFile,
   listTrashDetailed, openWorkspace, readDoc, readWorkspaceSettings, restoreBackupToNewWorkspace, restoreTrashItem, moveDocToTrash, listDocs, searchDocs,
   saveDoc, saveDocIfUnchanged, slug
 } from '../../../src/storage.ts';
@@ -52,4 +53,14 @@ test('concurrent same-name asset uploads receive distinct filenames',async()=>{
   assert.notEqual(one,two);
   assert.equal(await(await(await workspace.assets.getFileHandle(one)).getFile()).text(),'one');
   assert.equal(await(await(await workspace.assets.getFileHandle(two)).getFile()).text(),'two');
+});
+
+test('attachment validation rejects active content and oversized files before writing',async()=>{
+  const {workspace}=await fixture();
+  const svg=new File(['<svg onload="alert(1)"></svg>'],'drawing.svg',{type:'image/svg+xml'});
+  assert.throws(()=>validateAttachmentFile(svg),/executable or active content/);
+  await assert.rejects(()=>addAsset(workspace.assets,svg),/executable or active content/);
+  const oversized={name:'large.bin',size:MAX_ATTACHMENT_SIZE_BYTES+1,type:'application/octet-stream'};
+  assert.throws(()=>validateAttachmentFile(oversized),/25 MiB or smaller/);
+  assert.doesNotThrow(()=>validateAttachmentFile(new File(['safe'],'document.pdf',{type:'application/pdf'})));
 });

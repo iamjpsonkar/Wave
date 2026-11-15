@@ -1,0 +1,64 @@
+# Wave security and privacy threat model
+
+> Status: initial source-backed threat model, 2026-11-15. This is an engineering baseline, not a security certification or completed review.
+
+## Product and trust boundaries
+
+Wave is a browser-based, local-first workspace. A user explicitly selects a directory through the browser File System Access API. Wave stores Markdown documents and ordinary attachment files beneath that directory in .wave/. The browser-local IndexedDB registry stores a workspace handle; the draft journal stores temporary unsaved recovery content. There is no Wave application backend, account service, team server, cloud sync service or server-side sharing service in the current product.
+
+Primary trust boundaries:
+1. User-selected filesystem: workspace files are user-controlled and may be malicious, malformed, stale, oversized or externally modified.
+2. Browser origin/runtime: Wave code executes in the browser with filesystem access only after the user grants/retains permission. Browser vulnerabilities and compromised dependencies remain in scope.
+3. Markdown and attachment rendering: document content, links, image/media references, code blocks and filenames are untrusted input.
+4. Build and release supply chain: npm packages, GitHub Actions, scanner images, Docker base images and generated artifacts can be compromised or vulnerable.
+5. External navigation: users may choose to follow external links. Wave must not fetch remote document content or silently upload workspace content.
+
+## Assets and security objectives
+
+| Asset | Objective |
+|---|---|
+| Markdown documents and attachments | Confidentiality, integrity, availability, portability |
+| Workspace manifest, settings, backups and Trash | Integrity and recoverability |
+| Temporary browser recovery drafts and workspace handles | Local confidentiality and safe lifecycle |
+| Browser filesystem permission | Least privilege; user-initiated selection and revocation |
+| Dependency, action and container build chain | Integrity, vulnerability visibility, reproducibility |
+| Diagnostics and CI reports | No workspace content, credential or matched-secret disclosure |
+
+## Threat actors and abuse cases
+
+- A malicious document or attachment attempts script execution, unsafe navigation, remote resource loading, path traversal or resource exhaustion.
+- A malicious or compromised dependency/action attempts to exfiltrate source, secrets or workspace data during CI/build.
+- A malicious PR attempts to access repository secrets or write to the default branch/security settings.
+- A local process modifies a document between read and save, or injects malformed metadata/path names.
+- A compromised container/base image introduces vulnerable OS packages or unexpected runtime behavior.
+- A user unintentionally attaches an executable or active-content document.
+
+## Current controls verified in source
+
+- Markdown preview uses react-markdown, remark-gfm and rehype-sanitize; raw HTML is not enabled with rehype-raw.
+- External links open in a separate browsing context with noopener noreferrer; local media/assets resolve only from the workspace asset directory.
+- Workspace paths reject absolute paths, empty segments, dot segments, backslashes, colons and NULs before filesystem traversal.
+- Attachment names are normalized and collision-safe. This tranche adds a 25 MiB limit and rejects known executable/active-content extensions and MIME types.
+- Existing storage code verifies saved attachment size and uses collision checks; backups are verified before listing/restoring.
+- Production Nginx receives a restrictive Content Security Policy and standard security headers. Remote Google Fonts loading is removed to avoid unsolicited third-party font requests.
+- GitHub workflows use read-only defaults, pinned actions, explicit timeouts/concurrency and no secrets for fork PR scanners. Sonar is gated on owner-provided configuration.
+- npm, OSV, Gitleaks, CodeQL and Trivy are configured as independent automated checks.
+
+## Known limitations and unimplemented product capabilities
+
+These are intentionally not represented as shipped:
+- No encryption-at-rest vault or password/key recovery; workspace Markdown and assets are ordinary plaintext files.
+- No end-to-end sync, key rotation or device revocation; there is no sync service.
+- No team/document permission model, plugin runtime/capability sandbox, integration credential store or automation execution environment.
+- No server-backed sharing links, expiry/revocation, public publishing service or access/admin audit log.
+- No archive extraction/import flow exists; do not add one without archive traversal, symlink, size/entry-count and bomb-resistance design.
+- No built-in malware scanner is installed. CI scanners analyze repository/dependencies/container, not a user's private workspace attachments. Do not upload user files to a remote scanning service without explicit product approval and consent.
+- Native browser permission revocation, OS-level malware defense, compromised browser extensions and physical-device compromise remain outside Wave's current guarantees.
+
+## Required follow-up review
+
+1. Review the file size/type policy against supported attachment use cases and add additional safe formats only with tests.
+2. Perform a focused manual review of every renderer/custom Markdown component and every filesystem entry point.
+3. Decide whether an optional local encryption vault is a product priority; specify threat model, recovery, key derivation, migration, backup and key-loss semantics before implementation.
+4. Keep sync, teams, plugins, sharing and malware scanning blocked behind explicit product decisions and privacy review.
+5. Revisit this document when data flow, permissions, dependencies, renderer or deployment architecture changes.

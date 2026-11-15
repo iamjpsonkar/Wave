@@ -73,8 +73,11 @@ test('mobile navigation drawer opens and closes', async ({ page }) => {
   await openWorkspace(page);
   await page.getByRole('button', { name: 'Open navigation' }).click();
   await expect(page.locator('aside.sidebar')).toHaveClass(/mobile-open/);
-  await page.getByRole('button', { name: 'Close navigation' }).click();
+  const closeDrawer = page.getByRole('button', { name: 'Close navigation drawer' });
+  await expect(closeDrawer).toBeVisible();
+  await closeDrawer.click();
   await expect(page.locator('aside.sidebar')).not.toHaveClass(/mobile-open/);
+  await expect(page.getByRole('button', { name: 'Close navigation drawer' })).toHaveCount(0);
 });
 
 test('backup and restore create a separate verified workspace folder', async ({ page }) => {

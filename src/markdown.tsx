@@ -586,7 +586,7 @@ function AsciiDocInline({text}:{text:string}) {
     if(token.startsWith('*'))nodes.push(createElement('strong',{key:index++},token.slice(1,-1)));
     else if(token.startsWith('_'))nodes.push(createElement('em',{key:index++},token.slice(1,-1)));
     else if(token.startsWith(tick))nodes.push(createElement('code',{key:index++},token.slice(1,-1)));
-    else{const link=token.match(/^link:([^\[]+)\[([^\]]*)\]$/);if(link&&/^https?:\/\//i.test(link[1]))nodes.push(createElement('a',{key:index++,href:link[1],target:'_blank',rel:'noreferrer'},link[2]||link[1]));else nodes.push(token);}
+    else{const link=token.match(/^link:([^\[]+)\[([^\]]*)\]$/);if(link&&/^https?:\/\//i.test(link[1]))nodes.push(createElement('a',{key:index++,href:link[1],target:'_blank',rel:'noopener noreferrer'},link[2]||link[1]));else nodes.push(token);}
     last=at+token.length;
   }
   if(last<text.length)nodes.push(text.slice(last));return createElement('span',null,...nodes);

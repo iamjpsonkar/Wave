@@ -464,7 +464,34 @@ export async function permanentlyDeleteTrashItem(trash: FileSystemDirectoryHandl
     try{await trash.removeEntry(id+'.op.json');}catch(error){if(!isNotFound(error))throw error;}
   });
 }
+export const MAX_ATTACHMENT_SIZE_BYTES = 25 * 1024 * 1024;
+const BLOCKED_ATTACHMENT_EXTENSIONS = new Set([
+  'svg','html','htm','xhtml','js','mjs','cjs','wasm','exe','dll','bat','cmd','ps1','sh',
+  'jar','msi','apk','dmg','app','vbs','hta','scr','com','php','phtml','cgi'
+]);
+const BLOCKED_ATTACHMENT_MIME_TYPES = new Set([
+  'image/svg+xml','text/html','application/xhtml+xml','text/javascript','application/javascript',
+  'application/ecmascript','application/wasm','application/x-msdownload','application/x-executable',
+  'application/x-sh','application/x-httpd-php'
+]);
+
+export function validateAttachmentFile(file: File): void {
+  if (!file || typeof file.size !== 'number' || !Number.isFinite(file.size) || file.size < 0) {
+    throw new Error('Invalid attachment file.');
+  }
+  if (file.size > MAX_ATTACHMENT_SIZE_BYTES) {
+    throw new Error('Attachments must be 25 MiB or smaller.');
+  }
+  const name = String(file.name ?? '').replaceAll('\\\\', '/').split('/').pop() ?? '';
+  const extension = name.includes('.') ? name.split('.').pop()!.toLowerCase() : '';
+  const mime = String(file.type ?? '').split(';', 1)[0].trim().toLowerCase();
+  if (BLOCKED_ATTACHMENT_EXTENSIONS.has(extension) || BLOCKED_ATTACHMENT_MIME_TYPES.has(mime)) {
+    throw new Error('This file type can contain executable or active content and cannot be attached.');
+  }
+}
+
 export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Promise<string> {
+  validateAttachmentFile(file);
   const original=file.name.split(/[\\\\/]/).pop()||'attachment';
   const cleaned=original.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'attachment';
   const dot=cleaned.lastIndexOf('.'),stem=dot>0?cleaned.slice(0,dot):cleaned,ext=dot>0?cleaned.slice(dot):'';
