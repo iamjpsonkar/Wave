@@ -882,3 +882,8 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Historical `etc/history/` logs are intentionally excluded from link enforcement because their path references document prior repository layouts and must remain historical records.
 - README documents `npm run test:links`. Exact-head CI is pending after these fixes; the initial integration run failed on the stale paths and must not be reported as passing.
 
+### Markdown link audit CI update
+
+- Functional gate on head `51206763337da0027ee8cf9f759439686a322228` passed: 42 Node tests, typecheck, production build and 50/50 Playwright. Container build, npm audit, OSV, CodeQL, OpenGrep, Gitleaks and Trivy also passed.
+- ESLint identified one checker lint error (redundant initialization) and an unused import; both were corrected in a subsequent commit. Fresh exact-head CI is pending. Do not report the PR as fully green until that run completes.
+
