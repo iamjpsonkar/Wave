@@ -490,3 +490,13 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Changed decline behavior to preserve the source record and emit a structured, content-free `[Wave recovery]` diagnostic with source-tab ownership information. Same-tab save/cleanup behavior is unchanged.
 - Strengthened the E2E assertion to poll IndexedDB for the exact source-tab record and ownership instead of taking a single immediate snapshot; this tolerates legitimate asynchronous journal/visibility events without weakening the preservation guarantee.
 - Verification is pending on the new manager head. No local test/build execution is claimed in this GitHub-only change.
+
+
+## WAVE-0111 — repair invalid test extraction and restore regression coverage — 2026-11-15
+
+- PR [#115](https://github.com/iamjpsonkar/Wave/pull/115), issue [#111](https://github.com/iamjpsonkar/Wave/issues/111), branch `WAVE-0111`.
+- The first extraction attempt produced malformed JavaScript in `tests/storage.test.js` and duplicated/mis-split the original storage scenarios. Restored `tests/storage.test.js` byte-for-byte from the branch base (`main`) rather than attempting another brace-based extraction.
+- Removed the invalid extracted `tests/unit/storage/workspace.test.js` and duplicate `tests/unit/safety/concurrency.test.js`; all original storage/safety scenarios remain in the canonical suite. No original assertions were intentionally removed.
+- Fixed the diagnostics test's invalid TypeScript-only import/type annotations in a `.js` file. Replaced test scripts that targeted now-removed directories with explicit valid suite paths; `npm test` remains the canonical command consumed by `test.sh` and CI.
+- Updated `tests/unit/README.md` to describe the actual layout and explicitly defer storage scenario splitting until an inventory-backed move can be verified. This is a corrective stabilization, not completion of #111's full architecture target.
+- GitHub Actions was observed queued/in progress for earlier intermediate heads; it does not verify the final head after this repair. No local test, typecheck, build or browser execution was available in this GitHub-only session. Check the newest PR workflow against the final documented SHA before claiming a pass.
