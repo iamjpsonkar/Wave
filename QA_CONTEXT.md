@@ -506,3 +506,10 @@ Important documentation drift observed at the same HEAD:
 - The cross-tab recovery E2E now inspects the IndexedDB journal in both tabs before attempting recovery.
 - It verifies the source record's content, owning session ID, and `FileSystemDirectoryHandle.isSameEntry()` relationship; the second tab must observe that same record while having a distinct session ID.
 - These assertions distinguish a failed journal write, workspace-handle mismatch, cross-tab visibility problem, and recovery-dialog logic failure. The recovery prompt and decline-preserves-record assertions remain intact.
+
+
+### Cross-tab recovery — latest CI diagnosis and plan
+- CI run `43689421532` (#918) reached 48 Playwright scenarios; the only persistent failure was in the new diagnostic assertion before the second tab attempted recovery. The source journal contained the exact draft, correct source `tabId`, and `sameWorkspace: true`.
+- Root cause of this run's failure: the test expectation encoded newline escapes twice, so it compared literal `\\n` sequences with actual Markdown line breaks. This was a test assertion defect, not evidence of a failed IndexedDB write or workspace-handle mismatch.
+- Corrected the expected strings to use actual newline escapes. Next verification must proceed through second-tab visibility, distinct session identity, recovery prompt source, and declined-draft retention.
+- Plan: (1) prove the second tab sees the source record; (2) if not, isolate IndexedDB origin/context and workspace-handle identity; (3) if visible, instrument `getDraft()` selection and `open()` decision; (4) fix only the failing production boundary; (5) rerun the complete `test.sh` CI gate and require all Node, typecheck, build, E2E, and container jobs to pass. Do not mask the test with sleeps, retries, or weakened assertions.
