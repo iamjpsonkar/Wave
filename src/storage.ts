@@ -475,6 +475,30 @@ const BLOCKED_ATTACHMENT_MIME_TYPES = new Set([
   'application/x-sh','application/x-httpd-php'
 ]);
 
+const ACTIVE_ATTACHMENT_SIGNATURES: Array<{ mime: string; matches: (bytes: Uint8Array) => boolean }> = [
+  { mime: 'image/svg+xml', matches: bytes => new TextDecoder().decode(bytes).trimStart().startsWith('<svg') || /^<\\?xml[\\s\\S]*?<svg\\b/i.test(new TextDecoder().decode(bytes)) },
+  { mime: 'text/html', matches: bytes => /^\\s*(?:<!doctype\\s+html|<html\\b|<script\\b|<iframe\\b)/i.test(new TextDecoder().decode(bytes)) },
+  { mime: 'application/pdf', matches: bytes => bytes[0]===0x25&&bytes[1]===0x50&&bytes[2]===0x44&&bytes[3]===0x46 },
+  { mime: 'image/png', matches: bytes => bytes.length>=8&&bytes[0]===0x89&&bytes[1]===0x50&&bytes[2]===0x4e&&bytes[3]===0x47&&bytes[4]===0x0d&&bytes[5]===0x0a&&bytes[6]===0x1a&&bytes[7]===0x0a },
+  { mime: 'image/jpeg', matches: bytes => bytes.length>=3&&bytes[0]===0xff&&bytes[1]===0xd8&&bytes[2]===0xff },
+  { mime: 'image/gif', matches: bytes => bytes.length>=6&&String.fromCharCode(...bytes.slice(0,6)).match(/^GIF8[79]a$/)!==null },
+  { mime: 'image/webp', matches: bytes => bytes.length>=12&&String.fromCharCode(...bytes.slice(0,4))==='RIFF'&&String.fromCharCode(...bytes.slice(8,12))==='WEBP' },
+  { mime: 'image/bmp', matches: bytes => bytes.length>=2&&bytes[0]===0x42&&bytes[1]===0x4d },
+  { mime: 'image/x-icon', matches: bytes => bytes.length>=4&&bytes[0]===0&&bytes[1]===0&&bytes[2]===1&&bytes[3]===0 },
+  { mime: 'application/zip', matches: bytes => bytes.length>=4&&bytes[0]===0x50&&bytes[1]===0x4b&&[0x03,0x05,0x07].includes(bytes[2])&&[0x04,0x06,0x08].includes(bytes[3]) },
+  { mime: 'application/gzip', matches: bytes => bytes.length>=2&&bytes[0]===0x1f&&bytes[1]===0x8b },
+  { mime: 'application/wasm', matches: bytes => bytes.length>=4&&bytes[0]===0&&bytes[1]===0x61&&bytes[2]===0x73&&bytes[3]===0x6d }
+];
+
+function extensionMimeMismatch(extension: string, mime: string): boolean {
+  const groups: Record<string,string[]> = {
+    png:['png'],jpg:['jpeg','jpg'],jpeg:['jpeg','jpg'],gif:['gif'],webp:['webp'],bmp:['bmp'],ico:['x-icon','vnd.microsoft.icon'],
+    pdf:['pdf'],zip:['zip'],gz:['gzip'],wasm:['wasm'],svg:['svg+xml'],html:['html','xhtml+xml'],htm:['html']
+  };
+  const expected=groups[extension];
+  return Boolean(expected && mime && mime!=='application/octet-stream' && !expected.some(value=>mime.endsWith(value)));
+}
+
 export function validateAttachmentFile(file: File): void {
   if (!file || typeof file.size !== 'number' || !Number.isFinite(file.size) || file.size < 0) {
     throw new Error('Invalid attachment file.');
@@ -488,10 +512,23 @@ export function validateAttachmentFile(file: File): void {
   if (BLOCKED_ATTACHMENT_EXTENSIONS.has(extension) || BLOCKED_ATTACHMENT_MIME_TYPES.has(mime)) {
     throw new Error('This file type can contain executable or active content and cannot be attached.');
   }
+  if (extensionMimeMismatch(extension,mime)) {
+    throw new Error('The attachment extension and MIME type do not match.');
+  }
+}
+
+export async function validateAttachmentContent(file: File): Promise<void> {
+  const candidates=ACTIVE_ATTACHMENT_SIGNATURES.filter(item=>item.mime===file.type);
+  if(!candidates.length||!file.size)return;
+  const bytes=new Uint8Array(await file.slice(0,512).arrayBuffer());
+  if(!candidates.some(item=>item.matches(bytes))) {
+    throw new Error('The attachment content does not match its declared file type.');
+  }
 }
 
 export async function addAsset(dir: FileSystemDirectoryHandle, file: File): Promise<string> {
   validateAttachmentFile(file);
+  await validateAttachmentContent(file);
   const original=file.name.split(/[\\\\/]/).pop()||'attachment';
   const cleaned=original.normalize('NFKD').replace(/[^a-zA-Z0-9._-]+/g,'-').replace(/^-+|-+$/g,'').slice(0,100)||'attachment';
   const dot=cleaned.lastIndexOf('.'),stem=dot>0?cleaned.slice(0,dot):cleaned,ext=dot>0?cleaned.slice(dot):'';
