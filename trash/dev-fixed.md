@@ -4,6 +4,18 @@
 > Updated: 2026-11-14  
 > Purpose: record development fixes and code-level changes independently from the QA registers.
 
+## 2026-11-15 — WAVE-0100 storage regression test deduplication
+
+### Changes
+- Removed the repeated workspace-lock/backup/save interleaving scenario, retaining one canonical workspace-wide lock test.
+- Removed the repeated copied-file mutation scenario, retaining one canonical copied-snapshot integrity test.
+- Added a distinct source-mutation-during-copy scenario. The test changes the source after the copy read, then verifies backup rejection, preservation of the external source change, and exclusion from the valid backup list.
+- Strengthened the successful backup test to read the backup's Markdown document and compare its exact content.
+- Reviewed all test names: **29 definitions, 29 unique names**. No production code changed.
+
+### Verification
+Source/test review only. No local Node test execution was performed; PR CI is pending. No test pass is claimed.
+
 ## 2026-11-14 — Cross-tab recovery draft provenance
 
 ### Problem identified
@@ -301,16 +313,3 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Commits: sample component `65fb14ba86541accb9a36617588dbd80b9c65b99`; App integration `148fc99d14bfbc792e4be0a830938cbf001a791e`, escape correction `40ca59461ae6cab5c2b772f4e11b32d07d55e26f`, event typing `e55a34748dcf02c1ec6ae2c87aa27afadb7aa664`; CSS `6ffe152c88fec619cca223871d51086894ebe408`, nav alignment `c1f7265ed48cafe50dc9fab2fb8975c59aa0700b`; E2E `4c616bba1d7c3e37408834b8fdba117918f4e321`, syntax correction `81261223084692acf14486db9d937cd77238e055`.
 - CI: run `43632920367` passed Node tests, TypeScript typecheck and production build, but E2E stopped at parse time due to an extra suite-closing `});` that had been left before the PDF scenario. Removed that stray token in `8126122`; fresh CI run `43633086687` is queued. The CSS-only run `43632988620` failed for the same E2E parse issue before the correction. No E2E pass or visual QA is claimed yet.
 - Regression follow-up: expanded the list Enter scenario to verify nested indentation and that Enter inside a fenced code block remains a normal newline. The empty-task-item expectation now explicitly checks the blank line that terminates the list. Test commit `757d8edba0925432bf8c5027924074ee8331a1eb`; CI run `43633137209` is in progress. Earlier run `43633086687` passed Node tests, typecheck and production build; Playwright execution was still running at the last check.
-
-## 2026-11-15 — WAVE-0100 storage regression test deduplication
-
-### Changes
-- Removed the repeated workspace-lock/backup/save interleaving scenario, retaining one canonical workspace-wide lock test.
-- Removed the repeated copied-file mutation scenario, retaining one canonical copied-snapshot integrity test.
-- Added a distinct source-mutation-during-copy scenario. The test changes the source after the copy read, then verifies backup rejection, preservation of the external source change, and exclusion from the valid backup list.
-- Strengthened the successful backup test to read the backup's Markdown document and compare its exact content.
-- Reviewed all test names: **29 definitions, 29 unique names**. No production code changed.
-
-### Verification
-Source/test review only. No local Node test execution was performed; PR CI is pending. No test pass is claimed.
-
