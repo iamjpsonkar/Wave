@@ -735,3 +735,9 @@ The initial Trivy attempt found a HIGH Dockerfile non-root configuration issue a
 - Job [132840278700](https://github.com/iamjpsonkar/Wave/actions/runs/43723476897/job/132840278700) failed in unit tests (36 passed, 3 failed), before E2E. The new byte-signature gate was too strict for existing fake image fixtures and caused the permission test to fail before reaching the permission check.
 - Refined checks to catch active SVG/HTML payload masquerading and known archive/container signature mismatches, while preserving legacy benign attachment behavior. Updated the permission fixture with valid PNG header bytes and changed spoof tests to use signatures that are genuinely detected.
 - Changes are on `WAVE-0120`; fresh exact-head CI is required. No local execution is claimed.
+
+
+### Latest CI follow-up — 2026-11-15
+
+- Run [43723789551](https://github.com/iamjpsonkar/Wave/actions/runs/43723789551) on head `963df45cda13803bb0db52850aabd65863218213`: container build passed; Main CI reached unit tests and failed one attachment-signature assertion (38/39 passed). Exact log points to `tests/unit/storage/workspace.test.js:69`: recognized ZIP bytes declared as text/plain were not rejected.
+- Root cause is a policy gap: ZIP/gzip signatures were detected but not treated as required matching container MIME. The validator change now rejects these known container signatures on MIME mismatch while preserving unknown/opaque payload compatibility. Regression coverage updated. New exact-head workflows must be checked before claiming pass.
