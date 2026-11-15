@@ -2,10 +2,11 @@ import { expect } from '@playwright/test';
 
 export async function installWorkspaceFixture(page: import('@playwright/test').Page) {
   await page.addInitScript(async () => {
-    // A stable OPFS entry lets multiple tabs open the same workspace while
-    // each test still receives an isolated browser context.
+    // Each browser context receives an isolated OPFS workspace. Multi-tab
+    // scenarios reopen the same workspace through the recent-workspace handle.
+    const fixtureId = 'wave-e2e-' + crypto.randomUUID();
     const opfsRoot = await navigator.storage.getDirectory();
-    const root = await opfsRoot.getDirectoryHandle('wave-e2e-shared-workspace', { create: true });
+    const root = await opfsRoot.getDirectoryHandle(fixtureId, { create: true });
     Object.defineProperty(window, '__waveTestRoot', { value: root, configurable: true });
     Object.defineProperty(window, 'showDirectoryPicker', { value: async () => root, configurable: true });
     const permissionPrototype = Object.getPrototypeOf(root);
