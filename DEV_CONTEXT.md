@@ -783,3 +783,13 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Full CI run [43700194483](https://github.com/iamjpsonkar/Wave/actions/runs/43700194483) passed on source head `ada90b58b05247358604a644a3e6902edcbed80f`: 35 Node tests, typecheck, production build, 48 Playwright tests and container job all passed. Artifact `wave-playwright-diagnostics` was uploaded (1.5 MB, 14-day retention).
 - This task used GitHub repository operations only; no local checkout or local test execution is claimed. The final docs commit and workflow artifact-path extension also trigger a fresh CI run; verify the latest PR workflow against the final head before merging.
 - PR #115 is open and should be reviewed/merged by the repository owner; do not merge or close issue #111 automatically.
+
+
+## PR #115 review follow-up — diagnostic privacy and isolation (2026-11-15)
+
+- Review 5910111707 identified missing failure-boundary events, missing operation correlation, permissive string fields, absent sanitized causes, test-layer rationale, shared fixed OPFS name and missing E2E failure-injection coverage.
+- Follow-up updates strict diagnostic vocabularies and sanitizes error names/messages and bounded cause chains. Raw stacks remain excluded because browser frames may disclose workspace paths or user-derived values.
+- Autosave failure reports once at central `persistDocument` using the save timer's operation ID; timer catch remains for UI state only.
+- Playwright now creates unique OPFS directories per browser context. Multi-tab scenarios reopen the user-selected workspace through the remembered handle.
+- Test-layer rationale: storage contract cases share one in-memory filesystem adapter; concurrency/recovery primitives are isolated in safety; true UI integration is exercised through Playwright. A separate Node integration layer awaits a genuinely distinct injectable app/storage boundary.
+- GitHub-only edits; local tests/typecheck/build were not run. Verify full CI on the exact resulting SHA.
