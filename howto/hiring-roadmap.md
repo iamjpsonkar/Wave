@@ -128,3 +128,20 @@ Use outcomes rather than raw activity:
 - Documentation freshness and onboarding time.
 
 Do not optimize for lines of code, number of commits, tickets closed or headcount alone.
+
+
+## 10. Hiring decision gate
+
+Before opening a role, document:
+- The measurable bottleneck and why existing role combinations cannot address it.
+- The outcomes expected in the first 30/60/90 days.
+- Required skills versus skills that can be learned.
+- Reporting line, decision authority and collaboration expectations.
+- Budget, employment model, location/time-zone and legal constraints.
+- Onboarding owner, access scope and security/data-handling requirements.
+
+Do not infer that the illustrative headcounts in this roadmap are approved vacancies or a committed budget. The Founder/Product Owner must approve hiring and compensation decisions.
+
+## 11. AI agents as an execution multiplier
+
+AI agents may support research, implementation, testing, code review and documentation. They are not organizational officers and do not receive implicit authority to approve releases, change product policy, access secrets, modify repository protections or make irreversible decisions. Assign each agent a bounded task, least-privilege tools, acceptance criteria and a human accountable reviewer.
