@@ -930,3 +930,12 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - A mismatch fails closed: the restore status is marked `failed`, and `openWorkspace` continues to reject the incomplete destination.
 - Added a deterministic regression that mutates a backup document between the copy read and final verification, then asserts the restore is rejected and the destination cannot be opened.
 - No local tests, typecheck, build, Playwright, or Docker checks were run in this GitHub-only edit. Exact-head CI is required before merge.
+
+
+## 2026-11-15 — Markdown preview route hardening (#120)
+
+- Branch: `WAVE-0120-markdown-route-hardening`, based on `c38649a8b74154e041ff82e87a3cc5206af7ea75`.
+- Fixed a source-audited render-crash path: malformed percent encoding in a user-authored `https://wave.invalid/page/` link previously threw from `decodeURIComponent` inside the ReactMarkdown renderer. It now degrades to an inert unresolved link; valid internal links continue to resolve only against known workspace documents.
+- Added a Playwright regression for malformed internal page and media routes and verifies surrounding preview content remains rendered.
+- Updated `docs/SECURITY_THREAT_MODEL.md` and the WIKI security checklist with the boundary and regression coverage.
+- No local tests, typecheck, build, Playwright, or Docker checks were run in this GitHub-only edit. Exact-head CI is required before merge.

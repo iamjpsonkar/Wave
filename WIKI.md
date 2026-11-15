@@ -592,6 +592,7 @@ These are recommendations, not claims of implementation. Add them to the appropr
 ### D. Security and privacy
 
 1. Maintain a threat model covering workspace files, browser storage, Markdown/HTML, attachments/imports, remote links, plugins and optional sync.
+   - Regression coverage exercises malformed percent-encoded reserved preview routes; invalid internal page links remain inert and cannot crash the Markdown preview.
 2. Review CSP, dependency updates, MIME sniffing, attachment size/type limits and unsafe archive extraction.
 3. Add a visible network/data-flow disclosure when optional online features are enabled.
 4. Add privacy-safe diagnostics with no page contents, filenames, secrets or workspace paths in logs.

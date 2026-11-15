@@ -617,6 +617,25 @@ test('Markdown link schemes and local media paths enforce the preview security b
   await expect(preview.locator('.missing-asset')).toHaveCount(5);
 });
 
+test('Malformed reserved Wave preview routes remain inert instead of crashing Markdown rendering', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'Malformed Internal Routes');
+  await editor.fill([
+    '# Malformed Internal Routes',
+    '',
+    '[Malformed internal page](https://wave.invalid/page/%E0%A4%A)',
+    '',
+    '[Malformed local media](https://wave.invalid/media/audio/%E0%A4%A)',
+    '',
+    'Preview remains available after invalid route input.'
+  ].join('\n'));
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
+  const preview = page.locator('.markdown-preview');
+  await expect(preview.locator('.wiki-link-unresolved[title="Invalid internal page link"]')).toContainText('Malformed internal page');
+  await expect(preview.locator('.missing-asset')).toContainText('Invalid local media path');
+  await expect(preview).toContainText('Preview remains available after invalid route input.');
+});
+
 test('Markdown Mermaid mindmap, timeline, quadrant, requirement and architecture renderers expose source', async ({ page }) => {
   await openWorkspace(page);
   const editor = await createPage(page, 'More Mermaid Families');

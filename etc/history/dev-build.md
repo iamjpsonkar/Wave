@@ -1203,3 +1203,12 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Added equivalent consistency checks for `manifest.json` and `settings.json`, including detection of files appearing, disappearing or changing during copy.
 - Added a regression that mutates a source backup document after its copy read. The restore must reject, persist a failed marker, and remain blocked by `openWorkspace`.
 - Verification is pending exact-head GitHub Actions. No local test/build execution is claimed.
+
+
+## 2026-11-15 — Harden malformed internal Markdown preview routes (#120)
+
+- Source audit found that a user-authored HTTPS link using Wave's reserved `https://wave.invalid/page/` preview namespace reached an unguarded `decodeURIComponent` call in the custom ReactMarkdown link renderer. A malformed percent-encoded path could throw during render and take down the preview instead of degrading to inert content.
+- Wrapped decoding of the reserved internal page route in a narrow try/catch. Invalid encodings now render as an unresolved internal link; valid links still resolve only against the current workspace document list. Existing local-media route decoding already fails closed and is now covered by the same regression scenario.
+- Added a Playwright regression covering malformed page and media route encodings and asserting the remainder of the preview remains visible.
+- Updated the threat model and WIKI security guidance. This is a narrow renderer hardening increment, not a complete Markdown/security audit.
+- No local tests, typecheck, build, browser run or Docker checks were executed in this GitHub-only edit. Exact-head CI is required before merge.
