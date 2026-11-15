@@ -10,7 +10,7 @@ The retired planning, defect, UI-backlog and development-log Markdown files are 
 
 ## Summary
 
-- **92 open issues verified:** 10 existing defect/gap issues, 1 detailed UI feature backlog issue, 80 roadmap tracking issues, and 1 priority/dependency planning issue.
+- **94 open issues verified:** 10 original defect/gap issues, 1 detailed UI feature backlog issue, 80 roadmap tracking issues, 1 priority/dependency planning issue, and 2 newly identified repository-quality issues (#99–#100).
 - **971 unchecked/in-progress checklist entries** from `upcoming-features.md` are represented in the roadmap issue checklists.
 - Entries are grouped by their existing blueprint subsection, with exact source wording and source line comments retained.
 - Release-sequence, product-coverage and competitor-coverage checklists are retained as their own traceability issues; repeated feature requirements are intentionally not deleted.
@@ -33,6 +33,8 @@ The retired planning, defect, UI-backlog and development-log Markdown files are 
 | [#10](https://github.com/iamjpsonkar/Wave/issues/10) | Native local-first visual diagram editor |
 | [#92](https://github.com/iamjpsonkar/Wave/issues/92) | Remaining UI feature proposals UIF-003–UIF-021; supplements #4, #5, #11, #13 and #32 without duplicating their broad scope |
 | [#98](https://github.com/iamjpsonkar/Wave/issues/98) | Priority order, dependency gates and release sequencing from `trash/priority-features.md` |
+| [#99](https://github.com/iamjpsonkar/Wave/issues/99) | Broken case-sensitive and stale Markdown navigation links across README/wiki/developer context |
+| [#100](https://github.com/iamjpsonkar/Wave/issues/100) | Duplicate storage backup/locking regression test scenarios; consolidate without reducing coverage |
 
 ## Historical archives (closed)
 
