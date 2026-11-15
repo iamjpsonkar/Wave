@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { addDiagnosticSink, configureDiagnostics, createOperationId, reportDiagnostic, resetDiagnosticsForTests, type DiagnosticEvent } from '../../../src/diagnostics.ts';
+import { addDiagnosticSink, configureDiagnostics, createOperationId, reportDiagnostic, resetDiagnosticsForTests } from '../../../src/diagnostics.ts';
 
 test.afterEach(() => resetDiagnosticsForTests());
 
 test('diagnostic events include stable structure and operation correlation', () => {
-  const events: DiagnosticEvent[] = [];
+  const events = [];
   addDiagnosticSink({ write: event => events.push(event) });
   const operationId = createOperationId();
   reportDiagnostic('error', 'storage:write-failed', { operation: 'save', attempt: 2 }, operationId);
@@ -18,7 +18,7 @@ test('diagnostic events include stable structure and operation correlation', () 
 });
 
 test('diagnostics redact sensitive fields before dispatch', () => {
-  const events: DiagnosticEvent[] = [];
+  const events = [];
   addDiagnosticSink({ write: event => events.push(event) });
   reportDiagnostic('warn', 'workspace:operation', { documentContent: '# private', filePath: '/private/notes.md', operation: 'backup' });
   assert.equal(events[0].fields.documentContent, '[redacted]');
@@ -27,7 +27,7 @@ test('diagnostics redact sensitive fields before dispatch', () => {
 });
 
 test('diagnostic levels suppress messages below configured verbosity', () => {
-  const events: DiagnosticEvent[] = [];
+  const events = [];
   addDiagnosticSink({ write: event => events.push(event) });
   configureDiagnostics('warn');
   reportDiagnostic('debug', 'test:debug');
