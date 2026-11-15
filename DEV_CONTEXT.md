@@ -844,5 +844,5 @@ The project documentation library is organized under `etc/product/`, `etc/engine
 - Added root `LICENSE` using the canonical ChooseALicense MIT text, with only the year and copyright-holder placeholders replaced by the approved values.
 - Added README license summary and rationale; declared SPDX identifier `MIT` in root `package.json` and the root package entry of `package-lock.json`.
 - Added contributor licensing expectations to `etc/engineering/CONTRIBUTING.md`: contributions submitted for inclusion are offered under MIT, contributors retain their copyright, and no CLA/DCO requirement is introduced.
-- Updated `WIKI.md` to use the actual canonical contributor-guide path and to index the license; updated `etc/README.md` and README contributor links.
+- Updated `WIKI.md` to use the actual canonical contributor-guide path and to index the license; kept its documentation map table contiguous. Updated `etc/README.md` and README contributor links.
 - Branch: `WAVE-0117`. This is a GitHub API-only documentation/metadata change; no local tests, typecheck or build were run. Exact-head GitHub Actions verification is pending. GitHub's detected-license metadata is tied to the default branch and cannot be considered complete until this PR is merged.
