@@ -507,9 +507,10 @@ test('autosave write failures are visible and create a sanitized diagnostic even
   });
 });
 
-test('recovery traces are quiet by default and visible only with explicit debug mode', async ({ page }) => {
+test('recovery traces are quiet by default and debug traces share one operation ID', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'Quiet Diagnostics');
+
   const normalLogs: string[] = [];
   page.on('console', message => normalLogs.push(message.text()));
   await page.getByRole('button', { name: /Quiet Diagnostics/ }).click();
@@ -519,16 +520,24 @@ test('recovery traces are quiet by default and visible only with explicit debug 
   const debugPage = await page.context().newPage();
   const sharedFixtureId = await page.evaluate(() => (window as any).__waveTestFixtureId as string);
   await installWorkspaceFixture(debugPage, sharedFixtureId);
-  await debugPage.addInitScript(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.get('waveDebug') !== '1') return;
+
+  const debugEvents: Array<{ event: string; operationId: string; level: string }> = [];
+  debugPage.on('console', message => {
+    if (!message.text().includes('recovery:stage')) return;
+    const args = message.args();
+    void args[1]?.jsonValue().then(record => {
+      debugEvents.push(record as { event: string; operationId: string; level: string });
+    });
   });
-  const debugLogs: string[] = [];
-  debugPage.on('console', message => debugLogs.push(message.text()));
+
   await debugPage.goto('/?waveDebug=1');
   await expect(debugPage.getByRole('button', { name: /Reopen recent workspace/ })).toBeVisible();
   await debugPage.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(debugPage.getByRole('button', { name: /Quiet Diagnostics/ })).toBeVisible();
   await debugPage.getByRole('button', { name: /Quiet Diagnostics/ }).click();
-  await expect.poll(() => debugLogs.some(line => line.includes('recovery:stage'))).toBe(true);
+
+  await expect.poll(() => debugEvents.length, { timeout: 5000 }).toBeGreaterThan(1);
+  expect(debugEvents.every(event => event.level === 'debug')).toBe(true);
+  expect(debugEvents.every(event => event.event === 'recovery:stage')).toBe(true);
+  expect(new Set(debugEvents.map(event => event.operationId)).size).toBe(1);
 });
