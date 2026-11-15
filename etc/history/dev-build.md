@@ -1012,3 +1012,12 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 
 - Exact run [43724391529](https://github.com/iamjpsonkar/Wave/actions/runs/43724391529), job [132843050515](https://github.com/iamjpsonkar/Wave/actions/runs/43724391529/job/132843050515) failed at attachment test line 68 (38/39 passed). The active SVG payload renamed as PNG is correctly rejected by the validator as active SVG/HTML, but the previous assertion expected the generic content mismatch error. Updated expected error and added labelled case-by-case debug output. Validator diagnostics log metadata and the first 16 bytes as hex only, never file contents.
 - A local checkout attempt and `./test.sh` were blocked by unavailable DNS access to github.com; local test status is NOT RUN. Exact-head CI is required before claiming success.
+
+
+### 2026-11-15 — Fix attachment signature regex escaping
+
+- CI run `43724833607` failed in `tests/unit/storage/workspace.test.js`: the disguised SVG payload was rejected, but the test received the generic signature-mismatch error instead of the active-SVG error.
+- Root cause: regex literals in `ACTIVE_ATTACHMENT_SIGNATURES` and `validateAttachmentContent` were double-escaped. SVG/HTML detectors therefore matched literal backslashes rather than XML declarations, tag boundaries, or whitespace.
+- Corrected the regex literals for SVG/XML, HTML, and BOM detection. The existing test expectations remain strict; no assertion was weakened.
+- Debug logs from the failed run confirmed the 29-byte `<svg...` prefix and exposed the failed detection path. Logs report only filename, MIME, size, and hex prefix—not file contents.
+- Validation status: awaiting CI for commit `9c25904e2e8609de1720db7a5fbc417033fb60fb`. Local `./test.sh` has not been run in this environment because repository checkout access is unavailable; do not treat CI as locally executed.
