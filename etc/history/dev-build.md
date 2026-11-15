@@ -1098,3 +1098,39 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Audited all eight workflows against the current main branch. The primary CI already used immutable SHAs for checkout v7.0.1, setup-node v7.1.0 and upload-artifact v7.0.2; reusable workflows still contained older v6/v4 references, and the container job still used checkout v4.
 - Updated the remaining checkout references to `3d3c42e5aac5ba805825da76410c181273ba90b1` (v7.0.1), setup-node references to `949feb2413d6458794dcd2491c4babbbce0c15c1` (v7.1.0), and upload-artifact to `cf430e030ddbb5b0abf93d22962f4752f3646cd9` (v7.0.2). All references remain immutable full-SHA pins.
 - No application dependencies or lockfiles changed. Source/configuration review only; exact-head CI is required for verification. Local test/build execution is unavailable in this environment because DNS resolution for github.com fails.
+
+## 2026-11-15 — Coordinated npm dependency upgrade candidate (issue #137)
+
+- Prepared a single compatible version set from the seven closed Dependabot update branches: Vite 8.3.8 + `@vitejs/plugin-react` 6.3.0; React/React DOM 19.3.1 + both React type packages 19.3.0; TypeScript 7.0.2; react-markdown 10.1.0; lucide-react 1.72.0.
+- Vite 8 requires Node 20.19+ or 22.12+; CI uses Node 22. The current Vite config calls `react()` without the Babel options removed in plugin-react 6, so no config migration was required by source inspection.
+- Combined the package metadata from the separate npm-generated Dependabot lockfile updates, preserving independent dependency entries and applying the coordinated root dependency map. This is a candidate lockfile merge, not a local npm regeneration; fresh `npm ci` on the PR is the acceptance gate.
+- Candidate lock inventory: 181 packages; MIT 142, Apache-2.0 22, ISC 3, MPL-2.0 12, BSD-3-Clause 1, 0BSD 1; no missing license declarations. Added MPL-2.0 to the checker allowlist after reviewing Mozilla's official license and Lightning CSS 1.33.0 package metadata. Updated third-party notices to record source-availability and notice obligations; no legal certification is claimed.
+- Local checkout/npm execution is blocked by DNS resolution for github.com. No local tests or build are claimed. Exact-head CI must validate lock consistency, React 19/TypeScript 7/Vite 8 compatibility, unit tests, E2E and all security workflows.
+
+### React 19 / TypeScript 7 first CI correction — 2026-11-15
+
+- Exact PR #139 run [43733896044](https://github.com/iamjpsonkar/Wave/actions/runs/43733896044): `npm ci`, dependency license audit and all 39 Node unit tests passed. Typecheck then failed on two migration issues: React 19's textarea ref is `RefObject<HTMLTextAreaElement | null>`, while EditorEnhancements required the narrower type; TypeScript 7 also requires an explicit declaration for the CSS side-effect import.
+- Updated the component prop to accept the nullable ref and added Vite's official `vite/client` type reference in `src/vite-env.d.ts` (which supplies the CSS module shim). No compiler strictness was disabled and no test assertions were changed.
+- Exact-head CI must rerun typecheck, production build, Playwright and the full security/container matrix. No pass is claimed for this correction yet.
+
+### Lucide 1.x icon class compatibility — 2026-11-15
+
+- Exact PR #139 run [43734105883](https://github.com/iamjpsonkar/Wave/actions/runs/43734105883): `npm ci`, license audit, all 39 Node tests, TypeScript 7 typecheck and production build passed. Playwright passed 49 of 50 scenarios.
+- The only failure was the toolbar icon assertion expecting the old `lucide-file-code2` class. Lucide 1.72 maps the existing `FileCode2` export to an SVG with `lucide-file-code-corner lucide-file-code-2`; the UI label and behavior remained correct.
+- Updated the regression assertion to accept the new icon class while still checking that the code-block icon is distinct from the inline-code icon. Fresh exact-head E2E and downstream CI are required.
+
+### TypeScript 7 toolchain compatibility decision — 2026-11-15
+
+- The full PR #139 workflow reached the code-quality job after the functional suite passed. ESLint tooling installation failed because pinned stable `typescript-eslint@8.72.2` declares peer `typescript >=4.8.4 <6.1.0` and rejects TypeScript 7.0.2.
+- Did not bypass peer validation or install a canary. Changed the candidate compiler to stable TypeScript 6.0.3, which is inside the supported peer range and is the TypeScript transition release before the native TypeScript 7 compiler. Updated the lock entry using the exact package metadata and integrity from npm-generated TypeScript 6.0.3 lockfiles; removed the TypeScript 7 platform packages.
+- TypeScript 7 is deferred until the stable typescript-eslint toolchain explicitly supports it. The current PR must re-run npm ci, license audit, typecheck, build, all 50 E2E tests and the full CI matrix on the new head.
+
+### Coordinated dependency upgrade — full CI success — 2026-11-15
+
+- Final candidate commit: `61831fa21435cb718e2c2d4a7858f7e6ec89f6cf` on `WAVE-0137-npm-upgrades`.
+- Workflow [43734814515](https://github.com/iamjpsonkar/Wave/actions/runs/43734814515) completed successfully.
+- Functional build: `npm ci`, license audit, 39 Node tests, TypeScript 6.0.3 typecheck, production build and **50/50 Playwright Chromium scenarios** passed.
+- Downstream jobs: container configuration/image build, npm audit, Code Quality/ESLint, CodeQL, OSV-Scanner, OpenGrep, Gitleaks and Trivy filesystem/image scans all passed. GitHub Pages deploy was correctly skipped for the PR event.
+- Candidate set: Vite 8.3.8 + plugin-react 6.3.0; React/React DOM 19.3.1 + matching type packages 19.3.0; TypeScript 6.0.3; react-markdown 10.1.0; lucide-react 1.72.0. TypeScript 7 is deferred in issue #140 until stable typescript-eslint supports it.
+- Candidate license inventory: 161 entries (MIT 142, Apache-2.0 2, ISC 3, MPL-2.0 12, BSD-3-Clause 1, 0BSD 1). MPL-2.0 Lightning CSS notices and source-availability obligations are documented in `THIRD_PARTY_NOTICES.md`; no legal certification is claimed.
+- No local build/test was run; all reported verification is from the exact-head GitHub Actions workflow above.

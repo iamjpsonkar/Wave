@@ -833,3 +833,37 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Aligned all reusable workflows and the container job with the verified immutable GitHub Actions pins already used by the primary CI: checkout v7.0.1, setup-node v7.1.0 and upload-artifact v7.0.2.
 - No npm package versions or lockfiles changed in this batch. The Vite/plugin-react, React/type-definition and independent dependency upgrades remain separate compatibility batches under #137; they require regenerated lockfiles and full test verification.
 - Source review completed; local tests/build were not run because this environment cannot resolve github.com. See `etc/history/dev-build.md` and the PR for exact-head CI results.
+
+## 2026-11-15 — Coordinated npm dependency upgrade handoff
+
+- Branch: `WAVE-0137-npm-upgrades`, issue #137.
+- Candidate stack: Vite 8.3.8 + plugin-react 6.3.0; React/React DOM 19.3.1 + both React type packages 19.3.0; TypeScript 7.0.2; react-markdown 10.1.0; lucide-react 1.72.0.
+- The current Vite config uses `react()` without Babel-specific options, so the plugin-react 6 Babel removal does not require a config change by source inspection. CI Node 22 satisfies Vite 8's minimum 22.12 requirement on the hosted runner.
+- Combined the npm-generated lockfile updates from the closed Dependabot branches and regenerated the exact dependency license inventory from that candidate lock data. Fresh `npm ci` and the full CI matrix are still required; do not treat the lock merge as validated until exact-head workflows pass.
+- License audit snapshot: 181 package entries; includes 12 MPL-2.0 Lightning CSS packages and 22 Apache-2.0 entries (TypeScript 7 platform packages and other transitive packages). Updated checker allowlist and third-party notice disclosures. This is not legal certification.
+- Local tests/build were not run because this environment cannot resolve github.com. See `etc/history/dev-build.md` and the PR for CI evidence.
+
+## 2026-11-15 — React 19 / TypeScript 7 migration correction
+
+- PR #139 first exact-head CI run [43733896044](https://github.com/iamjpsonkar/Wave/actions/runs/43733896044) passed `npm ci`, license audit and all 39 Node tests, then exposed two typecheck errors: nullable React 19 textarea ref variance and missing CSS side-effect import typing under TypeScript 7.
+- Corrected the ref contract in `src/EditorEnhancements.tsx` and added `src/vite-env.d.ts` referencing `vite/client` for the CSS module shim. Strict type checking remains enabled.
+- Fresh exact-head CI is required; no pass is claimed until the new workflow completes. See `etc/history/dev-build.md` and PR #139.
+
+## 2026-11-15 — Lucide 1.x icon regression correction
+
+- PR #139 run [43734105883](https://github.com/iamjpsonkar/Wave/actions/runs/43734105883) passed npm ci, license audit, 39 Node tests, TypeScript 7 typecheck and production build. Playwright passed 49/50; one assertion expected the old Lucide v0 class `lucide-file-code2`, while v1.72 emits `lucide-file-code-corner lucide-file-code-2` for the same `FileCode2` export.
+- Updated `tests/e2e/editor/editor.spec.ts` to match the current v1 class while preserving the distinct-icon assertion. New exact-head CI is required; no full pass is claimed.
+
+## 2026-11-15 — TypeScript 7 deferral / stable TypeScript 6 selection
+
+- PR #139's full functional suite passed (50/50 E2E, 39 Node tests, typecheck and build), but the Code Quality job could not install pinned `typescript-eslint@8.72.2` with TypeScript 7.0.2: its declared peer range is `>=4.8.4 <6.1.0`.
+- Selected stable TypeScript 6.0.3 instead of forcing or using a canary lint parser. The package lock uses the exact TypeScript 6.0.3 registry URL, integrity and metadata from npm-generated lockfiles; removed TypeScript 7's platform-specific packages. Candidate inventory now contains 161 package entries.
+- TypeScript 7 remains a tracked future upgrade once stable typescript-eslint support is published. Fresh exact-head CI is required; no full pass is claimed yet.
+
+## 2026-11-15 — Dependency upgrade candidate fully verified
+
+- PR #139 head `61831fa21435cb718e2c2d4a7858f7e6ec89f6cf`; exact-head CI [43734814515](https://github.com/iamjpsonkar/Wave/actions/runs/43734814515) completed successfully.
+- Passed: npm ci, dependency license audit, 39 Node tests, TypeScript 6.0.3 typecheck, production build, 50/50 Playwright scenarios, container build, npm audit, ESLint, CodeQL, OSV, OpenGrep, Gitleaks and Trivy filesystem/image scans. Pages deployment was skipped as expected for a PR.
+- Candidate versions: Vite 8.3.8/plugin-react 6.3.0; React/React DOM 19.3.1 and matching React type packages 19.3.0; TypeScript 6.0.3; react-markdown 10.1.0; lucide-react 1.72.0. TypeScript 7 is deferred under issue #140 because stable typescript-eslint 8.72.2 does not support its peer range yet.
+- License inventory: 161 package entries (MIT 142, Apache-2.0 2, ISC 3, MPL-2.0 12, BSD-3-Clause 1, 0BSD 1). Third-party notices document MPL-2.0 source/notice obligations; this is not legal certification.
+- No local tests/build were run; all verification above is from exact-head CI. DEV_CONTEXT is the final handoff record for this implementation batch.
