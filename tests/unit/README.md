@@ -84,3 +84,10 @@ To debug one scenario, pass Node's `--test-name-pattern` option through `node --
 - Fixed the failure handler to capture both tabs' logs and enabled `?waveDebug=1` for the cross-tab regression to retain the journal ownership/locking evidence in CI.
 - Root timing issue in the test: `page.clock.install()` alone installs the controllable clock but does not pause time. The test now explicitly calls `page.clock.pauseAt(new Date())` before creating the unsaved draft, preventing the 600 ms autosave timer from committing the source document and clearing its journal before the second tab inspects it.
 - Follow-up full CI is required on the final documentation commit. The nested-breadcrumb timeout remains separately tracked until a fresh run determines whether it reproduces after the recovery test is deterministic.
+
+## WAVE-0111 final review follow-up (2026-11-15)
+
+- Completed the remaining operation-ID propagation: `flush(operationId)` now passes its caller's ID into `persistDocument`; document create/template, duplicate, Trash move/list/refresh, backup create, workspace activation, document open, and reload pass one ID through nested flush/persistence and their failure boundary.
+- `syncCopyWithEditor` and `loadTrash` accept the parent operation ID so nested save/refresh work does not silently start a new correlation chain. Standalone calls still create a fresh ID by default.
+- The recovery diagnostics browser test now verifies the default-mode open emits no recovery trace, debug mode emits structured `debug` recovery events, and every stage from one open shares exactly one operation ID.
+- Exact-head CI is required after this follow-up; do not treat the previous green run as verification of these changes.
