@@ -978,3 +978,8 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Added attachment metadata extension/MIME mismatch rejection and byte-signature verification for supported image/document/archive formats before saving. Added regressions for mismatched metadata, spoofed PNG/PDF declarations, active SVG bytes under a benign extension, and valid PNG/text files. This is format integrity defense-in-depth, not malware scanning; generic/unknown formats remain subject to extension/MIME deny-list screening.
 - Owner-side Dependabot alerts/security updates, secret scanning/push protection, private vulnerability reporting, and exact package tarball LICENSE/NOTICE/legal review remain manual repository-owner/release tasks; workflows cannot enable them.
 - All changes above are source updates only at this point. Run local `./test.sh`, YAML/policy validation, and verify all workflow results on the new exact PR head before claiming completion.
+
+
+### OSV reporter CLI correction — 2026-11-15
+
+- The first follow-up after switching the scanner command to `--output-file` exposed that reporter CLI v2.7.1 uses `--output-files=sarif:<path>` (plural), not `--output-file`. The reporter's `--gh-annotations` flag is also deprecated; annotations now use `--output-files=gh-annotations:#stderr` for PR comparison. Corrected from the exact workflow log for run [43723343889](https://github.com/iamjpsonkar/Wave/actions/runs/43723343889). New exact-head CI remains required.
