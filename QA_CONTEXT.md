@@ -395,3 +395,15 @@ Important documentation drift observed at the same HEAD:
 - Verified GitHub search returned 90 open issues: #1–#89 and #91. The issue index `github-issues.md` now lists all 90 active issues.
 - No application source code was changed. No feature is claimed implemented by issue creation. Issues are tracking artifacts; completion still requires implementation, tests and documentation.
 - Issue index update commit: `4aa17e29acdd08eaeb3cdaa4ebf477e03857bb60`.
+
+
+---
+
+## Repository-wide issue audit — 2026-11-15
+
+- Audited current `main` at commit `d831bf04ac458a888206de4d492830f55958b022`, including repository orientation/developer handoff, QA and bug registers, issue index, package scripts, CI workflow, configuration relocation, storage tests and Playwright E2E test source.
+- Reconciled against all **98 existing GitHub issues** (92 open, 6 closed) before creating new tickets. Existing WAVE-031/WAVE-039, UI/Markdown/export issues and roadmap/coverage epics were treated as canonical; no duplicate issue was opened for their scope.
+- Created [#99 — repair case-sensitive and stale Markdown navigation links](https://github.com/iamjpsonkar/Wave/issues/99). Confirmed examples include README's `./wiki.md` versus maintained `WIKI.md`, missing `docs/README.md`, and root-level tracker links where the maintained files live under `trash/`.
+- Created [#100 — remove duplicate storage regression scenarios](https://github.com/iamjpsonkar/Wave/issues/100). `tests/storage.test.js` repeats the backup-lock interleaving scenario at lines 300–321 and 334–355, and repeats the copied-file mutation scenario at lines 322–333 and 356 onward. The issue requires preserving distinct locking and integrity guarantees while removing redundant tests.
+- Updated `trash/github-issues.md` to include both issues and the verified open-issue count.
+- This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
