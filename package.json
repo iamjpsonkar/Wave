@@ -21,7 +21,8 @@
     "license:audit": "node scripts/check-dependency-licenses.mjs",
     "license:audit:json": "node scripts/check-dependency-licenses.mjs --json",
     "test:license": "npm run license:audit",
-    "license:audit:update": "node scripts/check-dependency-licenses.mjs --update-inventory"
+    "license:audit:update": "node scripts/check-dependency-licenses.mjs --update-inventory",
+    "test:links": "node scripts/check-markdown-links.mjs"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^6.3.0",
