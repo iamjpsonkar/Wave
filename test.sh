@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
-set -Eeuo pipefail
-ROOT_DIR="$(cd -- "$(dirname -- "\${BASH_SOURCE[0]}")" && pwd)"
+set -Ee -o pipefail
+ROOT_DIR="$(cd -- "$(dirname -- "$0")" && pwd)"
 cd "$ROOT_DIR"
-
 on_error() {
   status=$?
   echo >&2
-  printf 'FAILED (exit %s) near line %s: %s\n' "$status" "\${BASH_LINENO[0]:-?}" "$BASH_COMMAND" >&2
+  printf 'FAILED (exit %s) near line %s: %s\n' "$status" "$LINENO" "$BASH_COMMAND" >&2
   exit "$status"
 }
 trap on_error ERR
-
 usage() {
   cat <<'USAGE'
 Wave local verification runner
@@ -40,7 +38,6 @@ while (($#)); do
   esac
   shift
 done
-
 command -v node >/dev/null 2>&1 || { echo "Error: Node.js is required." >&2; exit 1; }
 command -v npm >/dev/null 2>&1 || { echo "Error: npm is required." >&2; exit 1; }
 node -e 'const [major,minor]=process.versions.node.split(".").map(Number); process.exit(major > 22 || (major === 22 && minor >= 6) ? 0 : 1)' || {
@@ -55,9 +52,8 @@ if [[ ! -x node_modules/.bin/tsc || ! -x node_modules/.bin/vite ]]; then
   echo "Installing locked project dependencies..."
   npm ci
 fi
-
 run_step() {
-  local label="$1"
+  label="$1"
   shift
   printf '\n==> %s\n' "$label"
   "$@"
@@ -65,15 +61,15 @@ run_step() {
 run_step "Node unit and storage tests" npm test
 run_step "TypeScript typecheck" npm run typecheck
 run_step "Production build" npm run build
-
 if ((run_e2e)); then
   if [[ ! -x node_modules/.bin/playwright ]]; then
     if ((skip_playwright_install)); then
       echo "Error: @playwright/test is missing. Omit --skip-playwright-install to install it." >&2
       exit 1
     fi
-    version="\${PLAYWRIGHT_VERSION:-1.55.0}"
-    run_step "Install Playwright test runner (\${version})" npm install --no-save --package-lock=false "@playwright/test@\${version}"
+    version="$PLAYWRIGHT_VERSION"
+    if [[ -z "$version" ]]; then version=1.55.0; fi
+    run_step "Install Playwright test runner ($version)" npm install --no-save --package-lock=false "@playwright/test@$version"
   fi
   if ((!skip_browser_install)); then
     run_step "Install Playwright Chromium browser" npx playwright install chromium
