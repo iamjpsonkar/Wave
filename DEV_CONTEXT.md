@@ -665,3 +665,19 @@ The test suite is organized by test level, product domain and scenario. Node tes
 ## Documentation directory migration — 2026-11-15
 
 The former `trash/` documentation tree has been moved into the canonical `etc/` hierarchy (`product/`, `engineering/`, `quality/`, `history/`). All meaningful source documents and stable tracker IDs were preserved. Consult [etc/README.md](./etc/README.md) for the maintained index. This migration changes documentation organization only; it does not change application behavior or verification status.
+
+
+## 2026-11-15 — Project Markdown documentation reorganization
+
+- Moved the complete former `trash/` documentation tree into the canonical `etc/` hierarchy. No meaningful source document, stable tracker ID, requirement catalogue or historical log was intentionally removed.
+- New structure:
+  - `etc/product/`: feature overview, complete product blueprint, priorities, release roadmap, UI backlog, Markdown coverage and diagram editor blueprint.
+  - `etc/engineering/`: architecture, contributor guide, Docker deployment and Markdown support reference.
+  - `etc/quality/`: current open bugs, fixed-bug/regression register and GitHub issue index.
+  - `etc/history/`: development/build/CI log and development fix log.
+  - `etc/README.md`: canonical documentation index.
+- Updated agent, wiki, QA, README and contributor-handbook navigation to use the new hierarchy. Repaired relative links found in the migrated development log.
+- Verified the latest Git tree contains 31 Markdown files, the expected `etc/` hierarchy and no `trash/` directory.
+- This is a documentation/path migration only. Application source and test definitions were not changed. No tests, typecheck, build, browser suite, Docker build or CI run was executed; no new production-readiness claim is made.
+- Target branch: `manager`. Migration commit: `dd279cdf3e64a90eace2c2f36075d250578aaece`; subsequent documentation/link updates are on the current branch head recorded in GitHub.
+- Canonical index: [etc/README.md](./etc/README.md).
