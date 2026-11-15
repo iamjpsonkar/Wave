@@ -55,12 +55,19 @@ test('concurrent same-name asset uploads receive distinct filenames',async()=>{
   assert.equal(await(await(await workspace.assets.getFileHandle(two)).getFile()).text(),'two');
 });
 
-test('attachment validation rejects active content and oversized files before writing',async()=>{
+test('attachment validation rejects active content, metadata mismatches, spoofed signatures and oversized files',async()=>{
   const {workspace}=await fixture();
   const svg=new File(['<svg onload="alert(1)"></svg>'],'drawing.svg',{type:'image/svg+xml'});
   assert.throws(()=>validateAttachmentFile(svg),/executable or active content/);
   await assert.rejects(()=>addAsset(workspace.assets,svg),/executable or active content/);
   const oversized={name:'large.bin',size:MAX_ATTACHMENT_SIZE_BYTES+1,type:'application/octet-stream'};
   assert.throws(()=>validateAttachmentFile(oversized),/25 MiB or smaller/);
-  assert.doesNotThrow(()=>validateAttachmentFile(new File(['safe'],'document.pdf',{type:'application/pdf'})));
+  assert.throws(()=>validateAttachmentFile(new File(['not a png'],'photo.png',{type:'text/plain'})),/extension and MIME type do not match/);
+  await assert.rejects(()=>addAsset(workspace.assets,new File(['not actually a png'],'spoof.png',{type:'image/png'})),/content does not match/);
+  await assert.rejects(()=>addAsset(workspace.assets,new File(['<svg onload="alert(1)"></svg>'],'renamed.png',{type:'image/png'})),/content does not match/);
+  await assert.rejects(()=>addAsset(workspace.assets,new File(['not pdf'],'document.pdf',{type:'application/pdf'})),/content does not match/);
+  await assert.rejects(()=>addAsset(workspace.assets,new File(['MZ executable'],'notes.txt',{type:'text/plain'})),/content does not match/);
+  const genuinePng=new Uint8Array([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0,0,0,0]);
+  assert.doesNotReject(()=>addAsset(workspace.assets,new File([genuinePng],'valid.png',{type:'image/png'})));
+  assert.doesNotReject(()=>addAsset(workspace.assets,new File(['safe text'],'notes.txt',{type:'text/plain'})));
 });
