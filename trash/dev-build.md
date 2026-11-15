@@ -347,3 +347,14 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Updated the wiki, README, contributor guidance, developer handoff, roadmap/issue references and documentation index. Added a mandatory per-task Markdown review/enforcement section to `wiki.md`: update authoritative docs, preserve IDs/history, avoid duplicate sources, validate links and update `DEV_CONTEXT.md` last.
 - Preserved as separate files: `upcoming-features.md`, `priority-features.md`, `dev-fixed.md`, `dev-build.md`, `bugs.md`, `fixed-bugs.md`, `features-gap.md`, `diagram-features.md`, and the architecture/deployment/Markdown/roadmap guides.
 - Verification: fetched and compared source/destination contents before deletion; confirmed UIB-001..006, UI-001..024, UIF-001..021 and WAVE-031/WAVE-039/WAVE-042 are present in the consolidated destinations. Checked navigation and corrected stale links in the consolidated feature guide. No application code changed; no local tests/build or CI run was performed.
+
+
+## 2026-11-15 — WAVE-0001 verification additions (CI pending)
+
+- Branch: `WAVE-0001` (issue #1).
+- Added two Playwright scenarios: recent-workspace permission reauthorization from the prompt state, and editor conflict handling after an external filesystem edit.
+- Current source inventory after the additions: 30 Node test definitions and 48 Playwright E2E scenarios.
+- Existing Node coverage includes conditional-save external-change rejection and backup snapshot mutation/fault checks.
+- CI: pending PR workflow. Record the exact workflow run, commit SHA and each suite outcome after GitHub Actions completes. No new test/build pass is claimed yet.
+- Native OS picker/revocation, external-process race scheduling, full accessibility audit and actual process termination remain manual/platform verification requirements.
+
