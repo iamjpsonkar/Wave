@@ -40,3 +40,11 @@ Commands:
 - `./test.sh` — canonical full local gate: Node tests, typecheck, production build and E2E.
 
 To debug one scenario, pass Node's `--test-name-pattern` option through `node --test`; use Playwright's `--grep` option for a browser scenario. Do not weaken assertions to make a flaky test pass; add deterministic fixture control and record operation identifiers instead.
+
+
+## Diagnostics and failure artifacts
+
+- Production diagnostics default to warning/error output and keep a bounded 200-event in-memory history on the device. Sensitive field names (including document/content, paths, asset names, credentials and user identifiers) are redacted before a record is stored or sent to a sink.
+- Root React render failures, uncaught browser errors/rejections and critical workspace operations (open/reopen, document open/save/reload, Trash, backup/restore and asset add) emit structured events with operation IDs and error class only; raw error messages and workspace paths are not copied into diagnostic fields.
+- Add `?waveDebug=1` to the app URL to enable info/debug console output. In Settings → Diagnostics, inspect the sanitized report preview, copy it explicitly, or clear the in-memory history. No remote telemetry or persistent diagnostic storage is used.
+- Playwright retains traces, screenshots and video on failure, plus an HTML report. CI uploads `test-results/` and `playwright-report/` as `wave-playwright-diagnostics` for 14 days. The trace includes browser console and network activity; inspect it alongside the failing file/scenario name.
