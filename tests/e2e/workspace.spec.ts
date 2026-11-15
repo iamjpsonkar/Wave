@@ -1770,6 +1770,8 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await editor.press('Enter');
   await expect(editor).toHaveValue('  - Nested item\n  - ');
 
+  // Replace the nested list with a fenced block and immediately press Enter
+  // inside a list-looking code line. The handler must read the live textarea.
   await editor.fill('```md\n- Literal code line\n```');
   await editor.evaluate((node: HTMLTextAreaElement) => {
     const cursor = node.value.indexOf('Literal code line') + 'Literal code line'.length;
@@ -1777,4 +1779,5 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   });
   await editor.press('Enter');
   await expect(editor).toHaveValue('```md\n- Literal code line\n\n```');
+  await expect.poll(() => editor.evaluate(node => node === document.activeElement && node.selectionStart === node.value.indexOf('Literal code line') + 'Literal code line'.length + 1)).toBe(true);
 });
