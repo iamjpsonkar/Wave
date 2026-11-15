@@ -455,3 +455,11 @@ Important documentation drift observed at the same HEAD:
 - Remaining failures from that run: settings Escape dismissal/focus trap, Lucide icon class expectation, duplicate `pre`/template/diagram/color-span selectors, color-toolbar operations not applying background/clear due to stale selection/state, and block callout classification.
 - Follow-up pushed after this run: settings dialog Escape handling, scoped/exact locator updates, color-edit operations now flow through the controlled change handler, and block-color callout classification fix. A newer workflow must be checked for the latest head before recording any pass.
 - Do not treat the previous 39/9 result as current CI; inspect latest PR SHA and run.
+
+
+## WAVE-0001 consolidated CI recheck — 2026-11-15
+
+- Latest checked PR-head workflow: [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184), head `8ff23d414ecf2dc7421fbb7188cf7b56145af419` — **failed**. Container job passed; build job Playwright reported **42 passed / 6 failed**. Node tests, typecheck and production build completed successfully in this run.
+- Remaining failures: Settings test attempted to click Preview while its modal overlay was still open; code-block icon assertion expected `lucide-file-code-2` while the rendered SVG class is `lucide-file-code2`; inline/block color changes still did not reliably consume the current controlled source; block-mode color update did not refresh the block source range.
+- Remediation pushed to `WAVE-0001`: color actions now read `contentRef.current` and pass changes through `handleEditorChange`; block-mode color replacement writes the complete current source range; Settings test closes its modal before switching Preview; icon expectation matches actual Lucide class.
+- Fresh CI is required for these commits. No local test, typecheck, build, native picker, or accessibility pass is claimed. Keep PR #101 and issue #1 open until latest CI and WAVE-031 manual acceptance criteria are met.
