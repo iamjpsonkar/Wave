@@ -688,3 +688,7 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Corrected `tests/e2e/workspace.spec.ts`: the source page's clock is no longer installed before workspace setup. It is frozen once after the baseline page has been created/saved and before the unsaved cross-tab draft is entered; the second tab remains on real time.
 - Test commit: `a983dc3199264348331a9e172217d6e70ec4d099`. QA evidence and development history are appended in `QA_CONTEXT.md`, `WIKI.md`, `trash/dev-fixed.md` and `trash/dev-build.md`.
 - Fresh CI is required; no local tests were executed. PR #101 remains open/unmerged and issue #1 remains open pending manual native picker/permission, external-process race, accessibility and process-termination acceptance checks.
+
+
+### Current CI investigation — cross-tab recovery
+The repeated recovery-dialog failure is being isolated with direct browser-side IndexedDB checks. The E2E test now verifies the source tab's saved draft text/session/workspace handle and confirms the second tab sees the same record with a different session ID before invoking `open()`. Existing dialog-source and declined-record-retention assertions are preserved. Treat this as diagnostic hardening, not a confirmed production fix, until CI proves the complete flow passes.
