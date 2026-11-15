@@ -723,3 +723,8 @@ The initial Trivy attempt found a HIGH Dockerfile non-root configuration issue a
 - Attachment validation now checks metadata mismatch and selected known format signatures (PDF, PNG, JPEG, GIF, WebP, BMP, ICO, ZIP, gzip, WASM, SVG/HTML active content) when MIME claims a supported format. This is not malware scanning; unknown formats/text retain prior behavior subject to deny-list screening.
 - Verification state: GitHub source edits only. No local test execution is claimed. Exact branch CI for the new head is required; inspect full job logs and fix failures before considering remediation done.
 - Still owner/release actions: enable Dependabot alerts/security updates, secret scanning/push protection and private vulnerability reporting where supported; inspect exact package tarball LICENSE/NOTICE and final release artifacts with owner/legal reviewer. Source changes cannot enable these settings or constitute legal approval.
+
+
+### OSV reporter CLI correction — 2026-11-15
+
+- Exact follow-up CI run [43723343889](https://github.com/iamjpsonkar/Wave/actions/runs/43723343889) confirmed the scanner command accepts `--output-file`, but reporter CLI v2.7.1 does not. Reporter requires `--output-files=sarif:<path>` and PR annotations use `--output-files=gh-annotations:#stderr`; `--gh-annotations` is deprecated. Corrected the workflow from the job's own usage output. The subsequent current-head CI must verify this correction.
