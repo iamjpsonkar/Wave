@@ -95,7 +95,7 @@ Verify:
 - Diagram, math, code, and media extensions respect their documented supported subsets and safety limits.
 - Unsupported syntax is handled predictably and does not corrupt the source document.
 
-Use [docs/MARKDOWN_SUPPORT.md](../trash/docs/MARKDOWN_SUPPORT.md) as the compatibility contract. Do not report partial parser support as full language compliance.
+Use [docs/MARKDOWN_SUPPORT.md](../etc/engineering/MARKDOWN_SUPPORT.md) as the compatibility contract. Do not report partial parser support as full language compliance.
 
 ### E. Accessibility and UX
 
