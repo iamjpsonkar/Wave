@@ -613,3 +613,12 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Reworked [etc/howtoqa.md](./etc/howtoqa.md) into a risk-based QA workflow covering test planning, data integrity, concurrency/lifecycle, Markdown security, accessibility, automated verification, PR review, actionable bug reports, severity, bug lifecycle, and evidence standards.
 - Both documentation updates were committed to the `manager` branch: developer guide `6487eba6f7a5d5872247e6fcbbb732583448eb94`; QA guide `a6e09aafc52fa79292663e8d05e1d9aa6b6005cd`.
 - Documentation-only work. No application source or tests changed. No test suite, typecheck, build, E2E, or CI run was performed. Refresh the branch HEAD and run the relevant checks before relying on verification status.
+
+
+## 2026-11-15 — Organization handbook and howto directory restructure
+
+- Created `howto/` as the canonical contributor, QA and organizational handbook. Added `README.md`, `organization.md`, `teams.md`, `ownership.md`, `workflow.md`, `engineering-rules.md` and `hiring-roadmap.md`.
+- Relocated the existing developer and QA guides without dropping their content: `etc/howtodev.md` → `howto/howtodev.md`; `etc/howtoqa.md` → `howto/howtoqa.md`. Verified each original file was fetched and copied before deleting the old path; the former `etc/` directory is now retired.
+- Updated [WIKI.md](./WIKI.md) with the new handbook map and migration note.
+- This establishes a proposed functional organization of seven teams. It does not create GitHub Teams, CODEOWNERS, branch protection, permissions, staff positions or hiring approvals. The ownership map is a documented proposal until repository settings are configured.
+- Documentation-only change. No application source or tests changed; no test, typecheck, build, E2E or CI run was performed. Relative links and rendered Markdown have not been validated by CI.
