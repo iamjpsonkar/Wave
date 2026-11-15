@@ -36,7 +36,7 @@ function isKnownExpression(expression) {
   // Deliberately supports only simple identifiers and parenthesized AND/OR
   // combinations of recognized SPDX identifiers; deprecated/LicenseRef
   // expressions are surfaced for manual review rather than silently passed.
-  const normalized = expression.replace(/[()]/g, ' ').replace(/\\s+/g, ' ').trim();
+  const normalized = expression.replace(/[()]/g, ' ').replace(/\s+/g, ' ').trim();
   const tokens = normalized.split(' ').filter(Boolean);
   if (!tokens.length) return false;
   let expectLicense = true;
@@ -87,7 +87,7 @@ try {
     packages
   };
   if (options.json) {
-    process.stdout.write(JSON.stringify(report, null, 2) + '\\n');
+    process.stdout.write(JSON.stringify(report, null, 2) + '\n');
   } else {
     console.log('Locked packages: ' + report.packageCount);
     for (const [license,count] of Object.entries(report.licenseCounts)) console.log('  ' + license + ': ' + count);
