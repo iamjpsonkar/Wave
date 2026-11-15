@@ -1,5 +1,7 @@
 # Wave
 
+> **AI agents and automated contributors:** Read [AGENTS.md](./AGENTS.md) before starting any task. It is the single-entry operating guide for what Wave is, why its engineering rules exist, and how to plan, implement, test and document changes.
+
 **Your thoughts. Your space.**
 
 Wave is a local-first workspace for notes, documents and ideas. Choose a folder and Wave creates a portable `.wave/` workspace inside it. Your Markdown pages and attachments remain ordinary files you own.
