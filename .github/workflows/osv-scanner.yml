@@ -85,10 +85,10 @@ jobs:
         uses: google/osv-scanner-action/osv-reporter-action@32d3cd482bdadfb38b186c0ad1b031902d55d932 # v2.7.1
         with:
           scan-args: |-
-            --output-file=osv-results.sarif
+            --output-files=sarif:osv-results.sarif
             --old=old-results.json
             --new=new-results.json
-            --gh-annotations=true
+            --output-files=gh-annotations:#stderr
             --fail-on-vuln=true
       - name: Report full-scan findings and create SARIF
         if: github.event_name != 'pull_request'
@@ -97,8 +97,7 @@ jobs:
           scan-args: |-
             --output-file=osv-results.sarif
             --new=full-results.json
-            --gh-annotations=false
-            --fail-on-vuln=true
+                        --fail-on-vuln=true
       - name: Upload OSV SARIF to code scanning
         if: always() && hashFiles('osv-results.sarif') != '' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository)
         uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066 # v4
