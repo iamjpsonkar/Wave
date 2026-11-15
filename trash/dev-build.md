@@ -443,3 +443,12 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Reused existing [#3](https://github.com/iamjpsonkar/Wave/issues/3) for keyboard/focus, screen-reader and contrast audit; linked that scope to parent #1 rather than creating a duplicate.
 - Parent #1 remains open. The latest previously verified PR CI recorded on main is run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741), 48/48 Playwright plus all other workflow jobs passing.
 - This reconciliation does not run tests.
+
+
+## Automated test suite organization issue — 2026-11-15
+
+- Created [#111 — restructure automated tests into feature-based suites and scenarios](https://github.com/iamjpsonkar/Wave/issues/111).
+- Current source inspection confirmed Node tests are discovered through the flat `tests/*.test.js` package script, while Playwright coverage is concentrated in `tests/e2e/workspace.spec.ts`. The issue requests an inventory-first migration into meaningful unit/integration/E2E feature directories, focused files and scenarios.
+- Acceptance criteria explicitly preserve all existing assertions and guarantees, maintain complete discovery through `test.sh` and CI, support focused runs, and avoid test-order coupling.
+- Coordinated scope with [#100](https://github.com/iamjpsonkar/Wave/issues/100): duplicate cleanup must retain distinct coverage; #111 is the broader organizational restructuring.
+- This was issue creation and documentation only. No test files, application code or test commands were changed/run.
