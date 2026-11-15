@@ -112,9 +112,17 @@ export async function clearDraft(workspace:FileSystemDirectoryHandle,path:string
     try{
       const matches=await findDrafts(db,workspace,path);
       const tabId=currentTabId();
-      const ownMatches=matches.filter(record=>record.tabId===tabId||!record.tabId);
-      if(!ownMatches.length)return;
-      await writeTransaction(db,store=>{for(const record of ownMatches)if(record.id!==undefined)store.delete(record.id);});
+      // A tab may clear only the record it owns. Legacy records have no
+      // reliable owner, so preserve them rather than risk deleting another
+      // tab's recoverable work during an autosave or recovery decision.
+      const ownMatches=matches.filter(record=>record.tabId===tabId);
+      if(!ownMatches.length){
+        console.info('[Wave recovery] journal:clear-skipped',{path,tabId,matchingRecords:matches.length,reason:'no-current-tab-record'});
+        return;
+      }
+      const ids=ownMatches.map(record=>record.id).filter((id):id is number=>id!==undefined);
+      await writeTransaction(db,store=>{for(const id of ids)store.delete(id);});
+      console.info('[Wave recovery] journal:clear-current-tab',{path,tabId,removed:ids.length,foreignRecordsPreserved:matches.length-ownMatches.length});
     }finally{db.close();}
   });
 }
