@@ -7,7 +7,7 @@
 **Important:** This is a plan, not a claim that unchecked features exist.
 
 - [Current shipped features](FEATURES.md)
-- [Priority features and delivery plan](priority-FEATURES.md)
+- [Priority features and delivery plan](priority-features.md)
 - [Detailed feature status](FEATURES.md)
 - [Delivery roadmap](docs/ROADMAP.md)
 
