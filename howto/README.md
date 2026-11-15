@@ -46,3 +46,7 @@ Keep this handbook aligned with actual repository structure. When a process or o
 | `hiring-roadmap.md` | Product Owner | Approved staffing strategy or team capacity assumptions change |
 
 These are proposed document owners, not assertions that named employees or GitHub teams currently exist.
+
+## Project reference library
+
+See the canonical [etc documentation index](../etc/README.md) for product scope, engineering architecture, deployment, quality registers, issue traceability and development history. Keep this handbook focused on operating procedures and team governance.
