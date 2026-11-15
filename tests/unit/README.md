@@ -1,12 +1,35 @@
-# Test suite layout
+# Test architecture
 
-The storage regression suite remains in `tests/storage.test.js` until its scenarios can be split with a verified one-to-one inventory. It includes storage, recovery, backup integrity, permission simulation and concurrency guarantees; do not duplicate or remove scenarios during future extraction.
+Node tests are organized by layer and behavior. Keep scenario names outcome-oriented and preserve every independent assertion when moving tests.
 
-Typed diagnostic API tests live in `tests/unit/diagnostics/diagnostics.test.js`.
+```text
+tests/
+  helpers/
+    storage-fixtures.js
+  unit/
+    diagnostics/
+      diagnostics.test.js
+    safety/
+      concurrency.test.js
+    storage/
+      workspace.test.js
+      trash-backup.test.js
+  e2e/
+    workspace.spec.ts
+```
+
+- `unit/storage`: workspace/document operations, Trash, backup and recovery behavior.
+- `unit/safety`: concurrency, locking, revision flushes, path safety and stale-workspace guards.
+- `unit/diagnostics`: structured event shape, redaction, levels and sink isolation.
+- `helpers`: shared in-memory File System Access API fixtures. Fixtures are stateless per test; call `fixture()` for a fresh workspace.
+- `e2e`: Playwright user journeys in the Chromium browser. Keep browser-only behavior out of Node unit tests.
 
 Commands:
-- `npm test` — complete Node test suite (same command used by `./test.sh` and CI).
-- `npm run test:unit:storage` — storage, recovery and safety regression suite.
-- `npm run test:unit:diagnostics` — diagnostic API tests.
+- `npm test` / `npm run test:unit` — recursively discover all Node unit tests.
+- `npm run test:unit:storage` — storage and recovery suites.
+- `npm run test:unit:safety` — safety/concurrency suite.
+- `npm run test:unit:diagnostics` — diagnostics contract suite.
+- `npm run test:e2e` — Playwright browser journeys.
+- `./test.sh` — canonical full local gate: Node tests, typecheck, production build and E2E.
 
-The browser E2E suite is under `tests/e2e/` and runs with `npm run test:e2e`.
+To debug one scenario, pass Node's `--test-name-pattern` option through `node --test`; use Playwright's `--grep` option for a browser scenario. Do not weaken assertions to make a flaky test pass; add deterministic fixture control and record operation identifiers instead.
