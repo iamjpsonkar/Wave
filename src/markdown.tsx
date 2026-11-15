@@ -73,6 +73,10 @@ export function markdownSource(source: string, docs: WikiDoc[] = []): string {
     return withMedia.replace(/(\x60+)([\s\S]*?)\1|\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (match, ticks, _code, target, alias) => {
       if (ticks || !target) return match;
       const normalizedTarget = target.trim();
+      // Reserve malformed Wave color directives as literal text instead of
+      // silently interpreting them as wiki links. Only six-digit hex colors
+      // are supported by the inline color extension.
+      if (/^(?:color|bg):/i.test(normalizedTarget) && !/^(?:color|bg):#[0-9a-f]{6}$/i.test(normalizedTarget)) return match;
       const path = resolveWikiLinkTarget(normalizedTarget, docs);
       const label = (alias || normalizedTarget).trim();
       const href = path ? 'https://wave.invalid/page/' + encodeURIComponent(path) : 'https://wave.invalid/unresolved/' + encodeURIComponent(normalizedTarget);

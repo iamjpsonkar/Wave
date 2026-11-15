@@ -129,11 +129,6 @@ The retired planning, defect, UI-backlog and development-log Markdown files are 
 - [#89 — [P1][Roadmap] 15.6 Security and privacy](https://github.com/iamjpsonkar/Wave/issues/89)
 - [#91 — [P2][Roadmap] 16. Additional competitor coverage checklist](https://github.com/iamjpsonkar/Wave/issues/91)
 
-- [#104 — [P1][Reliability] Native folder picker and real filesystem permission lifecycle (WAVE-031A)](https://github.com/iamjpsonkar/Wave/issues/104)
-- [#105 — [P1][Reliability] External filesystem races and backup/restore fault handling (WAVE-031B)](https://github.com/iamjpsonkar/Wave/issues/105)
-- [#106 — [P1][Reliability] Recovery drafts under abrupt browser process termination (WAVE-031C)](https://github.com/iamjpsonkar/Wave/issues/106)
-- Accessibility verification for WAVE-031 remains in existing [#3 — Theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3) to avoid duplicate tracking.
-
 ## Tracking rules
 
 - Pick work by priority and dependency; P0 foundations precede major feature expansion.
@@ -144,3 +139,8 @@ The retired planning, defect, UI-backlog and development-log Markdown files are 
 - Existing bug IDs and historical fixed-bug records remain authoritative. Do not create duplicate defect issues when a roadmap issue overlaps; link the canonical issue instead.
 - `trash/features-gap.md` is included in #6 and its color-extension follow-up #9; `trash/priority-features.md` is preserved in #98, while the complete roadmap is represented by #11–#91. `trash/UI_BACKLOG.md` UI gaps/UIB records are covered by #3–#10; remaining UI feature proposals are tracked in #92.
 - Completed histories are indexed in closed archives #93–#95. Keep detailed evidence in their source registers until an intentional documentation retirement is approved.
+
+- [#104 — [P1][Reliability] Native folder picker and real filesystem permission lifecycle (WAVE-031A)](https://github.com/iamjpsonkar/Wave/issues/104)
+- [#105 — [P1][Reliability] External filesystem races and backup/restore fault handling (WAVE-031B)](https://github.com/iamjpsonkar/Wave/issues/105)
+- [#106 — [P1][Reliability] Recovery drafts under abrupt browser process termination (WAVE-031C)](https://github.com/iamjpsonkar/Wave/issues/106)
+- Accessibility verification for WAVE-031 remains in existing [#3 — Theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3) to avoid duplicate tracking.

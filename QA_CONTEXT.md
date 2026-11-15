@@ -8,12 +8,12 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: `main`  
-> Last QA recheck: 2026-11-14  
+> Last QA recheck: 2026-11-15 (WAVE-0001 branch; source/test update pending CI)  
 > Scope: source review of current default-branch files, open bug register, and fixed-bug regression baseline.
 
 ## Current disposition
 
-- **WAVE-031 — OPEN / PARTIAL (P1):** native user-picked-folder permission prompt and OS permission revocation are not exercised. External filesystem edits during active read/save/backup/restore, comprehensive keyboard/screen-reader accessibility, and actual browser-process termination are also not covered.
+- **WAVE-031 — OPEN / PARTIAL (P1):** branch `WAVE-0001` adds deterministic tests for permission reauthorization from the prompt state and editor conflict handling after an external file edit. The OPFS permission contract remains simulated; native picker/OS revocation, external-process scheduling races during read/save/backup/restore, comprehensive keyboard/screen-reader accessibility, and actual browser-process termination remain unverified.
 - **WAVE-039 — OPEN / PARTIAL (P1):** IndexedDB journal writes request strict durability and are attempted on `pagehide` / hidden visibility, but the transaction is asynchronous. A process kill before commit can still lose the latest keystroke.
 - **WAVE-042 — FIXED in source:** per-tab draft records and current-tab-only clearing are implemented; the cross-tab E2E scenario verifies both edits remain represented and that recovery provenance is shown.
 - No newly confirmed regression was found in the source paths reviewed. Do not close WAVE-031 or WAVE-039 based on source inspection.
@@ -21,9 +21,9 @@
 ## Current test inventory (source, not execution)
 
 - `tests/storage.test.js`: **30** Node test definitions.
-- `tests/e2e/workspace.spec.ts`: **13** Playwright Chromium test definitions.
+- `tests/e2e/workspace.spec.ts`: **48** Playwright Chromium test definitions on branch `WAVE-0001` (46 before this issue's two added scenarios).
 - E2E fixture: Origin Private File System (OPFS) directory handles; `showDirectoryPicker` is replaced with a fixture and permission query/request behavior is simulated.
-- Current E2E coverage includes workspace creation/autosave, reload recovery, Trash round trip, root/nested attachments, mobile navigation, backup/restore, strict IndexedDB durability request, simulated permission denial, same-workspace two-tab edits, cross-tab recovery provenance, Markdown sanitization/GFM, command palette keyboard execution, and wiki links/backlinks.
+- Current E2E coverage includes workspace creation/autosave, reload recovery, Trash round trip, root/nested attachments, mobile navigation, backup/restore, strict IndexedDB durability request, simulated permission denial and reauthorization, external-edit conflict preservation, same-workspace two-tab edits, cross-tab recovery provenance, Markdown sanitization/GFM, command palette keyboard execution, wiki links/backlinks, and the broader Markdown/UI regression suite.
 - Historical CI evidence in `dev-build.md` reports 30 Node tests and 10 E2E scenarios passing for commit `09021ed224f739fd66325bb8f6cc8f1bcca5b142`. That run does **not** establish that the current 13-scenario E2E suite passed.
 
 ## Files reviewed
@@ -33,9 +33,39 @@
 - `tests/storage.test.js`, `tests/e2e/workspace.spec.ts`, `.github/workflows/ci.yml`, `config/playwright.config.ts`
 - `package.json`, `DEV_CONTEXT.md`, `dev-build.md`, `dev-fixed.md`
 
+## WAVE-031 manual verification plan
+
+The following checks must be performed in a real supported browser and recorded with browser version, OS version, date, outcome and any reproducible evidence. OPFS/Playwright stubs are not substitutes.
+
+### Native folder picker and permission lifecycle
+1. Use a current supported Chromium browser (Chrome or Edge) on a secure origin (HTTPS or localhost).
+2. In a fresh browser profile, choose a real user folder using the native picker; confirm Wave creates/opens only its `.wave/` subdirectory and that canceling the picker leaves the welcome screen usable.
+3. Reload and use **Reopen recent workspace**. Record whether the browser retains the read/write grant or presents a native permission prompt.
+4. Revoke the site's file-system permission using browser site settings (and OS-level folder access controls where the platform exposes them); reload and attempt reopen.
+5. Confirm Wave does not load/edit the workspace while permission is denied, provides a clear recovery message, and can reopen after the user reauthorizes from the explicit Reopen gesture.
+6. Repeat after browser restart and after changing the folder's OS access rights. Record platform-specific differences; do not infer behavior from the OPFS fixture.
+
+### External filesystem and backup/restore
+1. Open a Markdown page in Wave, then modify the same file from an external editor before Wave autosaves. Confirm Wave reports a conflict and does not overwrite the external content.
+2. Repeat with an external rename/delete and record safe error/recovery behavior.
+3. Modify a document or asset while backup is in progress using a controlled external writer. Verify the backup is rejected or clearly marked incomplete; no partial snapshot may be offered as valid.
+4. Inject a restore copy failure and verify the destination is marked incomplete and cannot be opened as a workspace.
+5. Record the exact operation timing and source/backup hashes where available. Current Node tests cover simulated snapshot mutation and restore failure, not arbitrary OS process scheduling.
+
+### Keyboard, focus and assistive technology
+1. Complete the core workspace journey using only the keyboard: open/reopen, navigate page list, create/open/edit, switch Edit/Preview, use command palette, open/close settings/dialogs, and navigate Trash/backups.
+2. Verify visible focus at every step, logical tab order, Escape behavior, focus containment where appropriate, and focus restoration to the invoking control after dialogs close.
+3. Inspect accessible names/roles for icon-only controls, dialogs, editor, navigation, Markdown headings/links/tables/task lists/callouts/disclosures.
+4. Perform a screen-reader pass with at least one platform-supported screen reader (for example NVDA on Windows or VoiceOver on macOS). Record browser/screen-reader versions and any findings.
+5. Run contrast checks for light/dark themes and keyboard focus indicators. Automated smoke assertions do not constitute a WCAG conformance audit.
+
+### Browser lifecycle
+1. Use a controlled test profile to terminate the browser process while a recovery-draft transaction is pending and at several intervals after input.
+2. Reopen and verify whether the edit exists in the Markdown file or as a committed recovery draft. Document the unavoidable pre-commit loss window separately; do not promise crash-proof IndexedDB durability.
+
 ## QA limitations and next verification
 
-This was a **source-only recheck**. No repository checkout, local test execution, browser run, native picker interaction, accessibility audit, or fresh GitHub Actions result was available in this pass. Do not report tests as newly passed.
+This branch update is a **source/test-definition change pending CI**. No local test execution, browser run, native picker interaction, or accessibility audit has been performed for WAVE-0001 yet. Do not report tests as newly passed.
 
 Next:
 1. Run `npm ci`, `npm test`, `npm run typecheck`, `npm run build`.
@@ -409,15 +439,87 @@ Important documentation drift observed at the same HEAD:
 - This was a repository/source and tracker audit only. No application source was changed; no tests, typecheck, build, browser run, Docker build or current CI workflow result was executed/verified in this task. Do not interpret source inventory as a passing test run.
 
 
----
+## WAVE-0001 CI failure remediation — 2026-11-15
+
+- Initial PR run `43682365587` passed `npm test`, typecheck, production build and container build, but Playwright failed 15 scenarios (33 passed). The failure was not a single product regression: several tests used stale/ambiguous accessible-name selectors or expected an obsolete error class; multiple fixtures encoded literal `\\n` instead of real line breaks.
+- Corrected the external-edit fixture to write actual Markdown newlines and assert the current `.app-error` surface. Tightened ambiguous Edit/Preview/Settings/code-action selectors, fixed template-preview flow/scoping, corrected image/diagram expectations, and repaired PDF fixture newlines.
+- Fixed task-list Enter handling so a blank `- [ ] ` item is recognized as empty and exits the list.
+- Fixed block-color parsing/serialization to split/join real newlines and match callout syntax correctly. Preserved editor selection while clicking color preset/clear actions.
+- Re-run workflow for commit `639be32a7060c6d0b4454a611c944eb909c9b353`: [CI run 43683698072](https://github.com/iamjpsonkar/Wave/actions/runs/43683698072). Status was in progress at documentation time; do not record as passing until final job conclusions are checked.
+- No local test/typecheck/build run was performed. The E2E run remains the acceptance gate; inspect any remaining failures rather than loosening assertions.
+
+
+## WAVE-0001 latest CI recheck — 2026-11-15
+
+- Latest completed run checked: [43683760674](https://github.com/iamjpsonkar/Wave/actions/runs/43683760674), head `98f3a77e90ed1819811998d1519d010516c1203d` — **failed**. Container job passed; Node tests, typecheck and production build passed; Playwright reported 39 passed / 9 failed.
+- Remaining failures from that run: settings Escape dismissal/focus trap, Lucide icon class expectation, duplicate `pre`/template/diagram/color-span selectors, color-toolbar operations not applying background/clear due to stale selection/state, and block callout classification.
+- Follow-up pushed after this run: settings dialog Escape handling, scoped/exact locator updates, color-edit operations now flow through the controlled change handler, and block-color callout classification fix. A newer workflow must be checked for the latest head before recording any pass.
+- Do not treat the previous 39/9 result as current CI; inspect latest PR SHA and run.
+
+
+## WAVE-0001 consolidated CI recheck — 2026-11-15
+
+- Latest checked PR-head workflow: [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184), head `8ff23d414ecf2dc7421fbb7188cf7b56145af419` — **failed**. Container job passed; build job Playwright reported **42 passed / 6 failed**. Node tests, typecheck and production build completed successfully in this run.
+- Remaining failures: Settings test attempted to click Preview while its modal overlay was still open; code-block icon assertion expected `lucide-file-code-2` while the rendered SVG class is `lucide-file-code2`; inline/block color changes still did not reliably consume the current controlled source; block-mode color update did not refresh the block source range.
+- Remediation pushed to `WAVE-0001`: color actions now read `contentRef.current` and pass changes through `handleEditorChange`; block-mode color replacement writes the complete current source range; Settings test closes its modal before switching Preview; icon expectation matches actual Lucide class.
+- Fresh CI is required for these commits. No local test, typecheck, build, native picker, or accessibility pass is claimed. Keep PR #101 and issue #1 open until latest CI and WAVE-031 manual acceptance criteria are met.
+
+## Local test runner and CI parity — 2026-11-15
+
+- Added root `test.sh` as the canonical local verification entry point. By default it runs Node tests, TypeScript typecheck, production build and Playwright Chromium E2E; it installs missing npm dependencies, the pinned Playwright runner and Chromium when needed.
+- `./test.sh --no-e2e` runs the fast non-browser checks. `--skip-install`, `--skip-playwright-install` and `--skip-browser-install` support pre-provisioned/CI environments and fail clearly if a required tool is missing.
+- CI now provisions its Linux browser dependencies and invokes the same script with install steps skipped, reducing local/CI command drift.
+- No local execution is claimed for this repository-edit task; run `./test.sh` from a checkout to verify locally. Chromium system libraries may need OS-specific installation on Linux.
+
+
+## CI follow-up — workspace theme and color-formatting regressions
+
+- Fixed the three color-formatting E2E regressions by making the color inputs start from a neutral `#ffffff` value. This allows selecting the documented warm highlight (`#fff0a8`) and green block background (`#eaf2e8`) to produce a real input change event, instead of asking the browser to re-select the already-selected color.
+- Added a compact mobile Settings action in the top bar so appearance preferences remain reachable when the sidebar is collapsed into its navigation drawer.
+- Corrected the narrow-content-width assertion: 680px is the configured maximum, while the editor's grid column can be narrower when the contextual sample library is visible. The test now verifies the configured cap and that the rendered preview respects it.
+- Verification is pending the PR workflow for the follow-up commit; no local execution is claimed.
+
+
+## 2026-11-15 — CI follow-up: Markdown directives and E2E stability
+
+- Run `43687589347` failed only in Playwright; Node tests, typecheck, production build and container build passed. The suite reported 44 passes, two deterministic failures and two flaky scenarios (cross-tab recovery and list typing).
+- Fixed malformed `[[color:red|...]]`-style directives being mistaken for unresolved wiki links: invalid `color:`/`bg:` directives now remain literal text, while valid six-digit hex directives retain their existing rendering path.
+- Corrected the block-background E2E assertion to compare the browser-computed RGB CSS value rather than expecting the source hex serialization. Removed an unnecessary frozen clock from the second cross-tab page, asserted the dialog source before checking the declined-recovery result, and made list continuation tests wait for focus/caret restoration before typing the next item.
+- Verification is pending on the new commit. No local browser run is claimed. Native OS picker/permission, external-process race, accessibility and process-termination checks remain outstanding; issue #1 stays open and PR #101 stays unmerged.
+
+
+## 2026-11-15 — Cross-tab recovery CI follow-up
+
+- Workflow `43688050754` passed 47 of 48 Playwright tests; Node tests (30), typecheck, production build and container image passed. The remaining failure was the cross-tab recovery test: after removing the fake clock from both pages, the source tab's 600ms autosave committed the changed Markdown before the second tab opened it, so no recovery dialog was expected and the prompt assertion received an empty string.
+- Corrected the test to freeze only the source tab's clock after workspace/page setup and before editing. Draft-journal writes remain immediate; only the delayed Markdown autosave is held. The second tab remains on real time so navigation and recovery interaction are not blocked.
+- Fresh CI is pending. No local browser execution is claimed. Outstanding manual OS picker/permission, external-process race, accessibility, and process-termination criteria remain tracked; issue #1 and PR #101 remain open.
+
+
+## 2026-11-15 — Cross-tab recovery test clock isolation correction
+
+- Run `43688362527` failed with 47/48 Playwright tests passing; Node tests (30), TypeScript typecheck, production build and container image passed. The cross-tab recovery test received no prompt message.
+- Inspection found the source page's clock was installed twice: once before workspace/page setup and again after the baseline page had been created. The early installation could freeze the baseline page's own save lifecycle, invalidating the intended setup. Removed the premature installation; the source clock is now frozen exactly once, after the baseline page is saved and immediately before the unsaved edit. The second tab remains on real time.
+- This is a test-fixture correction, not a production recovery implementation change. Fresh CI is required; no local test execution is claimed. Native picker/OS permission, external-process race, accessibility and process-termination criteria remain outstanding; issue #1 and PR #101 remain open.
+
+
+### Cross-tab recovery: diagnostic coverage
+- The cross-tab recovery E2E now inspects the IndexedDB journal in both tabs before attempting recovery.
+- It verifies the source record's content, owning session ID, and `FileSystemDirectoryHandle.isSameEntry()` relationship; the second tab must observe that same record while having a distinct session ID.
+- These assertions distinguish a failed journal write, workspace-handle mismatch, cross-tab visibility problem, and recovery-dialog logic failure. The recovery prompt and decline-preserves-record assertions remain intact.
+
+
+### Cross-tab recovery — latest CI diagnosis and plan
+- CI run `43689421532` (#918) reached 48 Playwright scenarios; the only persistent failure was in the new diagnostic assertion before the second tab attempted recovery. The source journal contained the exact draft, correct source `tabId`, and `sameWorkspace: true`.
+- Root cause of this run's failure: the test expectation encoded newline escapes twice, so it compared literal `\\n` sequences with actual Markdown line breaks. This was a test assertion defect, not evidence of a failed IndexedDB write or workspace-handle mismatch.
+- Corrected the expected strings to use actual newline escapes. Next verification must proceed through second-tab visibility, distinct session identity, recovery prompt source, and declined-draft retention.
+- Plan: (1) prove the second tab sees the source record; (2) if not, isolate IndexedDB origin/context and workspace-handle identity; (3) if visible, instrument `getDraft()` selection and `open()` decision; (4) fix only the failing production boundary; (5) rerun the complete `test.sh` CI gate and require all Node, typecheck, build, E2E, and container jobs to pass. Do not mask the test with sleeps, retries, or weakened assertions.
 
 ## WAVE-031 verification workstream split — 2026-11-15
 
-The remaining acceptance work from parent issue [#1](https://github.com/iamjpsonkar/Wave/issues/1) is now split into focused GitHub issues:
+The remaining acceptance work from parent issue [#1](https://github.com/iamjpsonkar/Wave/issues/1) is split into focused GitHub issues:
 
-- [#104 — WAVE-031A: native folder picker and real filesystem permission lifecycle](https://github.com/iamjpsonkar/Wave/issues/104). Existing OPFS/Playwright permission behavior is simulated; native picker, cancellation, browser/OS revocation and real reauthorization remain to be verified.
+- [#104 — WAVE-031A: native folder picker and real filesystem permission lifecycle](https://github.com/iamjpsonkar/Wave/issues/104). OPFS/Playwright permission behavior is simulated; native picker, cancellation, browser/OS revocation and real reauthorization remain to be verified.
 - [#105 — WAVE-031B: external filesystem races and backup/restore fault handling](https://github.com/iamjpsonkar/Wave/issues/105). Existing E2E coverage verifies one editor-save external-edit conflict; broader read/save/backup/restore race boundaries and fault injection remain.
 - [#106 — WAVE-031C: recovery drafts under abrupt browser process termination](https://github.com/iamjpsonkar/Wave/issues/106). Normal journal and cross-tab recovery tests do not establish behavior under actual process termination; measure the commit boundary and document the pre-commit loss window.
-- Accessibility remains in existing [#3 — theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3), avoiding a duplicate issue. Its WAVE-031 linkage and keyboard/focus/screen-reader checks are documented in an issue comment.
-
-Parent #1 remains open until all four workstreams have evidence. PR #101's latest CI run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741) passed (48/48 Playwright, Node tests, typecheck, build and container), but this automated result does not satisfy native/manual acceptance criteria. No source code or test implementation changed in this issue-splitting task.
+- Accessibility remains in existing [#3 — theme, contrast and accessibility verification](https://github.com/iamjpsonkar/Wave/issues/3), avoiding a duplicate issue. Parent #1 remains open until all workstreams have evidence.
+- Main recorded PR #101 CI run [43690301741](https://github.com/iamjpsonkar/Wave/actions/runs/43690301741) passed (48/48 Playwright, Node tests, typecheck, build and container). This automated result does not satisfy native/manual acceptance criteria.

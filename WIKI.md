@@ -674,3 +674,91 @@ Before finishing:
 - [ ] Report evidence and limitations honestly.
 
 **If two documents appear to conflict:** follow the most recent explicit product-owner instruction for workflow, the product constitution and complete catalogue for scope, `DEV_CONTEXT.md` for current implementation facts, source/tests for actual behavior, and the latest successful CI evidence for verification. Record and resolve material conflicts rather than silently choosing the convenient interpretation.
+
+
+## 18. GitHub issue implementation and review workflow
+
+For every issue selected by the product owner, work on an isolated issue branch and leave final integration to the product owner.
+
+1. Refresh the latest `main` branch and read the issue body, acceptance criteria, relevant source, tests and project handoff files.
+2. Create a branch from the latest `main` using the GitHub issue number padded to four digits: issue #1 → `WAVE-0001`, issue #42 → `WAVE-0042`. The branch name uses the GitHub issue number, not a similarly named internal WAVE defect ID.
+3. Implement the issue in that branch. Keep the change cohesive; preserve existing features and scope.
+4. Add regression coverage and run relevant checks. If local execution is unavailable, rely on the PR CI workflow and report its exact status; never infer a pass from test definitions.
+5. Commit the changes to the issue branch and push through the GitHub integration.
+6. Open a pull request targeting `main`, link the originating issue (for example, `Closes #1` only when all acceptance criteria are truly complete), and include a concise summary, tests, CI status and remaining limitations.
+7. Add a comment to the GitHub issue describing what changed, the branch, commit/PR links, verification performed and unresolved criteria.
+8. Do not merge the PR or close the issue. The product owner reviews and decides when to merge. If only part of an issue is completed, do not use an auto-closing PR keyword and keep the issue open with the remaining acceptance criteria explicit.
+
+Branch naming is case-sensitive and zero-padded to exactly four digits. Do not reuse an issue branch for a different issue. If the branch already exists, inspect it and its PR before proceeding rather than overwriting it.
+
+
+
+## 19. CI failure triage and browser regression tests
+
+- Read the failing job log and classify each failure as a product defect, stale selector, invalid fixture, or infrastructure issue before editing.
+- Keep assertions tied to the current accessible UI contract. Use exact accessible names where labels overlap (for example Edit vs Block editing, Settings vs a page titled Settings, and Preview vs a page titled Preview).
+- Markdown fixtures must contain actual newline characters (`\\n` in TypeScript source), not literal backslash-plus-n text (`\\\\n`). Validate both fixture data and expected values.
+- Preserve meaningful end-to-end coverage. Correct tests to match intended product behavior; do not delete scenarios, broaden locators to hide ambiguity, or weaken expectations just to turn CI green.
+- After changes, inspect the latest PR head SHA and its own workflow run. Report each job's conclusion and keep the issue/PR open until required checks and acceptance criteria are complete.
+
+
+### Follow-up: interpreting failed Playwright retries
+
+- After a CI failure, always re-fetch the PR head SHA and workflow runs. Multiple commits on the same branch create separate runs; only the run tied to the latest PR head determines current verification.
+- A completed run that is red is not remedied by an earlier green job subset. Report total E2E pass/fail counts and every remaining failure category; verify fresh results after each subsequent fix.
+- UI event tests that simulate toolbar actions must account for browser focus/selection loss and React's controlled-state timing. Prefer dispatching through the real interaction and verify the persisted editor value, rather than relying on a stale DOM selection.
+
+
+## WAVE-0001 CI triage — consolidated follow-up (2026-11-15)
+
+When a latest-head E2E run fails, use the failure log and retry trace as the source of truth; do not infer current state from older runs. For run [43684569184](https://github.com/iamjpsonkar/Wave/actions/runs/43684569184), 42 Playwright scenarios passed and 6 failed. The container job passed; Node tests, TypeScript and production build passed.
+
+The follow-up patch reads the latest editor source through `contentRef.current`, sends toolbar color mutations through `handleEditorChange` so recovery drafts/title state are updated, and replaces the current Markdown block range for color updates. Settings tests must close the dialog before clicking editor controls because the modal backdrop intentionally blocks pointer events. Check icon expectations against the installed Lucide version's rendered SVG class (`file-code2`).
+
+**Verification rule:** these are source-level corrections, not verified fixes until a new workflow for the exact current PR head completes. Never mark WAVE-031 closed based on simulated OPFS permission tests; native picker/OS revocation, external-process races, full accessibility review and pre-commit process-kill behavior remain documented acceptance gaps.
+
+## Local development and one-command verification scripts
+
+The root scripts are the supported shortcuts:
+
+- `./run.sh`: checks Node.js 22.6+, installs locked npm dependencies only when missing, then starts the Vite development server. It must not run typecheck/build after launching Vite because the server process is long-running. Configure bind address/port with `WAVE_HOST` and `WAVE_PORT`; use `./run.sh --install` to force `npm ci`.
+- `./test.sh`: local quality gate matching CI: Node tests → TypeScript typecheck → production build → Playwright Chromium E2E. It bootstraps missing project dependencies, the CI-pinned Playwright package and Chromium browser. Use `./test.sh --no-e2e` for the fast non-browser checks.
+- `./test.sh --skip-install --skip-playwright-install --skip-browser-install`: run the checks using pre-provisioned dependencies, as CI does after its setup steps.
+- `npm run test:local`: package-script alias for the full local test script.
+
+The scripts fail fast, print the failing stage, validate the minimum supported Node version, and return a non-zero exit code on failure. A local pass shortens feedback time; GitHub CI remains the shared authoritative run on the pushed commit. Browser E2E requires Chromium and may require OS libraries on Linux.
+
+
+## Mobile workspace preferences
+
+On narrow screens the sidebar is a slide-out navigation drawer. The top bar exposes a dedicated Settings control so users can open workspace preferences without first opening the drawer. The editor content-width preference is a maximum width; the rendered editor/preview may be narrower when its available grid column is constrained by the contextual sample library or viewport.
+
+
+## 2026-11-15 — CI follow-up: Markdown directives and E2E stability
+
+- Run `43687589347` failed only in Playwright; Node tests, typecheck, production build and container build passed. The suite reported 44 passes, two deterministic failures and two flaky scenarios (cross-tab recovery and list typing).
+- Fixed malformed `[[color:red|...]]`-style directives being mistaken for unresolved wiki links: invalid `color:`/`bg:` directives now remain literal text, while valid six-digit hex directives retain their existing rendering path.
+- Corrected the block-background E2E assertion to compare the browser-computed RGB CSS value rather than expecting the source hex serialization. Removed an unnecessary frozen clock from the second cross-tab page, asserted the dialog source before checking the declined-recovery result, and made list continuation tests wait for focus/caret restoration before typing the next item.
+- Verification is pending on the new commit. No local browser run is claimed. Native OS picker/permission, external-process race, accessibility and process-termination checks remain outstanding; issue #1 stays open and PR #101 stays unmerged.
+
+
+## 2026-11-15 — Cross-tab recovery CI follow-up
+
+- Workflow `43688050754` passed 47 of 48 Playwright tests; Node tests (30), typecheck, production build and container image passed. The remaining failure was the cross-tab recovery test: after removing the fake clock from both pages, the source tab's 600ms autosave committed the changed Markdown before the second tab opened it, so no recovery dialog was expected and the prompt assertion received an empty string.
+- Corrected the test to freeze only the source tab's clock after workspace/page setup and before editing. Draft-journal writes remain immediate; only the delayed Markdown autosave is held. The second tab remains on real time so navigation and recovery interaction are not blocked.
+- Fresh CI is pending. No local browser execution is claimed. Outstanding manual OS picker/permission, external-process race, accessibility, and process-termination criteria remain tracked; issue #1 and PR #101 remain open.
+
+
+## 2026-11-15 — Cross-tab recovery test clock isolation correction
+
+- Run `43688362527` failed only in the cross-tab recovery E2E scenario (47/48 passed). Node tests, typecheck, production build and container image passed.
+- Removed an unintended first clock installation before workspace setup. The source tab's autosave clock is now frozen only after the baseline page is saved and immediately before the recovery draft is written; the second tab stays on real time. This preserves the test's intended state: baseline Markdown on disk plus a distinct unsaved draft owned by another tab.
+- Fresh CI must verify the correction. No local execution is claimed; WAVE-031 manual/native acceptance criteria remain open.
+
+
+### Cross-tab recovery verification
+The cross-tab recovery browser test validates the persisted IndexedDB record from both tabs before invoking the recovery flow. It checks draft text, tab ownership, shared workspace-handle identity, and distinct session IDs, then retains the existing prompt-source and decline-preservation checks. This prevents treating a missing dialog as an unexplained timing failure.
+
+
+### Cross-tab recovery: diagnosis and completion plan
+CI run #918 showed the source tab successfully committed the expected IndexedDB draft with its own session ID and a matching workspace handle. The failure was in the new diagnostic assertion: its expected Markdown used over-escaped newline sequences, unlike the actual content. The expectation has been corrected. Completion requires proving the second tab reads the same record, the recovery decision labels it as another tab, declining leaves the source record intact, and the full CI gate passes. If the next check fails, isolate the exact boundary (cross-tab IndexedDB visibility, handle matching, draft selection, or `open()` logic) before changing production code.

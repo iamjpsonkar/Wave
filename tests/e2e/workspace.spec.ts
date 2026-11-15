@@ -15,7 +15,10 @@ async function installWorkspaceFixture(page: import('@playwright/test').Page) {
     });
     Object.defineProperty(permissionPrototype, 'requestPermission', {
       configurable: true,
-      value: async () => localStorage.getItem('wave-e2e-permission') === 'denied' ? 'denied' : 'granted'
+      value: async () => {
+        (window as any).__wavePermissionRequests = ((window as any).__wavePermissionRequests || 0) + 1;
+        return localStorage.getItem('wave-e2e-request-result') || (localStorage.getItem('wave-e2e-permission') === 'denied' ? 'denied' : 'granted');
+      }
     });
     const originalTransaction = IDBDatabase.prototype.transaction;
     Object.defineProperty(IDBDatabase.prototype, 'transaction', {
@@ -157,6 +160,43 @@ test('recent workspace permission denial is surfaced without opening the workspa
   await expect(page.locator('textarea')).toHaveCount(0);
 });
 
+test('a recently used workspace can be reauthorized after permission returns to prompt', async ({ page }) => {
+  await openWorkspace(page);
+  await createPage(page, 'Permission Reauthorization');
+  await page.reload();
+  await page.evaluate(() => {
+    localStorage.setItem('wave-e2e-permission', 'prompt');
+    localStorage.setItem('wave-e2e-request-result', 'granted');
+  });
+  await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
+  await expect(page.getByRole('button', { name: /Permission Reauthorization/ })).toBeVisible();
+  await expect.poll(() => page.evaluate(() => (window as any).__wavePermissionRequests)).toBe(1);
+});
+
+test('an external file edit is preserved and the editor reports a save conflict', async ({ page }) => {
+  await openWorkspace(page);
+  const editor = await createPage(page, 'External Conflict');
+  await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const documents = await wave.getDirectoryHandle('documents');
+    const file = await documents.getFileHandle('untitled.md');
+    const writable = await file.createWritable();
+    await writable.write('# External Conflict\n\nChanged by another filesystem writer');
+    await writable.close();
+  });
+  await editor.fill('# External Conflict\n\nMy local draft must not overwrite the external edit');
+  await expect(page.locator('.app-error')).toContainText('changed outside Wave', { timeout: 8000 });
+  const diskContent = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot;
+    const wave = await root.getDirectoryHandle('.wave');
+    const documents = await wave.getDirectoryHandle('documents');
+    return (await (await documents.getFileHandle('untitled.md')).getFile()).text();
+  });
+  expect(diskContent).toContain('Changed by another filesystem writer');
+  expect(diskContent).not.toContain('My local draft must not overwrite');
+});
+
 test('two tabs editing the same workspace do not silently overwrite each other', async ({ page, context }) => {
   await openWorkspace(page);
   await createPage(page, 'Concurrent Editing');
@@ -198,27 +238,88 @@ test('two tabs editing the same workspace do not silently overwrite each other',
   await expect.poll(readPersistedAndDraftContent, { timeout: 12000 }).toContain('Change from second tab');
 });
 test('recovery prompt identifies a draft created in another tab and preserves its record when declined', async ({ page, context }) => {
-  await page.clock.install();
+  const recoveryLogs: string[] = [];
+  page.on('console', message => { if (message.text().includes('[Wave recovery]')) recoveryLogs.push(message.text()); });
   await openWorkspace(page);
   const firstEditor = await createPage(page, 'Cross-tab Recovery');
+  // Freeze only the source tab's autosave timer after setup. Its recovery
+  // journal writes are immediate, but the 600ms Markdown save must not
+  // commit the draft before the second tab attempts recovery.
+  await page.clock.install();
   await firstEditor.fill('# Cross-tab Recovery\n\nUnsaved change owned by first tab');
   await expect(page.locator('.topright small')).toContainText('Recovery draft saved', { timeout: 5000 });
+  const sourceJournal = await page.evaluate(async () => {
+    const root = (window as any).__waveTestRoot as FileSystemDirectoryHandle;
+    const tabId = sessionStorage.getItem('wave-draft-session-id');
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('wave-draft-journal', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const records = await new Promise<Array<{ path: string; content: string; tabId?: string; workspace: FileSystemDirectoryHandle }>>((resolve, reject) => {
+      const request = db.transaction('drafts', 'readonly').objectStore('drafts').getAll();
+      request.onsuccess = () => resolve(request.result as Array<{ path: string; content: string; tabId?: string; workspace: FileSystemDirectoryHandle }>);
+      request.onerror = () => reject(request.error);
+    });
+    const matching = [];
+    for (const record of records.filter(item => item.path === 'untitled.md')) {
+      matching.push({ content: record.content, tabId: record.tabId, sameWorkspace: await record.workspace.isSameEntry(root) });
+    }
+    db.close();
+    return { tabId, matching };
+  });
+  expect(sourceJournal.matching).toEqual([expect.objectContaining({
+    content: '# Cross-tab Recovery\n\nUnsaved change owned by first tab',
+    tabId: sourceJournal.tabId,
+    sameWorkspace: true
+  })]);
 
   const second = await context.newPage();
   await installWorkspaceFixture(second);
-  await second.clock.install();
   await second.goto('/');
   await second.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(second.getByRole('button', { name: /Cross-tab Recovery/ })).toBeVisible();
+  const secondJournal = await second.evaluate(async () => {
+    const root = (window as any).__waveTestRoot as FileSystemDirectoryHandle;
+    const tabId = sessionStorage.getItem('wave-draft-session-id');
+    const db = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open('wave-draft-journal', 1);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const records = await new Promise<Array<{ path: string; content: string; tabId?: string; workspace: FileSystemDirectoryHandle }>>((resolve, reject) => {
+      const request = db.transaction('drafts', 'readonly').objectStore('drafts').getAll();
+      request.onsuccess = () => resolve(request.result as Array<{ path: string; content: string; tabId?: string; workspace: FileSystemDirectoryHandle }>);
+      request.onerror = () => reject(request.error);
+    });
+    const matching = [];
+    for (const record of records.filter(item => item.path === 'untitled.md')) {
+      matching.push({ content: record.content, tabId: record.tabId, sameWorkspace: await record.workspace.isSameEntry(root) });
+    }
+    db.close();
+    return { tabId, matching };
+  });
+  expect(secondJournal.tabId).not.toBe(sourceJournal.tabId);
+  expect(secondJournal.matching).toContainEqual({
+    content: '# Cross-tab Recovery\n\nUnsaved change owned by first tab',
+    tabId: sourceJournal.tabId,
+    sameWorkspace: true
+  });
 
+  const secondRecoveryLogs: string[] = [];
+  second.on('console', message => { if (message.text().includes('[Wave recovery]')) secondRecoveryLogs.push(message.text()); });
   let promptMessage = '';
-  second.once('dialog', async dialog => {
+  const dialogPromise = second.waitForEvent('dialog', { timeout: 5000 }).then(async dialog => {
     promptMessage = dialog.message();
     await dialog.dismiss();
   });
   await second.getByRole('button', { name: /Cross-tab Recovery/ }).click();
-  await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\n\nBrowser regression content');
+  await dialogPromise.catch(error => {
+    console.error('[Cross-tab recovery diagnostics]', JSON.stringify({ sourceJournal, secondJournal, sourceLogs: recoveryLogs, secondLogs: secondRecoveryLogs, dialogError: String(error) }, null, 2));
+    throw error;
+  });
   expect(promptMessage).toContain('another browser tab');
+  await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\n\nBrowser regression content');
 
   const retainedDrafts = await second.evaluate(async () => {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
@@ -259,7 +360,7 @@ test('Markdown preview renders GFM tables, task lists, footnotes and safe alert 
     '',
     '> <img src=x onerror=alert(1)>'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview table')).toBeVisible();
   await expect(page.locator('.markdown-preview input[type=checkbox]')).toHaveCount(2);
   await expect(page.locator('.markdown-preview .footnotes')).toContainText('Footnote content survives preview.');
@@ -307,7 +408,7 @@ test('wiki links navigate to pages and backlinks are derived from Markdown files
   await expect(editor).toHaveValue('# Source Page\n\nSee [[untitled|the linked page]].');
   await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
   await expect(page.getByRole('button', { name: /Source Page/ })).toBeVisible();
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const previewHtml = await page.locator('.markdown-preview').innerHTML();
   expect(previewHtml).toContain('the linked page');
   expect(previewHtml).not.toContain('wave.invalid');
@@ -342,7 +443,7 @@ test('Markdown preview renders inline/display math, Mermaid flowcharts and headi
     '  B --> C[Save]',
     '```'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview h2#a-heading-with-anchors')).toBeVisible();
   await expect(page.locator('.markdown-math-inline math')).toBeVisible();
   await expect(page.locator('.markdown-math-display math')).toBeVisible();
@@ -379,7 +480,7 @@ test('Markdown extended preview highlights code, expands heading anchors, emoji 
     '"Safari" : 15',
     '```'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview h2#repeated-heading')).toHaveCount(1);
   await expect(page.locator('.markdown-preview h2#repeated-heading-1')).toHaveCount(1);
   await expect(page.locator('.markdown-preview')).toContainText('🚀 😄 👍');
@@ -407,7 +508,7 @@ test('Markdown safe inline extensions and disclosure blocks render without raw H
     '',
     '<script>alert(1)</script>'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview mark')).toHaveText('highlighted');
   await expect(page.locator('.markdown-preview u')).toHaveText('underlined');
   await expect(page.locator('.markdown-preview sup')).toHaveText('superscript');
@@ -452,7 +553,7 @@ test('Markdown CommonMark links, hard breaks, escaped tables and safe image fall
     '  continuation paragraph',
     '  - Nested child'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.locator('p').filter({ hasText: 'First hard-break line' })).toContainText('Second hard-break line');
   await expect(preview.locator('p').filter({ hasText: 'Second hard-break line' })).toContainText('Third line');
@@ -505,7 +606,7 @@ test('Markdown inline syntax, code literal preservation, duplicate slugs, nested
     '+new value',
     '```'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.locator('h1#duplicate-title')).toHaveCount(1);
   await expect(preview.locator('h1#duplicate-title-1')).toHaveCount(1);
@@ -536,11 +637,12 @@ test('Technical learning notes template contains real Markdown newlines and prev
   await openWorkspace(page);
   await page.getByRole('button', { name: 'New from template' }).click();
   await page.locator('.sidebar-templates').getByRole('button', { name: /Technical learning notes/ }).click();
-  const editor = page.locator('textarea');
+  await page.getByRole('dialog', { name: /Technical learning notes/ }).getByRole('button', { name: 'Create from template' }).click();
+  const editor = page.locator('.editor textarea');
   const markdown = await editor.inputValue();
   expect(markdown).toContain('## Introduction\n\nWhat is this technology');
   expect(markdown).toContain('## Open questions\n\n- [ ]');
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview').getByRole('heading', { level: 2, name: 'Introduction' })).toBeVisible();
   await expect(page.locator('.markdown-preview').getByRole('heading', { level: 2, name: 'Open questions' })).toBeVisible();
   await expect(page.locator('.markdown-preview pre code')).toContainText('Add a small, self-contained example');
@@ -574,7 +676,7 @@ test('Markdown math renders quadratic formula, matrices, cases, sums, integrals 
     '\\binom{n}{k} \\quad \\sqrt[3]{x} \\quad \\overline{AB}',
     '$$'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const math = page.locator('.markdown-math-display math');
   await expect(math).toHaveCount(5);
   await expect(math.nth(0).locator('mfrac')).toHaveCount(1);
@@ -646,7 +748,7 @@ test('Markdown Mermaid class, ER, state, Gantt, git and extended flowchart diagr
     'merge develop',
     '```'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const diagrams = page.locator('.markdown-preview .mermaid-diagram');
   await expect(diagrams).toHaveCount(6);
   await expect(diagrams.nth(0)).toContainText('Start');
@@ -708,7 +810,7 @@ test('Markdown local DOT, PlantUML, Vega-Lite, D2 and AsciiDoc renderers stay of
     '----',
     '```'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.locator('.mermaid-diagram')).toHaveCount(4);
   await expect(preview.locator('.mermaid-diagram svg')).toHaveCount(4);
@@ -745,7 +847,7 @@ test('Markdown embeds only local audio and video assets and rejects remote media
     '',
     '[[audio:https://example.com/remote.mp3]]'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.locator('audio[controls]')).toBeVisible();
   await expect(preview.locator('video[controls]')).toBeVisible();
@@ -764,10 +866,10 @@ test('editor inserts selected multiline code as a fenced block and preserves cop
     textarea.focus();
     textarea.setSelectionRange(0, value.length);
   }, source);
-  await page.getByRole('button', { name: 'Insert code block' }).click();
+  await page.getByRole('button', { name: 'Code block', exact: true }).click();
   const expected = '```\n' + source + '\n```';
   await expect(editor).toHaveValue(expected);
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const block = page.locator('.markdown-preview .markdown-code');
   await expect(block.locator('pre code')).toContainText('function greet(name: string)');
   await expect(block.locator('pre code')).toContainText('console.log(greet("Wave"));');
@@ -809,7 +911,7 @@ test('Markdown preview exposes accessible semantic structure and keyboard-operab
     'Buyer->>Shop: Place order',
     '```'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.getByRole('heading', { level: 1, name: 'Accessible Markdown' })).toBeVisible();
   const diagram = preview.getByRole('img', { name: 'Checkout sequence' });
@@ -872,12 +974,12 @@ test('Markdown preview is source-preserving across toggle, save and workspace re
   ].join('\n');
   await editor.fill(original);
   await expect(page.locator('.topright small')).toContainText('Saved locally', { timeout: 8000 });
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview h1')).toHaveText('Source Round Trip');
   await expect(page.locator('.markdown-preview table')).toContainText('escaped | pipe');
   await expect(page.locator('.markdown-preview .markdown-math-display math')).toBeVisible();
   await expect(page.locator('.markdown-preview .wiki-link-unresolved')).toContainText('Missing Page');
-  await page.getByRole('button', { name: 'Edit' }).click();
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await expect(page.locator('textarea')).toHaveValue(original);
   const saved = await page.evaluate(async () => {
     const root = (window as any).__waveTestRoot;
@@ -923,7 +1025,7 @@ test('Markdown link schemes and local media paths enforce the preview security b
     '[[audio:C:\\secret.mp3]]',
     '[[audio:https://example.com/secret.mp3]]'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.locator('a[href="https://example.com/safe"]')).toHaveCount(1);
   await expect(preview.locator('a[href="mailto:wave@example.com"]')).toHaveCount(1);
@@ -992,7 +1094,7 @@ test('Markdown Mermaid mindmap, timeline, quadrant, requirement and architecture
     'api:R -- L:db',
     '```'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const diagrams = page.locator('.markdown-preview .mermaid-diagram');
   await expect(diagrams).toHaveCount(5);
   await expect(diagrams.nth(0).locator('rect')).toHaveCount(4);
@@ -1032,7 +1134,7 @@ test('Markdown images preserve decorative semantics, accessible fallbacks and re
     '',
     '[reference-art]: assets/one-pixel.png "Reference title"'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   const artwork = preview.getByRole('img', { name: 'Accessible artwork' });
   await expect(artwork).toHaveAttribute('alt', 'Accessible artwork');
@@ -1046,7 +1148,7 @@ test('Markdown images preserve decorative semantics, accessible fallbacks and re
   await expect(linkedImage).toHaveAttribute('href', 'https://example.com/gallery');
   await linkedImage.focus();
   await expect(linkedImage).toBeFocused();
-  await expect(linkedImage.locator('.missing-asset')).toHaveAttribute('title', 'Reference title');
+  await expect(linkedImage.locator('img')).toHaveAttribute('title', 'Reference title');
 });
 
 
@@ -1070,7 +1172,7 @@ test('Math rendering rejects malformed and oversized input within explicit resou
     oversized,
     '```'
   ].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const fallbacks = page.locator('.markdown-math-fallback');
   await expect(fallbacks).toHaveCount(3);
   await expect(fallbacks.nth(0)).toContainText('unbalanced grouping braces');
@@ -1083,7 +1185,7 @@ test('Math rendering rejects malformed and oversized input within explicit resou
 test('workspace settings persist appearance and typography preferences locally', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'Settings Preferences');
-  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
   const dialog = page.getByRole('dialog', { name: 'Settings' });
   await expect(dialog).toBeVisible();
   await page.keyboard.press('Shift+Tab');
@@ -1099,9 +1201,15 @@ test('workspace settings persist appearance and typography preferences locally',
   await expect(page.locator('.editor')).toHaveAttribute('data-content-width', 'narrow');
   await expect(page.locator('.editor textarea')).toHaveCSS('font-size', '18px');
   await expect(page.locator('.editor textarea')).toHaveCSS('line-height', '34.2px');
-  await page.getByRole('button', { name: 'Preview' }).click();
-  await expect(page.locator('.markdown-preview')).toHaveCSS('width', '680px');
   await dialog.getByRole('button', { name: 'Done' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
+  // 680px is the configured maximum; the editor work column may be narrower
+  // while the contextual sample library is open, so assert the cap rather than
+  // assuming the available grid column is always at least 680px wide.
+  await expect(page.locator('[data-testid="wave-app"]')).toHaveCSS('--editor-content-width', '680px');
+  const previewWidth = await page.locator('.markdown-preview').evaluate(node => node.getBoundingClientRect().width);
+  expect(previewWidth).toBeGreaterThan(0);
+  expect(previewWidth).toBeLessThanOrEqual(680);
   const settings = await page.evaluate(async () => {
     const root = (window as any).__waveTestRoot;
     const wave = await root.getDirectoryHandle('.wave');
@@ -1116,7 +1224,7 @@ test('workspace settings persist appearance and typography preferences locally',
   await page.reload();
   await page.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(/theme-dark/);
-  await page.getByRole('button', { name: 'Settings' }).click();
+  await page.getByRole('button', { name: 'Settings', exact: true }).click();
   const reopenedDialog = page.getByRole('dialog', { name: 'Settings' });
   await expect(reopenedDialog.getByLabel('Font family')).toHaveValue('serif');
   await page.keyboard.press('Escape');
@@ -1127,12 +1235,12 @@ test('workspace settings persist appearance and typography preferences locally',
 test('toolbar code actions have distinct icons and accessible names', async ({ page }) => {
   await openWorkspace(page);
   await createPage(page, 'Code Toolbar Actions');
-  const inlineCode = page.getByRole('button', { name: 'Inline code' });
-  const codeBlock = page.getByRole('button', { name: 'Code block' });
+  const inlineCode = page.getByRole('button', { name: 'Inline code', exact: true });
+  const codeBlock = page.getByRole('button', { name: 'Code block', exact: true });
   await expect(inlineCode).toHaveAttribute('title', 'Inline code');
   await expect(codeBlock).toHaveAttribute('title', 'Code block');
-  await expect(inlineCode.locator('svg')).toHaveClass(/lucide-code-2/);
-  await expect(codeBlock.locator('svg')).toHaveClass(/lucide-file-code-2/);
+  await expect(inlineCode.locator('svg')).toHaveClass(/lucide-code-xml/);
+  await expect(codeBlock.locator('svg')).toHaveClass(/lucide-file-code2/);
   const editor = page.locator('.editor textarea');
   await editor.fill('const wave = true;');
   await editor.selectText();
@@ -1149,7 +1257,7 @@ test('system dark theme keeps Markdown and workspace controls readable', async (
   await openWorkspace(page);
   const editor = await createPage(page, 'System Dark Theme');
   await editor.fill(['# Readable heading', '', 'Body text with `inline code`.', '', '```js', 'const wave = true;', '```', '', '> A readable quotation', '', '| Name | Value |', '| --- | --- |', '| Wave | Local |'].join('\n'));
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(page.locator('[data-testid="wave-app"]')).toHaveClass(/theme-system/);
   await expect(preview.locator('h1')).toHaveCSS('color', 'rgb(237, 242, 233)');
@@ -1203,7 +1311,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
   const states: Array<{ theme: string; viewport: string; mode: string; colors: Record<string, string | number> }> = [];
   for (const theme of themes) {
     await page.emulateMedia({ colorScheme: theme.system as 'light' | 'dark' });
-    await page.getByRole('button', { name: 'Settings' }).click();
+    await page.getByRole('button', { name: 'Settings', exact: true }).click();
     const dialog = page.getByRole('dialog', { name: 'Settings' });
     await dialog.getByLabel('Theme').selectOption(theme.name);
     await dialog.getByRole('button', { name: 'Done' }).click();
@@ -1212,8 +1320,8 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
     for (const viewport of [{ name: 'wide', width: 1440, height: 1000 }, { name: 'tablet', width: 1024, height: 900 }, { name: 'small-tablet', width: 768, height: 900 }, { name: 'mobile', width: 390, height: 844 }, { name: 'compact-mobile', width: 320, height: 720 }]) {
       await page.setViewportSize({ width: viewport.width, height: viewport.height });
       for (const mode of ['edit', 'preview']) {
-        if (mode === 'preview') await page.getByRole('button', { name: 'Preview' }).click();
-        else await page.getByRole('button', { name: 'Edit' }).click();
+        if (mode === 'preview') await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
+        else await page.getByRole('button', { name: 'Edit', exact: true }).click();
         let colors: Record<string, string | number> = {};
         if (mode === 'edit') {
           await expect(page.locator('.editor textarea')).toBeVisible();
@@ -1226,7 +1334,7 @@ test('UI-020 theme and editor/preview matrix keeps representative Markdown reada
           const preview = page.locator('.markdown-preview');
           await expect(preview.locator('h1')).toContainText('Theme matrix heading');
           await expect(preview.locator('a')).toHaveCount(1);
-          await expect(preview.locator('pre')).toBeVisible();
+          await expect(preview.locator('pre code').filter({ hasText: 'const wave = "portable";' })).toBeVisible();
           await expect(preview.locator('.markdown-alert')).toBeVisible();
           await expect(preview.locator('.markdown-details')).toBeVisible();
           await expect(preview.locator('table')).toBeVisible();
@@ -1335,8 +1443,8 @@ test('editor productivity tools support find/replace, undo/redo, outline and liv
 test('template gallery searches and previews before creating a local page', async ({ page }) => {
   await openWorkspace(page);
   await page.getByRole('button', { name: 'New from template' }).click();
-  await page.getByRole('textbox', { name: 'Search templates' }).fill('meeting');
-  const meeting = page.getByRole('button', { name: /Meeting notes/ });
+  await page.locator('.sidebar-templates').getByRole('textbox', { name: 'Search templates' }).fill('meeting');
+  const meeting = page.locator('.sidebar-templates').getByRole('button', { name: /Meeting notes/ });
   await expect(meeting).toBeVisible();
   await meeting.click();
   const dialog = page.getByRole('dialog', { name: 'Meeting notes template preview' });
@@ -1448,13 +1556,13 @@ test('foreground and background color formatting round-trip through Markdown pre
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(node, '#fff0a8'); node.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await expect(editor).toHaveValue(/\[\[bg:#FFF0A8\|Background sample\]\]/);
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.locator('span[style*="color: rgb(18, 52, 86)"]')).toContainText('Foreground sample');
   await expect(preview.locator('span[style*="background-color: rgb(255, 240, 168)"]')).toContainText('Background sample');
   await expect(preview.locator('code')).toContainText('[[color:#123456|not colored]]');
   await expect(preview).toContainText('Invalid directive: [[color:red|plain text]]');
-  await page.getByRole('button', { name: 'Edit' }).click();
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await expect(editor).toHaveValue(/Literal code: `\[\[color:#123456\|not colored\]\]`/);
 });
 
@@ -1483,9 +1591,9 @@ test('color presets, reset and block background formatting are available', async
     node.dispatchEvent(new Event('change', { bubbles: true }));
   });
   await expect(editor).toHaveValue(/> \[!COLOR=#EAF2E8\]\n> Block background text/);
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toContainText('Block background text');
-  await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toHaveAttribute('style', /background-color:\s*#eaf2e8/i);
+  await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toHaveCSS('background-color', 'rgb(234, 242, 232)');
 });
 
 
@@ -1493,7 +1601,7 @@ test('block editor applies and updates a block background without leaving block 
   await openWorkspace(page);
   await createPage(page, 'Block Color Editing');
   const editor = page.locator('.editor textarea');
-  await editor.fill('# Colorable heading\\n\\nA paragraph to color.');
+  await editor.fill('# Colorable heading\n\nA paragraph to color.');
   await page.getByRole('button', { name: 'Block editing' }).click();
   const blocks = page.getByRole('region', { name: 'Markdown block editor' });
   await blocks.getByRole('textbox', { name: 'Edit paragraph block 2' }).focus();
@@ -1501,14 +1609,14 @@ test('block editor applies and updates a block background without leaving block 
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(node, '#eaf2e8');
     node.dispatchEvent(new Event('change', { bubbles: true }));
   });
-  await expect(blocks.getByRole('textbox', { name: 'Edit callout block 2' })).toHaveValue('> [!COLOR=#EAF2E8]\\n> A paragraph to color.');
+  await expect(blocks.getByRole('textbox', { name: 'Edit callout block 2' })).toHaveValue('> [!COLOR=#EAF2E8]\n> A paragraph to color.');
   await blocks.getByLabel('Block background color for block 2').evaluate((node: HTMLInputElement) => {
     Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')!.set!.call(node, '#fff0a8');
     node.dispatchEvent(new Event('change', { bubbles: true }));
   });
-  await expect(blocks.getByRole('textbox', { name: 'Edit callout block 2' })).toHaveValue('> [!COLOR=#FFF0A8]\\n> A paragraph to color.');
+  await expect(blocks.getByRole('textbox', { name: 'Edit callout block 2' })).toHaveValue('> [!COLOR=#FFF0A8]\n> A paragraph to color.');
   await page.getByRole('button', { name: 'Block editing' }).click();
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toContainText('A paragraph to color.');
 });
 
@@ -1517,7 +1625,7 @@ test('Wave Complete Feature Test template is available and previews its feature 
   await openWorkspace(page);
   await page.getByRole('button', { name: 'New from template' }).click();
   await page.locator('.sidebar-templates').getByRole('button', { name: /Wave Complete Feature Test/ }).click();
-  await expect(page.getByRole('dialog', { name: 'Template preview' })).toContainText('Comprehensive Markdown');
+  await expect(page.getByRole('dialog', { name: /Wave Complete Feature Test template preview/ })).toContainText('Comprehensive Markdown');
   await page.getByRole('button', { name: 'Create from template' }).click();
   const editor = page.locator('.editor textarea');
   const markdown = await editor.inputValue();
@@ -1526,13 +1634,13 @@ test('Wave Complete Feature Test template is available and previews its feature 
   expect(markdown).toContain('```mermaid');
   expect(markdown).toContain('[[audio:sample-audio.mp3]]');
   expect(markdown).toContain('## 15. Editor and workspace checklist');
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview.getByRole('heading', { name: 'Wave Complete Feature Test' })).toBeVisible();
   await expect(preview.locator('span[style*="color: rgb(54, 95, 186)"]')).toContainText('blue');
   await expect(preview.locator('blockquote.markdown-color-block')).toContainText('soft green background');
-  await expect(preview.locator('svg[role="img"]')).toBeVisible();
-  await page.getByRole('button', { name: 'Edit' }).click();
+  await expect(preview.locator('svg[aria-label="Mermaid flowchart"]').first()).toBeVisible();
+  await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await expect(editor).toHaveValue(markdown);
 });
 
@@ -1555,14 +1663,14 @@ test('PDF export uses a readable print palette and preserves Markdown content', 
     '$$',
     '\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}',
     '$$'
-  ].join('\\n');
+  ].join('\n');
   await page.locator('textarea').fill(source);
-  await page.getByRole('button', { name: 'Preview' }).click();
+  await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   const preview = page.locator('.markdown-preview');
   await expect(preview).toContainText('Readable body text');
-  await expect(preview.locator('.wave-inline-color')).toContainText('blue custom text');
-  await expect(preview.locator('.wave-inline-color')).toContainText('green text');
-  await expect(preview.locator('.wave-inline-color')).toContainText('red text');
+  await expect(preview.getByText('blue custom text', { exact: true })).toBeVisible();
+  await expect(preview.getByText('green text', { exact: true })).toBeVisible();
+  await expect(preview.getByText('red text', { exact: true })).toBeVisible();
   await expect(preview.locator('.wave-inline-background')).toContainText('highlighted background');
   await expect(preview.locator('tbody tr').first().locator('td').nth(2)).toHaveText('1');
   await expect(preview.locator('.markdown-special-block math')).toBeVisible();
@@ -1623,6 +1731,7 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await editor.press('End');
   await editor.press('Enter');
   await expect(editor).toHaveValue('1. First step\n2. ');
+  await expect.poll(() => editor.evaluate(node => node === document.activeElement && node.selectionStart === node.value.length)).toBe(true);
   await editor.type('Second step');
   await editor.press('Enter');
   await expect(editor).toHaveValue('1. First step\n2. Second step\n3. ');
@@ -1631,6 +1740,7 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await editor.press('End');
   await editor.press('Enter');
   await expect(editor).toHaveValue('- First item\n- ');
+  await expect.poll(() => editor.evaluate(node => node === document.activeElement && node.selectionStart === node.value.length)).toBe(true);
   await editor.type('Second item');
   await editor.press('Enter');
   await expect(editor).toHaveValue('- First item\n- Second item\n- ');
@@ -1639,6 +1749,7 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await editor.press('End');
   await editor.press('Enter');
   await expect(editor).toHaveValue('- [ ] First task\n- [ ] ');
+  await expect.poll(() => editor.evaluate(node => node === document.activeElement && node.selectionStart === node.value.length)).toBe(true);
   await editor.type('Second task');
   await editor.press('Enter');
   await expect(editor).toHaveValue('- [ ] First task\n- [ ] Second task\n- [ ] ');

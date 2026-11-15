@@ -301,3 +301,68 @@ Source changes and the regression scenario are committed, but no local typecheck
 - Commits: sample component `65fb14ba86541accb9a36617588dbd80b9c65b99`; App integration `148fc99d14bfbc792e4be0a830938cbf001a791e`, escape correction `40ca59461ae6cab5c2b772f4e11b32d07d55e26f`, event typing `e55a34748dcf02c1ec6ae2c87aa27afadb7aa664`; CSS `6ffe152c88fec619cca223871d51086894ebe408`, nav alignment `c1f7265ed48cafe50dc9fab2fb8975c59aa0700b`; E2E `4c616bba1d7c3e37408834b8fdba117918f4e321`, syntax correction `81261223084692acf14486db9d937cd77238e055`.
 - CI: run `43632920367` passed Node tests, TypeScript typecheck and production build, but E2E stopped at parse time due to an extra suite-closing `});` that had been left before the PDF scenario. Removed that stray token in `8126122`; fresh CI run `43633086687` is queued. The CSS-only run `43632988620` failed for the same E2E parse issue before the correction. No E2E pass or visual QA is claimed yet.
 - Regression follow-up: expanded the list Enter scenario to verify nested indentation and that Enter inside a fenced code block remains a normal newline. The empty-task-item expectation now explicitly checks the blank line that terminates the list. Test commit `757d8edba0925432bf8c5027924074ee8331a1eb`; CI run `43633137209` is in progress. Earlier run `43633086687` passed Node tests, typecheck and production build; Playwright execution was still running at the last check.
+
+## 2026-11-15 — WAVE-0001 permission and external-edit regression coverage
+
+### Scope
+Strengthen deterministic browser coverage for the WAVE-031 reliability/QA gap without misrepresenting simulated browser permissions as native OS picker coverage.
+
+### Changes
+- `tests/e2e/workspace.spec.ts`
+  - Extended the OPFS permission fixture to count `requestPermission()` calls and independently model the requested result.
+  - Added a reauthorization scenario: a remembered workspace starts in the prompt state, the user clicks Reopen, the permission request is granted, and the workspace becomes available.
+  - Added an external-writer scenario: a file is changed outside Wave after it is loaded; Wave's subsequent save reports the conflict and the external contents remain on disk.
+
+### Verification boundary
+- These are deterministic Playwright scenarios using OPFS and a simulated permission contract. They do not exercise the native OS folder picker, real browser/OS permission revocation, or external-process scheduling races.
+- Existing Node storage tests already cover conditional-save conflict rejection and backup snapshot mutation detection; the new browser scenario verifies the editor surfaces the save conflict without overwriting the external content.
+- CI execution is pending on the WAVE-0001 pull request. No test pass is claimed until the workflow result is checked.
+- WAVE-031 remains open until native supported-browser checks, broader external read/save/backup/restore race coverage, keyboard/focus/accessibility review, and lifecycle fault testing are evidenced.
+
+
+
+## 2026-11-15 — WAVE-0001 CI failure fixes (verification pending)
+
+- External-edit browser scenario now writes real newlines and checks `.app-error`, matching the rendered error container.
+- Updated Playwright selectors to use exact accessible names and scoped template search; corrected the template-preview creation step and image/diagram/PDF assertions.
+- Fixed Enter on an empty task item: checkbox syntax no longer makes an otherwise empty list item appear non-empty.
+- Fixed Markdown block-color parser/serializer to use real newline separators and correct whitespace/callout regular expressions.
+- Prevented toolbar color preset/clear mouse-down from discarding the editor selection before the action executes.
+- Verification: original CI run `43682365587` failed Playwright (33 passed, 15 failed); remediation run `43683698072` was in progress. No local tests/build claimed. Remaining CI failures, if any, must be addressed before marking verified.
+
+
+## 2026-11-15 — WAVE-0001 second CI triage fixes (verification pending)
+
+- Latest inspected run `43683760674` failed Playwright at 39 pass / 9 fail while Node, typecheck, build and container passed.
+- Fixed settings Escape handling, icon test's expected Lucide class, strict selectors for code block, template search, Mermaid diagrams and PDF custom-color spans.
+- Updated toolbar color insertion/clear to pass through `handleEditorChange` so controlled React content and recovery draft update together; clear action expands selection to include the wrapper delimiters.
+- Updated block-color classification handling so generated `[!COLOR=#...]` callouts remain recognized as callout blocks.
+- New CI is pending for subsequent commits. These fixes are not verified until fresh Playwright results confirm them.
+
+
+## 2026-11-15 — WAVE-0001 consolidated source fixes (CI pending)
+
+- Inline text foreground/background color actions consume the current editor content ref, wrap the current selection, then use the same recovery-aware editor mutation handler as normal typing.
+- Block background action also uses current source and the recovery-aware handler.
+- Markdown Blocks color update replaces the whole live source range with the updated callout text. This avoids composing from stale block offsets after controlled state re-render.
+- Settings modal E2E now closes the modal before clicking Preview; modal backdrop remains intentionally modal. Lucide icon test expects the actual `lucide-file-code2` class.
+- Source commits: App `763008201aa6f8112345f6343bb480fbfbd85372`; block editor `43830417f3be88556a4db952789416cc46211916`; E2E `9c1e653e38e3478e7eb9a1e1f0249775f044d768`.
+- Verification remains pending the new latest-head workflow. No test pass is claimed here.
+
+## 2026-11-15 — Cross-tab recovery E2E fixture correction
+
+- Diagnosed run `43688362527`: 47/48 Playwright passed; the only failure was an empty cross-tab recovery prompt message. Node tests (30), typecheck, production build and container build passed.
+- Removed the premature `page.clock.install()` that ran before workspace/page creation. The test now installs the source tab's fake clock once, after `createPage()` confirms the baseline document is saved, then writes the unsaved draft. The second tab remains on real time.
+- This corrects the test's clock lifecycle; it does not change application behavior. Fresh CI is pending, and no local browser execution is claimed.
+
+
+## Cross-tab recovery investigation (diagnostic hardening)
+- Repeated dialog-only failures showed that prior timer changes did not establish the underlying cause.
+- Added direct journal assertions in both browser tabs before clicking the page in the second tab.
+- No claim of a production fix is made until CI demonstrates the record is shared and the recovery prompt is correctly shown.
+
+
+## Cross-tab recovery diagnostic assertion correction
+- CI #918 established the source journal write and source workspace-handle match were successful.
+- Fixed the test's over-escaped newline expectations; this was a test defect and not a production recovery fix.
+- Further verification remains required for second-tab visibility and the complete recovery prompt/decline flow.
