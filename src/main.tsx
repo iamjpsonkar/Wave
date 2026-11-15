@@ -2,7 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import DiagnosticsErrorBoundary from './DiagnosticsErrorBoundary';
-import { reportDiagnostic } from './diagnostics';
+import { configureDiagnostics, reportDiagnostic } from './diagnostics';
+
+if (new URLSearchParams(window.location.search).get('waveDebug') === '1') configureDiagnostics('debug');
 import './styles.css';
 
 window.addEventListener('error', event => {
