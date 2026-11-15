@@ -30,7 +30,7 @@
 
 - `bugs.md` and `fixed-bugs.md` (including historical regression scenarios)
 - `src/App.tsx`, `src/draftJournal.ts`, `src/storage.ts`, `src/safety.ts`
-- `tests/storage.test.js`, `tests/e2e/workspace.spec.ts`, `.github/workflows/ci.yml`, `playwright.config.ts`
+- `tests/storage.test.js`, `tests/e2e/workspace.spec.ts`, `.github/workflows/ci.yml`, `config/playwright.config.ts`
 - `package.json`, `DEV_CONTEXT.md`, `dev-build.md`, `dev-fixed.md`
 
 ## QA limitations and next verification
