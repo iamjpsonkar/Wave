@@ -246,7 +246,6 @@ test('recovery prompt identifies a draft created in another tab and preserves it
 
   const second = await context.newPage();
   await installWorkspaceFixture(second);
-  await second.clock.install();
   await second.goto('/');
   await second.getByRole('button', { name: /Reopen recent workspace/ }).click();
   await expect(second.getByRole('button', { name: /Cross-tab Recovery/ })).toBeVisible();
@@ -257,8 +256,8 @@ test('recovery prompt identifies a draft created in another tab and preserves it
     await dialog.dismiss();
   });
   await second.getByRole('button', { name: /Cross-tab Recovery/ }).click();
-  await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\n\nBrowser regression content');
   expect(promptMessage).toContain('another browser tab');
+  await expect(second.locator('textarea')).toHaveValue('# Cross-tab Recovery\n\nBrowser regression content');
 
   const retainedDrafts = await second.evaluate(async () => {
     const db = await new Promise<IDBDatabase>((resolve, reject) => {
@@ -1532,7 +1531,7 @@ test('color presets, reset and block background formatting are available', async
   await expect(editor).toHaveValue(/> \[!COLOR=#EAF2E8\]\n> Block background text/);
   await page.locator('.view-toggle').getByRole('button', { name: 'Preview', exact: true }).click();
   await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toContainText('Block background text');
-  await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toHaveAttribute('style', /background-color:\s*#eaf2e8/i);
+  await expect(page.locator('.markdown-preview blockquote.markdown-color-block')).toHaveCSS('background-color', 'rgb(234, 242, 232)');
 });
 
 
@@ -1670,6 +1669,7 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await editor.press('End');
   await editor.press('Enter');
   await expect(editor).toHaveValue('1. First step\n2. ');
+  await expect.poll(() => editor.evaluate(node => node === document.activeElement && node.selectionStart === node.value.length)).toBe(true);
   await editor.type('Second step');
   await editor.press('Enter');
   await expect(editor).toHaveValue('1. First step\n2. Second step\n3. ');
@@ -1678,6 +1678,7 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await editor.press('End');
   await editor.press('Enter');
   await expect(editor).toHaveValue('- First item\n- ');
+  await expect.poll(() => editor.evaluate(node => node === document.activeElement && node.selectionStart === node.value.length)).toBe(true);
   await editor.type('Second item');
   await editor.press('Enter');
   await expect(editor).toHaveValue('- First item\n- Second item\n- ');
@@ -1686,6 +1687,7 @@ test('Enter continues ordered, bulleted and task lists and exits an empty item',
   await editor.press('End');
   await editor.press('Enter');
   await expect(editor).toHaveValue('- [ ] First task\n- [ ] ');
+  await expect.poll(() => editor.evaluate(node => node === document.activeElement && node.selectionStart === node.value.length)).toBe(true);
   await editor.type('Second task');
   await editor.press('Enter');
   await expect(editor).toHaveValue('- [ ] First task\n- [ ] Second task\n- [ ] ');

@@ -665,3 +665,11 @@ This remains historical CI evidence and does not verify later commits. The curre
 - Mobile Settings is available from the top bar even when the sidebar is collapsed.
 - Content width preferences are maximum widths bounded by the available editor grid column; tests should assert the configured cap and the rendered width constraint, not force horizontal overflow.
 - See QA_CONTEXT.md and WIKI.md for the regression details. CI verification for the latest commit is authoritative.
+
+
+## Latest CI triage — 2026-11-15
+
+- Workflow `43687589347` on source head `50eebbd975d0a1dfa47e54d23b51a85e62828703` completed with failure: Node tests, typecheck, Vite build and container image passed; Playwright reported 44 passes, two repeatable failures and two flaky tests.
+- The repeatable issues were invalid color directive text being transformed as a wiki link and an E2E style assertion comparing CSS hex text against Chromium's normalized RGB output. Flaky cases involved a frozen second-tab clock during cross-tab recovery and typing before list-editor caret restoration.
+- Follow-up patch: preserve malformed `color:`/`bg:` directives literally; assert computed RGB background color; remove the unnecessary second-tab fake clock and explicitly verify the recovery prompt; wait for list editor focus/caret restoration before subsequent typing.
+- Fresh CI is required. No local tests were run. This handoff is the final documentation action for this remediation pass.

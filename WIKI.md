@@ -732,3 +732,11 @@ The scripts fail fast, print the failing stage, validate the minimum supported N
 ## Mobile workspace preferences
 
 On narrow screens the sidebar is a slide-out navigation drawer. The top bar exposes a dedicated Settings control so users can open workspace preferences without first opening the drawer. The editor content-width preference is a maximum width; the rendered editor/preview may be narrower when its available grid column is constrained by the contextual sample library or viewport.
+
+
+## 2026-11-15 — CI follow-up: Markdown directives and E2E stability
+
+- Run `43687589347` failed only in Playwright; Node tests, typecheck, production build and container build passed. The suite reported 44 passes, two deterministic failures and two flaky scenarios (cross-tab recovery and list typing).
+- Fixed malformed `[[color:red|...]]`-style directives being mistaken for unresolved wiki links: invalid `color:`/`bg:` directives now remain literal text, while valid six-digit hex directives retain their existing rendering path.
+- Corrected the block-background E2E assertion to compare the browser-computed RGB CSS value rather than expecting the source hex serialization. Removed an unnecessary frozen clock from the second cross-tab page, asserted the dialog source before checking the declined-recovery result, and made list continuation tests wait for focus/caret restoration before typing the next item.
+- Verification is pending on the new commit. No local browser run is claimed. Native OS picker/permission, external-process race, accessibility and process-termination checks remain outstanding; issue #1 stays open and PR #101 stays unmerged.

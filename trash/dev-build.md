@@ -398,3 +398,11 @@ The cross-tab recovery prompt scenario brings the browser suite to **10 scenario
 - Exposed Settings directly in the mobile top bar.
 - Aligned the narrow-width E2E check with the product contract: configured width is a maximum, not a promise to overflow its available editor column.
 - CI verification pending; no local run claimed.
+
+
+## 2026-11-15 — CI follow-up: Markdown directives and E2E stability
+
+- Run `43687589347` failed only in Playwright; Node tests, typecheck, production build and container build passed. The suite reported 44 passes, two deterministic failures and two flaky scenarios (cross-tab recovery and list typing).
+- Fixed malformed `[[color:red|...]]`-style directives being mistaken for unresolved wiki links: invalid `color:`/`bg:` directives now remain literal text, while valid six-digit hex directives retain their existing rendering path.
+- Corrected the block-background E2E assertion to compare the browser-computed RGB CSS value rather than expecting the source hex serialization. Removed an unnecessary frozen clock from the second cross-tab page, asserted the dialog source before checking the declined-recovery result, and made list continuation tests wait for focus/caret restoration before typing the next item.
+- Verification is pending on the new commit. No local browser run is claimed. Native OS picker/permission, external-process race, accessibility and process-termination checks remain outstanding; issue #1 stays open and PR #101 stays unmerged.
