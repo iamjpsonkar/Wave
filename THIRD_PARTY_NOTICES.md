@@ -18,13 +18,15 @@ The committed exact-version inventory is [`etc/legal/dependency-license-inventor
 | BSD-3-Clause | 1 | Retain copyright, conditions and disclaimer; respect non-endorsement clause |
 | CC-BY-4.0 | 1 | Attribution is required; preserve attribution and source/license references when redistributing the licensed database material |
 
-### Explicitly surfaced dependency
+### Packages needing specific notice handling
 
+- `baseline-browser-mapping@2.11.37` — Apache-2.0. This is a production dependency entry in the current lock snapshot. Preserve the Apache-2.0 license text and any applicable upstream NOTICE file when redistributing. The actual package tarball NOTICE was not individually inspected during this API-only pass; verify it before release.
+- `typescript@5.7.3` — Apache-2.0, development-only in the current lock snapshot. Preserve upstream license/NOTICE material if its code is ever included in distributed artifacts; the current app build uses it as a dev tool and doesn't ship the compiler as application code.
 - `caniuse-lite@1.0.30001826` — `CC-BY-4.0`, from the `browserslist/caniuse-lite` project and npm registry package. This is the only dependency outside the MIT/ISC/Apache-2.0/BSD-3-Clause set in the audited lock snapshot. Attribution 4.0 requires appropriate credit, a license link and indication of changes where applicable. The package's upstream LICENSE file is the authoritative legal text. See [upstream repository](https://github.com/browserslist/caniuse-lite) and [upstream LICENSE](https://github.com/browserslist/caniuse-lite/blob/main/LICENSE).
 - `lucide-react@0.468.0` — declared `ISC` in the lockfile. The Lucide project's React package documentation identifies the ISC license; the upstream project license file is authoritative. See [Lucide React](https://github.com/lucide-icons/lucide/tree/main/packages/lucide-react) and [Lucide license](https://github.com/lucide-icons/lucide/blob/main/LICENSE).
 - Apache-2.0 entries in the lockfile must be distributed with required upstream license and NOTICE text, when applicable. Review the exact installed package files before creating a release artifact; the lockfile expression alone does not prove whether an upstream NOTICE file applies.
 
-All 221 package entries in the audited lock snapshot have a non-empty license field. The audit should be rerun whenever the lockfile changes. Package count and license distribution are a dated snapshot, not a permanent assertion.
+All 221 package entries in the audited lock snapshot have a non-empty license field. The seven ISC package entries are individually named and versioned in the committed JSON inventory. The audit should be rerun whenever the lockfile changes. Package count and license distribution are a dated snapshot, not a permanent assertion.
 
 ## Fonts and other non-package assets
 
