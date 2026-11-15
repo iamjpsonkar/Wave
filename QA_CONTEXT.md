@@ -8,12 +8,12 @@
 
 > Repository: https://github.com/iamjpsonkar/Wave  
 > Branch: `main`  
-> Last QA recheck: 2026-11-14  
+> Last QA recheck: 2026-11-15 (WAVE-0001 branch; source/test update pending CI)  
 > Scope: source review of current default-branch files, open bug register, and fixed-bug regression baseline.
 
 ## Current disposition
 
-- **WAVE-031 — OPEN / PARTIAL (P1):** native user-picked-folder permission prompt and OS permission revocation are not exercised. External filesystem edits during active read/save/backup/restore, comprehensive keyboard/screen-reader accessibility, and actual browser-process termination are also not covered.
+- **WAVE-031 — OPEN / PARTIAL (P1):** branch `WAVE-0001` adds deterministic tests for permission reauthorization from the prompt state and editor conflict handling after an external file edit. The OPFS permission contract remains simulated; native picker/OS revocation, external-process scheduling races during read/save/backup/restore, comprehensive keyboard/screen-reader accessibility, and actual browser-process termination remain unverified.
 - **WAVE-039 — OPEN / PARTIAL (P1):** IndexedDB journal writes request strict durability and are attempted on `pagehide` / hidden visibility, but the transaction is asynchronous. A process kill before commit can still lose the latest keystroke.
 - **WAVE-042 — FIXED in source:** per-tab draft records and current-tab-only clearing are implemented; the cross-tab E2E scenario verifies both edits remain represented and that recovery provenance is shown.
 - No newly confirmed regression was found in the source paths reviewed. Do not close WAVE-031 or WAVE-039 based on source inspection.
@@ -21,9 +21,9 @@
 ## Current test inventory (source, not execution)
 
 - `tests/storage.test.js`: **30** Node test definitions.
-- `tests/e2e/workspace.spec.ts`: **13** Playwright Chromium test definitions.
+- `tests/e2e/workspace.spec.ts`: **48** Playwright Chromium test definitions on branch `WAVE-0001` (46 before this issue's two added scenarios).
 - E2E fixture: Origin Private File System (OPFS) directory handles; `showDirectoryPicker` is replaced with a fixture and permission query/request behavior is simulated.
-- Current E2E coverage includes workspace creation/autosave, reload recovery, Trash round trip, root/nested attachments, mobile navigation, backup/restore, strict IndexedDB durability request, simulated permission denial, same-workspace two-tab edits, cross-tab recovery provenance, Markdown sanitization/GFM, command palette keyboard execution, and wiki links/backlinks.
+- Current E2E coverage includes workspace creation/autosave, reload recovery, Trash round trip, root/nested attachments, mobile navigation, backup/restore, strict IndexedDB durability request, simulated permission denial and reauthorization, external-edit conflict preservation, same-workspace two-tab edits, cross-tab recovery provenance, Markdown sanitization/GFM, command palette keyboard execution, wiki links/backlinks, and the broader Markdown/UI regression suite.
 - Historical CI evidence in `dev-build.md` reports 30 Node tests and 10 E2E scenarios passing for commit `09021ed224f739fd66325bb8f6cc8f1bcca5b142`. That run does **not** establish that the current 13-scenario E2E suite passed.
 
 ## Files reviewed
@@ -33,9 +33,39 @@
 - `tests/storage.test.js`, `tests/e2e/workspace.spec.ts`, `.github/workflows/ci.yml`, `config/playwright.config.ts`
 - `package.json`, `DEV_CONTEXT.md`, `dev-build.md`, `dev-fixed.md`
 
+## WAVE-031 manual verification plan
+
+The following checks must be performed in a real supported browser and recorded with browser version, OS version, date, outcome and any reproducible evidence. OPFS/Playwright stubs are not substitutes.
+
+### Native folder picker and permission lifecycle
+1. Use a current supported Chromium browser (Chrome or Edge) on a secure origin (HTTPS or localhost).
+2. In a fresh browser profile, choose a real user folder using the native picker; confirm Wave creates/opens only its `.wave/` subdirectory and that canceling the picker leaves the welcome screen usable.
+3. Reload and use **Reopen recent workspace**. Record whether the browser retains the read/write grant or presents a native permission prompt.
+4. Revoke the site's file-system permission using browser site settings (and OS-level folder access controls where the platform exposes them); reload and attempt reopen.
+5. Confirm Wave does not load/edit the workspace while permission is denied, provides a clear recovery message, and can reopen after the user reauthorizes from the explicit Reopen gesture.
+6. Repeat after browser restart and after changing the folder's OS access rights. Record platform-specific differences; do not infer behavior from the OPFS fixture.
+
+### External filesystem and backup/restore
+1. Open a Markdown page in Wave, then modify the same file from an external editor before Wave autosaves. Confirm Wave reports a conflict and does not overwrite the external content.
+2. Repeat with an external rename/delete and record safe error/recovery behavior.
+3. Modify a document or asset while backup is in progress using a controlled external writer. Verify the backup is rejected or clearly marked incomplete; no partial snapshot may be offered as valid.
+4. Inject a restore copy failure and verify the destination is marked incomplete and cannot be opened as a workspace.
+5. Record the exact operation timing and source/backup hashes where available. Current Node tests cover simulated snapshot mutation and restore failure, not arbitrary OS process scheduling.
+
+### Keyboard, focus and assistive technology
+1. Complete the core workspace journey using only the keyboard: open/reopen, navigate page list, create/open/edit, switch Edit/Preview, use command palette, open/close settings/dialogs, and navigate Trash/backups.
+2. Verify visible focus at every step, logical tab order, Escape behavior, focus containment where appropriate, and focus restoration to the invoking control after dialogs close.
+3. Inspect accessible names/roles for icon-only controls, dialogs, editor, navigation, Markdown headings/links/tables/task lists/callouts/disclosures.
+4. Perform a screen-reader pass with at least one platform-supported screen reader (for example NVDA on Windows or VoiceOver on macOS). Record browser/screen-reader versions and any findings.
+5. Run contrast checks for light/dark themes and keyboard focus indicators. Automated smoke assertions do not constitute a WCAG conformance audit.
+
+### Browser lifecycle
+1. Use a controlled test profile to terminate the browser process while a recovery-draft transaction is pending and at several intervals after input.
+2. Reopen and verify whether the edit exists in the Markdown file or as a committed recovery draft. Document the unavoidable pre-commit loss window separately; do not promise crash-proof IndexedDB durability.
+
 ## QA limitations and next verification
 
-This was a **source-only recheck**. No repository checkout, local test execution, browser run, native picker interaction, accessibility audit, or fresh GitHub Actions result was available in this pass. Do not report tests as newly passed.
+This branch update is a **source/test-definition change pending CI**. No local test execution, browser run, native picker interaction, or accessibility audit has been performed for WAVE-0001 yet. Do not report tests as newly passed.
 
 Next:
 1. Run `npm ci`, `npm test`, `npm run typecheck`, `npm run build`.
