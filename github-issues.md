@@ -33,7 +33,9 @@
 
 | Issue | Archived source | Coverage |
 |---|---|---|
-| [#93](https://github.com/iamjpsonkar/Wave/issues/93) | `fixed-bugs.md` | 50 source-verified historical findings WAVE-001–WAVE-052; WAVE-031 and WAVE-039 remain open in #1 and #2 |
+| [#93](https://github.com/iamjpsonkar/Wave/issues/93) | `fixed-bugs.md` | Full regression records WAVE-001–020 |
+| [#96](https://github.com/iamjpsonkar/Wave/issues/96) | `fixed-bugs.md` | Full regression records WAVE-021–040 |
+| [#97](https://github.com/iamjpsonkar/Wave/issues/97) | `fixed-bugs.md` | Full regression records WAVE-041–052; WAVE-031 and WAVE-039 remain open in #1 and #2 |
 | [#94](https://github.com/iamjpsonkar/Wave/issues/94) | `dev-fixed.md` | Completed implementation history, 2026-11-14 through 2026-11-15 |
 | [#95](https://github.com/iamjpsonkar/Wave/issues/95) | `dev-build.md` | CI/build chronology and verification evidence; pending checks remain pending |
 
