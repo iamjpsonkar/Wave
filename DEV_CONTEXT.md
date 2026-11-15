@@ -54,7 +54,9 @@ Runtime: `index.html` → `src/main.tsx` → `src/App.tsx`.
 - `src/styles.css`: application styling and responsive behavior.
 - `tests/storage.test.js`: Node storage/concurrency/safety regression tests.
 - `tests/e2e/workspace.spec.ts`: Playwright Chromium journeys.
-- `playwright.config.ts`: Playwright configuration and Vite test server.
+- `config/vite.config.ts`: Vite configuration.
+- `config/playwright.config.ts`: Playwright configuration and Vite test server.
+- `config/tsconfig.app.json`: application TypeScript project configuration; root `tsconfig.json` references it.
 - `.github/workflows/ci.yml`: CI gate.
 
 ### Current on-disk workspace format
