@@ -56,3 +56,13 @@ To debug one scenario, pass Node's `--test-name-pattern` option through `node --
 - Storage files split by behavior: workspace/document/assets versus Trash/backup/restore. Further splits should follow a cohesive scenario inventory, not file length alone.
 - Each browser context receives a unique OPFS directory. Separate tests/retries cannot encounter stale files; multi-tab scenarios reopen the same workspace through the app's remembered folder handle.
 - Diagnostic metadata has strict key-specific value vocabularies. Unknown strings redact regardless of field name. Error messages and bounded causes are sanitized; raw stack frames are intentionally omitted to avoid leaking filesystem paths, URLs or user content.
+
+
+## WAVE-0111 second review follow-up (2026-11-15)
+
+- Second review [5910232936](https://github.com/iamjpsonkar/Wave/pull/115#pullrequestreview-5910111707) identified recovery trace gating, incomplete operation correlation and unsafe free-form exception text.
+- Removed direct `console.info('[Wave recovery]')` tracing. Recovery stages now use structured `debug` events and share the same operation ID as document-open failure reporting. Default verbosity suppresses those events; `?waveDebug=1` enables them.
+- Diagnostic errors retain the standard error class and a bounded cause chain, but free-form exception messages are replaced with the fixed string `Details omitted for privacy.` This intentionally avoids heuristic text redaction that could miss document-derived prose. Raw stack traces are not stored.
+- Stable operation IDs now span workspace open/reopen and activation, document open, autosave persistence, Trash restore/delete, and backup create/restore. Existing diagnostics use strict string vocabularies and duplicate propagation is suppressed.
+- Unit coverage now checks ordinary unprefixed private prose is omitted. Playwright coverage checks no recovery trace noise by default, debug visibility when enabled, and autosave error privacy/correlation.
+- Full canonical CI must run against the exact latest head after these changes; no local execution is claimed.
