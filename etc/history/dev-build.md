@@ -1238,3 +1238,10 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Added two conditional-save regressions: if the active document path is externally renamed or deleted after Wave loaded it, `saveDocIfUnchanged` refuses the stale save. The renamed file remains unchanged and a deleted path is not silently recreated.
 - The tests use the in-memory filesystem adapter to make operation ordering deterministic. They do not prove native OS scheduling behavior or real picker/permission races.
 - Branch: `WAVE-0105-external-fs-races`, based on merge commit `030786a4a0188239da69058bb6fd887bed8d83aa`. No local tests/typecheck/build/browser/Docker checks were run; exact-head CI is required.
+
+
+## 2026-11-16 — CI correction for restore source deletion race (#105)
+
+- CI run [43842483785](https://github.com/iamjpsonkar/Wave/actions/runs/43842483785) failed in the storage unit suite: 52 passed, 1 failed. The restore-source deletion scenario was rejected earlier by the backup completion-manifest integrity check than the test expected, so the failure was in the asserted error path, not a missing fail-closed guard.
+- Updated the test to accept either the manifest-integrity rejection or the later tree-change rejection, and assert the actual earlier enumeration sequence. The test continues to verify failed restore status and that the incomplete destination cannot be opened.
+- Follow-up commit: `4d478f429f84f1beb5e4a6e617afb4fe078f0f55`. CI for this new head is pending; no pass is claimed.

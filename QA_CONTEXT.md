@@ -553,3 +553,11 @@ QA registers and issue traceability now live under `etc/quality/`; product/UI an
 - Added conditional-save regressions for a document renamed or deleted outside Wave. A stale Wave draft is rejected rather than recreating the deleted path or overwriting the renamed file.
 - These are deterministic adapter tests; they do not reproduce native OS process scheduling or picker permission behavior. No local test execution is claimed; exact-head CI is pending.
 - Issue #105 remains open for other external modification windows, broader fault boundaries, and native filesystem verification.
+
+
+## 2026-11-16 — Issue #105 CI failure correction
+
+- Exact-head CI run [43842483785](https://github.com/iamjpsonkar/Wave/actions/runs/43842483785) on head `2044a90873ad9d43dc1e1a670e6089d15903d82b` failed in the storage Node test suite: 52 passed, 1 failed.
+- The failing restore-deletion test expected the later tree-comparison error, but the earlier backup completion-manifest integrity check correctly rejected the deleted source first (`Backup contents do not match the completion manifest; restore was stopped.`).
+- Updated the regression to accept either fail-closed validation path and assert the manifest-first enumeration sequence. This does not weaken the safety expectation: the restore still must reject the changed source, write a failed marker and leave the destination unopenable.
+- The follow-up commit is `4d478f429f84f1beb5e4a6e617afb4fe078f0f55`. Exact-head CI must be rerun on the new head; no successful verification is claimed yet.
