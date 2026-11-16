@@ -425,7 +425,6 @@ test('backup rejects an external document rename between snapshot and copy', asy
   assert.equal(enumerations(), 2);
   assert.equal(await readDoc(workspace.documents, 'Renamed.md'), 'original content');
   assert.deepEqual(await listBackups(workspace.backups), []);
-  const [failedBackup] = [];
   const statuses = [];
   for await (const [name, handle] of workspace.backups.entries()) {
     if (handle.kind !== 'directory' || !name.startsWith('backup-')) continue;
