@@ -8,6 +8,92 @@ import {
 import { conflictCopyPath, enqueueWorkspaceTask, flushUntilStable, isWorkspaceGenerationCurrent, newestDraft, relativeAssetPath } from '../../../src/safety.ts';
 import { MemoryDirectoryHandle, fixture } from '../../helpers/storage-fixtures.js';
 
+function injectWritableFailure(directory, filename, phase) {
+  let triggered = false;
+  let aborted = false;
+  const originalGetFileHandle = directory.getFileHandle.bind(directory);
+  const patchedHandles = new WeakSet();
+  directory.getFileHandle = async (name, options = {}) => {
+    const handle = await originalGetFileHandle(name, options);
+    if (name !== filename || patchedHandles.has(handle)) return handle;
+    patchedHandles.add(handle);
+    const originalCreateWritable = handle.createWritable.bind(handle);
+    handle.createWritable = async () => {
+      const writer = await originalCreateWritable();
+      return {
+        write: async value => {
+          if (!triggered && phase === 'write') {
+            triggered = true;
+            throw new Error(`injected write failure for ${filename}`);
+          }
+          return writer.write(value);
+        },
+        close: async () => {
+          if (!triggered && phase === 'close') {
+            triggered = true;
+            throw new Error(`injected close failure for ${filename}`);
+          }
+          return writer.close();
+        },
+        abort: async () => {
+          aborted = true;
+          return writer.abort();
+        }
+      };
+    };
+    return handle;
+  };
+  return { wasTriggered: () => triggered, wasAborted: () => aborted };
+}
+
+function injectBackupCopyFailure(workspace, filename, phase) {
+  let injection = null;
+  const originalGetDirectoryHandle = workspace.backups.getDirectoryHandle.bind(workspace.backups);
+  workspace.backups.getDirectoryHandle = async (name, options = {}) => {
+    const backup = await originalGetDirectoryHandle(name, options);
+    if (!injection && name.startsWith('backup-')) {
+      const originalGetChild = backup.getDirectoryHandle.bind(backup);
+      backup.getDirectoryHandle = async (childName, childOptions = {}) => {
+        const child = await originalGetChild(childName, childOptions);
+        if (!injection && childName === 'documents') {
+          injection = injectWritableFailure(child, filename, phase);
+        }
+        return child;
+      };
+    }
+    return backup;
+  };
+  return () => injection;
+}
+
+function injectRestoreCopyFailure(workspace, filename, phase) {
+  let injection = null;
+  const originalGetDirectoryHandle = workspace.root.getDirectoryHandle.bind(workspace.root);
+  workspace.root.getDirectoryHandle = async (name, options = {}) => {
+    const target = await originalGetDirectoryHandle(name, options);
+    if (!injection && name.includes('-restore-')) {
+      const originalGetWave = target.getDirectoryHandle.bind(target);
+      target.getDirectoryHandle = async (childName, childOptions = {}) => {
+        const wave = await originalGetWave(childName, childOptions);
+        if (childName === '.wave') {
+          const originalGetStorage = wave.getDirectoryHandle.bind(wave);
+          wave.getDirectoryHandle = async (storageName, storageOptions = {}) => {
+            const storage = await originalGetStorage(storageName, storageOptions);
+            if (!injection && storageName === 'documents') {
+              injection = injectWritableFailure(storage, filename, phase);
+            }
+            return storage;
+          };
+        }
+        return wave;
+      };
+    }
+    return target;
+  };
+  return () => injection;
+}
+
+
 test('Trash restore chooses an unused path and preserves existing files',async()=>{
   const {workspace}=await fixture();
   await saveDoc(workspace.documents,'Notes.md','new page');
@@ -202,4 +288,105 @@ test('restore rejects backup mutation during copying and marks the destination i
   const marker=JSON.parse(await(await(await wave.getFileHandle('restore-status.json')).getFile()).text());
   assert.equal(marker.status,'failed');
   await assert.rejects(()=>openWorkspace(targets[0].handle),/incomplete backup restore/);
+});
+
+
+test('backup copy write failure aborts the writer and leaves the snapshot unlisted', async () => {
+  const { workspace } = await fixture();
+  await saveDoc(workspace.documents, 'A.md', 'source remains intact');
+  const getInjection = injectBackupCopyFailure(workspace, 'A.md', 'write');
+
+  await assert.rejects(() => createBackup(workspace), /injected write failure for A\.md/);
+
+  const injection = getInjection();
+  assert.ok(injection?.wasTriggered());
+  assert.ok(injection?.wasAborted());
+  assert.equal(await readDoc(workspace.documents, 'A.md'), 'source remains intact');
+  assert.deepEqual(await listBackups(workspace.backups), []);
+
+  const failed = [];
+  for await (const [name, handle] of workspace.backups.entries()) {
+    if (handle.kind !== 'directory' || !name.startsWith('backup-')) continue;
+    const status = JSON.parse(await (await (await handle.getFileHandle('backup-status.json')).getFile()).text());
+    failed.push(status.status);
+  }
+  assert.deepEqual(failed, ['failed']);
+});
+
+test('backup copy close failure aborts the writer and leaves the snapshot unlisted', async () => {
+  const { workspace } = await fixture();
+  await saveDoc(workspace.documents, 'A.md', 'source remains intact');
+  const getInjection = injectBackupCopyFailure(workspace, 'A.md', 'close');
+
+  await assert.rejects(() => createBackup(workspace), /injected close failure for A\.md/);
+
+  const injection = getInjection();
+  assert.ok(injection?.wasTriggered());
+  assert.ok(injection?.wasAborted());
+  assert.equal(await readDoc(workspace.documents, 'A.md'), 'source remains intact');
+  assert.deepEqual(await listBackups(workspace.backups), []);
+
+  const failed = [];
+  for await (const [name, handle] of workspace.backups.entries()) {
+    if (handle.kind !== 'directory' || !name.startsWith('backup-')) continue;
+    const status = JSON.parse(await (await (await handle.getFileHandle('backup-status.json')).getFile()).text());
+    failed.push(status.status);
+  }
+  assert.deepEqual(failed, ['failed']);
+});
+
+test('restore copy write failure aborts the writer and blocks the incomplete destination', async () => {
+  const { root, workspace } = await fixture();
+  await saveDoc(workspace.documents, 'A.md', 'verified backup source');
+  const backupName = await createBackup(workspace);
+  const getInjection = injectRestoreCopyFailure(workspace, 'A.md', 'write');
+
+  await assert.rejects(
+    () => restoreBackupToNewWorkspace(workspace, backupName),
+    /injected write failure for A\.md/
+  );
+
+  const injection = getInjection();
+  assert.ok(injection?.wasTriggered());
+  assert.ok(injection?.wasAborted());
+  const source = await workspace.backups.getDirectoryHandle(backupName);
+  assert.equal(await readDoc(await source.getDirectoryHandle('documents'), 'A.md'), 'verified backup source');
+
+  const targets = [];
+  for await (const [name, handle] of root.entries()) {
+    if (handle.kind === 'directory' && name.includes('-restore-')) targets.push(handle);
+  }
+  assert.equal(targets.length, 1);
+  const wave = await targets[0].getDirectoryHandle('.wave');
+  const marker = JSON.parse(await (await (await wave.getFileHandle('restore-status.json')).getFile()).text());
+  assert.equal(marker.status, 'failed');
+  await assert.rejects(() => openWorkspace(targets[0]), /incomplete backup restore/);
+});
+
+test('restore copy close failure aborts the writer and blocks the incomplete destination', async () => {
+  const { root, workspace } = await fixture();
+  await saveDoc(workspace.documents, 'A.md', 'verified backup source');
+  const backupName = await createBackup(workspace);
+  const getInjection = injectRestoreCopyFailure(workspace, 'A.md', 'close');
+
+  await assert.rejects(
+    () => restoreBackupToNewWorkspace(workspace, backupName),
+    /injected close failure for A\.md/
+  );
+
+  const injection = getInjection();
+  assert.ok(injection?.wasTriggered());
+  assert.ok(injection?.wasAborted());
+  const source = await workspace.backups.getDirectoryHandle(backupName);
+  assert.equal(await readDoc(await source.getDirectoryHandle('documents'), 'A.md'), 'verified backup source');
+
+  const targets = [];
+  for await (const [name, handle] of root.entries()) {
+    if (handle.kind === 'directory' && name.includes('-restore-')) targets.push(handle);
+  }
+  assert.equal(targets.length, 1);
+  const wave = await targets[0].getDirectoryHandle('.wave');
+  const marker = JSON.parse(await (await (await wave.getFileHandle('restore-status.json')).getFile()).text());
+  assert.equal(marker.status, 'failed');
+  await assert.rejects(() => openWorkspace(targets[0]), /incomplete backup restore/);
 });

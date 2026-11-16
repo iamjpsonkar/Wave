@@ -951,3 +951,16 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Added `tests/unit/storage/workspace.test.js` coverage asserting validation emits no `console.debug` or `console.warn` output for rejected SVG and accepted text attachments.
 - Updated `docs/SECURITY_THREAT_MODEL.md`, `docs/SECURITY_OPERATIONS.md`, `WIKI.md` and `etc/history/dev-build.md`.
 - This is a focused privacy hardening increment, not completion of issue #120. No local tests, typecheck, build, Playwright or Docker checks were run. Exact-head CI is required before merge.
+
+
+## Current implementation handoff — 2026-11-16
+
+### Issue #105 — backup/restore writable-stream fault injection
+
+- Branch: `WAVE-0105-backup-restore-write-faults`, based on `main` at `57a9e333b0a427956141223b0c8ade6d9bebcaaa`.
+- Added four deterministic Node tests in `tests/unit/storage/trash-backup.test.js` covering destination writer `write()` and `close()` failures during backup copy and restore copy.
+- The tests verify stream abort attempts, source preservation, failed backup exclusion from `listBackups()`, failed restore markers, and rejection of incomplete restore destinations by `openWorkspace()`.
+- Existing backup mutation detection, restore mutation detection, and enumeration-failure tests remain unchanged.
+- Updated `QA_CONTEXT.md`, `etc/history/dev-build.md` and `WIKI.md`. No application runtime code was changed in this slice.
+- No local tests, typecheck, build, Playwright or Docker checks were run. Exact-head CI is pending; do not merge until all required checks pass.
+- Issue #105 remains open for external filesystem races and the other unimplemented acceptance criteria. This branch addresses only deterministic writable-stream failure coverage.
