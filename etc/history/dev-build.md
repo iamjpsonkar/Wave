@@ -1229,3 +1229,12 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Existing backup/restore mutation and enumeration-failure tests are preserved.
 - Branch: `WAVE-0105-backup-restore-write-faults`, based on `57a9e333b0a427956141223b0c8ade6d9bebcaaa`. GitHub-only edit; no local tests, typecheck, build, Playwright or Docker checks were run. Exact-head CI is required before merge.
 - Scope is one deterministic fault-injection slice of issue #105; native filesystem races and the remaining acceptance criteria stay open.
+
+
+## 2026-11-16 — External rename/delete race coverage for backup, restore and conditional save (#105)
+
+- Added four deterministic storage race tests: external document rename/delete between backup's initial snapshot and copy enumeration; external backup-source rename/delete between restore's initial snapshot and copy enumeration.
+- Backup rejects changed source trees and records failed snapshots that are not listed as restorable. Restore rejects changed backup trees, marks the new destination failed, and leaves it blocked from opening.
+- Added two conditional-save regressions: if the active document path is externally renamed or deleted after Wave loaded it, `saveDocIfUnchanged` refuses the stale save. The renamed file remains unchanged and a deleted path is not silently recreated.
+- The tests use the in-memory filesystem adapter to make operation ordering deterministic. They do not prove native OS scheduling behavior or real picker/permission races.
+- Branch: `WAVE-0105-external-fs-races`, based on merge commit `030786a4a0188239da69058bb6fd887bed8d83aa`. No local tests/typecheck/build/browser/Docker checks were run; exact-head CI is required.

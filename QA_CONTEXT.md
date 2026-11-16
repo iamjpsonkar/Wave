@@ -544,3 +544,12 @@ QA registers and issue traceability now live under `etc/quality/`; product/UI an
 - Existing enumeration/read-side copy-failure and source-mutation scenarios remain in place; these additions specifically exercise the writable stream failure boundary.
 - This is automated failure-path coverage, not proof of native filesystem/OS race behavior. No local test, typecheck, build or browser run was executed through the GitHub-only workflow. Exact-head CI is pending.
 - Issue #105 remains open for external rename/delete races, concurrent source mutation at additional operation boundaries, broader copy/close fault coverage and native filesystem verification.
+
+
+## 2026-11-16 — Issue #105 external rename/delete race regressions (PR pending)
+
+- Added deterministic in-memory filesystem races for an external document rename or deletion after backup's initial source snapshot and before its copy enumeration. Backup must reject the changed tree and leave the snapshot marked failed and absent from restorable listings.
+- Added equivalent backup-source rename/delete races during restore. Restore must reject the changed source, mark its destination failed, and keep that destination blocked by `openWorkspace()`.
+- Added conditional-save regressions for a document renamed or deleted outside Wave. A stale Wave draft is rejected rather than recreating the deleted path or overwriting the renamed file.
+- These are deterministic adapter tests; they do not reproduce native OS process scheduling or picker permission behavior. No local test execution is claimed; exact-head CI is pending.
+- Issue #105 remains open for other external modification windows, broader fault boundaries, and native filesystem verification.

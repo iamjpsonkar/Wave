@@ -842,3 +842,8 @@ Read [the edition architecture](etc/engineering/EDITIONS.md), [architecture](etc
 ## 2026-11-16 — Backup/restore writable failure handling tests
 
 Issue [#105](https://github.com/iamjpsonkar/Wave/issues/105) now has four additional deterministic storage regression scenarios for backup and restore copy failures at writable-stream `write()` and `close()` boundaries. They verify abort attempts, source preservation, exclusion of failed backups from restore listings, and refusal to open failed restore destinations. These tests complement existing enumeration-failure and mutation-detection coverage; they do not establish native filesystem race behavior or complete issue #105.
+
+
+## 2026-11-16 — External filesystem rename/delete race coverage (#105)
+
+Issue [#105](https://github.com/iamjpsonkar/Wave/issues/105) now has deterministic regressions for external document rename/deletion during backup snapshot copying, external backup-source rename/deletion during restore, and stale conditional saves after a document is renamed or deleted. Backups that observe a changed source are rejected and excluded from restore listings; restores with changed sources are marked incomplete and cannot be opened; stale saves do not overwrite renamed files or recreate deleted paths. This is in-memory adapter coverage, not native OS race verification, and does not complete issue #105.

@@ -390,3 +390,104 @@ test('restore copy close failure aborts the writer and blocks the incomplete des
   assert.equal(marker.status, 'failed');
   await assert.rejects(() => openWorkspace(targets[0]), /incomplete backup restore/);
 });
+
+
+
+function mutateAfterInitialSnapshot(directory, mutation) {
+  const originalEntries = directory.entries.bind(directory);
+  let enumerations = 0;
+  directory.entries = async function* () {
+    enumerations++;
+    if (enumerations === 2) await mutation();
+    yield* originalEntries();
+  };
+  return () => enumerations;
+}
+
+async function renameMemoryFile(directory, from, to) {
+  const source = await directory.getFileHandle(from);
+  const data = await (await source.getFile()).text();
+  await directory.removeEntry(from);
+  const destination = await directory.getFileHandle(to, { create: true });
+  const writer = await destination.createWritable();
+  await writer.write(data);
+  await writer.close();
+}
+
+
+test('backup rejects an external document rename between snapshot and copy', async () => {
+  const { workspace } = await fixture();
+  await saveDoc(workspace.documents, 'A.md', 'original content');
+  const enumerations = mutateAfterInitialSnapshot(workspace.documents, () => renameMemoryFile(workspace.documents, 'A.md', 'Renamed.md'));
+
+  await assert.rejects(() => createBackup(workspace), /Workspace files changed during backup/);
+
+  assert.equal(enumerations(), 2);
+  assert.equal(await readDoc(workspace.documents, 'Renamed.md'), 'original content');
+  assert.deepEqual(await listBackups(workspace.backups), []);
+  const [failedBackup] = [];
+  const statuses = [];
+  for await (const [name, handle] of workspace.backups.entries()) {
+    if (handle.kind !== 'directory' || !name.startsWith('backup-')) continue;
+    statuses.push(JSON.parse(await (await (await handle.getFileHandle('backup-status.json')).getFile()).text()).status);
+  }
+  assert.deepEqual(statuses, ['failed']);
+});
+
+test('backup rejects an external document deletion between snapshot and copy', async () => {
+  const { workspace } = await fixture();
+  await saveDoc(workspace.documents, 'A.md', 'externally deleted content');
+  const enumerations = mutateAfterInitialSnapshot(workspace.documents, () => workspace.documents.removeEntry('A.md'));
+
+  await assert.rejects(() => createBackup(workspace), /Workspace files changed during backup/);
+
+  assert.equal(enumerations(), 2);
+  await assert.rejects(() => readDoc(workspace.documents, 'A.md'), /Missing file/);
+  assert.deepEqual(await listBackups(workspace.backups), []);
+});
+
+test('restore rejects an external backup document rename during copying', async () => {
+  const { root, workspace } = await fixture();
+  await saveDoc(workspace.documents, 'A.md', 'verified backup content');
+  const backupName = await createBackup(workspace);
+  const source = await workspace.backups.getDirectoryHandle(backupName);
+  const sourceDocuments = await source.getDirectoryHandle('documents');
+  const enumerations = mutateAfterInitialSnapshot(sourceDocuments, () => renameMemoryFile(sourceDocuments, 'A.md', 'Renamed.md'));
+
+  await assert.rejects(() => restoreBackupToNewWorkspace(workspace, backupName), /Backup files changed during restore/);
+
+  assert.equal(enumerations(), 2);
+  assert.equal(await readDoc(sourceDocuments, 'Renamed.md'), 'verified backup content');
+  const targets = [];
+  for await (const [name, handle] of root.entries()) {
+    if (handle.kind === 'directory' && name.includes('-restore-')) targets.push(handle);
+  }
+  assert.equal(targets.length, 1);
+  const wave = await targets[0].getDirectoryHandle('.wave');
+  const marker = JSON.parse(await (await (await wave.getFileHandle('restore-status.json')).getFile()).text());
+  assert.equal(marker.status, 'failed');
+  await assert.rejects(() => openWorkspace(targets[0]), /incomplete backup restore/);
+});
+
+test('restore rejects an external backup document deletion during copying', async () => {
+  const { root, workspace } = await fixture();
+  await saveDoc(workspace.documents, 'A.md', 'verified backup content');
+  const backupName = await createBackup(workspace);
+  const source = await workspace.backups.getDirectoryHandle(backupName);
+  const sourceDocuments = await source.getDirectoryHandle('documents');
+  const enumerations = mutateAfterInitialSnapshot(sourceDocuments, () => sourceDocuments.removeEntry('A.md'));
+
+  await assert.rejects(() => restoreBackupToNewWorkspace(workspace, backupName), /Backup files changed during restore/);
+
+  assert.equal(enumerations(), 2);
+  await assert.rejects(() => readDoc(sourceDocuments, 'A.md'), /Missing file/);
+  const targets = [];
+  for await (const [name, handle] of root.entries()) {
+    if (handle.kind === 'directory' && name.includes('-restore-')) targets.push(handle);
+  }
+  assert.equal(targets.length, 1);
+  const wave = await targets[0].getDirectoryHandle('.wave');
+  const marker = JSON.parse(await (await (await wave.getFileHandle('restore-status.json')).getFile()).text());
+  assert.equal(marker.status, 'failed');
+  await assert.rejects(() => openWorkspace(targets[0]), /incomplete backup restore/);
+});
