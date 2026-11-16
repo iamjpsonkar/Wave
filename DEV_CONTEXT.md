@@ -964,3 +964,19 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Updated `QA_CONTEXT.md`, `etc/history/dev-build.md` and `WIKI.md`. No application runtime code was changed in this slice.
 - No local tests, typecheck, build, Playwright or Docker checks were run. Exact-head CI is pending; do not merge until all required checks pass.
 - Issue #105 remains open for external filesystem races and the other unimplemented acceptance criteria. This branch addresses only deterministic writable-stream failure coverage.
+
+
+## Current implementation handoff — 2026-11-16
+
+### Issue #105 — external filesystem rename/delete race coverage
+
+- Branch: `WAVE-0105-external-fs-races`, based on the PR #150 squash merge commit `030786a4a0188239da69058bb6fd887bed8d83aa`.
+- Implementation commit: `e38464fd94dc43df42d289256ffb72934d8bdd13`; follow-up test cleanup commit: `9db43c3908c865aab578de119618363516b8cfa1`.
+- Added deterministic tests for external document rename/deletion after backup's initial tree snapshot and before copy enumeration. Both cases must fail closed; failed backups are marked failed and excluded from restorable listings.
+- Added equivalent external rename/deletion tests for backup-source files during restore. The restore destination must be marked failed and remain blocked by `openWorkspace()`.
+- Added conditional-save tests proving a stale Wave draft is rejected after the original document is externally renamed or deleted; the renamed file is preserved and the deleted path is not silently recreated.
+- Updated `tests/unit/storage/trash-backup.test.js`, `tests/unit/storage/workspace.test.js`, `QA_CONTEXT.md`, `etc/history/dev-build.md` and `WIKI.md`.
+- No production storage code changed; the existing snapshot comparison and conditional-save guard are exercised with new race schedules.
+- No local Node tests, typecheck, build, Playwright or Docker checks were run. Exact-head GitHub Actions CI is pending; report results only after the workflow completes on the final branch head.
+- Remaining #105 scope includes additional external modification windows, operation-boundary fault injection, stronger real-filesystem/OS evidence and any acceptance criteria not yet covered. The in-memory adapter tests do not prove native OS scheduling behavior.
+- Workflow constraint from the user: create/fix commits on the task branch and open/update a PR for review; **never merge or otherwise integrate the branch**.
