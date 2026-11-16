@@ -1212,3 +1212,11 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Added a Playwright regression covering malformed page and media route encodings and asserting the remainder of the preview remains visible.
 - Updated the threat model and WIKI security guidance. This is a narrow renderer hardening increment, not a complete Markdown/security audit.
 - No local tests, typecheck, build, browser run or Docker checks were executed in this GitHub-only edit. Exact-head CI is required before merge.
+
+
+## 2026-11-16 — Remove attachment metadata from runtime console logs (#120)
+
+- Source audit found `validateAttachmentContent` logging user-provided attachment filenames, declared MIME types, sizes and a hexadecimal content prefix with `console.debug`; rejected SVG/HTML payloads also logged filenames and MIME metadata with `console.warn`.
+- Removed both runtime logging statements. Attachment validation still returns the same user-facing validation errors and preserves all existing checks.
+- Added a unit regression that exercises both a rejected active SVG and an accepted text attachment while asserting that neither `console.debug` nor `console.warn` is called.
+- No local tests, typecheck, build, Playwright or Docker checks were run in this GitHub-only edit. Exact-head CI is required before merge.

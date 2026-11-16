@@ -32,6 +32,12 @@ The ESLint workflow installs exact tool versions transiently after `npm ci`, wit
 
 No Sonar/SonarCloud account, token, organization or paid service is required. Do not reintroduce credential-gated Sonar as a required workflow without an explicit owner decision.
 
+## Application logging and privacy
+
+- Do not write user-provided attachment names, workspace paths, document content, MIME metadata or content prefixes to the browser console or diagnostics.
+- Validation failures should report a generic, actionable error to the user without echoing sensitive filenames or payload details.
+- Keep regression coverage that asserts attachment validation emits no console output for both accepted and rejected files.
+
 ## Triage and remediation
 
 1. Record scanner, workflow run, commit SHA, package/component, installed version, dependency path, advisory/CVE/GHSA, severity, fixed version and evidence.
