@@ -535,3 +535,12 @@ QA registers and issue traceability now live under `etc/quality/`; product/UI an
 - PR [#110](https://github.com/iamjpsonkar/Wave/pull/110) targets `main`, head `f1d49c174279158f1a20a8fc9efb675ab0708b66`. Its CI workflow [43693734660](https://github.com/iamjpsonkar/Wave/actions/runs/43693734660) completed successfully on that exact head.
 - This workflow result verifies the configured CI jobs for the manager head; it does not satisfy native picker/OS permission, external-process race, abrupt process-termination or full accessibility acceptance work tracked under issues #3 and #104–#106.
 - No application source or test code was changed in this documentation reconciliation. No local tests, typecheck or build were run.
+
+
+## 2026-11-16 — Issue #105 writable-stream failure injection (implementation PR pending)
+
+- Added four deterministic Node regression scenarios in `tests/unit/storage/trash-backup.test.js`: backup-copy `write()` failure, backup-copy `close()` failure, restore-copy `write()` failure, and restore-copy `close()` failure.
+- Each injected stream failure verifies the storage adapter attempts `abort()`. Backup scenarios also verify the original document remains unchanged, the backup is marked failed, and `listBackups()` does not expose it as restorable. Restore scenarios verify the verified backup source remains intact, the destination receives a failed restore marker, and `openWorkspace()` refuses the incomplete destination.
+- Existing enumeration/read-side copy-failure and source-mutation scenarios remain in place; these additions specifically exercise the writable stream failure boundary.
+- This is automated failure-path coverage, not proof of native filesystem/OS race behavior. No local test, typecheck, build or browser run was executed through the GitHub-only workflow. Exact-head CI is pending.
+- Issue #105 remains open for external rename/delete races, concurrent source mutation at additional operation boundaries, broader copy/close fault coverage and native filesystem verification.

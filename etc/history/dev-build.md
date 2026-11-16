@@ -1220,3 +1220,12 @@ Important limitations: Wave still stores Markdown/assets as ordinary plaintext; 
 - Removed both runtime logging statements. Attachment validation still returns the same user-facing validation errors and preserves all existing checks.
 - Added a unit regression that exercises both a rejected active SVG and an accepted text attachment while asserting that neither `console.debug` nor `console.warn` is called.
 - No local tests, typecheck, build, Playwright or Docker checks were run in this GitHub-only edit. Exact-head CI is required before merge.
+
+
+## 2026-11-16 — Backup/restore writable failure-injection coverage (#105)
+
+- Added four deterministic storage regressions for failures in destination writable `write()` and `close()` during backup copying and restore copying.
+- Tests assert `abort()` is attempted, source documents/verified backups remain unchanged, failed backups are excluded from `listBackups()`, and failed restore destinations carry a failed marker and cannot be opened as workspaces.
+- Existing backup/restore mutation and enumeration-failure tests are preserved.
+- Branch: `WAVE-0105-backup-restore-write-faults`, based on `57a9e333b0a427956141223b0c8ade6d9bebcaaa`. GitHub-only edit; no local tests, typecheck, build, Playwright or Docker checks were run. Exact-head CI is required before merge.
+- Scope is one deterministic fault-injection slice of issue #105; native filesystem races and the remaining acceptance criteria stay open.

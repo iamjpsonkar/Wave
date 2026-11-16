@@ -837,3 +837,8 @@ The mobile drawer must expose a dedicated close control above the open sidebar. 
 Wave Personal is the local-only edition: no accounts, backend, server database, document uploads, remote sync or collaboration dependency. Wave Full adds optional identity, encrypted synchronization and collaboration while preserving local/offline workspace ownership. The approved architecture rejects mandatory server-side storage of readable user documents; local SQLite remains the planned canonical store and is not yet implemented.
 
 Read [the edition architecture](etc/engineering/EDITIONS.md), [architecture](etc/engineering/ARCHITECTURE.md), and the threat-model extension in [SECURITY_THREAT_MODEL.md](docs/SECURITY_THREAT_MODEL.md). The work is tracked by [issue #135](https://github.com/iamjpsonkar/Wave/issues/135). Neither edition nor its future online services should be described as shipped until implementation and verification are complete.
+
+
+## 2026-11-16 — Backup/restore writable failure handling tests
+
+Issue [#105](https://github.com/iamjpsonkar/Wave/issues/105) now has four additional deterministic storage regression scenarios for backup and restore copy failures at writable-stream `write()` and `close()` boundaries. They verify abort attempts, source preservation, exclusion of failed backups from restore listings, and refusal to open failed restore destinations. These tests complement existing enumeration-failure and mutation-detection coverage; they do not establish native filesystem race behavior or complete issue #105.
