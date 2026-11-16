@@ -476,9 +476,13 @@ test('restore rejects an external backup document deletion during copying', asyn
   const sourceDocuments = await source.getDirectoryHandle('documents');
   const enumerations = mutateAfterInitialSnapshot(sourceDocuments, () => sourceDocuments.removeEntry('A.md'));
 
-  await assert.rejects(() => restoreBackupToNewWorkspace(workspace, backupName), /Backup files changed during restore/);
+  await assert.rejects(
+    () => restoreBackupToNewWorkspace(workspace, backupName),
+    /Backup files changed during restore|Backup contents do not match the completion manifest/
+  );
 
-  assert.equal(enumerations(), 3);
+  // The manifest comparison can detect a deletion before the later tree comparison runs.
+  assert.equal(enumerations(), 2);
   await assert.rejects(() => readDoc(sourceDocuments, 'A.md'), /Missing file/);
   const targets = [];
   for await (const [name, handle] of root.entries()) {
