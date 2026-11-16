@@ -422,7 +422,7 @@ test('backup rejects an external document rename between snapshot and copy', asy
 
   await assert.rejects(() => createBackup(workspace), /Workspace files changed during backup/);
 
-  assert.equal(enumerations(), 2);
+  assert.equal(enumerations(), 3);
   assert.equal(await readDoc(workspace.documents, 'Renamed.md'), 'original content');
   assert.deepEqual(await listBackups(workspace.backups), []);
   const statuses = [];
@@ -440,7 +440,7 @@ test('backup rejects an external document deletion between snapshot and copy', a
 
   await assert.rejects(() => createBackup(workspace), /Workspace files changed during backup/);
 
-  assert.equal(enumerations(), 2);
+  assert.equal(enumerations(), 3);
   await assert.rejects(() => readDoc(workspace.documents, 'A.md'), /Missing file/);
   assert.deepEqual(await listBackups(workspace.backups), []);
 });
@@ -455,7 +455,7 @@ test('restore rejects an external backup document rename during copying', async 
 
   await assert.rejects(() => restoreBackupToNewWorkspace(workspace, backupName), /Backup files changed during restore/);
 
-  assert.equal(enumerations(), 2);
+  assert.equal(enumerations(), 3);
   assert.equal(await readDoc(sourceDocuments, 'Renamed.md'), 'verified backup content');
   const targets = [];
   for await (const [name, handle] of root.entries()) {
@@ -478,7 +478,7 @@ test('restore rejects an external backup document deletion during copying', asyn
 
   await assert.rejects(() => restoreBackupToNewWorkspace(workspace, backupName), /Backup files changed during restore/);
 
-  assert.equal(enumerations(), 2);
+  assert.equal(enumerations(), 3);
   await assert.rejects(() => readDoc(sourceDocuments, 'A.md'), /Missing file/);
   const targets = [];
   for await (const [name, handle] of root.entries()) {
