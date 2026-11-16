@@ -980,3 +980,18 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - No local Node tests, typecheck, build, Playwright or Docker checks were run. Exact-head GitHub Actions CI is pending; report results only after the workflow completes on the final branch head.
 - Remaining #105 scope includes additional external modification windows, operation-boundary fault injection, stronger real-filesystem/OS evidence and any acceptance criteria not yet covered. The in-memory adapter tests do not prove native OS scheduling behavior.
 - Workflow constraint from the user: create/fix commits on the task branch and open/update a PR for review; **never merge or otherwise integrate the branch**.
+
+
+## Current implementation handoff — 2026-11-16 (CI failure correction)
+
+### Issue #105 — external filesystem rename/delete race coverage
+
+- Branch: `WAVE-0105-external-fs-races`; review PR: [#151](https://github.com/iamjpsonkar/Wave/pull/151). Do not merge; user requires all work to remain on the task branch.
+- Latest commits: `4d478f429f84f1beb5e4a6e617afb4fe078f0f55` fixes the restore-deletion test's expected fail-closed path; `5ca01582941c575c4d950c309dde2e784f57232b` records CI findings in QA/build history.
+- CI run [43842483785](https://github.com/iamjpsonkar/Wave/actions/runs/43842483785) on prior head `2044a90873ad9d43dc1e1a670e6089d15903d82b` failed in the storage Node suite: 52 passed, 1 failed. The restore-source deletion test expected the later tree-comparison error, but the earlier backup completion-manifest check correctly rejected the deleted source first.
+- Updated the test to accept the manifest-integrity rejection or the later tree-change rejection and assert the actual manifest-first enumeration sequence. It still checks failed restore metadata and that the incomplete destination cannot be opened.
+- The CI correction is committed and pushed. CI must be rerun on the new branch head `5ca01582941c575c4d950c309dde2e784f57232b`; no successful verification is claimed yet.
+- No local Node tests, typecheck, build, Playwright or Docker checks were run.
+- The branch also contains external rename/delete tests for backup and restore plus conditional-save stale-path protection. These use the in-memory adapter and do not prove native OS scheduling or picker permission behavior.
+- Remaining #105 scope: other asset/metadata mutation windows, additional operation-boundary failures, stronger native filesystem evidence, and remaining acceptance criteria.
+- User workflow constraint: only fix and push to the task branch and maintain the review PR. Never merge or integrate it.
