@@ -964,3 +964,34 @@ The pinned OSV-Scanner v2.2.1 CLI rejected `--output-file` because this release 
 - Updated `QA_CONTEXT.md`, `etc/history/dev-build.md` and `WIKI.md`. No application runtime code was changed in this slice.
 - No local tests, typecheck, build, Playwright or Docker checks were run. Exact-head CI is pending; do not merge until all required checks pass.
 - Issue #105 remains open for external filesystem races and the other unimplemented acceptance criteria. This branch addresses only deterministic writable-stream failure coverage.
+
+
+## Current implementation handoff — 2026-11-16
+
+### Issue #105 — external filesystem rename/delete race coverage
+
+- Branch: `WAVE-0105-external-fs-races`, based on PR #150 squash merge commit `030786a4a0188239da69058bb6fd887bed8d83aa`.
+- Implementation commits: `e38464fd94dc43df42d289256ffb72934d8bdd13` (race scenarios and documentation), `9db43c3908c865aab578de119618363516b8cfa1` (unused test binding cleanup), and `551694bc1d128d91dfcc7c295fc571ec7c217a38` (snapshot enumeration assertion correction).
+- Added deterministic tests for external document rename/deletion after backup's initial tree snapshot and before copy enumeration. Both cases must fail closed; failed backups are marked failed and excluded from restorable listings.
+- Added equivalent external rename/deletion tests for backup-source files during restore. The restore destination must be marked failed and remain blocked by `openWorkspace()`.
+- Added conditional-save tests proving a stale Wave draft is rejected after the original document is externally renamed or deleted; the renamed file is preserved and the deleted path is not silently recreated.
+- Updated `tests/unit/storage/trash-backup.test.js`, `tests/unit/storage/workspace.test.js`, `QA_CONTEXT.md`, `etc/history/dev-build.md` and `WIKI.md`.
+- No production storage code changed; the existing snapshot comparison and conditional-save guard are exercised with new race schedules.
+- No local Node tests, typecheck, build, Playwright or Docker checks were run. Exact-head GitHub Actions CI is pending; report results only after the workflow completes on the final branch head.
+- Remaining #105 scope includes additional external modification windows, operation-boundary fault injection, stronger real-filesystem/OS evidence and any acceptance criteria not yet covered. The in-memory adapter tests do not prove native OS scheduling behavior.
+- Workflow constraint from the user: create/fix commits on the task branch and open/update a PR for review; **never merge or otherwise integrate the branch**.
+
+
+## Current implementation handoff — 2026-11-16 (CI failure correction)
+
+### Issue #105 — external filesystem rename/delete race coverage
+
+- Branch: `WAVE-0105-external-fs-races`; review PR: [#151](https://github.com/iamjpsonkar/Wave/pull/151). Do not merge; user requires all work to remain on the task branch.
+- Latest commits: `4d478f429f84f1beb5e4a6e617afb4fe078f0f55` fixes the restore-deletion test's expected fail-closed path; `5ca01582941c575c4d950c309dde2e784f57232b` records CI findings in QA/build history.
+- CI run [43842483785](https://github.com/iamjpsonkar/Wave/actions/runs/43842483785) on prior head `2044a90873ad9d43dc1e1a670e6089d15903d82b` failed in the storage Node suite: 52 passed, 1 failed. The restore-source deletion test expected the later tree-comparison error, but the earlier backup completion-manifest check correctly rejected the deleted source first.
+- Updated the test to accept the manifest-integrity rejection or the later tree-change rejection and assert the actual manifest-first enumeration sequence. It still checks failed restore metadata and that the incomplete destination cannot be opened.
+- The CI correction is committed and pushed. CI must be rerun on the new branch head `5ca01582941c575c4d950c309dde2e784f57232b`; no successful verification is claimed yet.
+- No local Node tests, typecheck, build, Playwright or Docker checks were run.
+- The branch also contains external rename/delete tests for backup and restore plus conditional-save stale-path protection. These use the in-memory adapter and do not prove native OS scheduling or picker permission behavior.
+- Remaining #105 scope: other asset/metadata mutation windows, additional operation-boundary failures, stronger native filesystem evidence, and remaining acceptance criteria.
+- User workflow constraint: only fix and push to the task branch and maintain the review PR. Never merge or integrate it.

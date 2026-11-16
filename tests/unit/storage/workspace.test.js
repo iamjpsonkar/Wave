@@ -107,3 +107,35 @@ test('attachment validation rejects active content, metadata mismatches, spoofed
   await expectAccept('valid PNG signature detection',()=>validateAttachmentContent(new File([genuinePng],'valid.png',{type:'image/png'})));
   await expectAccept('unrecognized benign text payload',()=>addAsset(workspace.assets,new File(['safe text'],'notes.txt',{type:'text/plain'})));
 });
+
+
+
+test('saveDocIfUnchanged preserves a renamed external file and refuses the stale path', async () => {
+  const { workspace } = await fixture();
+  await saveDoc(workspace.documents, 'Notes.md', 'original content');
+  const original = await workspace.documents.getFileHandle('Notes.md');
+  const content = await (await original.getFile()).text();
+  await workspace.documents.removeEntry('Notes.md');
+  const renamed = await workspace.documents.getFileHandle('Renamed.md', { create: true });
+  const writer = await renamed.createWritable();
+  await writer.write(content);
+  await writer.close();
+
+  await assert.rejects(
+    () => saveDocIfUnchanged(workspace.documents, 'Notes.md', 'unsaved Wave draft', 'original content'),
+    /changed outside Wave/
+  );
+  assert.equal(await readDoc(workspace.documents, 'Renamed.md'), 'original content');
+});
+
+test('saveDocIfUnchanged refuses to recreate a document deleted externally', async () => {
+  const { workspace } = await fixture();
+  await saveDoc(workspace.documents, 'Notes.md', 'original content');
+  await workspace.documents.removeEntry('Notes.md');
+
+  await assert.rejects(
+    () => saveDocIfUnchanged(workspace.documents, 'Notes.md', 'unsaved Wave draft', 'original content'),
+    /changed outside Wave/
+  );
+  await assert.rejects(() => readDoc(workspace.documents, 'Notes.md'), /Missing file/);
+});
